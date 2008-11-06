@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="java-blas" basedir="." default="jar">
+    <description>
+		This is the build script to compile and deploy the java-blas project.
+		It also generates JavaDoc from source in ../doc.
+		
+		$Id: build.xml 361 2007-09-30 15:23:58Z charlierby $
+    </description>
+
+	<!-- Define directories -->
+    <property name="src" value="${basedir}/src" />
+    <property name="test" value="${basedir}/test" />
+    <property name="bin" value="${basedir}/bin" />
+    <property name="deploy" value="${basedir}/deploy" />
+    <property name="doc" value="${basedir}/doc" />
+    <property name="jar" value="${basedir}/jBLAS.jar" />
+    <property name="include" value="${basedir}/include" />
+    <property name="external" value="${basedir}/external" />
+    <property name="scripts" value="${basedir}/scripts" />
+    <macrodef name="classToFloat">
+        <attribute name="class"/>
+        <attribute name="path" default="src"/>
+        <sequential>
+            <echo message="Generating float version of @{class}"/>
+            <exec executable="ruby">
+                <arg line="scripts/class_to_float.rb @{path} @{class}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+    <macrodef name="staticClassToFloat">
+        <attribute name="class"/>
+        <sequential>
+            <echo message="Add float versions to class @{class}"/>
+            <exec executable="ruby">
+                <arg line="scripts/static_class_to_float.rb src @{class}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+    <macrodef name="rjpp">
+        <attribute name="file"/>
+        <sequential>
+            <exec executable="ruby">
+                <arg line="scripts/rjpp.rb @{file}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+    <target name="clean">
+        <delete dir="${doc}" />
+        <delete dir="${bin}" />
+        <delete dir="${deploy}" />
+        <delete file="${jar}" />
+        <exec executable="make">
+            <arg line="clean" />
+        </exec>
+    </target>
+    <target name="realclean" depends="clean">
+        <delete file="fortranwrapper.dump"/>
+    </target>
+    <target name="prepare">
+        <mkdir dir="${bin}" />
+    </target>
+    <target name="compile" depends="prepare,wrapper,generateFloat">
+        <javac destdir="${bin}" source="1.6" debug="on" compiler="javac1.6" fork="yes" nowarn="yes">
+            <src path="${src}" />
+            <src path="${test}" />
+            <classpath>
+                <pathelement location="${external}/junit.jar" />
+            </classpath>
+        </javac>
+    </target>
+    <target name="javah" depends="prepare,wrapper,compile">
+        <javah destdir="${include}" force="yes">
+            <class name="edu.ida.core.Dynamic" />
+            <class name="edu.ida.la.Blas" />
+            <classpath>
+                <pathelement path="${bin}" />
+            </classpath>
+        </javah>
+    </target>
+    <target name="compileNative" depends="prepare,javah">
+        <exec executable="make">
+            <arg line="compileNative" />
+        </exec>
+    </target>
+    <target name="wrapper">
+        <exec executable="make">
+            <arg line="generateWrapper" />
+        </exec>
+    </target>
+    <target name="generateFloat" depends="preprocess">
+        <classToFloat class="edu.ida.la.DoubleMatrix"/>
+        <classToFloat class="edu.ida.la.DoubleFunction"/>
+        <classToFloat class="edu.ida.core.ComplexDouble"/>
+        <classToFloat path="test" class="edu.ida.la.TestDoubleMatrix"/>
+        <classToFloat path="test" class="edu.ida.la.TestBlasDouble"/>
+        <classToFloat class="edu.ida.la.ComplexDoubleMatrix"/>
+        <staticClassToFloat class="edu.ida.la.SimpleBlas"/>
+        <staticClassToFloat class="edu.ida.la.Solve"/>
+        <staticClassToFloat class="edu.ida.la.Eigen"/>
+        <staticClassToFloat class="edu.ida.la.Geometry"/>
+        <staticClassToFloat class="edu.ida.la.MatrixFunctions"/>
+    </target>
+    <target name="preprocess">
+        <rjpp file="src/edu/ida/la/DoubleMatrix.java"/>
+        <rjpp file="test/edu/ida/la/TestDoubleMatrix.java"/>
+        <rjpp file="src/edu/ida/la/MatrixFunctions.java"/>
+        <rjpp file="src/edu/ida/la/ComplexDoubleMatrix.java"/>
+    </target>
+    <target name="jar" depends="compile,compileNative">
+        <jar destfile="${jar}">
+            <fileset dir="${bin}">
+                <include name="edu/**" />
+                <include name="lib*.so"/>
+                <include name="*.dll"/>
+            </fileset>
+            <manifest>
+                <attribute name="Built-By" value="IDA Group, TU Berlin" />
+            </manifest>
+        </jar>
+    </target>
+    <target name="javadoc" depends="generateFloat">
+        <mkdir dir="${doc}" />
+        <javadoc packagenames="com.fhg.theseus.*"
+		sourcepath="${src}" defaultexcludes="yes"
+		destdir="${doc}" author="true" version="true"
+		use="true" windowtitle="jBLAS" linksource="yes"
+			stylesheetfile="javadoc.css">
+            <doctitle>
+				<![CDATA[ <h1>jBLAS - Lightweight Linear Algebra for JAVA</h1> ]]>
+            </doctitle>
+            <bottom>
+			<![CDATA[ written by Mikio L. Braun and Johannes Schaback ]]>
+            </bottom>
+            <tag name="dedication" scope="all" description="Dedication:" />
+            <fileset dir="${src}" id="id">
+            </fileset>
+        </javadoc>
+    </target>
+    <target name="test" depends="jar">
+        <junit printsummary="yes" haltonfailure="yes" showoutput="yes">
+            <classpath>
+                <pathelement location="${external}/junit.jar" />
+                <pathelement path="${bin}" />
+            </classpath>
+            <formatter type="plain" usefile="false" />
+            <test name="edu.ida.la.BenchmarkMatrix" />
+        </junit>
+    </target>
+    <target name="all" depends="jar, javadoc">
+    </target>
+    <target name="debugDirectBufferGC" depends="jar">
+        <java classname="edu.ida.la.DebugDirectBufferGC" classpath="${basedir}/jBLAS.jar" />
+    </target>
+</project>
