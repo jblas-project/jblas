@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." name="jBLAS-IDE">
+    <import file="../build.xml"/>
+    <!-- TODO: edit the following target according to your needs -->
+    <!-- (more info: http://www.netbeans.org/kb/41/freeform-config.html#runsingle) -->
+    <target name="test-selected-file-in-test-old">
+        <fail unless="run.class">Must set property 'run.class'</fail>
+        <junit classname="${run.class}" failonerror="true" fork="true">
+            <classpath>
+                <pathelement path="external/junit.jar:bin"/>
+            </classpath>
+        </junit>
+    </target>
+    <target depends="compile,compileNative" name="test-selected-file-in-test">
+        <mkdir dir="test-results"/>
+        <junit errorproperty="tests.failed" failureproperty="tests.failed" fork="true" showoutput="true">
+            <test name="${run.class}" todir="test-results"/>
+            <classpath path="${bin}:external/junit.jar"/>
+            <formatter type="brief" usefile="false"/>
+            <formatter type="xml"/>
+        </junit>
+    </target>
+    <!-- TODO: edit the following target according to your needs -->
+    <!-- (more info: http://www.netbeans.org/kb/41/freeform-config.html#runsingle) -->
+    <target name="debug-test-selected-file-in-test">
+        <fail unless="debug.class">Must set property 'debug.class'</fail>
+        <path id="cp">
+            <pathelement path="${bin}:external/junit.jar"/>
+        </path>
+        <nbjpdastart addressproperty="jpda.address" name="jBLAS" transport="dt_socket">
+            <classpath refid="cp"/>
+        </nbjpdastart>
+        <junit errorproperty="tests.failed" failureproperty="tests.failed" fork="true" showoutput="true">
+            <classpath path="${classes.dir}:external/junit.jar:${test.classes.dir}"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xnoagent"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+            <test name="${debug.class}" todir="${test.results.dir}"/>
+            <formatter type="brief" usefile="false"/>
+            <formatter type="xml"/>
+        </junit>
+    </target>
+</project>
