@@ -13,7 +13,7 @@
     <property name="bin" value="${basedir}/bin" />
     <property name="deploy" value="${basedir}/deploy" />
     <property name="doc" value="${basedir}/doc" />
-    <property name="jar" value="${basedir}/jBLASarray.jar" />
+    <property name="jar" value="${basedir}/jBLAS.jar" />
     <property name="include" value="${basedir}/include" />
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />

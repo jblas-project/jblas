@@ -1,0 +1,34 @@
+jBLAS is a matrix library for Java which uses existing high
+performance BLAS and LAPACK libraries like ATLAS.
+
+INSTALL
+
+In principle, all you need is the jBLAS.jar in your
+classpath. jBLAS.jar will then automagically extract your platform
+dependent native library to a tempfile and load it from there. You can
+also put that file somewhere in your load path ($LD_LIBRARY_PATH for
+Linux, %PATH for Windows).
+
+BUILDING
+
+If you want to build jBLAS from the sources, you need to set up quite
+a few things:
+
+You will need some implementation of blas and lapack, for example, as
+provided by ATLAS (http://math-atlas.sourceforge.net/). You also need
+the Fortran sources for BLAS and LAPACK, available, for example from
+http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz.
+
+Besides that, you need an installation of ruby, for some code
+generation scripts.
+
+If you still want to build the source your own, see README for further
+details.
+
+CONTRIBUTORS
+
+Mikio Braun - mikio@cs.tu-berlin.de 
+   (main developer)
+
+Johannes Schaback - johannes.schaback@gmail.com 
+   (additional programming, web-site design) 
