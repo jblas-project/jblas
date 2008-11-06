@@ -8,8 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.FloatBuffer;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import static edu.ida.core.BlasUtil.*;
 
 /**
@@ -201,19 +202,10 @@ public class FloatMatrix {
 	public int rows;
 	public int columns;
 	public int length;
-	public FloatBuffer data = null; // rows are contiguous
+	public float[] data = null; // rows are contiguous
 
         public static final FloatMatrix EMPTY = new FloatMatrix();
-        
-        
-        protected void finalize() throws Throwable {
-            super.finalize();
-            data = null;
-            MemoryTracker.registerFinalize(length * Float.SIZE);
-            //System.err.printf("%d * %d matrix finalized\n", rows, columns);
-        }
-        
-        
+                
         
 	/**************************************************************************
 	 * 
@@ -224,11 +216,16 @@ public class FloatMatrix {
 	/** Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
 	 * using <i>newData></i> as the data. The length of the data is not checked!
 	 */
-	public FloatMatrix(int newRows, int newColumns, FloatBuffer newData) {
+	public FloatMatrix(int newRows, int newColumns, float... newData) {
 		rows = newRows;
 		columns = newColumns;
 		length = rows * columns;
-		data = newData;
+
+                if (newData != null && newData.length != newRows * newColumns)
+			throw new IllegalArgumentException(
+					"Passed data must match matrix dimensions.");
+
+                data = newData;
                 //System.err.printf("%d * %d matrix created\n", rows, columns);
 	}
 	
@@ -238,43 +235,14 @@ public class FloatMatrix {
 	 * @param newColumns the number of columns (<i>m</i>) of the new matrix.
 	 */
 	public FloatMatrix(int newRows, int newColumns) {
-		this(newRows, newColumns, createFloatBuffer(newRows * newColumns));
-                MemoryTracker.registerCreate(newRows * newColumns * Float.SIZE);
+		this(newRows, newColumns, new float[newRows * newColumns]);
 	}
 	
-	/**
-	 * Creates a new <i>n</i> times <i>m</i> <tt>FloatMatrix</tt> and 
-	 * fill entries from the given data array.
-	 * The leading dimension is set to rows per default, therefore the
-	 * given array is wrapped in the columns. For example, <br/><br/>
-	 * <code>new FloatMatrix(3, 3, 1d, 2d, 3d, 4d, 5d, 6d, 7d, 8d, 9d).print();</code><br/><br/>
-	 * will print out
-	 * <pre>
-	 * 1.0f	4.0f	7.0f	
-	 * 2.0f	5.0f	8.0f
-	 * 3.0f	6.0f	9.0f
-	 * </pre>
-	 * on <tt>System.out</tt>.
-	 * @param newRows the number of rows (<i>n</i>) of the new matrix.
-	 * @param newColumns the number of columns (<i>m</i>) of the new matrix.
-	 * @param newData
-	 */
-	public FloatMatrix(int newRows, int newColumns, float... newData) {
-		this(newRows, newColumns, (FloatBuffer)null);
-
-		if (newData.length != newRows * newColumns)
-			throw new IllegalArgumentException(
-					"Passed data must match matrix dimensions.");
-
-		data = createFloatBufferFrom(newData);
-                MemoryTracker.registerCreate(length * Float.SIZE);
-	}
-
 	/**
 	 * Creates a new <tt>FloatMatrix</tt> of size 0 times 0.
 	 */
 	public FloatMatrix() {
-		this(0, 0, (FloatBuffer)null);
+		this(0, 0, (float[])null);
 	}
 
 	/**
@@ -282,15 +250,12 @@ public class FloatMatrix {
 	 * @param len
 	 */
 	public FloatMatrix(int len) {
-		this(len, 1, createFloatBuffer(len));
-                MemoryTracker.registerCreate(length * Float.SIZE);
+		this(len, 1, new float[len]);
 	}
 	
 	public FloatMatrix(float[] newData) {
 		this(newData.length);
-				
-		data = createFloatBufferFrom(newData);
-                MemoryTracker.registerCreate(length * Float.SIZE);
+                data = newData;
 	}
 		
 	/**
@@ -333,7 +298,7 @@ public class FloatMatrix {
 
 		java.util.Random r = new java.util.Random();
 		for (int i = 0; i < rows * columns; i++) {
-			m.data.put(i, r.nextFloat());
+			m.data[i] = r.nextFloat();
 		}
 
 		return m;
@@ -349,7 +314,7 @@ public class FloatMatrix {
 
 		java.util.Random r = new java.util.Random();
 		for (int i = 0; i < rows * columns; i++) {
-			m.data.put(i, (float)r.nextGaussian());
+			m.data[i] = (float)r.nextGaussian();
 		}
 
 		return m;
@@ -795,8 +760,7 @@ public class FloatMatrix {
 		rows = newRows;
 		columns = newColumns;
 		length = newRows * newColumns;
-		data = createFloatBuffer(rows * columns);
-                MemoryTracker.registerCreate(length * Float.SIZE);
+		data = new float[rows * columns];
 	}
 
 	
@@ -859,12 +823,10 @@ public class FloatMatrix {
 	 * but the buffer is not shared.
 	 */
 	public FloatMatrix dup() {
-		FloatMatrix out = new FloatMatrix(rows, columns, createFloatBuffer(data.capacity()));
-                MemoryTracker.registerCreate(length * Float.SIZE);
+		FloatMatrix out = new FloatMatrix(rows, columns);
 
-		data.rewind();
-		out.data.put(data);
-		
+                JavaBlas.rcopy(length, data, 0, 1, out.data, 0, 1);
+                		
 		return out;
 	}
 	
@@ -882,13 +844,13 @@ public class FloatMatrix {
 		
 	/** Set matrix element */
 	public FloatMatrix put(int rowIndex, int columnIndex, float value) {
-		data.put(index(rowIndex, columnIndex), value);
+		data[index(rowIndex, columnIndex)] = value;
 		return this;
 	}
 
 	/** Retrieve matrix element */
 	public float get(int rowIndex, int columnIndex) {
-		return data.get(index(rowIndex, columnIndex));
+		return data[index(rowIndex, columnIndex)];
 	}
 
 	/** Get index of an element */
@@ -908,12 +870,12 @@ public class FloatMatrix {
         
         /** Get a matrix element (linear indexing). */
 	public float get(int i) {
-		return data.get(i);
+		return data[i];
 	}
 
         /** Set a matrix element (linear indexing). */
 	public FloatMatrix put(int i, float v) {
-		data.put(i, v);
+		data[i] = v;
 		return this;
 	}
 
@@ -1003,7 +965,28 @@ public class FloatMatrix {
 		
 		return s.toString();
 	}
-
+    
+        public String toString(String fmt) {
+            StringWriter s = new StringWriter();
+            PrintWriter p = new PrintWriter(s);
+            
+            p.print("[");
+            
+            for (int r = 0; r < rows; r++) {
+                for (int c = 0; c < columns; c++) {
+                    p.printf(fmt, get(r, c));
+                    if (c < columns - 1)
+                        p.print(", ");
+                }
+                if (r < rows - 1)
+                    p.print("; ");
+            }
+            
+            p.print("]");
+            
+            return s.toString();
+        }
+    
         /** Converts the matrix to a one-dimensional array of floats. */
         public float[] toArray() {
 		float[] array = new float[length];
@@ -1066,6 +1049,16 @@ public class FloatMatrix {
 				
 		return array;
 	}
+        
+        public FloatMatrix toFloatMatrix() {
+            FloatMatrix result = new FloatMatrix(rows, columns);
+            
+            for (int c = 0; c < columns; c++)
+                for (int r = 0; r < rows; r++)
+                    result.put(r, c, (float)get(r, c));
+            
+            return result;
+        }
 
 	/**************************************************************************
 	 * Arithmetic Operations
@@ -1437,11 +1430,13 @@ public class FloatMatrix {
                 return dup();
             } else {
  		FloatMatrix v = new FloatMatrix(1, columns);
-                FloatMatrix temp = new FloatMatrix(rows);
                 
-		for (int c = 0; c < columns; c++)
-			v.put(c, getColumn(c, temp).sum());
-
+		for (int c = 0; c < columns; c++) {
+                    for (int r = 0; r < rows; r++) {
+                        v.put(c, v.get(c) + get(r, c));
+                    }
+                }
+                
 		return v;
             }
 	}
@@ -1455,10 +1450,12 @@ public class FloatMatrix {
                 return dup();
             } else {
 		FloatMatrix v = new FloatMatrix(rows);
-                FloatMatrix temp = new FloatMatrix(columns);
                 
-		for (int r = 0; r < rows; r++)
-			v.put(r, getRow(r, temp).sum());
+                for (int c = 0; c < columns; c++) {
+                    for (int r = 0; r < rows; r++) {
+                        v.put(r, v.get(r) + get(r, c));
+                    }
+                }
 
 		return v;
             }
@@ -1566,8 +1563,9 @@ public class FloatMatrix {
 
 	/** Add a row vector to all rows of the matrix (in place). */
 	public FloatMatrix addiRowVector(FloatMatrix x) {
+                x.checkLength(columns);
 		for (int r = 0; r < rows; r++) {
-			Blas.saxpy(columns, 1.0f, x.data, 0, 1, data, index(r, 0), rows);
+			JavaBlas.raxpy(columns, 1.0f, x.data, 0, 1, data, index(r, 0), rows);
 		}
                 return this;
 	}
@@ -1578,8 +1576,9 @@ public class FloatMatrix {
 
 	/** Add a vector to all columns of the matrix */
 	public FloatMatrix addiColumnVector(FloatMatrix x) {
+                x.checkLength(rows);
 		for (int c = 0; c < columns; c++) {
-			Blas.saxpy(rows, 1.0f, x.data, 0, 1, data, index(0, c), 1);
+			JavaBlas.raxpy(rows, 1.0f, x.data, 0, 1, data, index(0, c), 1);
 		}
                 return this;
 	}
@@ -1590,8 +1589,10 @@ public class FloatMatrix {
         
        	/** Add a row vector to all rows of the matrix */
 	public FloatMatrix subiRowVector(FloatMatrix x) {
+                // This is a bit crazy, but a row vector must have as length as the columns of the matrix.
+                x.checkLength(columns);
 		for (int r = 0; r < rows; r++) {
-			Blas.saxpy(columns, -1.0f, x.data, 0, 1, data, index(r, 0), rows);
+			JavaBlas.raxpy(columns, -1.0f, x.data, 0, 1, data, index(r, 0), rows);
 		}
                 return this;
 	}
@@ -1602,8 +1603,9 @@ public class FloatMatrix {
 
         /** Add a vector to all columns of the matrix */
 	public FloatMatrix subiColumnVector(FloatMatrix x) {
+                x.checkLength(rows);
 		for (int c = 0; c < columns; c++) {
-			Blas.saxpy(rows, -1.0f, x.data, 0, 1, data, index(0, c), 1);
+			JavaBlas.raxpy(rows, -1.0f, x.data, 0, 1, data, index(0, c), 1);
 		}
                 return this;
 	}
@@ -1632,11 +1634,9 @@ public class FloatMatrix {
 		dos.writeInt(columns);
 		dos.writeInt(rows);
 		
-		dos.writeInt(data.capacity());
-		data.rewind();
-		data.reset();
-		for(int i=0; i < data.capacity();i++)
-			dos.writeDouble(data.get());
+		dos.writeInt(data.length);
+		for(int i=0; i < data.length;i++)
+			dos.writeDouble(data[i]);
 	}
 	
 	/**
@@ -1653,11 +1653,9 @@ public class FloatMatrix {
 		this.rows		= dis.readInt();
 
 		final int MAX = dis.readInt();
-		data = createFloatBuffer(MAX);
-		data.rewind();
-		data.reset();
+		data = new float[MAX];
 		for(int i=0; i < MAX;i++)
-			data.put(dis.readFloat());
+			data[i] = dis.readFloat();
 	}	
 	
 	/**

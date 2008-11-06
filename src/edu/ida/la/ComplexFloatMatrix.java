@@ -9,14 +9,13 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.FloatBuffer;
 
 public class ComplexFloatMatrix {
 	
 	int rows;
 	int columns;
 	int length;
-	FloatBuffer data = null; // rows are contiguous
+	float[] data = null; // rows are contiguous
 
 	/**************************************************************************
 	 * 
@@ -27,11 +26,16 @@ public class ComplexFloatMatrix {
 	/** Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
 	 * using <i>newData></i> as the data. The length of the data is not checked!
 	 */
-	public ComplexFloatMatrix(int newRows, int newColumns, FloatBuffer newData) {
+	public ComplexFloatMatrix(int newRows, int newColumns, float... newData) {
 		rows = newRows;
 		columns = newColumns;
 		length = rows * columns;
-		data = newData;
+
+                if (newData.length != 2 * newRows * newColumns)
+			throw new IllegalArgumentException(
+					"Passed data must match matrix dimensions.");
+
+                data = newData;
 	}
 	
 	/**
@@ -40,41 +44,14 @@ public class ComplexFloatMatrix {
 	 * @param newColumns the number of columns (<i>m</i>) of the new matrix.
 	 */
 	public ComplexFloatMatrix(int newRows, int newColumns) {
-		this(newRows, newColumns, createFloatBuffer(2 * newRows * newColumns));
+		this(newRows, newColumns, new float[2 * newRows * newColumns]);
 	}
 	
-	/**
-	 * Creates a new <i>n</i> times <i>m</i> <tt>ComplexFloatMatrix</tt> and 
-	 * fill entries from the given data array.
-	 * The leading dimension is set to rows per default, therefore the
-	 * given array is wrapped in the columns. For example, <br/><br/>
-	 * <code>new ComplexFloatMatrix(3, 3, 1d, 2d, 3d, 4d, 5d, 6d, 7d, 8d, 9d).print();</code><br/><br/>
-	 * will print out
-	 * <pre>
-	 * 1.0f	4.0f	7.0f	
-	 * 2.0f	5.0f	8.0f
-	 * 3.0f	6.0f	9.0f
-	 * </pre>
-	 * on <tt>System.out</tt>.
-	 * @param newRows the number of rows (<i>n</i>) of the new matrix.
-	 * @param newColumns the number of columns (<i>m</i>) of the new matrix.
-	 * @param newData
-	 */
-	public ComplexFloatMatrix(int newRows, int newColumns, float... newData) {
-		this(newRows, newColumns, (FloatBuffer)null);
-
-		if (newData.length != 2 * newRows * newColumns)
-			throw new IllegalArgumentException(
-					"Passed data must match matrix dimensions.");
-
-		data = createFloatBufferFrom(newData);
-	}
-
 	/**
 	 * Creates a new <tt>ComplexFloatMatrix</tt> of size 0 times 0.
 	 */
 	public ComplexFloatMatrix() {
-		this(0, 0, (FloatBuffer)null);
+		this(0, 0, null);
 	}
 
 	/**
@@ -82,13 +59,13 @@ public class ComplexFloatMatrix {
 	 * @param len
 	 */
 	public ComplexFloatMatrix(int len) {
-		this(len, 1, createFloatBuffer(2 * len));
+		this(len, 1, new float[2 * len]);
 	}
 	
 	public ComplexFloatMatrix(float[] newData) {
 		this(newData.length/2);
 				
-		data = createFloatBufferFrom(newData);
+		data = newData;
 	}
 
 	public ComplexFloatMatrix(ComplexFloat[] newData) {
@@ -605,7 +582,7 @@ public class ComplexFloatMatrix {
 		rows = newRows;
 		columns = newColumns;
 		length = newRows * newColumns;
-		data = createFloatBuffer(rows * columns);
+		data = new float[2 * rows * columns];
 	}
 
 	
@@ -674,10 +651,9 @@ public class ComplexFloatMatrix {
 	 * but the buffer is not shared.
 	 */
 	public ComplexFloatMatrix dup() {
-		ComplexFloatMatrix out = new ComplexFloatMatrix(rows, columns, createFloatBuffer(data.capacity()));
+		ComplexFloatMatrix out = new ComplexFloatMatrix(rows, columns);
 
-		data.rewind();
-		out.data.put(data);
+                System.arraycopy(out.data, 0, data, 0, 2 * length);
 		
 		return out;
 	}
@@ -694,30 +670,30 @@ public class ComplexFloatMatrix {
 		
 	/** Set matrix element */
 	public ComplexFloatMatrix put(int rowIndex, int columnIndex, float value) {
-		data.put(2*index(rowIndex, columnIndex), value);
+		data[2*index(rowIndex, columnIndex)] =  value;
 		return this;
 	}
 
 	public ComplexFloatMatrix put(int rowIndex, int columnIndex, ComplexFloat value) {
 		int i = 2*index(rowIndex, columnIndex);
-		data.put(i, value.real()); data.put(i+1, value.imag());
+		data[i] = value.real(); data[i+1] = value.imag();
 		return this;
 	}
 
 	public ComplexFloatMatrix putReal(int rowIndex, int columnIndex, float value) {
-		data.put(2*index(rowIndex, columnIndex), value);
+		data[2*index(rowIndex, columnIndex)] = value;
 		return this;
 	}
 
 	public ComplexFloatMatrix putImag(int rowIndex, int columnIndex, float value) {
-		data.put(2*index(rowIndex, columnIndex)+1, value);
+		data[2*index(rowIndex, columnIndex)+1] = value;
 		return this;
 	}
 	
 	/** Retrieve matrix element */
 	public ComplexFloat get(int rowIndex, int columnIndex) {
             int i = 2*index(rowIndex, columnIndex);
-            return new ComplexFloat(data.get(i), data.get(i+1));
+            return new ComplexFloat(data[i], data[i+1]);
 	}
 	
 	public FloatMatrix getReal() {
@@ -735,29 +711,29 @@ public class ComplexFloatMatrix {
 	}
 
 	public ComplexFloat get(int i) {
-		return new ComplexFloat(data.get(i * 2), data.get(i * 2 + 1));
+		return new ComplexFloat(data[i * 2], data[i * 2 + 1]);
 	}
 	
         public ComplexFloat get(int i, ComplexFloat result) {
-            return result.set(data.get(i * 2), data.get(i*2+1));
+            return result.set(data[i * 2], data[i*2+1]);
         }
         
 	public float getReal(int i) {
-		return data.get(2*i);
+		return data[2*i];
 	}
 	
 	public float getImag(int i) {
-		return data.get(2*i + 1); 
+		return data[2*i + 1]; 
 	}
 
 	public ComplexFloatMatrix put(int i, float v) {
-		data.put(2*i, v);
+		data[2*i] = v;
 		return this;
 	}
 	
 	public ComplexFloatMatrix put(int i, ComplexFloat v) {
-		data.put(2*i, v.real());
-		data.put(2*i+1, v.imag());
+		data[2*i] = v.real();
+		data[2*i+1] = v.imag();
 		return this;
 	}
 	
@@ -766,7 +742,7 @@ public class ComplexFloatMatrix {
 	}
 	
 	public ComplexFloatMatrix putImag(int i, float v) {
-		data.put(2*i+1, v);
+		data[2*i+1] = v;
 		return this;
 	}
 
@@ -867,7 +843,7 @@ public class ComplexFloatMatrix {
 		float[] array = new float[2*length];
 		
 		for (int i = 0; i < 2*length; i++)
-			array[i] = data.get(i);
+			array[i] = data[i];
 		
 		return array;
 	}
@@ -1360,11 +1336,9 @@ public class ComplexFloatMatrix {
 		dos.writeInt(columns);
 		dos.writeInt(rows);
 		
-		dos.writeInt(data.capacity());
-		data.rewind();
-		data.reset();
-		for(int i=0; i < data.capacity();i++)
-			dos.writeDouble(data.get());
+		dos.writeInt(data.length);
+		for(int i=0; i < data.length;i++)
+			dos.writeDouble(data[i]);
 	}
 	
 	/**
@@ -1381,11 +1355,9 @@ public class ComplexFloatMatrix {
 		this.rows		= dis.readInt();
 
 		final int MAX = dis.readInt();
-		data = createFloatBuffer(MAX);
-		data.rewind();
-		data.reset();
+		data = new float[MAX];
 		for(int i=0; i < MAX;i++)
-			data.put(dis.readFloat());
+			data[i] = dis.readFloat();
 	}	
 	
 	/**

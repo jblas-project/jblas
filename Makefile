@@ -66,14 +66,13 @@ PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 %.$(SO) : %.o
 	$(LD) $(LDFLAGS) -o $@ $^ $(LOADLIBES)
 
-bin/$(LIB)j%.$(SO) : native/%.$(SO)
+bin/$(LIB)j%Array.$(SO) : native/%.$(SO)
 	mv $< $@
 
 # the default target
 all	: compileNative
 
-#compileNative : bin/$(LIB)jBlas.$(SO) bin/$(LIB)jDynamic.$(SO)
-compileNative : bin/$(LIB)jBlas.$(SO)
+compileNative : bin/$(LIB)jBlasArray.$(SO)
 
 generateWrapper: src/$(PACKAGE_PATH)/Blas.java native/Blas.c
 
@@ -92,5 +91,3 @@ src/$(PACKAGE_PATH)/Blas.java native/Blas.c: scripts/fortranwrapper scripts/fort
 	$(LAPACK)/[sd]geev.f
 
 bin/$(LIB)Blas.$(SO) : native/Blas.o
-
-bin/$(LIB)Dynamic.$(SO) : native/Dynamic.o

@@ -8,8 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.DoubleBuffer;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import static edu.ida.core.BlasUtil.*;
 
 /**
@@ -201,19 +202,10 @@ public class DoubleMatrix {
 	public int rows;
 	public int columns;
 	public int length;
-	public DoubleBuffer data = null; // rows are contiguous
+	public double[] data = null; // rows are contiguous
 
         public static final DoubleMatrix EMPTY = new DoubleMatrix();
-        
-        
-        protected void finalize() throws Throwable {
-            super.finalize();
-            data = null;
-            MemoryTracker.registerFinalize(length * Double.SIZE);
-            //System.err.printf("%d * %d matrix finalized\n", rows, columns);
-        }
-        
-        
+                
         
 	/**************************************************************************
 	 * 
@@ -224,11 +216,16 @@ public class DoubleMatrix {
 	/** Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
 	 * using <i>newData></i> as the data. The length of the data is not checked!
 	 */
-	public DoubleMatrix(int newRows, int newColumns, DoubleBuffer newData) {
+	public DoubleMatrix(int newRows, int newColumns, double... newData) {
 		rows = newRows;
 		columns = newColumns;
 		length = rows * columns;
-		data = newData;
+
+                if (newData != null && newData.length != newRows * newColumns)
+			throw new IllegalArgumentException(
+					"Passed data must match matrix dimensions.");
+
+                data = newData;
                 //System.err.printf("%d * %d matrix created\n", rows, columns);
 	}
 	
@@ -238,43 +235,14 @@ public class DoubleMatrix {
 	 * @param newColumns the number of columns (<i>m</i>) of the new matrix.
 	 */
 	public DoubleMatrix(int newRows, int newColumns) {
-		this(newRows, newColumns, createDoubleBuffer(newRows * newColumns));
-                MemoryTracker.registerCreate(newRows * newColumns * Double.SIZE);
+		this(newRows, newColumns, new double[newRows * newColumns]);
 	}
 	
-	/**
-	 * Creates a new <i>n</i> times <i>m</i> <tt>DoubleMatrix</tt> and 
-	 * fill entries from the given data array.
-	 * The leading dimension is set to rows per default, therefore the
-	 * given array is wrapped in the columns. For example, <br/><br/>
-	 * <code>new DoubleMatrix(3, 3, 1d, 2d, 3d, 4d, 5d, 6d, 7d, 8d, 9d).print();</code><br/><br/>
-	 * will print out
-	 * <pre>
-	 * 1.0	4.0	7.0	
-	 * 2.0	5.0	8.0
-	 * 3.0	6.0	9.0
-	 * </pre>
-	 * on <tt>System.out</tt>.
-	 * @param newRows the number of rows (<i>n</i>) of the new matrix.
-	 * @param newColumns the number of columns (<i>m</i>) of the new matrix.
-	 * @param newData
-	 */
-	public DoubleMatrix(int newRows, int newColumns, double... newData) {
-		this(newRows, newColumns, (DoubleBuffer)null);
-
-		if (newData.length != newRows * newColumns)
-			throw new IllegalArgumentException(
-					"Passed data must match matrix dimensions.");
-
-		data = createDoubleBufferFrom(newData);
-                MemoryTracker.registerCreate(length * Double.SIZE);
-	}
-
 	/**
 	 * Creates a new <tt>DoubleMatrix</tt> of size 0 times 0.
 	 */
 	public DoubleMatrix() {
-		this(0, 0, (DoubleBuffer)null);
+		this(0, 0, (double[])null);
 	}
 
 	/**
@@ -282,15 +250,12 @@ public class DoubleMatrix {
 	 * @param len
 	 */
 	public DoubleMatrix(int len) {
-		this(len, 1, createDoubleBuffer(len));
-                MemoryTracker.registerCreate(length * Double.SIZE);
+		this(len, 1, new double[len]);
 	}
 	
 	public DoubleMatrix(double[] newData) {
 		this(newData.length);
-				
-		data = createDoubleBufferFrom(newData);
-                MemoryTracker.registerCreate(length * Double.SIZE);
+                data = newData;
 	}
 		
 	/**
@@ -333,7 +298,7 @@ public class DoubleMatrix {
 
 		java.util.Random r = new java.util.Random();
 		for (int i = 0; i < rows * columns; i++) {
-			m.data.put(i, r.nextDouble());
+			m.data[i] = r.nextDouble();
 		}
 
 		return m;
@@ -349,7 +314,7 @@ public class DoubleMatrix {
 
 		java.util.Random r = new java.util.Random();
 		for (int i = 0; i < rows * columns; i++) {
-			m.data.put(i, (double)r.nextGaussian());
+			m.data[i] = (double)r.nextGaussian();
 		}
 
 		return m;
@@ -795,8 +760,7 @@ public class DoubleMatrix {
 		rows = newRows;
 		columns = newColumns;
 		length = newRows * newColumns;
-		data = createDoubleBuffer(rows * columns);
-                MemoryTracker.registerCreate(length * Double.SIZE);
+		data = new double[rows * columns];
 	}
 
 	
@@ -859,12 +823,10 @@ public class DoubleMatrix {
 	 * but the buffer is not shared.
 	 */
 	public DoubleMatrix dup() {
-		DoubleMatrix out = new DoubleMatrix(rows, columns, createDoubleBuffer(data.capacity()));
-                MemoryTracker.registerCreate(length * Double.SIZE);
+		DoubleMatrix out = new DoubleMatrix(rows, columns);
 
-		data.rewind();
-		out.data.put(data);
-		
+                JavaBlas.rcopy(length, data, 0, 1, out.data, 0, 1);
+                		
 		return out;
 	}
 	
@@ -882,13 +844,13 @@ public class DoubleMatrix {
 		
 	/** Set matrix element */
 	public DoubleMatrix put(int rowIndex, int columnIndex, double value) {
-		data.put(index(rowIndex, columnIndex), value);
+		data[index(rowIndex, columnIndex)] = value;
 		return this;
 	}
 
 	/** Retrieve matrix element */
 	public double get(int rowIndex, int columnIndex) {
-		return data.get(index(rowIndex, columnIndex));
+		return data[index(rowIndex, columnIndex)];
 	}
 
 	/** Get index of an element */
@@ -908,12 +870,12 @@ public class DoubleMatrix {
         
         /** Get a matrix element (linear indexing). */
 	public double get(int i) {
-		return data.get(i);
+		return data[i];
 	}
 
         /** Set a matrix element (linear indexing). */
 	public DoubleMatrix put(int i, double v) {
-		data.put(i, v);
+		data[i] = v;
 		return this;
 	}
 
@@ -1003,7 +965,28 @@ public class DoubleMatrix {
 		
 		return s.toString();
 	}
-
+    
+        public String toString(String fmt) {
+            StringWriter s = new StringWriter();
+            PrintWriter p = new PrintWriter(s);
+            
+            p.print("[");
+            
+            for (int r = 0; r < rows; r++) {
+                for (int c = 0; c < columns; c++) {
+                    p.printf(fmt, get(r, c));
+                    if (c < columns - 1)
+                        p.print(", ");
+                }
+                if (r < rows - 1)
+                    p.print("; ");
+            }
+            
+            p.print("]");
+            
+            return s.toString();
+        }
+    
         /** Converts the matrix to a one-dimensional array of doubles. */
         public double[] toArray() {
 		double[] array = new double[length];
@@ -1066,6 +1049,16 @@ public class DoubleMatrix {
 				
 		return array;
 	}
+        
+        public FloatMatrix toFloatMatrix() {
+            FloatMatrix result = new FloatMatrix(rows, columns);
+            
+            for (int c = 0; c < columns; c++)
+                for (int r = 0; r < rows; r++)
+                    result.put(r, c, (float)get(r, c));
+            
+            return result;
+        }
 
 	/**************************************************************************
 	 * Arithmetic Operations
@@ -1437,11 +1430,13 @@ public class DoubleMatrix {
                 return dup();
             } else {
  		DoubleMatrix v = new DoubleMatrix(1, columns);
-                DoubleMatrix temp = new DoubleMatrix(rows);
                 
-		for (int c = 0; c < columns; c++)
-			v.put(c, getColumn(c, temp).sum());
-
+		for (int c = 0; c < columns; c++) {
+                    for (int r = 0; r < rows; r++) {
+                        v.put(c, v.get(c) + get(r, c));
+                    }
+                }
+                
 		return v;
             }
 	}
@@ -1455,10 +1450,12 @@ public class DoubleMatrix {
                 return dup();
             } else {
 		DoubleMatrix v = new DoubleMatrix(rows);
-                DoubleMatrix temp = new DoubleMatrix(columns);
                 
-		for (int r = 0; r < rows; r++)
-			v.put(r, getRow(r, temp).sum());
+                for (int c = 0; c < columns; c++) {
+                    for (int r = 0; r < rows; r++) {
+                        v.put(r, v.get(r) + get(r, c));
+                    }
+                }
 
 		return v;
             }
@@ -1566,8 +1563,9 @@ public class DoubleMatrix {
 
 	/** Add a row vector to all rows of the matrix (in place). */
 	public DoubleMatrix addiRowVector(DoubleMatrix x) {
+                x.checkLength(columns);
 		for (int r = 0; r < rows; r++) {
-			Blas.daxpy(columns, 1.0, x.data, 0, 1, data, index(r, 0), rows);
+			JavaBlas.raxpy(columns, 1.0, x.data, 0, 1, data, index(r, 0), rows);
 		}
                 return this;
 	}
@@ -1578,8 +1576,9 @@ public class DoubleMatrix {
 
 	/** Add a vector to all columns of the matrix */
 	public DoubleMatrix addiColumnVector(DoubleMatrix x) {
+                x.checkLength(rows);
 		for (int c = 0; c < columns; c++) {
-			Blas.daxpy(rows, 1.0, x.data, 0, 1, data, index(0, c), 1);
+			JavaBlas.raxpy(rows, 1.0, x.data, 0, 1, data, index(0, c), 1);
 		}
                 return this;
 	}
@@ -1590,8 +1589,10 @@ public class DoubleMatrix {
         
        	/** Add a row vector to all rows of the matrix */
 	public DoubleMatrix subiRowVector(DoubleMatrix x) {
+                // This is a bit crazy, but a row vector must have as length as the columns of the matrix.
+                x.checkLength(columns);
 		for (int r = 0; r < rows; r++) {
-			Blas.daxpy(columns, -1.0, x.data, 0, 1, data, index(r, 0), rows);
+			JavaBlas.raxpy(columns, -1.0, x.data, 0, 1, data, index(r, 0), rows);
 		}
                 return this;
 	}
@@ -1602,8 +1603,9 @@ public class DoubleMatrix {
 
         /** Add a vector to all columns of the matrix */
 	public DoubleMatrix subiColumnVector(DoubleMatrix x) {
+                x.checkLength(rows);
 		for (int c = 0; c < columns; c++) {
-			Blas.daxpy(rows, -1.0, x.data, 0, 1, data, index(0, c), 1);
+			JavaBlas.raxpy(rows, -1.0, x.data, 0, 1, data, index(0, c), 1);
 		}
                 return this;
 	}
@@ -1632,11 +1634,9 @@ public class DoubleMatrix {
 		dos.writeInt(columns);
 		dos.writeInt(rows);
 		
-		dos.writeInt(data.capacity());
-		data.rewind();
-		data.reset();
-		for(int i=0; i < data.capacity();i++)
-			dos.writeDouble(data.get());
+		dos.writeInt(data.length);
+		for(int i=0; i < data.length;i++)
+			dos.writeDouble(data[i]);
 	}
 	
 	/**
@@ -1653,11 +1653,9 @@ public class DoubleMatrix {
 		this.rows		= dis.readInt();
 
 		final int MAX = dis.readInt();
-		data = createDoubleBuffer(MAX);
-		data.rewind();
-		data.reset();
+		data = new double[MAX];
 		for(int i=0; i < MAX;i++)
-			data.put(dis.readDouble());
+			data[i] = dis.readDouble();
 	}	
 	
 	/**

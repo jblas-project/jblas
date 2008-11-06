@@ -27,11 +27,11 @@ public class BenchmarkElementwise extends TestCase {
 				za[j] = xa[j] * ya[j];
 		toc();
 
-		tic("muli (double buffer:");
+		/*tic("muli (double buffer:");
 		for (int i = 0; i < ITERS; i++)
 			for (int j = 0; j < SIZE; j++)
 				z.data.put(j, x.data.get(j) * y.data.get(j));
-		toc();
+		toc();*/
 		
 		tic("divi():");
 		for (int i = 0; i < ITERS/10; i++)
@@ -49,11 +49,11 @@ public class BenchmarkElementwise extends TestCase {
 				za[j] = xa[j] + ya[j];
 		toc();
 
-		tic("addi() doublebuffer:");
+		/*tic("addi() doublebuffer:");
 		for (int i = 0; i < ITERS; i++)
 			for (int j = 0; j < SIZE; j++)
 				z.data.put(j, x.data.get(j) + y.data.get(j));
-		toc();
+		toc();*/
 		
 		tic("subi():");
 		for (int i = 0; i < ITERS; i++)

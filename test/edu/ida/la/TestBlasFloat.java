@@ -5,8 +5,6 @@ import junit.framework.TestCase;
 import edu.ida.core.BlasUtil;
 import edu.ida.la.Blas;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import static java.lang.Math.abs;
 
 import static edu.ida.core.BlasUtil.*;
@@ -18,7 +16,7 @@ public class TestBlasFloat extends TestCase {
 
 	/** test sum of absolute values */
 	public void testAsum() {
-		FloatBuffer a = createFloatBufferFrom(1.0f, 2.0f, 3.0f, 4.0f);
+		float[] a = new float[]{1.0f, 2.0f, 3.0f, 4.0f};
 		
 		assertEquals(10.0f, Blas.sasum(4, a, 0, 1));
 		assertEquals(4.0f, Blas.sasum(2, a, 0, 2));
@@ -27,33 +25,49 @@ public class TestBlasFloat extends TestCase {
 	
 	/** test scalar product */
 	public void testDot() {
-		FloatBuffer a = BlasUtil.createFloatBufferFrom(1.0f, 2.0f, 3.0f, 4.0f);
-		FloatBuffer b = BlasUtil.createFloatBufferFrom(4.0f, 5.0f, 6.0f, 7.0f);
+		float[] a = new float[] { 1.0f, 2.0f, 3.0f, 4.0f };
+		float[] b = new float[] { 4.0f, 5.0f, 6.0f, 7.0f };
 
 		assertEquals(32.0f, Blas.sdot(3, a, 0, 1, b, 0, 1));
 		assertEquals(22.0f, Blas.sdot(2, a, 0, 2, b, 0, 2));
 		assertEquals(5.0f + 12.0f + 21.0f, Blas.sdot(3, a, 0, 1, b, 1, 1));
 	}
 	
+        public void testSwap() {
+            float[] a = new float[] { 1.0f, 2.0f, 3.0f, 4.0f };
+            float[] b = new float[] { 4.0f, 5.0f, 6.0f, 7.0f };
+            float[] c = new float[] { 1.0f, 2.0f, 3.0f, 4.0f };
+            float[] d = new float[] { 4.0f, 5.0f, 6.0f, 7.0f };
+            
+            System.out.println("dswap");
+            Blas.sswap(4, a, 0, 1, b, 0, 1);
+            assertTrue(arraysEqual(a, d));
+            assertTrue(arraysEqual(b, c));
+
+            System.out.println("dswap same");
+            Blas.sswap(2, a, 0, 2, a, 1, 2);
+            assertTrue(arraysEqual(a, 5.0f, 4.0f, 7.0f, 6.0f));
+        }
+        
 	/* test vector addition */
 	public void testAxpy() {
-		FloatBuffer x = createFloatBufferFrom(1.0f, 2.0f, 3.0f, 4.0f);
-		FloatBuffer y = createFloatBufferFrom(0.0f, 0.0f, 0.0f, 0.0f);
+		float[] x = new float[] { 1.0f, 2.0f, 3.0f, 4.0f };
+		float[] y = new float[] { 0.0f, 0.0f, 0.0f, 0.0f };
 		
 		Blas.saxpy(4, 2.0f, x, 0, 1, y, 0, 1);
 		
 		for(int i = 0; i < 4; i++)
-			assertEquals(2*x.get(i), y.get(i));
+			assertEquals(2*x[i], y[i]);
 	}
 	
 	/* test matric-vector multiplication */
 	public void testGemv() {
-		FloatBuffer A = createFloatBufferFrom(1.0f, 2.0f, 3.0f,
+		float[] A = new float[] { 1.0f, 2.0f, 3.0f,
 										  4.0f, 5.0f, 6.0f,
-										  7.0f, 8.0f, 9.0f);
+										  7.0f, 8.0f, 9.0f };
 		
-		FloatBuffer x = createFloatBufferFrom(1.0f, 3.0f, 7.0f);
-		FloatBuffer y = createFloatBufferFrom(0.0f, 0.0f, 0.0f);
+		float[] x = new float[] {1.0f, 3.0f, 7.0f };
+		float[] y = new float[] { 0.0f, 0.0f, 0.0f };
 		
 		Blas.sgemv('N', 3, 3, 1.0f, A, 0, 3, x, 0, 1, 0.0f, y, 0, 1);
 		
@@ -70,13 +84,13 @@ public class TestBlasFloat extends TestCase {
 	}
 		
 	/** Compare float buffer against an array of floats */
-	private boolean arraysEqual(FloatBuffer a, float... b) {
-		if (a.capacity() != b.length)
+	private boolean arraysEqual(float[] a, float... b) {
+		if (a.length != b.length)
 			return false;
 		else { 
 			float diff = 0.0f;
 			for (int i = 0; i < b.length; i++)
-				diff += abs(a.get(i) - b[i]);
+				diff += abs(a[i] - b[i]);
 			return diff < 1e-6;
 		}
 	}
@@ -90,13 +104,13 @@ public class TestBlasFloat extends TestCase {
 	public static void testSolve() {
 		FloatMatrix A = new FloatMatrix(3, 3, 3.0f, 5.0f, 6.0f, 1.0f, 0.0f, 0.0f, 2.0f, 4.0f, 0.0f);
 		FloatMatrix X = new FloatMatrix(3, 1, 1.0f, 2.0f, 3.0f);
-		IntBuffer p = createIntBuffer(3);
+		int[] p = new int[3];
 		SimpleBlas.gesv(A, p, X);
 		A.print();
 		X.print();
 		// De-shuffle X
 		for (int i = 2; i >= 0; i--) {
-			int perm = p.get(i) - 1;
+			int perm = p[i] - 1;
 			float t = X.get(i); X.put(i, X.get(perm)); X.put(perm, t);
 		}
 		System.out.println();
@@ -107,7 +121,7 @@ public class TestBlasFloat extends TestCase {
 		System.out.println("--- Symmetric solve");
 		FloatMatrix A = new FloatMatrix(3, 3, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f);
 		FloatMatrix x = new FloatMatrix(3, 1, 1.0f, 2.0f, 3.0f);
-		IntBuffer p = createIntBuffer(3);
+		int[] p = new int[3];
 		SimpleBlas.sysv('U', A, p, x);
 		A.print();
 		x.print();

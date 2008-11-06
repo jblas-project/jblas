@@ -3,11 +3,11 @@
     <type>org.netbeans.modules.ant.freeform</type>
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
-            <name>jBLAS</name>
+            <name>jBLAS-Array</name>
         </general-data>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
             <!-- Do not use Project Properties customizer when editing this file manually. -->
-            <name>jBLAS</name>
+            <name>jBLAS-Array</name>
             <properties/>
             <folders>
                 <source-folder>
@@ -33,6 +33,20 @@
                     <label>scripts</label>
                     <type>java</type>
                     <location>scripts</location>
+                    <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>native</label>
+                    <type>java</type>
+                    <location>native</location>
+                    <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>include</label>
+                    <type>java</type>
+                    <location>include</location>
                     <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
                     <encoding>UTF-8</encoding>
                 </source-folder>
@@ -116,6 +130,16 @@
                         <location>scripts</location>
                         <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
                     </source-folder>
+                    <source-folder style="packages">
+                        <label>native</label>
+                        <location>native</location>
+                        <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
+                    </source-folder>
+                    <source-folder style="packages">
+                        <label>include</label>
+                        <location>include</location>
+                        <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
+                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -144,6 +168,14 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>scripts</package-root>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>native</package-root>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>include</package-root>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>

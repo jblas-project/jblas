@@ -9,14 +9,13 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.DoubleBuffer;
 
 public class ComplexDoubleMatrix {
 	
 	int rows;
 	int columns;
 	int length;
-	DoubleBuffer data = null; // rows are contiguous
+	double[] data = null; // rows are contiguous
 
 	/**************************************************************************
 	 * 
@@ -27,11 +26,16 @@ public class ComplexDoubleMatrix {
 	/** Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
 	 * using <i>newData></i> as the data. The length of the data is not checked!
 	 */
-	public ComplexDoubleMatrix(int newRows, int newColumns, DoubleBuffer newData) {
+	public ComplexDoubleMatrix(int newRows, int newColumns, double... newData) {
 		rows = newRows;
 		columns = newColumns;
 		length = rows * columns;
-		data = newData;
+
+                if (newData.length != 2 * newRows * newColumns)
+			throw new IllegalArgumentException(
+					"Passed data must match matrix dimensions.");
+
+                data = newData;
 	}
 	
 	/**
@@ -40,41 +44,14 @@ public class ComplexDoubleMatrix {
 	 * @param newColumns the number of columns (<i>m</i>) of the new matrix.
 	 */
 	public ComplexDoubleMatrix(int newRows, int newColumns) {
-		this(newRows, newColumns, createDoubleBuffer(2 * newRows * newColumns));
+		this(newRows, newColumns, new double[2 * newRows * newColumns]);
 	}
 	
-	/**
-	 * Creates a new <i>n</i> times <i>m</i> <tt>ComplexDoubleMatrix</tt> and 
-	 * fill entries from the given data array.
-	 * The leading dimension is set to rows per default, therefore the
-	 * given array is wrapped in the columns. For example, <br/><br/>
-	 * <code>new ComplexDoubleMatrix(3, 3, 1d, 2d, 3d, 4d, 5d, 6d, 7d, 8d, 9d).print();</code><br/><br/>
-	 * will print out
-	 * <pre>
-	 * 1.0	4.0	7.0	
-	 * 2.0	5.0	8.0
-	 * 3.0	6.0	9.0
-	 * </pre>
-	 * on <tt>System.out</tt>.
-	 * @param newRows the number of rows (<i>n</i>) of the new matrix.
-	 * @param newColumns the number of columns (<i>m</i>) of the new matrix.
-	 * @param newData
-	 */
-	public ComplexDoubleMatrix(int newRows, int newColumns, double... newData) {
-		this(newRows, newColumns, (DoubleBuffer)null);
-
-		if (newData.length != 2 * newRows * newColumns)
-			throw new IllegalArgumentException(
-					"Passed data must match matrix dimensions.");
-
-		data = createDoubleBufferFrom(newData);
-	}
-
 	/**
 	 * Creates a new <tt>ComplexDoubleMatrix</tt> of size 0 times 0.
 	 */
 	public ComplexDoubleMatrix() {
-		this(0, 0, (DoubleBuffer)null);
+		this(0, 0, null);
 	}
 
 	/**
@@ -82,13 +59,13 @@ public class ComplexDoubleMatrix {
 	 * @param len
 	 */
 	public ComplexDoubleMatrix(int len) {
-		this(len, 1, createDoubleBuffer(2 * len));
+		this(len, 1, new double[2 * len]);
 	}
 	
 	public ComplexDoubleMatrix(double[] newData) {
 		this(newData.length/2);
 				
-		data = createDoubleBufferFrom(newData);
+		data = newData;
 	}
 
 	public ComplexDoubleMatrix(ComplexDouble[] newData) {
@@ -605,7 +582,7 @@ public class ComplexDoubleMatrix {
 		rows = newRows;
 		columns = newColumns;
 		length = newRows * newColumns;
-		data = createDoubleBuffer(rows * columns);
+		data = new double[2 * rows * columns];
 	}
 
 	
@@ -674,10 +651,9 @@ public class ComplexDoubleMatrix {
 	 * but the buffer is not shared.
 	 */
 	public ComplexDoubleMatrix dup() {
-		ComplexDoubleMatrix out = new ComplexDoubleMatrix(rows, columns, createDoubleBuffer(data.capacity()));
+		ComplexDoubleMatrix out = new ComplexDoubleMatrix(rows, columns);
 
-		data.rewind();
-		out.data.put(data);
+                System.arraycopy(out.data, 0, data, 0, 2 * length);
 		
 		return out;
 	}
@@ -694,30 +670,30 @@ public class ComplexDoubleMatrix {
 		
 	/** Set matrix element */
 	public ComplexDoubleMatrix put(int rowIndex, int columnIndex, double value) {
-		data.put(2*index(rowIndex, columnIndex), value);
+		data[2*index(rowIndex, columnIndex)] =  value;
 		return this;
 	}
 
 	public ComplexDoubleMatrix put(int rowIndex, int columnIndex, ComplexDouble value) {
 		int i = 2*index(rowIndex, columnIndex);
-		data.put(i, value.real()); data.put(i+1, value.imag());
+		data[i] = value.real(); data[i+1] = value.imag();
 		return this;
 	}
 
 	public ComplexDoubleMatrix putReal(int rowIndex, int columnIndex, double value) {
-		data.put(2*index(rowIndex, columnIndex), value);
+		data[2*index(rowIndex, columnIndex)] = value;
 		return this;
 	}
 
 	public ComplexDoubleMatrix putImag(int rowIndex, int columnIndex, double value) {
-		data.put(2*index(rowIndex, columnIndex)+1, value);
+		data[2*index(rowIndex, columnIndex)+1] = value;
 		return this;
 	}
 	
 	/** Retrieve matrix element */
 	public ComplexDouble get(int rowIndex, int columnIndex) {
             int i = 2*index(rowIndex, columnIndex);
-            return new ComplexDouble(data.get(i), data.get(i+1));
+            return new ComplexDouble(data[i], data[i+1]);
 	}
 	
 	public DoubleMatrix getReal() {
@@ -735,29 +711,29 @@ public class ComplexDoubleMatrix {
 	}
 
 	public ComplexDouble get(int i) {
-		return new ComplexDouble(data.get(i * 2), data.get(i * 2 + 1));
+		return new ComplexDouble(data[i * 2], data[i * 2 + 1]);
 	}
 	
         public ComplexDouble get(int i, ComplexDouble result) {
-            return result.set(data.get(i * 2), data.get(i*2+1));
+            return result.set(data[i * 2], data[i*2+1]);
         }
         
 	public double getReal(int i) {
-		return data.get(2*i);
+		return data[2*i];
 	}
 	
 	public double getImag(int i) {
-		return data.get(2*i + 1); 
+		return data[2*i + 1]; 
 	}
 
 	public ComplexDoubleMatrix put(int i, double v) {
-		data.put(2*i, v);
+		data[2*i] = v;
 		return this;
 	}
 	
 	public ComplexDoubleMatrix put(int i, ComplexDouble v) {
-		data.put(2*i, v.real());
-		data.put(2*i+1, v.imag());
+		data[2*i] = v.real();
+		data[2*i+1] = v.imag();
 		return this;
 	}
 	
@@ -766,7 +742,7 @@ public class ComplexDoubleMatrix {
 	}
 	
 	public ComplexDoubleMatrix putImag(int i, double v) {
-		data.put(2*i+1, v);
+		data[2*i+1] = v;
 		return this;
 	}
 
@@ -867,7 +843,7 @@ public class ComplexDoubleMatrix {
 		double[] array = new double[2*length];
 		
 		for (int i = 0; i < 2*length; i++)
-			array[i] = data.get(i);
+			array[i] = data[i];
 		
 		return array;
 	}
@@ -1360,11 +1336,9 @@ public class ComplexDoubleMatrix {
 		dos.writeInt(columns);
 		dos.writeInt(rows);
 		
-		dos.writeInt(data.capacity());
-		data.rewind();
-		data.reset();
-		for(int i=0; i < data.capacity();i++)
-			dos.writeDouble(data.get());
+		dos.writeInt(data.length);
+		for(int i=0; i < data.length;i++)
+			dos.writeDouble(data[i]);
 	}
 	
 	/**
@@ -1381,11 +1355,9 @@ public class ComplexDoubleMatrix {
 		this.rows		= dis.readInt();
 
 		final int MAX = dis.readInt();
-		data = createDoubleBuffer(MAX);
-		data.rewind();
-		data.reset();
+		data = new double[MAX];
 		for(int i=0; i < MAX;i++)
-			data.put(dis.readDouble());
+			data[i] = dis.readDouble();
 	}	
 	
 	/**

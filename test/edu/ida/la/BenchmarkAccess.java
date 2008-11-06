@@ -22,12 +22,12 @@ public class BenchmarkAccess extends TestCase {
 			}
 		toc();
 		
-		tic("DoubleBuffer.put()");
+		/*tic("DoubleBuffer.put()");
 		for (int j = 0; j < ITERS; j++)
 			for (int i = 0; i < SIZE; i++) {
 				mb.data.put(i, ma.data.get(i));
 			}
-		toc();
+		toc();*/
 
 		tic("DoubleMatrix.put()");
 		for (int j = 0; j < ITERS; j++)

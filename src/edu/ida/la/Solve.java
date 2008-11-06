@@ -12,7 +12,7 @@ public class Solve {
 	public static DoubleMatrix solve(DoubleMatrix A, DoubleMatrix B) {
 		A.assertSquare();
 		DoubleMatrix X = B.dup();
-		IntBuffer ipiv = createIntBuffer(B.rows);
+		int[] ipiv = new int[B.rows];
 		SimpleBlas.gesv(A.dup(), ipiv, X);
 		return X;
 	}
@@ -21,7 +21,7 @@ public class Solve {
 	public static DoubleMatrix solveSymmetric(DoubleMatrix A, DoubleMatrix B) {
 		A.assertSquare();
 		DoubleMatrix X = B.dup();
-		IntBuffer ipiv = createIntBuffer(B.rows);
+		int[] ipiv = new int[B.rows];
 		SimpleBlas.sysv('U', A.dup(), ipiv, X);
 		return X;
 	}
@@ -42,7 +42,7 @@ public class Solve {
 	public static FloatMatrix solve(FloatMatrix A, FloatMatrix B) {
 		A.assertSquare();
 		FloatMatrix X = B.dup();
-		IntBuffer ipiv = createIntBuffer(B.rows);
+		int[] ipiv = new int[B.rows];
 		SimpleBlas.gesv(A.dup(), ipiv, X);
 		return X;
 	}
@@ -51,7 +51,7 @@ public class Solve {
 	public static FloatMatrix solveSymmetric(FloatMatrix A, FloatMatrix B) {
 		A.assertSquare();
 		FloatMatrix X = B.dup();
-		IntBuffer ipiv = createIntBuffer(B.rows);
+		int[] ipiv = new int[B.rows];
 		SimpleBlas.sysv('U', A.dup(), ipiv, X);
 		return X;
 	}

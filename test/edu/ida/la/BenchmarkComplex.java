@@ -25,12 +25,12 @@ public class BenchmarkComplex extends TestCase {
         tic("Doing it by hand");
         for (int i = 0; i < ITERS; i++)
             for (int j = 0; j < 2*A.length; j+=2) {
-                double ar = A.data.get(j), ai = A.data.get(j+1);
-                double br = B.data.get(j), bi = B.data.get(j+1);
+                double ar = A.data[j], ai = A.data[j+1];
+                double br = B.data[j], bi = B.data[j+1];
                 double cr = ar * br - ai * bi;
                 double ci = ar * bi + ai * br;
-                C.data.put(j, cr);
-                C.data.put(j+1, ci);
+                C.data[j] = cr;
+                C.data[j+1] = ci;
             }
         printMflops(6L*SIZE*SIZE*ITERS, toc());
     }

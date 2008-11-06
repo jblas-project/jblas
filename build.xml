@@ -13,7 +13,7 @@
     <property name="bin" value="${basedir}/bin" />
     <property name="deploy" value="${basedir}/deploy" />
     <property name="doc" value="${basedir}/doc" />
-    <property name="jar" value="${basedir}/jBLAS.jar" />
+    <property name="jar" value="${basedir}/jBLASarray.jar" />
     <property name="include" value="${basedir}/include" />
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
@@ -70,7 +70,6 @@
     </target>
     <target name="javah" depends="prepare,wrapper,compile">
         <javah destdir="${include}" force="yes">
-            <class name="edu.ida.core.Dynamic" />
             <class name="edu.ida.la.Blas" />
             <classpath>
                 <pathelement path="${bin}" />
@@ -99,6 +98,7 @@
         <staticClassToFloat class="edu.ida.la.Eigen"/>
         <staticClassToFloat class="edu.ida.la.Geometry"/>
         <staticClassToFloat class="edu.ida.la.MatrixFunctions"/>
+        <staticClassToFloat class="edu.ida.la.JavaBlas"/>
     </target>
     <target name="preprocess">
         <rjpp file="src/edu/ida/la/DoubleMatrix.java"/>
@@ -143,7 +143,7 @@
                 <pathelement path="${bin}" />
             </classpath>
             <formatter type="plain" usefile="false" />
-            <test name="edu.ida.la.BenchmarkMatrix" />
+            <test name="edu.ida.la.TestBlasDouble" />
         </junit>
     </target>
     <target name="all" depends="jar, javadoc">

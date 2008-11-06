@@ -2,17 +2,17 @@ module Fortran
 
   class FortranType
     # extend FortranType by converters to java and C
-    ArrayTypeMap = { 'REAL*4' => 'FloatBuffer',
-      'REAL*8' => 'DoubleBuffer',
-      'INTEGER*2' => 'ShortBuffer',
-      'INTEGER*4' => 'IntBuffer',
-      'INTEGER*8' => 'LongBuffer',
-      'LOGICAL*1' => 'ByteBuffer',
-      'LOGICAL*2' => 'ShortBuffer',
-      'LOGICAL*4' => 'IntBuffer',
-      'LOGICAL*8' => 'LongBuffer',
-      'COMPLEX*8' => 'FloatBuffer',
-      'COMPLEX*16' => 'DoubleBuffer',
+    ArrayTypeMap = { 'REAL*4' => 'float[]',
+      'REAL*8' => 'double[]',
+      'INTEGER*2' => 'short[]',
+      'INTEGER*4' => 'int[]',
+      'INTEGER*8' => 'long[]',
+      'LOGICAL*1' => 'byte[]',
+      'LOGICAL*2' => 'short[]',
+      'LOGICAL*4' => 'int[]',
+      'LOGICAL*8' => 'long[]',
+      'COMPLEX*8' => 'float[]',
+      'COMPLEX*16' => 'double[]',
       'VOID' => 'void'
     }
     
@@ -54,8 +54,8 @@ module Fortran
     
     def to_c
       javatype = to_java
-      if javatype =~ /Buffer/
-        'jobject'
+      if javatype =~ /\[\]$/
+        'j' + javatype[0...-2] + 'Array'
       elsif javatype == 'void'
         'void'
       elsif javatype =~ /Complex/
@@ -119,6 +119,7 @@ module Fortran
       attr_accessor :fortran_args, :fortran_return_type
       attr_accessor :conversions
       attr_accessor :call_pre, :call_post, :fortran_fct_name, :call_args
+      attr_accessor :arrays
       
       def initialize(prefix, r)
         @package = prefix
@@ -133,6 +134,7 @@ module Fortran
         @fortran_fct_name = ''
         @call_args = []
         @call_post = ''
+        @arrays = [] # already seen arrays
       end
       
   public
@@ -150,10 +152,11 @@ module Fortran
 JNIEXPORT #{return_type} JNICALL Java_#{fct_name}(JNIEnv *env, jclass this#{decl_args})
 {
   extern #{fortran_return_type} #{fortran_fct_name}(#{fortran_args.join(', ')});
-
+  
 #{conversions}
   savedEnv = env;
-  #{call_pre}#{fortran_fct_name}(#{call_args.join(', ')});#{call_post}
+  #{call_pre}#{fortran_fct_name}(#{call_args.join(', ')});
+#{call_post}
 }
 EOS
       end
@@ -174,7 +177,7 @@ EOS
           r.args.each do |name|
             type = r.argtype[name]
             args << type.to_java + " " + name.downcase unless name == 'INFO'
-            if type.to_java =~ /Buffer/
+            if type.to_java =~ /\[\]/
               args << "int #{name.downcase}Idx"
             end
           end
@@ -229,7 +232,7 @@ EOS
         javatype = type.to_java
         if javatype == 'void'
           Java::NilArgument.new(self)
-        elsif javatype =~ /Buffer/
+        elsif javatype =~ /\[\]/
           Java::BufferArgument.new(self)
         elsif javatype =~ /Complex/
           Java::ComplexArgument.new(self)
@@ -284,8 +287,12 @@ EOS
       end
 
       def make_call_return
-        code.call_pre << "return "
-        code.call_pre << "(jdouble)" if ctype == 'jfloat'
+        code.call_pre << ctype + " retval = "
+        if ctype == 'jfloat'
+          code.call_post << "\n  return (jdouble) retval;"
+        else
+          code.call_post << "\n  return retval;"
+        end
       end
 
       def make_decl_arg
@@ -312,15 +319,51 @@ EOS
         code.decl_args << ", jint " + name + "Idx"
       end
 
+      def make_fortran_arg
+        code.fortran_args << ctype[1...-5] + " *"
+      end
+      
+      # Okay, my apologies for this method. What makes it so difficult
+      # is that it can happen that you pass in an array twice. If you
+      # then call Get<Type>ArrayElements twice you get two copies
+      # and any attempt to do something truly inplace won't work (for
+      # example dswap). So I have to check before each array if 
+      # I maybe already have it. And the same thing around in the end... .
       def make_convert_arg
-        code.conversions << "  #{javatype} *#{name}Ptr = (#{name}) ? " + 
-          "(((#{javatype}*)(*env)->GetDirectBufferAddress(env, #{name}))"
-        if type.basetype =~ /COMPLEX/
-          code.conversions << " + 2*#{name}Idx"
-        else
-          code.conversions << " + #{name}Idx"
+        basectype = ctype[0...-5]
+        code.conversions << <<EOS + '    '
+  #{basectype} *#{name}PtrBase = 0, *#{name}Ptr = 0;
+  if (#{name}) {
+EOS
+        unless code.arrays.empty?
+          code.arrays.each do |a, t|
+            if t == basectype
+              code.conversions << "if((*env)->IsSameObject(env, #{name}, #{a}) == JNI_TRUE)\n      #{name}PtrBase = #{a}PtrBase;\n    else\n      "
+            end
+          end
         end
-        code.conversions << ") : (void*)0;\n"
+        code.conversions << <<EOS
+#{name}PtrBase = (*env)->Get#{basectype[1..-1].capitalize}ArrayElements(env, #{name}, NULL);
+    #{name}Ptr = #{name}PtrBase + #{'2*' if type.basetype =~ /COMPLEX/}#{name}Idx;
+  }
+EOS
+        
+        # and releasing the stuff again...
+        release = "  if(#{name}PtrBase"
+        code.arrays.each do |a, t| 
+          if t == basectype
+            release << " && #{name}PtrBase != #{a}PtrBase"
+          end
+        end
+        release << ") {" + <<EOS
+        
+    (*env)->Release#{basectype[1..-1].capitalize}ArrayElements(env, #{name}, #{name}PtrBase, 0);
+  }
+EOS
+        code.call_post = release + code.call_post
+        
+        # store information about the arrays we have already handled
+        code.arrays << [name, basectype]
       end
 
       def make_call_arg
