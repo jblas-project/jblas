@@ -199,9 +199,13 @@ import static edu.ida.core.BlasUtil.*;
  */
 public class DoubleMatrix {
 	
+        /** Number of rows. */
 	public int rows;
+        /** Number of columns. */
 	public int columns;
+        /** Total number of elements (for convenience). */
 	public int length;
+        /** The actual data stored by rows (that is, row 0, row 1...). */
 	public double[] data = null; // rows are contiguous
 
         public static final DoubleMatrix EMPTY = new DoubleMatrix();
@@ -292,7 +296,7 @@ public class DoubleMatrix {
 				put(r, c, data[r][c]);
 	}
 	
-	/** Create matrix with random values uniformly in 0..1 */
+	/** Create matrix with random values uniformly in 0..1. */
 	public static DoubleMatrix rand(int rows, int columns) {
 		DoubleMatrix m = new DoubleMatrix(rows, columns);
 
@@ -304,11 +308,12 @@ public class DoubleMatrix {
 		return m;
 	}
 	
+        /** Creates a row vector with random values uniformly in 0..1. */
 	public static DoubleMatrix rand(int len) {
 		return rand(len, 1);
 	}
 
-	/** Create matrix with normally distributed random values */
+	/** Create matrix with normally distributed random values. */
 	public static DoubleMatrix randn(int rows, int columns) {
 		DoubleMatrix m = new DoubleMatrix(rows, columns);
 
@@ -325,26 +330,17 @@ public class DoubleMatrix {
 		return randn(len, 1);
 	}
 	
-	/**
-	 * Creates a new matrix in which all values are equal 0.
-	 * @param rows number of rows
-	 * @param columns number of columns
-	 * @return new matrix
-	 */
+	/** Creates a new matrix in which all values are equal 0. */
 	public static DoubleMatrix zeros(int rows, int columns) {
 		return new DoubleMatrix(rows, columns);
 	}
 
+        /** Creates a row vector of given length. */
 	public static DoubleMatrix zeros(int length) {
 		return zeros(length, 1);
 	}
 	
-	/**
-	 * Creates a new matrix in which all values are equal 1.
-	 * @param rows number of rows
-	 * @param columns number of columns
-	 * @return new matrix
-	 */
+	/** Creates a new matrix in which all values are equal 1. */
 	public static DoubleMatrix ones(int rows, int columns) {
 		DoubleMatrix m = new DoubleMatrix(rows, columns);
 		
@@ -354,15 +350,12 @@ public class DoubleMatrix {
 		return m;
 	}
 	
+        /** Creates a row vector with all elements equal to 1. */
 	public static DoubleMatrix ones(int length) {
 		return ones(length, 1);
 	}
 	
-	/**
-	 * Construct a new <i>n</i> times <i>n</i> identity matrix.
-	 * @param n number of rows/columns.
-	 * @return new quadratic matrix where the elements on the diagonal are 1.
-	 */
+	/** Construct a new n-by-n identity matrix. */
 	public static DoubleMatrix eye(int n) {
 		DoubleMatrix m = new DoubleMatrix(n, n);
 		
@@ -372,11 +365,9 @@ public class DoubleMatrix {
 		return m;
 	}
 	
-	/**
-	 * Creates a new matrix where the values of the given vector are the diagonal values of
+	/** 
+         * Creates a new matrix where the values of the given vector are the diagonal values of
 	 * the matrix.
-	 * @param x the diagonal values
-	 * @return new matrix
 	 */
 	public static DoubleMatrix diag(DoubleMatrix x) {
 		DoubleMatrix m = new DoubleMatrix(x.length, x.length);
@@ -388,10 +379,8 @@ public class DoubleMatrix {
 	}
 	
 	/**
-	 * Create a 1 * 1 - matrix. For many operations, this matrix functions like a
-	 * normal double
-	 * @param s value of the matrix
-	 * @return the constructed DoubleMatrix 
+	 * Create a 1-by-1 matrix. For many operations, this matrix functions like a
+	 * normal double.
 	 */
 	public static DoubleMatrix scalar(double s) {
 		DoubleMatrix m = new DoubleMatrix(1, 1);
@@ -399,16 +388,20 @@ public class DoubleMatrix {
 		return m;
 	}
 	
-	/** Test whether a matrix is scalar */
+	/** Test whether a matrix is scalar. */
 	public boolean isScalar() {
 		return length == 1;
 	}
 	
-	/** Return the first element of the matrix */
+	/** Return the first element of the matrix. */
 	public double scalar() {
 		return get(0);
 	}
 	
+        /** 
+         * Concatenates two matrices horizontally. Matrices must have identical
+         * numbers of rows.
+         */
 	public static DoubleMatrix concatHorizontally(DoubleMatrix A, DoubleMatrix B) {
 		if (A.rows != B.rows)
 			throw new SizeException("Matrices don't have same number of rows.");
@@ -419,6 +412,10 @@ public class DoubleMatrix {
 		return result;
 	}
 
+        /**
+         * Concatenates two matrices vertically. Matrices must have identical
+         * numbers of columns.
+         */
 	public static DoubleMatrix concatVertically(DoubleMatrix A, DoubleMatrix B) {
 		if (A.columns != B.columns)
 			throw new SizeException("Matrices don't have same number of columns (" + A.columns + " != " + B.columns + ".");
@@ -478,6 +475,7 @@ public class DoubleMatrix {
 		return result;
 	}
 	
+        /** Get elements from specified rows and columns. */
         public DoubleMatrix get(Range rs, Range cs) {
             rs.init(0, rows - 1);
             cs.init(0, columns - 1);
@@ -490,18 +488,31 @@ public class DoubleMatrix {
             return result;
         }
         
+        /** Get elements specified by the non-zero entries of the passed matrix. */
 	public DoubleMatrix get(DoubleMatrix indices) {
 		return get(indices.findIndices());
 	}
 
+        /** 
+         * Get elements from a row and columns as specified by the non-zero entries of
+         * a matrix.
+         */
 	public DoubleMatrix get(int r, DoubleMatrix indices) {
 		return get(r, indices.findIndices());
 	}
-	
+
+        /**
+         * Get elements from a column and rows as specified by the non-zero entries of
+         * a matrix.
+         */
 	public DoubleMatrix get(DoubleMatrix indices, int c) {
 		return get(indices.findIndices(), c);
 	}
 
+        /**
+         * Get elements from columns and rows as specified by the non-zero entries of
+         * the passed matrices.
+         */
 	public DoubleMatrix get(DoubleMatrix rindices, DoubleMatrix cindices) {
 		return get(rindices.findIndices(), cindices.findIndices());
 	}
@@ -516,6 +527,7 @@ public class DoubleMatrix {
             return result;
         }
         
+        /** Get elements from a row and columns <tt>a</tt> to <tt>b</tt>. */
         public DoubleMatrix getColumnRange(int r, int a, int b) {
             DoubleMatrix result = new DoubleMatrix(1, b - a);
             
@@ -525,6 +537,7 @@ public class DoubleMatrix {
             return result;
         }
 
+        /** Get elements from a column and rows <tt>a/tt> to <tt>b</tt>. */
         public DoubleMatrix getRowRange(int a, int b, int c) {
             DoubleMatrix result = new DoubleMatrix(b - a);
             
@@ -534,6 +547,10 @@ public class DoubleMatrix {
             return result;
         }
         
+        /** 
+         * Get elements from rows <tt>ra</tt> to <tt>rb</tt> and 
+         * columns <tt>ca</tt> to <tt>cb</tt>. 
+         */
         public DoubleMatrix getRange(int ra, int rb, int ca, int cb) {
             DoubleMatrix result = new DoubleMatrix(rb - ra, cb - ca);
             
@@ -544,17 +561,20 @@ public class DoubleMatrix {
             return result;
         }
         
+        /** Get whole rows from the passed indices. */
         public DoubleMatrix getRows(int[] rindices) {
             DoubleMatrix result = new DoubleMatrix(rindices.length, columns);
             for (int i = 0; i < rindices.length; i++)
-                Blas.dcopy(columns, data, index(rindices[i], 0), rows, result.data, result.index(i, 0), result.rows);
+                JavaBlas.rcopy(columns, data, index(rindices[i], 0), rows, result.data, result.index(i, 0), result.rows);
             return result;
         }
         
+        /** Get whole rows as specified by the non-zero entries of a matrix. */
         public DoubleMatrix getRows(DoubleMatrix rindices) {
             return getRows(rindices.findIndices());
         }
 
+        /** Get whole columns from the passed indices. */
         public DoubleMatrix getColumns(int[] cindices) {
             DoubleMatrix result = new DoubleMatrix(rows, cindices.length);
             for (int i = 0; i < cindices.length; i++)
@@ -562,21 +582,34 @@ public class DoubleMatrix {
             return result;
         }
         
+        /** Get whole columns as specified by the non-zero entries of a matrix. */
         public DoubleMatrix getColumns(DoubleMatrix cindices) {
             return getColumns(cindices.findIndices());
         }
         
-	private void checkLength(int l) {
+        /**
+         * Assert that the matrix has a certain length.
+         * @throws SizeException 
+         */ 
+	public void checkLength(int l) {
 		if (length != l)
 			throw new SizeException("Matrix does not have the necessary length (" + length + " != " + l + ").");
 	}
 
-	private void checkRows(int r) {
+        /**
+         * Asserts that the matrix has a certain number of rows.
+         * @throws SizeException
+         */
+	public void checkRows(int r) {
 		if (rows != r)
 			throw new SizeException("Matrix does not have the necessary number of rows (" + rows + " != " + r + ").");
 	}
 	
-	private void checkColumns(int c) {
+        /** 
+         * Asserts that the amtrix has a certain number of columns.
+         * @throws SizeException
+         */
+	public void checkColumns(int c) {
 		if (columns != c)
 			throw new SizeException("Matrix does not have the necessary number of columns (" + columns + " != " + c + ").");
 	}

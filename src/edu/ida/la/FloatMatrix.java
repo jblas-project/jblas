@@ -199,9 +199,13 @@ import static edu.ida.core.BlasUtil.*;
  */
 public class FloatMatrix {
 	
+        /** Number of rows. */
 	public int rows;
+        /** Number of columns. */
 	public int columns;
+        /** Total number of elements (for convenience). */
 	public int length;
+        /** The actual data stored by rows (that is, row 0, row 1...). */
 	public float[] data = null; // rows are contiguous
 
         public static final FloatMatrix EMPTY = new FloatMatrix();
@@ -292,7 +296,7 @@ public class FloatMatrix {
 				put(r, c, data[r][c]);
 	}
 	
-	/** Create matrix with random values uniformly in 0..1 */
+	/** Create matrix with random values uniformly in 0..1. */
 	public static FloatMatrix rand(int rows, int columns) {
 		FloatMatrix m = new FloatMatrix(rows, columns);
 
@@ -304,11 +308,12 @@ public class FloatMatrix {
 		return m;
 	}
 	
+        /** Creates a row vector with random values uniformly in 0..1. */
 	public static FloatMatrix rand(int len) {
 		return rand(len, 1);
 	}
 
-	/** Create matrix with normally distributed random values */
+	/** Create matrix with normally distributed random values. */
 	public static FloatMatrix randn(int rows, int columns) {
 		FloatMatrix m = new FloatMatrix(rows, columns);
 
@@ -325,26 +330,17 @@ public class FloatMatrix {
 		return randn(len, 1);
 	}
 	
-	/**
-	 * Creates a new matrix in which all values are equal 0.
-	 * @param rows number of rows
-	 * @param columns number of columns
-	 * @return new matrix
-	 */
+	/** Creates a new matrix in which all values are equal 0. */
 	public static FloatMatrix zeros(int rows, int columns) {
 		return new FloatMatrix(rows, columns);
 	}
 
+        /** Creates a row vector of given length. */
 	public static FloatMatrix zeros(int length) {
 		return zeros(length, 1);
 	}
 	
-	/**
-	 * Creates a new matrix in which all values are equal 1.
-	 * @param rows number of rows
-	 * @param columns number of columns
-	 * @return new matrix
-	 */
+	/** Creates a new matrix in which all values are equal 1. */
 	public static FloatMatrix ones(int rows, int columns) {
 		FloatMatrix m = new FloatMatrix(rows, columns);
 		
@@ -354,15 +350,12 @@ public class FloatMatrix {
 		return m;
 	}
 	
+        /** Creates a row vector with all elements equal to 1. */
 	public static FloatMatrix ones(int length) {
 		return ones(length, 1);
 	}
 	
-	/**
-	 * Construct a new <i>n</i> times <i>n</i> identity matrix.
-	 * @param n number of rows/columns.
-	 * @return new quadratic matrix where the elements on the diagonal are 1.
-	 */
+	/** Construct a new n-by-n identity matrix. */
 	public static FloatMatrix eye(int n) {
 		FloatMatrix m = new FloatMatrix(n, n);
 		
@@ -372,11 +365,9 @@ public class FloatMatrix {
 		return m;
 	}
 	
-	/**
-	 * Creates a new matrix where the values of the given vector are the diagonal values of
+	/** 
+         * Creates a new matrix where the values of the given vector are the diagonal values of
 	 * the matrix.
-	 * @param x the diagonal values
-	 * @return new matrix
 	 */
 	public static FloatMatrix diag(FloatMatrix x) {
 		FloatMatrix m = new FloatMatrix(x.length, x.length);
@@ -388,10 +379,8 @@ public class FloatMatrix {
 	}
 	
 	/**
-	 * Create a 1 * 1 - matrix. For many operations, this matrix functions like a
-	 * normal float
-	 * @param s value of the matrix
-	 * @return the constructed FloatMatrix 
+	 * Create a 1-by-1 matrix. For many operations, this matrix functions like a
+	 * normal float.
 	 */
 	public static FloatMatrix scalar(float s) {
 		FloatMatrix m = new FloatMatrix(1, 1);
@@ -399,16 +388,20 @@ public class FloatMatrix {
 		return m;
 	}
 	
-	/** Test whether a matrix is scalar */
+	/** Test whether a matrix is scalar. */
 	public boolean isScalar() {
 		return length == 1;
 	}
 	
-	/** Return the first element of the matrix */
+	/** Return the first element of the matrix. */
 	public float scalar() {
 		return get(0);
 	}
 	
+        /** 
+         * Concatenates two matrices horizontally. Matrices must have identical
+         * numbers of rows.
+         */
 	public static FloatMatrix concatHorizontally(FloatMatrix A, FloatMatrix B) {
 		if (A.rows != B.rows)
 			throw new SizeException("Matrices don't have same number of rows.");
@@ -419,6 +412,10 @@ public class FloatMatrix {
 		return result;
 	}
 
+        /**
+         * Concatenates two matrices vertically. Matrices must have identical
+         * numbers of columns.
+         */
 	public static FloatMatrix concatVertically(FloatMatrix A, FloatMatrix B) {
 		if (A.columns != B.columns)
 			throw new SizeException("Matrices don't have same number of columns (" + A.columns + " != " + B.columns + ".");
@@ -478,6 +475,7 @@ public class FloatMatrix {
 		return result;
 	}
 	
+        /** Get elements from specified rows and columns. */
         public FloatMatrix get(Range rs, Range cs) {
             rs.init(0, rows - 1);
             cs.init(0, columns - 1);
@@ -490,18 +488,31 @@ public class FloatMatrix {
             return result;
         }
         
+        /** Get elements specified by the non-zero entries of the passed matrix. */
 	public FloatMatrix get(FloatMatrix indices) {
 		return get(indices.findIndices());
 	}
 
+        /** 
+         * Get elements from a row and columns as specified by the non-zero entries of
+         * a matrix.
+         */
 	public FloatMatrix get(int r, FloatMatrix indices) {
 		return get(r, indices.findIndices());
 	}
-	
+
+        /**
+         * Get elements from a column and rows as specified by the non-zero entries of
+         * a matrix.
+         */
 	public FloatMatrix get(FloatMatrix indices, int c) {
 		return get(indices.findIndices(), c);
 	}
 
+        /**
+         * Get elements from columns and rows as specified by the non-zero entries of
+         * the passed matrices.
+         */
 	public FloatMatrix get(FloatMatrix rindices, FloatMatrix cindices) {
 		return get(rindices.findIndices(), cindices.findIndices());
 	}
@@ -516,6 +527,7 @@ public class FloatMatrix {
             return result;
         }
         
+        /** Get elements from a row and columns <tt>a</tt> to <tt>b</tt>. */
         public FloatMatrix getColumnRange(int r, int a, int b) {
             FloatMatrix result = new FloatMatrix(1, b - a);
             
@@ -525,6 +537,7 @@ public class FloatMatrix {
             return result;
         }
 
+        /** Get elements from a column and rows <tt>a/tt> to <tt>b</tt>. */
         public FloatMatrix getRowRange(int a, int b, int c) {
             FloatMatrix result = new FloatMatrix(b - a);
             
@@ -534,6 +547,10 @@ public class FloatMatrix {
             return result;
         }
         
+        /** 
+         * Get elements from rows <tt>ra</tt> to <tt>rb</tt> and 
+         * columns <tt>ca</tt> to <tt>cb</tt>. 
+         */
         public FloatMatrix getRange(int ra, int rb, int ca, int cb) {
             FloatMatrix result = new FloatMatrix(rb - ra, cb - ca);
             
@@ -544,17 +561,20 @@ public class FloatMatrix {
             return result;
         }
         
+        /** Get whole rows from the passed indices. */
         public FloatMatrix getRows(int[] rindices) {
             FloatMatrix result = new FloatMatrix(rindices.length, columns);
             for (int i = 0; i < rindices.length; i++)
-                Blas.scopy(columns, data, index(rindices[i], 0), rows, result.data, result.index(i, 0), result.rows);
+                JavaBlas.rcopy(columns, data, index(rindices[i], 0), rows, result.data, result.index(i, 0), result.rows);
             return result;
         }
         
+        /** Get whole rows as specified by the non-zero entries of a matrix. */
         public FloatMatrix getRows(FloatMatrix rindices) {
             return getRows(rindices.findIndices());
         }
 
+        /** Get whole columns from the passed indices. */
         public FloatMatrix getColumns(int[] cindices) {
             FloatMatrix result = new FloatMatrix(rows, cindices.length);
             for (int i = 0; i < cindices.length; i++)
@@ -562,21 +582,34 @@ public class FloatMatrix {
             return result;
         }
         
+        /** Get whole columns as specified by the non-zero entries of a matrix. */
         public FloatMatrix getColumns(FloatMatrix cindices) {
             return getColumns(cindices.findIndices());
         }
         
-	private void checkLength(int l) {
+        /**
+         * Assert that the matrix has a certain length.
+         * @throws SizeException 
+         */ 
+	public void checkLength(int l) {
 		if (length != l)
 			throw new SizeException("Matrix does not have the necessary length (" + length + " != " + l + ").");
 	}
 
-	private void checkRows(int r) {
+        /**
+         * Asserts that the matrix has a certain number of rows.
+         * @throws SizeException
+         */
+	public void checkRows(int r) {
 		if (rows != r)
 			throw new SizeException("Matrix does not have the necessary number of rows (" + rows + " != " + r + ").");
 	}
 	
-	private void checkColumns(int c) {
+        /** 
+         * Asserts that the amtrix has a certain number of columns.
+         * @throws SizeException
+         */
+	public void checkColumns(int c) {
 		if (columns != c)
 			throw new SizeException("Matrix does not have the necessary number of columns (" + columns + " != " + c + ").");
 	}
