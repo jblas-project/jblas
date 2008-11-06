@@ -1,0 +1,4 @@
+#scripts/fortranwrapper com.fhg.la Blas ~/src/blas/ddot.f ~/src/blas/zdotc.f ~/src/blas/saxpy.f ~/src/blas/cdotc.f ~/src/blas/zgemm.f
+scripts/fortranwrapper com.fhg.la Blas ~/src/blas/*.f
+ant compile createHeaderFiles
+make bin/Blas.o
