@@ -30,6 +30,10 @@ def collect(*args)
   args.join "\n"
 end
 
+def doc(s)
+  "/** " + s + " */"
+end
+
 #open file
 file = open(ARGV[0], 'r').read
 saved_file = file

@@ -79,17 +79,31 @@ import static edu.ida.core.BlasUtil.*;
  * <tr><td>x.swapRows(i, j)<td>Swap the contents of columns i and j.
  * </table>
  * 
- * <p>For <tt>get</tt> and <tt>put</tt>, you can also pass integer arrays or 
- * FloatMatrix objects, which then specify the indices used as follows:
+ * <p>For <tt>get</tt> and <tt>put</tt>, you can also pass integer arrays,
+ * FloatMatrix objects, or Range objects, which then specify the indices used 
+ * as follows:
  * 
  * <ul>
  * <li><em>integer array:</em> the elements will be used as indices.
  * <li><em>FloatMatrix object:</em> non-zero entries specify the indices.
+ * <li><em>Range object:</em> see below.
  * </ul>
  * 
  * <p>When using <tt>put</tt> with multiple indices, the assigned object must
  * have the correct size or be a scalar.</p>
  *
+ * <p>There exist the following Range objects. The Class <tt>RangeUtils</tt> also
+ * contains the a number of handy helper methods for constructing these ranges.</p>
+ * <table class="my">
+ * <tr><th>Class <th>RangeUtils method <th>Indices
+ * <tr><td>AllRange <td>all() <td>All legal indices.
+ * <tr><td>PointRange <td>point(i) <td> A single point.
+ * <tr><td>IntervalRange <td>interval(a, b)<td> All indices from a to b (inclusive)
+ * <tr><td rowspan=3>IndicesRange <td>indices(int[])<td> The specified indices.
+ * <tr><td>indices(FloatMatrix)<td>The specified indices.
+ * <tr><td>find(FloatMatrix)<td>The non-zero entries of the matrix.
+ * </table>
+ * 
  * <p>The following methods can be used for duplicating and copying matrices.</p>
  * 
  * <table class="my">
@@ -112,6 +126,7 @@ import static edu.ida.core.BlasUtil.*;
  * <tr><td>x.isColumnVector()<td>Checks whether columns == 1.
  * <tr><td>x.isVector()<td>Checks whether rows == 1 or columns == 1.
  * <tr><td>x.isSquare()<td>Checks whether rows == columns.
+ * <tr><td>x.isScalar()<td>Checks whether length == 1.
  * <tr><td>x.resize(r, c)<td>Resize the matrix to r rows and c columns, discarding the content.
  * <tr><td>x.reshape(r, c)<td>Resize the matrix to r rows and c columns.<br> Number of elements must not change.
  * </table>
@@ -122,10 +137,14 @@ import static edu.ida.core.BlasUtil.*;
  * 
  * <h3>Arithmetics</h3>
  * 
- * <p>The usual arithmetic operations can be found. Each operation exists in a
+ * <p>The usual arithmetic operations are implemented. Each operation exists in a
  * in-place version, recognizable by the suffix <tt>"i"</tt>, to which you can supply
- * the result matrix (or <tt>this</tt> is used, if missing), in order to prevent
- * the construction of too many temporary objects.</p>
+ * the result matrix (or <tt>this</tt> is used, if missing). Using in-place operations
+ * can also lead to a smaller memory footprint, as the number of temporary objects
+ * which are directly garbage collected again is reduced.</p>
+ * 
+ * <p>Whenever you specify a result vector, the result vector must already have the
+ * correct dimensions.</p>
  * 
  * <p>For example, you can add two matrices using the <tt>add</tt> method. If you want
  * to store the result in of <tt>x + y</tt> in <tt>z</tt>, type
@@ -153,8 +172,24 @@ import static edu.ida.core.BlasUtil.*;
  * <tr><td rowspan=3>x * y 	<td>x.mul(y) <td>element-wise multiplication 
  * <tr>						<td>x.mmul(y)<td>matrix-matrix multiplication
  * <tr>						<td>x.dot(y) <td>scalar-product
+ * <tr><td>x / y <td>x.div(y), y.rdiv(x) <td>rdiv divides right hand side by left hand side.
  * <tr><td>- x	<td>x.neg()				<td>
  * </table>
+ * 
+ * <p>There also exist operations which work on whole columns or rows.</p>
+ * 
+ * <table class="my">
+ * <tr><th>Method <th>Description
+ * <tr><td>x.addRowVector<td>adds a vector to each row (addiRowVector works in-place)
+ * <tr><td>x.addColumnVector<td>adds a vector to each column
+ * <tr><td>x.subRowVector<td>subtracts a vector from each row
+ * <tr><td>x.subColumnVector<td>subtracts a vector from each column
+ * <tr><td>x.mulRow<td>Multiplies a row by a scalar
+ * <tr><td>x.mulColumn<td>multiplies a row by a column
+ * </table>
+ * 
+ * <p>In principle, you could achieve the same result by first calling getColumn(), 
+ * adding, and then calling putColumn, but these methods are much faster.</p>
  * 
  * <p>The following comparison operations are available</p>
  *  
@@ -614,6 +649,7 @@ public class FloatMatrix {
 			throw new SizeException("Matrix does not have the necessary number of columns (" + columns + " != " + c + ").");
 	}
 
+        /** Set elements in linear ordering in the specified indices. */
 	public FloatMatrix put(int[] indices, FloatMatrix x) {
 		if (x.isScalar())
 			return put(indices, x.scalar());
@@ -625,6 +661,7 @@ public class FloatMatrix {
 		return this;
 	}
 	
+        /** Set multiple elements in a row. */
 	public FloatMatrix put(int r, int[] indices, FloatMatrix x) {
 		if (x.isScalar())
 			return put(r, indices, x.scalar());
@@ -636,6 +673,7 @@ public class FloatMatrix {
 		return this;
 	}
 	
+        /** Set multiple elements in a row. */
 	public FloatMatrix put(int[] indices, int c, FloatMatrix x) {
 		if (x.isScalar())
 			return put(indices, c, x.scalar());		
@@ -647,6 +685,7 @@ public class FloatMatrix {
 		return this;
 	}
 	
+        /** Put a sub-matrix as specified by the indices. */
 	public FloatMatrix put(int[] rindices, int[] cindices, FloatMatrix x) {
 		if (x.isScalar())
 			return put(rindices, cindices, x.scalar());		
@@ -660,7 +699,7 @@ public class FloatMatrix {
 		return this;
 	}
         
-        /** Put a matrix into specified indices of this. */
+        /** Put a matrix into specified indices. */
         public FloatMatrix put(Range rs, Range cs, FloatMatrix x) {
             rs.init(0, rows - 1);
             cs.init(0, columns - 1);
@@ -675,6 +714,7 @@ public class FloatMatrix {
             return this;
         }
 	
+        /** Put a single value into the specified indices (linear adressing). */
 	public FloatMatrix put(int[] indices, float v) {
 		for (int i = 0; i < indices.length; i++)
 			put(indices[i], v);
@@ -682,6 +722,7 @@ public class FloatMatrix {
 		return this;
 	}
 	
+        /** Put a single value into a row and the specified columns. */
 	public FloatMatrix put(int r, int[] indices, float v) {
 		for (int i = 0; i < indices.length; i++)
 			put(r, indices[i], v);
@@ -689,6 +730,7 @@ public class FloatMatrix {
 		return this;
 	}
 	
+        /** Put a single value into the specified rows of a column. */
 	public FloatMatrix put(int[] indices, int c, float v) {
 		for (int i = 0; i < indices.length; i++)
 			put(indices[i], c, v);
@@ -696,6 +738,7 @@ public class FloatMatrix {
 		return this;
 	}
 	
+        /** Put a single value into the specified rows and columns. */
 	public FloatMatrix put(int[] rindices, int[] cindices, float v) {
 		for (int i = 0; i < rindices.length; i++)
 			for (int j = 0; j < cindices.length; j++)
@@ -704,34 +747,60 @@ public class FloatMatrix {
 		return this;
 	}
 
+        /**
+         * Put a sub-matrix into the indices specified by the non-zero entries 
+         * of <tt>indices</tt> (linear adressing).
+         */ 
 	public FloatMatrix put(FloatMatrix indices, FloatMatrix v) {
 		return put(indices.findIndices(), v);
 	}
 
+        /** Put a sub-vector into the specified columns (non-zero entries of <tt>indices</tt>) of a row. */
 	public FloatMatrix put(int r, FloatMatrix indices, FloatMatrix v) {
 		return put(r, indices.findIndices(), v);
 	}
 	
+        /** Put a sub-vector into the specified rows (non-zero entries of <tt>indices</tt>) of a column. */
 	public FloatMatrix put(FloatMatrix indices, int c, FloatMatrix v) {
 		return put(indices.findIndices(), c, v);
 	}
 
+        /** 
+         * Put a sub-matrix into the specified rows and columns (non-zero entries of
+         * <tt>rindices</tt> and <tt>cindices</tt>.
+         */
 	public FloatMatrix put(FloatMatrix rindices, FloatMatrix cindices, FloatMatrix v) {
 		return put(rindices.findIndices(), cindices.findIndices(), v);
 	}
 
+        /** 
+         * Put a single value into the elements specified by the non-zero
+         * entries of <tt>indices</tt> (linear adressing).
+         */
 	public FloatMatrix put(FloatMatrix indices, float v) {
 		return put(indices.findIndices(), v);
 	}
 
+        /** 
+         * Put a single value into the specified columns (non-zero entries of
+         * <tt>indices</tt>) of a row.
+         */
 	public FloatMatrix put(int r, FloatMatrix indices, float v) {
 		return put(r, indices.findIndices(), v);
 	}
 	
+        /**
+         * Put a single value into the specified rows (non-zero entries of
+         * <tt>indices</tt>) of a column.
+         */
 	public FloatMatrix put(FloatMatrix indices, int c, float v) {
 		return put(indices.findIndices(), c, v);
 	}
 
+        /**
+         * Put a single value in the specified rows and columns (non-zero entries
+         * of <tt>rindices</tt> and <tt>cindices</tt>.
+         */
 	public FloatMatrix put(FloatMatrix rindices, FloatMatrix cindices, float v) {
 		return put(rindices.findIndices(), cindices.findIndices(), v);
 	}
@@ -769,7 +838,8 @@ public class FloatMatrix {
 	}
 	
 		
-	/** Compare two matrices. Returns true if and only if other is also a 
+	/** 
+         * Compare two matrices. Returns true if and only if other is also a 
          * FloatMatrix which has the same size and the maximal absolute
          * difference in matrix elements is smaller thatn 1e-6.  
          */
@@ -852,7 +922,8 @@ public class FloatMatrix {
 		return a;
 	}
 	
-	/** Returns a duplicate of this matrix. Geometry is the same (including offsets, transpose, etc.),
+	/** 
+         * Returns a duplicate of this matrix. Geometry is the same (including offsets, transpose, etc.),
 	 * but the buffer is not shared.
 	 */
 	public FloatMatrix dup() {
@@ -912,7 +983,8 @@ public class FloatMatrix {
 		return this;
 	}
 
-        public FloatMatrix clear(float value) {
+        /** Set all elements to a value. */
+        public FloatMatrix fill(float value) {
             for (int i = 0; i < length; i++)
                 put(i, value);
             return this;
@@ -999,6 +1071,12 @@ public class FloatMatrix {
 		return s.toString();
 	}
     
+        /**
+         * Generate string representation of the matrix, with specified
+         * format for the entries. For example, <code>x.toString("%.1f")</code>
+         * generates a string representations having only one position after the
+         * decimal point.
+         */
         public String toString(String fmt) {
             StringWriter s = new StringWriter();
             PrintWriter p = new PrintWriter(s);
@@ -1083,6 +1161,7 @@ public class FloatMatrix {
 		return array;
 	}
         
+        /** Convert matrix to FloatMatrix. */
         public FloatMatrix toFloatMatrix() {
             FloatMatrix result = new FloatMatrix(rows, columns);
             
@@ -1109,7 +1188,7 @@ public class FloatMatrix {
 		}
 	}
 
-	/** Add two matrices. */
+	/** Add two matrices (in-place). */
 	public FloatMatrix addi(FloatMatrix other, FloatMatrix result) {
 		if (other.isScalar())
 			return addi(other.scalar(), result);
@@ -1131,7 +1210,7 @@ public class FloatMatrix {
 		return result;
 	}
 	
-	/** Add a scalar to a matrix. */
+	/** Add a scalar to a matrix (in-place). */
 	public FloatMatrix addi(float v, FloatMatrix result) {
 		ensureResultLength(null, result);
 		
@@ -1140,7 +1219,7 @@ public class FloatMatrix {
 		return result;
 	}
 
-	/** Subtract two matrices. */
+	/** Subtract two matrices (in-place). */
 	public FloatMatrix subi(FloatMatrix other, FloatMatrix result) {
 		if (other.isScalar())
 			return subi(other.scalar(), result);
@@ -1163,7 +1242,7 @@ public class FloatMatrix {
 		return result;
 	}
 	
-	/** Subtract a scalar from a matrix */
+	/** Subtract a scalar from a matrix (in-place). */
 	public FloatMatrix subi(float v, FloatMatrix result) {
 		ensureResultLength(null, result);
 		
@@ -1174,13 +1253,13 @@ public class FloatMatrix {
 	
 	/** 
 	 * Subtract two matrices, but subtract first from second matrix, that is, 
-	 * compute <em>result = other - this</em>. 
+	 * compute <em>result = other - this</em> (in-place).
 	 * */
 	public FloatMatrix rsubi(FloatMatrix other, FloatMatrix result) {
 		return other.subi(this, result);
 	}
 	
-	/** Subtract a matrix from a scalar */
+	/** Subtract a matrix from a scalar (in-place). */
 	public FloatMatrix rsubi(float a, FloatMatrix result) {
 		ensureResultLength(null, result);
 		
@@ -1189,7 +1268,7 @@ public class FloatMatrix {
 		return result;
 	}
 	
-	/** (Elementwise) Multiplication */ 
+	/** Elementwise multiplication (in-place). */ 
 	public FloatMatrix muli(FloatMatrix other, FloatMatrix result) {
 		if (other.isScalar())
 			return muli(other.scalar(), result);
@@ -1204,7 +1283,7 @@ public class FloatMatrix {
 		return result;
 	}
 	
-	/** (Elementwise) Multiplication with a scalar */
+	/** Elementwise multiplication with a scalar (in-place). */
 	public FloatMatrix muli(float v, FloatMatrix result) {
 		ensureResultLength(null, result);
 		
@@ -1213,7 +1292,7 @@ public class FloatMatrix {
 		return result;
 	}
 	
-	/** Matrix-Matrix Multiplication */
+	/** Matrix-matrix multiplication (in-place). */
 	public FloatMatrix mmuli(FloatMatrix other, FloatMatrix result) {
 		if (other.isScalar())
 			return muli(other.scalar(), result);
@@ -1249,14 +1328,14 @@ public class FloatMatrix {
 		return result;
 	}
 	
-	/** Matrix-Matrix Multiplication with a scalar (for symmetry, does the
-	 * same as muli(scalar)
+	/** Matrix-matrix multiplication with a scalar (for symmetry, does the
+	 * same as <code>muli(scalar)</code> (in-place).
 	 */
 	public FloatMatrix mmuli(float v, FloatMatrix result) {
 		return muli(v, result);
 	}
 	
-	/** (Elementwise) division */
+	/** Elementwise division (in-place). */
 	public FloatMatrix divi(FloatMatrix other, FloatMatrix result) {
 		if (other.isScalar())
 			return divi(other.scalar(), result);
@@ -1271,7 +1350,7 @@ public class FloatMatrix {
 		return result;
 	}
 		
-	/** (Elementwise) division with a scalar */
+	/** Elementwise division with a scalar (in-place). */
 	public FloatMatrix divi(float a, FloatMatrix result) {
 		ensureResultLength(null, result);
 		
@@ -1281,14 +1360,14 @@ public class FloatMatrix {
 	}	
 
 	/** 
-	 * (Elementwise) division, with operands switched. Computes
-	 * <em>result = other / this</em>. */
+	 * Elementwise division, with operands switched. Computes
+	 * <code>result = other / this</code> (in-place). */
 	public FloatMatrix rdivi(FloatMatrix other, FloatMatrix result) {
             return other.divi(this, result);
 	}
 		
 	/** (Elementwise) division with a scalar, with operands switched. Computes
-	 * <em>result = a / this</em>.*/
+	 * <code>result = a / this</code> (in-place). */
 	public FloatMatrix rdivi(float a, FloatMatrix result) {
 		ensureResultLength(null, result);
 
@@ -1297,32 +1376,38 @@ public class FloatMatrix {
 		return result;
 	}
 	
+        /** Negate each element (in-place). */
 	public FloatMatrix negi() {
 		for (int i = 0; i < length; i++)
 			put(i, -get(i));
 		return this;
 	}
 	
+        /** Negate each element. */
 	public FloatMatrix neg() {
 		return dup().negi();
 	}
 
+        /** Maps zero to 1.0f and all non-zero values to 0.0f (in-place). */
 	public FloatMatrix noti() {
 		for (int i = 0; i < length; i++)
 			put(i, get(i) == 0.0f ? 1.0f : 0.0f);
 		return this;
 	}
 	
+        /** Maps zero to 1.0f and all non-zero values to 0.0f. */
 	public FloatMatrix not() {
 		return dup().noti();
 	}
 	
+        /** Maps zero to 0.0f and all non-zero values to 1.0f (in-place). */
 	public FloatMatrix truthi() {
 		for (int i = 0; i < length; i++)
 			put(i, get(i) == 0.0f ? 0.0f : 1.0f);
 		return this;
 	}
 	
+        /** Maps zero to 0.0f and all non-zero values to 1.0f. */
 	public FloatMatrix truth() {
 		return dup().truthi();
 	}
@@ -1361,6 +1446,7 @@ public class FloatMatrix {
 	 * Logical operations
 	 */
 
+        /** Returns the minimal element of the matrix. */
 	public float min() {
 		if (isEmpty())
 			return Float.POSITIVE_INFINITY;
@@ -1372,6 +1458,10 @@ public class FloatMatrix {
 		return v;
 	}
 	
+        /** 
+         * Returns the linear index of the minimal element. If there are
+         * more than one elements with this value, the first one is returned.
+         */
 	public int argmin() {
 		if (isEmpty())
 			return -1;
@@ -1386,6 +1476,7 @@ public class FloatMatrix {
 		return a;
 	}
 	
+        /** Returns the maximal element of the matrix. */
 	public float max() {
 		if (isEmpty())
 			return Float.NEGATIVE_INFINITY;
@@ -1396,6 +1487,11 @@ public class FloatMatrix {
 		return v;
 	}
 	
+        /**
+         * Returns the linear index of the maximal element of the matrix. If
+         * there are more than one elements with this value, the first one
+         * is returned.
+         */
 	public int argmax() {
 		if (isEmpty())
 			return -1;
@@ -1410,6 +1506,7 @@ public class FloatMatrix {
 		return a;
 	}
 	
+        /** Computes the sum of all elements of the matrix. */
 	public float sum() {
 		float s = 0.0f;
 		for (int i = 0; i < length; i++)
@@ -1417,10 +1514,18 @@ public class FloatMatrix {
 		return s;
 	}
 	
+        /** 
+         * Computes the mean value of all elements in the matrix, 
+         * that is, <code>x.sum() / x.length</code>.
+         */
 	public float mean() {
 		return sum() / length;
 	}
-        
+
+        /**
+         * Computes the cumulative sum, that is, the sum of all elements
+         * of the matrix up to a given index in linear addressing (in-place).
+         */
         public FloatMatrix cumulativeSumi() {
             float s = 0.0f;
             for (int i = 0; i < length; i++) {
@@ -1430,33 +1535,59 @@ public class FloatMatrix {
             return this;
         }
         
+        /**
+         * Computes the cumulative sum, that is, the sum of all elements
+         * of the matrix up to a given index in linear addressing.
+         */
         public FloatMatrix cumulativeSum() {
             return dup().cumulativeSumi();
         }
 	
+        /** The scalar product of this with other. */
 	public float dot(FloatMatrix other) {
 		return SimpleBlas.dot(this, other);
 	}
 	
+        /**
+         * The Euclidean norm of the matrix as vector, also the Frobenius
+         * norm of the matrix.
+         */
 	public float norm2() {
 		return SimpleBlas.nrm2(this);
 	}
 	
+        /**
+         * The maximum norm of the matrix (maximal absolute value of the elements).
+         */
 	public float normmax() {
 		int i = SimpleBlas.iamax(this);
 		return Math.abs(get(i));
 	}
 
+        /**
+         * The 1-norm of the matrix as vector (sum of absolute values of elements).
+         */
 	public float norm1() {
 		return SimpleBlas.asum(this);
 	}
 	
+        /**
+         * Return a new matrix with all elements sorted.
+         */
 	public FloatMatrix sort() {
 		float array[] = toArray();
 		java.util.Arrays.sort(array);
 		return new FloatMatrix(rows, columns, array);
 	}
-	
+
+        /**
+         * Sort elements in-place.
+         */
+        public FloatMatrix sorti() {
+            java.util.Arrays.sort(data);
+            return this;
+        }
+        
 	/** Return a vector containing the sums of the columns (having number of columns many entries) */
 	public FloatMatrix columnSums() {
             if (rows == 1) {
@@ -1474,10 +1605,12 @@ public class FloatMatrix {
             }
 	}
 
+        /** Return a vector containing the means of all columns. */
 	public FloatMatrix columnMeans() {
 		return columnSums().divi(rows);
 	}
 	
+        /** Return a vector containing the sum of the rows. */
 	public FloatMatrix rowSums() {
             if (columns == 1) {
                 return dup();
@@ -1494,39 +1627,46 @@ public class FloatMatrix {
             }
 	}
 
+        /** Return a vector containing the means of the rows. */
 	public FloatMatrix rowMeans() {
 		return rowSums().divi(columns);
 	}
 
+        /** Get a copy of a column. */
 	public FloatMatrix getColumn(int c) {
 		return getColumn(c, new FloatMatrix(rows, 1));
 	}
         
+        /** Copy a column to the given vector. */
         public FloatMatrix getColumn(int c, FloatMatrix result) {
             result.checkLength(rows);
             Blas.scopy(rows, data, index(0, c), 1, result.data, 0, 1);
             return result;
         }
 	
+        /** Copy a column back into the matrix. */
 	public void putColumn(int c, FloatMatrix v) {
 		Blas.scopy(rows, v.data, 0, 1, data, index(0, c), 1);
 	}
 
+        /** Get a copy of a row. */
 	public FloatMatrix getRow(int r) {
             return getRow(r, new FloatMatrix(1, columns));
 	}
 	
+        /** Copy a row to a given vector. */
         public FloatMatrix getRow(int r, FloatMatrix result) {
             result.checkLength(columns);
             Blas.scopy(columns, data, index(r, 0), rows, result.data, 0, 1);
             return result;
         }
         
+        /** Copy a row back into the matrix. */
 	public void putRow(int r, FloatMatrix v) {
 		Blas.scopy(columns, v.data, 0, 1, data, index(r, 0), rows);
 	}
 
-	/** Return column-wise minimums */
+	/** Return column-wise minimums. */
 	public FloatMatrix columnMins() {
 		FloatMatrix mins = new FloatMatrix(1, columns);
 		for (int c = 0; c < columns; c++)
@@ -1534,7 +1674,7 @@ public class FloatMatrix {
 		return mins;
 	}
 
-	/** Return index of minimal element per column */
+	/** Return index of minimal element per column. */
 	public int[] columnArgmins() {
 		int[] argmins = new int[columns];
 		for (int c = 0; c < columns; c++)
@@ -1542,7 +1682,7 @@ public class FloatMatrix {
 		return argmins;
 	}
 
-	/** Return column-wise minimums */
+	/** Return column-wise maximums. */
 	public FloatMatrix columnMaxs() {
 		FloatMatrix maxs = new FloatMatrix(1, columns);
 		for (int c = 0; c < columns; c++)
@@ -1550,7 +1690,7 @@ public class FloatMatrix {
 		return maxs;
 	}
 
-	/** Return index of minimal element per column */
+	/** Return index of minimal element per column. */
 	public int[] columnArgmaxs() {
 		int[] argmaxs = new int[columns];
 		for (int c = 0; c < columns; c++)
@@ -1558,7 +1698,7 @@ public class FloatMatrix {
 		return argmaxs;
 	}
 
-	/** Return row-wise minimums */
+	/** Return row-wise minimums. */
 	public FloatMatrix rowMins() {
 		FloatMatrix mins = new FloatMatrix(rows);
 		for (int c = 0; c < rows; c++)
@@ -1566,7 +1706,7 @@ public class FloatMatrix {
 		return mins;
 	}
 
-	/** Return index of minimal element per row */
+	/** Return index of minimal element per row. */
 	public int[] rowArgmins() {
 		int[] argmins = new int[rows];
 		for (int c = 0; c < rows; c++)
@@ -1574,7 +1714,7 @@ public class FloatMatrix {
 		return argmins;
 	}
 
-	/** Return row-wise minimums */
+	/** Return row-wise maximums. */
 	public FloatMatrix rowMaxs() {
 		FloatMatrix maxs = new FloatMatrix(rows);
 		for (int c = 0; c < rows; c++)
@@ -1582,7 +1722,7 @@ public class FloatMatrix {
 		return maxs;
 	}
 
-	/** Return index of minimal element per row */
+	/** Return index of minimal element per row. */
 	public int[] rowArgmaxs() {
 		int[] argmaxs = new int[rows];
 		for (int c = 0; c < rows; c++)
@@ -1603,11 +1743,12 @@ public class FloatMatrix {
                 return this;
 	}
         
+        /** Add a row to all rows of the matrix. */
         public FloatMatrix addRowVector(FloatMatrix x) {
             return dup().addiRowVector(x);
         }
 
-	/** Add a vector to all columns of the matrix */
+	/** Add a vector to all columns of the matrix (in-place). */
 	public FloatMatrix addiColumnVector(FloatMatrix x) {
                 x.checkLength(rows);
 		for (int c = 0; c < columns; c++) {
@@ -1616,11 +1757,12 @@ public class FloatMatrix {
                 return this;
 	}
 
+        /** Add a vector to all columns of the matrix. */
         public FloatMatrix addColumnVector(FloatMatrix x) {
             return dup().addiColumnVector(x);
         }
         
-       	/** Add a row vector to all rows of the matrix */
+       	/** Subtract a row vector from all rows of the matrix (in-place). */
 	public FloatMatrix subiRowVector(FloatMatrix x) {
                 // This is a bit crazy, but a row vector must have as length as the columns of the matrix.
                 x.checkLength(columns);
@@ -1630,11 +1772,12 @@ public class FloatMatrix {
                 return this;
 	}
 
+        /** Subtract a row vector from all rows of the matrix. */
         public FloatMatrix subRowVector(FloatMatrix x) {
             return dup().subiRowVector(x);
         }
 
-        /** Add a vector to all columns of the matrix */
+        /** Subtract a column vector from all columns of the matrix (in-place). */
 	public FloatMatrix subiColumnVector(FloatMatrix x) {
                 x.checkLength(rows);
 		for (int c = 0; c < columns; c++) {
@@ -1643,15 +1786,18 @@ public class FloatMatrix {
                 return this;
 	}
 
+        /** Subtract a vector from all columns of the matrix. */
         public FloatMatrix subColumnVector(FloatMatrix x) {
             return dup().subiColumnVector(x);
         }
 
+        /** Multiply a row by a scalar. */
         public FloatMatrix mulRow(int r, float scale) {
             Blas.sscal(columns, scale, data, index(r, 0), rows);
             return this;
         }
         
+        /** Multiply a column by a scalar. */
         public FloatMatrix mulColumn(int c, float scale) {
             Blas.sscal(rows, scale, data, index(0, c), 1);
             return this;
@@ -1764,19 +1910,23 @@ public class FloatMatrix {
 
 	/* Overloads for the usual arithmetic operations */
 	/*#
-	 def gen_overloads(base, result_rows, result_cols); <<-EOS
+	 def gen_overloads(base, result_rows, result_cols, verb=''); <<-EOS
+        #{doc verb.capitalize + " a matrix (in place)."}
 	public FloatMatrix #{base}i(FloatMatrix other) {
 		return #{base}i(other, this);
 	}
-	 	
+	
+        #{doc verb.capitalize + " a matrix (in place)."}
 	public FloatMatrix #{base}(FloatMatrix other) {
 	  	return #{base}i(other, new FloatMatrix(#{result_rows}, #{result_cols}));
 	}
 
+        #{doc verb.capitalize + " a scalar (in place)."}
 	public FloatMatrix #{base}i(float v) {
 		return #{base}i(v, this);
 	}
 	
+        #{doc verb.capitalize + " a scalar."}
 	public FloatMatrix #{base}(float v) {
 		return #{base}i(v, new FloatMatrix(rows, columns));
 	} 	
@@ -1789,7 +1939,8 @@ public class FloatMatrix {
 	 */
 	
 	/*#
-	 def gen_compare(name, op); <<-EOS
+	 def gen_compare(name, op, cmp); <<-EOS
+         #{doc 'Test for ' + cmp + ' (in-place).'}
 	 public FloatMatrix #{name}i(FloatMatrix other, FloatMatrix result) {
 	    if (other.isScalar())
 	       return #{name}i(other.scalar(), result);
@@ -1802,14 +1953,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         #{doc 'Test for ' + cmp + ' (in-place).'}
 	 public FloatMatrix #{name}i(FloatMatrix other) {
 	   return #{name}i(other, this);
 	 }
 	 
+         #{doc 'Test for ' + cmp + '.'}
 	 public FloatMatrix #{name}(FloatMatrix other) {
 	   return #{name}i(other, new FloatMatrix(rows, columns));
 	 }
 	 
+         #{doc 'Test for ' + cmp + ' against a scalar (in-place).'}
 	 public FloatMatrix #{name}i(float value, FloatMatrix result) {
 	   ensureResultLength(null, result);
 	   for (int i = 0; i < length; i++)
@@ -1817,10 +1971,12 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         #{doc 'Test for ' + cmp + ' against a scalar (in-place).'}
 	 public FloatMatrix #{name}i(float value) {
 	   return #{name}i(value, this);
 	 }
 	 
+         #{doc 'test for ' + cmp + ' against a scalar.'}
 	 public FloatMatrix #{name}(float value) {
 	   return #{name}i(value, new FloatMatrix(rows, columns));
 	 }
@@ -1829,8 +1985,9 @@ public class FloatMatrix {
 	 #*/
 	
 	/*#
-	 def gen_logical(name, op); <<-EOS
-	 public FloatMatrix #{name}i(FloatMatrix other, FloatMatrix result) {
+	 def gen_logical(name, op, cmp); <<-EOS
+	 #{doc 'Compute elementwise ' + cmp + ' (in-place).'}
+         public FloatMatrix #{name}i(FloatMatrix other, FloatMatrix result) {
 	 	assertSameLength(other);
 	 	ensureResultLength(other, result);
 	 	
@@ -1839,14 +1996,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+	 #{doc 'Compute elementwise ' + cmp + ' (in-place).'}
 	 public FloatMatrix #{name}i(FloatMatrix other) {
 	   return #{name}i(other, this);
 	 }
 	 
+	 #{doc 'Compute elementwise ' + cmp + '.'}
 	 public FloatMatrix #{name}(FloatMatrix other) {
 	   return #{name}i(other, new FloatMatrix(rows, columns));
 	 }
 	 
+	 #{doc 'Compute elementwise ' + cmp + ' against a scalar (in-place).'}
 	 public FloatMatrix #{name}i(float value, FloatMatrix result) {
 	 	ensureResultLength(null, result);
 	 	boolean val = (value != 0.0f);
@@ -1855,10 +2015,12 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+	 #{doc 'Compute elementwise ' + cmp + ' against a scalar (in-place).'}
 	 public FloatMatrix #{name}i(float value) {
 	   return #{name}i(value, this);
 	 }
 	 
+	 #{doc 'Compute elementwise ' + cmp + ' against a scalar.'}
 	 public FloatMatrix #{name}(float value) {
 	   return #{name}i(value, new FloatMatrix(rows, columns));
 	 }
@@ -1866,136 +2028,165 @@ public class FloatMatrix {
 	 end
 	 #*/
 
-	/*# collect(gen_overloads('add', 'rows', 'columns'),
-	  gen_overloads('sub', 'rows', 'columns'),
-	  gen_overloads('rsub', 'rows', 'columns'),
-	  gen_overloads('div', 'rows', 'columns'),
-	  gen_overloads('rdiv', 'rows', 'columns'),
-	  gen_overloads('mul', 'rows', 'columns'),
-	  gen_overloads('mmul', 'rows', 'other.columns'),
-	  gen_compare('lt', '<'),
-	  gen_compare('gt', '>'),
-	  gen_compare('le', '<='),
-	  gen_compare('ge', '>='),
-	  gen_compare('eq', '=='),
-	  gen_compare('ne', '!='),
-	  gen_logical('and', '&'),
-	  gen_logical('or', '|'),
-	  gen_logical('xor', '^'))
+	/*# collect(gen_overloads('add', 'rows', 'columns', 'add'),
+	  gen_overloads('sub', 'rows', 'columns', 'subtract'),
+	  gen_overloads('rsub', 'rows', 'columns', '(right-)subtract'),
+	  gen_overloads('div', 'rows', 'columns', 'elementwise divide by'),
+	  gen_overloads('rdiv', 'rows', 'columns', '(right-)elementwise divide by'),
+	  gen_overloads('mul', 'rows', 'columns', 'elementwise multiply by'),
+	  gen_overloads('mmul', 'rows', 'other.columns', 'matrix-multiply by'),
+	  gen_compare('lt', '<', '"less than"'),
+	  gen_compare('gt', '>', '"greater than"'),
+	  gen_compare('le', '<=', '"less than or equal"'),
+	  gen_compare('ge', '>=', '"greater than or equal"'),
+	  gen_compare('eq', '==', 'equality'),
+	  gen_compare('ne', '!=', 'inequality'),
+	  gen_logical('and', '&', 'logical and'),
+	  gen_logical('or', '|', 'logical or'),
+	  gen_logical('xor', '^', 'logical xor'))
 	 #*/
 //RJPP-BEGIN------------------------------------------------------------
+        /** Add a matrix (in place). */
 	public FloatMatrix addi(FloatMatrix other) {
 		return addi(other, this);
 	}
-	 	
+	
+        /** Add a matrix (in place). */
 	public FloatMatrix add(FloatMatrix other) {
 	  	return addi(other, new FloatMatrix(rows, columns));
 	}
 
+        /** Add a scalar (in place). */
 	public FloatMatrix addi(float v) {
 		return addi(v, this);
 	}
 	
+        /** Add a scalar. */
 	public FloatMatrix add(float v) {
 		return addi(v, new FloatMatrix(rows, columns));
 	} 	
 
+        /** Subtract a matrix (in place). */
 	public FloatMatrix subi(FloatMatrix other) {
 		return subi(other, this);
 	}
-	 	
+	
+        /** Subtract a matrix (in place). */
 	public FloatMatrix sub(FloatMatrix other) {
 	  	return subi(other, new FloatMatrix(rows, columns));
 	}
 
+        /** Subtract a scalar (in place). */
 	public FloatMatrix subi(float v) {
 		return subi(v, this);
 	}
 	
+        /** Subtract a scalar. */
 	public FloatMatrix sub(float v) {
 		return subi(v, new FloatMatrix(rows, columns));
 	} 	
 
+        /** (right-)subtract a matrix (in place). */
 	public FloatMatrix rsubi(FloatMatrix other) {
 		return rsubi(other, this);
 	}
-	 	
+	
+        /** (right-)subtract a matrix (in place). */
 	public FloatMatrix rsub(FloatMatrix other) {
 	  	return rsubi(other, new FloatMatrix(rows, columns));
 	}
 
+        /** (right-)subtract a scalar (in place). */
 	public FloatMatrix rsubi(float v) {
 		return rsubi(v, this);
 	}
 	
+        /** (right-)subtract a scalar. */
 	public FloatMatrix rsub(float v) {
 		return rsubi(v, new FloatMatrix(rows, columns));
 	} 	
 
+        /** Elementwise divide by a matrix (in place). */
 	public FloatMatrix divi(FloatMatrix other) {
 		return divi(other, this);
 	}
-	 	
+	
+        /** Elementwise divide by a matrix (in place). */
 	public FloatMatrix div(FloatMatrix other) {
 	  	return divi(other, new FloatMatrix(rows, columns));
 	}
 
+        /** Elementwise divide by a scalar (in place). */
 	public FloatMatrix divi(float v) {
 		return divi(v, this);
 	}
 	
+        /** Elementwise divide by a scalar. */
 	public FloatMatrix div(float v) {
 		return divi(v, new FloatMatrix(rows, columns));
 	} 	
 
+        /** (right-)elementwise divide by a matrix (in place). */
 	public FloatMatrix rdivi(FloatMatrix other) {
 		return rdivi(other, this);
 	}
-	 	
+	
+        /** (right-)elementwise divide by a matrix (in place). */
 	public FloatMatrix rdiv(FloatMatrix other) {
 	  	return rdivi(other, new FloatMatrix(rows, columns));
 	}
 
+        /** (right-)elementwise divide by a scalar (in place). */
 	public FloatMatrix rdivi(float v) {
 		return rdivi(v, this);
 	}
 	
+        /** (right-)elementwise divide by a scalar. */
 	public FloatMatrix rdiv(float v) {
 		return rdivi(v, new FloatMatrix(rows, columns));
 	} 	
 
+        /** Elementwise multiply by a matrix (in place). */
 	public FloatMatrix muli(FloatMatrix other) {
 		return muli(other, this);
 	}
-	 	
+	
+        /** Elementwise multiply by a matrix (in place). */
 	public FloatMatrix mul(FloatMatrix other) {
 	  	return muli(other, new FloatMatrix(rows, columns));
 	}
 
+        /** Elementwise multiply by a scalar (in place). */
 	public FloatMatrix muli(float v) {
 		return muli(v, this);
 	}
 	
+        /** Elementwise multiply by a scalar. */
 	public FloatMatrix mul(float v) {
 		return muli(v, new FloatMatrix(rows, columns));
 	} 	
 
+        /** Matrix-multiply by a matrix (in place). */
 	public FloatMatrix mmuli(FloatMatrix other) {
 		return mmuli(other, this);
 	}
-	 	
+	
+        /** Matrix-multiply by a matrix (in place). */
 	public FloatMatrix mmul(FloatMatrix other) {
 	  	return mmuli(other, new FloatMatrix(rows, other.columns));
 	}
 
+        /** Matrix-multiply by a scalar (in place). */
 	public FloatMatrix mmuli(float v) {
 		return mmuli(v, this);
 	}
 	
+        /** Matrix-multiply by a scalar. */
 	public FloatMatrix mmul(float v) {
 		return mmuli(v, new FloatMatrix(rows, columns));
 	} 	
 
+         /** Test for "less than" (in-place). */
 	 public FloatMatrix lti(FloatMatrix other, FloatMatrix result) {
 	    if (other.isScalar())
 	       return lti(other.scalar(), result);
@@ -2008,14 +2199,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for "less than" (in-place). */
 	 public FloatMatrix lti(FloatMatrix other) {
 	   return lti(other, this);
 	 }
 	 
+         /** Test for "less than". */
 	 public FloatMatrix lt(FloatMatrix other) {
 	   return lti(other, new FloatMatrix(rows, columns));
 	 }
 	 
+         /** Test for "less than" against a scalar (in-place). */
 	 public FloatMatrix lti(float value, FloatMatrix result) {
 	   ensureResultLength(null, result);
 	   for (int i = 0; i < length; i++)
@@ -2023,14 +2217,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for "less than" against a scalar (in-place). */
 	 public FloatMatrix lti(float value) {
 	   return lti(value, this);
 	 }
 	 
+         /** test for "less than" against a scalar. */
 	 public FloatMatrix lt(float value) {
 	   return lti(value, new FloatMatrix(rows, columns));
 	 }
 
+         /** Test for "greater than" (in-place). */
 	 public FloatMatrix gti(FloatMatrix other, FloatMatrix result) {
 	    if (other.isScalar())
 	       return gti(other.scalar(), result);
@@ -2043,14 +2240,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for "greater than" (in-place). */
 	 public FloatMatrix gti(FloatMatrix other) {
 	   return gti(other, this);
 	 }
 	 
+         /** Test for "greater than". */
 	 public FloatMatrix gt(FloatMatrix other) {
 	   return gti(other, new FloatMatrix(rows, columns));
 	 }
 	 
+         /** Test for "greater than" against a scalar (in-place). */
 	 public FloatMatrix gti(float value, FloatMatrix result) {
 	   ensureResultLength(null, result);
 	   for (int i = 0; i < length; i++)
@@ -2058,14 +2258,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for "greater than" against a scalar (in-place). */
 	 public FloatMatrix gti(float value) {
 	   return gti(value, this);
 	 }
 	 
+         /** test for "greater than" against a scalar. */
 	 public FloatMatrix gt(float value) {
 	   return gti(value, new FloatMatrix(rows, columns));
 	 }
 
+         /** Test for "less than or equal" (in-place). */
 	 public FloatMatrix lei(FloatMatrix other, FloatMatrix result) {
 	    if (other.isScalar())
 	       return lei(other.scalar(), result);
@@ -2078,14 +2281,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for "less than or equal" (in-place). */
 	 public FloatMatrix lei(FloatMatrix other) {
 	   return lei(other, this);
 	 }
 	 
+         /** Test for "less than or equal". */
 	 public FloatMatrix le(FloatMatrix other) {
 	   return lei(other, new FloatMatrix(rows, columns));
 	 }
 	 
+         /** Test for "less than or equal" against a scalar (in-place). */
 	 public FloatMatrix lei(float value, FloatMatrix result) {
 	   ensureResultLength(null, result);
 	   for (int i = 0; i < length; i++)
@@ -2093,14 +2299,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for "less than or equal" against a scalar (in-place). */
 	 public FloatMatrix lei(float value) {
 	   return lei(value, this);
 	 }
 	 
+         /** test for "less than or equal" against a scalar. */
 	 public FloatMatrix le(float value) {
 	   return lei(value, new FloatMatrix(rows, columns));
 	 }
 
+         /** Test for "greater than or equal" (in-place). */
 	 public FloatMatrix gei(FloatMatrix other, FloatMatrix result) {
 	    if (other.isScalar())
 	       return gei(other.scalar(), result);
@@ -2113,14 +2322,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for "greater than or equal" (in-place). */
 	 public FloatMatrix gei(FloatMatrix other) {
 	   return gei(other, this);
 	 }
 	 
+         /** Test for "greater than or equal". */
 	 public FloatMatrix ge(FloatMatrix other) {
 	   return gei(other, new FloatMatrix(rows, columns));
 	 }
 	 
+         /** Test for "greater than or equal" against a scalar (in-place). */
 	 public FloatMatrix gei(float value, FloatMatrix result) {
 	   ensureResultLength(null, result);
 	   for (int i = 0; i < length; i++)
@@ -2128,14 +2340,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for "greater than or equal" against a scalar (in-place). */
 	 public FloatMatrix gei(float value) {
 	   return gei(value, this);
 	 }
 	 
+         /** test for "greater than or equal" against a scalar. */
 	 public FloatMatrix ge(float value) {
 	   return gei(value, new FloatMatrix(rows, columns));
 	 }
 
+         /** Test for equality (in-place). */
 	 public FloatMatrix eqi(FloatMatrix other, FloatMatrix result) {
 	    if (other.isScalar())
 	       return eqi(other.scalar(), result);
@@ -2148,14 +2363,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for equality (in-place). */
 	 public FloatMatrix eqi(FloatMatrix other) {
 	   return eqi(other, this);
 	 }
 	 
+         /** Test for equality. */
 	 public FloatMatrix eq(FloatMatrix other) {
 	   return eqi(other, new FloatMatrix(rows, columns));
 	 }
 	 
+         /** Test for equality against a scalar (in-place). */
 	 public FloatMatrix eqi(float value, FloatMatrix result) {
 	   ensureResultLength(null, result);
 	   for (int i = 0; i < length; i++)
@@ -2163,14 +2381,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for equality against a scalar (in-place). */
 	 public FloatMatrix eqi(float value) {
 	   return eqi(value, this);
 	 }
 	 
+         /** test for equality against a scalar. */
 	 public FloatMatrix eq(float value) {
 	   return eqi(value, new FloatMatrix(rows, columns));
 	 }
 
+         /** Test for inequality (in-place). */
 	 public FloatMatrix nei(FloatMatrix other, FloatMatrix result) {
 	    if (other.isScalar())
 	       return nei(other.scalar(), result);
@@ -2183,14 +2404,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for inequality (in-place). */
 	 public FloatMatrix nei(FloatMatrix other) {
 	   return nei(other, this);
 	 }
 	 
+         /** Test for inequality. */
 	 public FloatMatrix ne(FloatMatrix other) {
 	   return nei(other, new FloatMatrix(rows, columns));
 	 }
 	 
+         /** Test for inequality against a scalar (in-place). */
 	 public FloatMatrix nei(float value, FloatMatrix result) {
 	   ensureResultLength(null, result);
 	   for (int i = 0; i < length; i++)
@@ -2198,15 +2422,18 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+         /** Test for inequality against a scalar (in-place). */
 	 public FloatMatrix nei(float value) {
 	   return nei(value, this);
 	 }
 	 
+         /** test for inequality against a scalar. */
 	 public FloatMatrix ne(float value) {
 	   return nei(value, new FloatMatrix(rows, columns));
 	 }
 
-	 public FloatMatrix andi(FloatMatrix other, FloatMatrix result) {
+	 /** Compute elementwise logical and (in-place). */
+         public FloatMatrix andi(FloatMatrix other, FloatMatrix result) {
 	 	assertSameLength(other);
 	 	ensureResultLength(other, result);
 	 	
@@ -2215,14 +2442,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+	 /** Compute elementwise logical and (in-place). */
 	 public FloatMatrix andi(FloatMatrix other) {
 	   return andi(other, this);
 	 }
 	 
+	 /** Compute elementwise logical and. */
 	 public FloatMatrix and(FloatMatrix other) {
 	   return andi(other, new FloatMatrix(rows, columns));
 	 }
 	 
+	 /** Compute elementwise logical and against a scalar (in-place). */
 	 public FloatMatrix andi(float value, FloatMatrix result) {
 	 	ensureResultLength(null, result);
 	 	boolean val = (value != 0.0f);
@@ -2231,15 +2461,18 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+	 /** Compute elementwise logical and against a scalar (in-place). */
 	 public FloatMatrix andi(float value) {
 	   return andi(value, this);
 	 }
 	 
+	 /** Compute elementwise logical and against a scalar. */
 	 public FloatMatrix and(float value) {
 	   return andi(value, new FloatMatrix(rows, columns));
 	 }
 
-	 public FloatMatrix ori(FloatMatrix other, FloatMatrix result) {
+	 /** Compute elementwise logical or (in-place). */
+         public FloatMatrix ori(FloatMatrix other, FloatMatrix result) {
 	 	assertSameLength(other);
 	 	ensureResultLength(other, result);
 	 	
@@ -2248,14 +2481,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+	 /** Compute elementwise logical or (in-place). */
 	 public FloatMatrix ori(FloatMatrix other) {
 	   return ori(other, this);
 	 }
 	 
+	 /** Compute elementwise logical or. */
 	 public FloatMatrix or(FloatMatrix other) {
 	   return ori(other, new FloatMatrix(rows, columns));
 	 }
 	 
+	 /** Compute elementwise logical or against a scalar (in-place). */
 	 public FloatMatrix ori(float value, FloatMatrix result) {
 	 	ensureResultLength(null, result);
 	 	boolean val = (value != 0.0f);
@@ -2264,15 +2500,18 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+	 /** Compute elementwise logical or against a scalar (in-place). */
 	 public FloatMatrix ori(float value) {
 	   return ori(value, this);
 	 }
 	 
+	 /** Compute elementwise logical or against a scalar. */
 	 public FloatMatrix or(float value) {
 	   return ori(value, new FloatMatrix(rows, columns));
 	 }
 
-	 public FloatMatrix xori(FloatMatrix other, FloatMatrix result) {
+	 /** Compute elementwise logical xor (in-place). */
+         public FloatMatrix xori(FloatMatrix other, FloatMatrix result) {
 	 	assertSameLength(other);
 	 	ensureResultLength(other, result);
 	 	
@@ -2281,14 +2520,17 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+	 /** Compute elementwise logical xor (in-place). */
 	 public FloatMatrix xori(FloatMatrix other) {
 	   return xori(other, this);
 	 }
 	 
+	 /** Compute elementwise logical xor. */
 	 public FloatMatrix xor(FloatMatrix other) {
 	   return xori(other, new FloatMatrix(rows, columns));
 	 }
 	 
+	 /** Compute elementwise logical xor against a scalar (in-place). */
 	 public FloatMatrix xori(float value, FloatMatrix result) {
 	 	ensureResultLength(null, result);
 	 	boolean val = (value != 0.0f);
@@ -2297,10 +2539,12 @@ public class FloatMatrix {
 	   return result;
 	 }
 	 
+	 /** Compute elementwise logical xor against a scalar (in-place). */
 	 public FloatMatrix xori(float value) {
 	   return xori(value, this);
 	 }
 	 
+	 /** Compute elementwise logical xor against a scalar. */
 	 public FloatMatrix xor(float value) {
 	   return xori(value, new FloatMatrix(rows, columns));
 	 }
