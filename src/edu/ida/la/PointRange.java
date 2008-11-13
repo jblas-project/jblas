@@ -6,13 +6,13 @@
 package edu.ida.la;
 
 /**
- *
- * @author mikio
+ * A PointRange is a range which only has a single point.
  */
 public class PointRange implements Range {
     private int value;
     private boolean consumed; 
-    
+
+    /** Construct a new PointRange with the one given index. */
     public PointRange(int v) {
         value = v;
     }

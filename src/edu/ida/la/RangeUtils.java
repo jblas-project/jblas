@@ -9,12 +9,12 @@ package edu.ida.la;
  * A bunch of static functions for making construction of ranges more
  * uniform. Basically, we have
  * <ul>
- * <li>point(3) - a PointRange
- * <li>indices(new int[] {1,2,3,...}) - a Indices Range
- * <li>interval(1, 2) - an interval range
- * <li>all() - an AllRange
- * <li>indices(x) - with a DoubleMatrix
- * <li>find(x) - an index constructed from the non-zero elements of x
+ * <li>point(3) - a PointRange.
+ * <li>indices(new int[] {1,2,3,...}) - a Indices Range.
+ * <li>interval(1, 2) - an interval range.
+ * <li>all() - an AllRange.
+ * <li>indices(x) - with a DoubleMatrix.
+ * <li>find(x) - an index constructed from the non-zero elements of x.
  * </ul>
  * 
  */

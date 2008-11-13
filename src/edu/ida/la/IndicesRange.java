@@ -6,13 +6,19 @@
 package edu.ida.la;
 
 /**
- *
- * @author mikio
+ * Range which varies over pre-specified indices.
+ * 
+ * For example,
+ * <pre>
+ *     int[] indices = new int[] { 1, 1, 2, 3, 5, 8, 13 };
+ *     Range r = new IndicesRange(indices);</pre>
+ * ranges over the first few Fibonacci numbers.
  */
 public class IndicesRange implements Range {
     private int[] indices;
     private int counter;
         
+    /** Initialize from integer array. */
     public IndicesRange(int[] is) {
         indices = is;
     }
@@ -21,6 +27,10 @@ public class IndicesRange implements Range {
         counter = 0;
     }
     
+    /** 
+     * Initialize from DoubleMatrix. Entries are converted to integers
+     * by truncation.
+     */
     public IndicesRange(DoubleMatrix is) {
         this(is.toIntArray());
     }

@@ -1,14 +1,15 @@
 package edu.ida.la;
 
 /**
- * Eigenvalue and Eigenvector related functions.
+ * <p>Eigenvalue and Eigenvector related functions.</p>
  * 
- * Comment on the used routines: On my computer, I found that for matrices up to 2000 points, 
- * syevd is faster than syev. I couldn't get syev[xr] to run :(
+ * <p>Methods exist for working with symmetric matrices or general eigenvalues.
+ * The symmetric versions are usually much faster on symmetric matrices.</p>
  */
 public class Eigen {
         private static final DoubleMatrix dummyDouble = new DoubleMatrix(1);
     
+        /** Compute the eigenvalues for a symmetric matrix. */
 	public static DoubleMatrix symmetricEigenvalues(DoubleMatrix A) {
 		A.assertSquare();
 		DoubleMatrix eigenvalues = new DoubleMatrix(A.rows);
@@ -16,6 +17,13 @@ public class Eigen {
 		return eigenvalues;
 	}
 	
+        /** 
+         * Computes the eigenvalues and eigenvectors for a symmetric matrix. 
+         *
+         * @return an array of DoubleMatrix objects containing the eigenvectors 
+         * stored as the columns of the first matrix, and the eigenvalues as
+         * diagonal elements of the second matrix.
+         */
 	public static DoubleMatrix[] symmetricEigenvectors(DoubleMatrix A) {
 		A.assertSquare();
 		DoubleMatrix eigenvalues = new DoubleMatrix(A.rows);
@@ -24,6 +32,7 @@ public class Eigen {
 		return new DoubleMatrix[] { eigenvectors, DoubleMatrix.diag(eigenvalues) };
 	}
         
+        /** Computes the eigenvalues of a general matrix. */
         public static ComplexDoubleMatrix eigenvalues(DoubleMatrix A) {
             A.assertSquare();
             DoubleMatrix WR = new DoubleMatrix(A.rows);
@@ -33,6 +42,13 @@ public class Eigen {
             return new ComplexDoubleMatrix(WR, WI);
         }
         
+        /** 
+         * Computes the eigenvalues and eigenvectors of a general matrix.
+         * 
+         * @return an array of ComplexDoubleMatrix objects containing the eigenvectors
+         * stored as the columns of the first matrix, and the eigenvalues as the
+         * diagonal elements of the second matrix.
+         */
         public static ComplexDoubleMatrix[] eigenvectors(DoubleMatrix A) {
             A.assertSquare();
             // setting up result arrays
@@ -63,6 +79,7 @@ public class Eigen {
   // DO NOT EDIT!
         private static final FloatMatrix dummyFloat = new FloatMatrix(1);
     
+        /** Compute the eigenvalues for a symmetric matrix. */
 	public static FloatMatrix symmetricEigenvalues(FloatMatrix A) {
 		A.assertSquare();
 		FloatMatrix eigenvalues = new FloatMatrix(A.rows);
@@ -70,6 +87,13 @@ public class Eigen {
 		return eigenvalues;
 	}
 	
+        /** 
+         * Computes the eigenvalues and eigenvectors for a symmetric matrix. 
+         *
+         * @return an array of FloatMatrix objects containing the eigenvectors 
+         * stored as the columns of the first matrix, and the eigenvalues as
+         * diagonal elements of the second matrix.
+         */
 	public static FloatMatrix[] symmetricEigenvectors(FloatMatrix A) {
 		A.assertSquare();
 		FloatMatrix eigenvalues = new FloatMatrix(A.rows);
@@ -78,6 +102,7 @@ public class Eigen {
 		return new FloatMatrix[] { eigenvectors, FloatMatrix.diag(eigenvalues) };
 	}
         
+        /** Computes the eigenvalues of a general matrix. */
         public static ComplexFloatMatrix eigenvalues(FloatMatrix A) {
             A.assertSquare();
             FloatMatrix WR = new FloatMatrix(A.rows);
@@ -87,6 +112,13 @@ public class Eigen {
             return new ComplexFloatMatrix(WR, WI);
         }
         
+        /** 
+         * Computes the eigenvalues and eigenvectors of a general matrix.
+         * 
+         * @return an array of ComplexFloatMatrix objects containing the eigenvectors
+         * stored as the columns of the first matrix, and the eigenvalues as the
+         * diagonal elements of the second matrix.
+         */
         public static ComplexFloatMatrix[] eigenvectors(FloatMatrix A) {
             A.assertSquare();
             // setting up result arrays

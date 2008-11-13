@@ -5,8 +5,7 @@
 package edu.ida.la;
 
 /**
- *
- * @author mikio
+ * Range which varies from a given interval. Endpoints are both inclusive!
  */
 public class IntervalRange implements Range {
     private int start;
@@ -14,6 +13,7 @@ public class IntervalRange implements Range {
     private int value;
     private int counter;
 
+    /** Construct new interval range. Endpoints are inclusive. */
     public IntervalRange(int a, int b) {
         start = a;
         end = b;
