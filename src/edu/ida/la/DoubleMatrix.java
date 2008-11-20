@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Comparator;
 import static edu.ida.core.BlasUtil.*;
 
 /**
@@ -443,7 +445,7 @@ public class DoubleMatrix {
 		
 		DoubleMatrix result = new DoubleMatrix(A.rows, A.columns + B.columns);
 		SimpleBlas.copy(A, result);
-		Blas.dcopy(B.length, B.data, 0, 1, result.data, A.length, 1);
+		JavaBlas.rcopy(B.length, B.data, 0, 1, result.data, A.length, 1);
 		return result;
 	}
 
@@ -458,8 +460,8 @@ public class DoubleMatrix {
 		DoubleMatrix result = new DoubleMatrix(A.rows + B.rows, A.columns);
 
 		for (int i = 0; i < A.columns; i++) {
-			Blas.dcopy(A.rows, A.data, A.index(0, i), 1, result.data, result.index(0, i), 1);
-			Blas.dcopy(B.rows, B.data, B.index(0, i), 1, result.data, result.index(A.rows, i), 1);
+			JavaBlas.rcopy(A.rows, A.data, A.index(0, i), 1, result.data, result.index(0, i), 1);
+			JavaBlas.rcopy(B.rows, B.data, B.index(0, i), 1, result.data, result.index(A.rows, i), 1);
 		}
 		
 		return result;
@@ -613,7 +615,7 @@ public class DoubleMatrix {
         public DoubleMatrix getColumns(int[] cindices) {
             DoubleMatrix result = new DoubleMatrix(rows, cindices.length);
             for (int i = 0; i < cindices.length; i++)
-                Blas.dcopy(rows, data, index(0, cindices[i]), 1, result.data, result.index(0, i), 1);
+                JavaBlas.rcopy(rows, data, index(0, cindices[i]), 1, result.data, result.index(0, i), 1);
             return result;
         }
         
@@ -826,18 +828,17 @@ public class DoubleMatrix {
 	 * Basic operations (copying, resizing, element access)
 	 */
 	
-	/** Return transposed copy of this matrix */
+	/** Return transposed copy of this matrix. */
 	public DoubleMatrix transpose() {
 		DoubleMatrix result = new DoubleMatrix(columns, rows);
 		
 		for (int i = 0; i < rows; i++)
-			for (int j = 0; j < columns; j++)
-				result.put(j, i, get(i, j));
+                	for (int j = 0; j < columns; j++)
+        			result.put(j, i, get(i, j));
 		
 		return result;
 	}
-	
-		
+	        
 	/** 
          * Compare two matrices. Returns true if and only if other is also a 
          * DoubleMatrix which has the same size and the maximal absolute
@@ -918,7 +919,7 @@ public class DoubleMatrix {
 		if (!sameSize(a))
 			resize(a.rows, a.columns);
 		
-		SimpleBlas.copy(a, this);
+		System.arraycopy(data, 0, a.data, 0, length);
 		return a;
 	}
 	
@@ -1040,7 +1041,7 @@ public class DoubleMatrix {
 	public DoubleMatrix diag() {
                 assertSquare(); 
 		DoubleMatrix d = new DoubleMatrix(rows);
-		Blas.dcopy(rows, data, 0, rows + 1, d.data, 0, 1);
+		JavaBlas.rcopy(rows, data, 0, rows + 1, d.data, 0, 1);
 		return d;
 	}
 	
@@ -1102,9 +1103,8 @@ public class DoubleMatrix {
         public double[] toArray() {
 		double[] array = new double[length];
 		
-		for (int i = 0; i < length; i++)
-			array[i] = get(i);
-		
+                System.arraycopy(data, 0, array, 0, length);
+                		
 		return array;
 	}
 	
@@ -1579,16 +1579,103 @@ public class DoubleMatrix {
 		java.util.Arrays.sort(array);
 		return new DoubleMatrix(rows, columns, array);
 	}
-
+        
         /**
          * Sort elements in-place.
          */
         public DoubleMatrix sorti() {
-            java.util.Arrays.sort(data);
+            Arrays.sort(data);
             return this;
         }
         
-	/** Return a vector containing the sums of the columns (having number of columns many entries) */
+        /** 
+         * Get the sorting permutation. 
+         * 
+         * @return an int[] array such that which indexes the elements in sorted
+         * order.
+         */
+        public int[] sortingPermutation() {
+            Integer[] indices = new Integer[length];
+            
+            for(int i = 0; i < length; i++)
+                indices[i] = i;
+
+            final double[] array = data;
+            
+            Arrays.sort(indices, new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    int i = (Integer)o1;
+                    int j = (Integer)o2;
+                    if (array[i] < array[j])
+                        return -1;
+                    else if (array[i] == array[j])
+                        return 0;
+                    else
+                        return 1;
+                }    
+            });
+            
+            int[] result = new int[length];
+            
+            for (int i = 0; i < length; i++)
+                result[i] = indices[i];
+            
+            return result;
+        }
+        
+        /**
+         * Sort columns (in-place).
+         */
+        public DoubleMatrix sortColumnsi() {
+            for (int i = 0; i < length; i += rows) {
+                Arrays.sort(data, i, i + rows);
+            }
+            return this;
+        }
+        
+        /** Sort columns. */
+        public DoubleMatrix sortColumns() {
+            return dup().sortColumnsi();
+        }
+        
+        /** Return matrix of indices which sort all columns. */
+        public int[][] columnSortingPermutations() {
+            int[][] result = new int[columns][];
+            
+            DoubleMatrix temp = new DoubleMatrix(rows);
+            for (int c = 0; c < columns; c++)
+                result[c] = getColumn(c, temp).sortingPermutation();
+            
+            return result;
+        }
+        
+        /** Sort rows (in-place). */
+        public DoubleMatrix sortRowsi() {
+            // actually, this is much harder because the data is not consecutive
+            // in memory...
+            DoubleMatrix temp = new DoubleMatrix(columns);
+            for (int r = 0; r < rows; r++)
+                putRow(r, getRow(r, temp).sorti());
+            return this;
+        }
+        
+        /** Sort rows. */
+        public DoubleMatrix sortRows() {
+            return dup().sortRowsi();
+        }
+        
+        /** Return matrix of indices which sort all columns. */
+        public int[][] rowSortingPermutations() {
+            int[][] result = new int[rows][];
+            
+            DoubleMatrix temp = new DoubleMatrix(columns);
+            for (int r = 0; r < rows; r++)
+                result[r] = getRow(r, temp).sortingPermutation();
+            
+            return result;
+        }
+
+        /** Return a vector containing the sums of the columns (having number of columns many entries) */
 	public DoubleMatrix columnSums() {
             if (rows == 1) {
                 return dup();
@@ -1640,13 +1727,13 @@ public class DoubleMatrix {
         /** Copy a column to the given vector. */
         public DoubleMatrix getColumn(int c, DoubleMatrix result) {
             result.checkLength(rows);
-            Blas.dcopy(rows, data, index(0, c), 1, result.data, 0, 1);
+            JavaBlas.rcopy(rows, data, index(0, c), 1, result.data, 0, 1);
             return result;
         }
 	
         /** Copy a column back into the matrix. */
 	public void putColumn(int c, DoubleMatrix v) {
-		Blas.dcopy(rows, v.data, 0, 1, data, index(0, c), 1);
+		JavaBlas.rcopy(rows, v.data, 0, 1, data, index(0, c), 1);
 	}
 
         /** Get a copy of a row. */
@@ -1657,13 +1744,13 @@ public class DoubleMatrix {
         /** Copy a row to a given vector. */
         public DoubleMatrix getRow(int r, DoubleMatrix result) {
             result.checkLength(columns);
-            Blas.dcopy(columns, data, index(r, 0), rows, result.data, 0, 1);
+            JavaBlas.rcopy(columns, data, index(r, 0), rows, result.data, 0, 1);
             return result;
         }
         
         /** Copy a row back into the matrix. */
 	public void putRow(int r, DoubleMatrix v) {
-		Blas.dcopy(columns, v.data, 0, 1, data, index(r, 0), rows);
+		JavaBlas.rcopy(columns, v.data, 0, 1, data, index(r, 0), rows);
 	}
 
 	/** Return column-wise minimums. */

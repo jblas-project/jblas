@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Comparator;
 import static edu.ida.core.BlasUtil.*;
 
 /**
@@ -443,7 +445,7 @@ public class FloatMatrix {
 		
 		FloatMatrix result = new FloatMatrix(A.rows, A.columns + B.columns);
 		SimpleBlas.copy(A, result);
-		Blas.scopy(B.length, B.data, 0, 1, result.data, A.length, 1);
+		JavaBlas.rcopy(B.length, B.data, 0, 1, result.data, A.length, 1);
 		return result;
 	}
 
@@ -458,8 +460,8 @@ public class FloatMatrix {
 		FloatMatrix result = new FloatMatrix(A.rows + B.rows, A.columns);
 
 		for (int i = 0; i < A.columns; i++) {
-			Blas.scopy(A.rows, A.data, A.index(0, i), 1, result.data, result.index(0, i), 1);
-			Blas.scopy(B.rows, B.data, B.index(0, i), 1, result.data, result.index(A.rows, i), 1);
+			JavaBlas.rcopy(A.rows, A.data, A.index(0, i), 1, result.data, result.index(0, i), 1);
+			JavaBlas.rcopy(B.rows, B.data, B.index(0, i), 1, result.data, result.index(A.rows, i), 1);
 		}
 		
 		return result;
@@ -613,7 +615,7 @@ public class FloatMatrix {
         public FloatMatrix getColumns(int[] cindices) {
             FloatMatrix result = new FloatMatrix(rows, cindices.length);
             for (int i = 0; i < cindices.length; i++)
-                Blas.scopy(rows, data, index(0, cindices[i]), 1, result.data, result.index(0, i), 1);
+                JavaBlas.rcopy(rows, data, index(0, cindices[i]), 1, result.data, result.index(0, i), 1);
             return result;
         }
         
@@ -826,18 +828,17 @@ public class FloatMatrix {
 	 * Basic operations (copying, resizing, element access)
 	 */
 	
-	/** Return transposed copy of this matrix */
+	/** Return transposed copy of this matrix. */
 	public FloatMatrix transpose() {
 		FloatMatrix result = new FloatMatrix(columns, rows);
 		
 		for (int i = 0; i < rows; i++)
-			for (int j = 0; j < columns; j++)
-				result.put(j, i, get(i, j));
+                	for (int j = 0; j < columns; j++)
+        			result.put(j, i, get(i, j));
 		
 		return result;
 	}
-	
-		
+	        
 	/** 
          * Compare two matrices. Returns true if and only if other is also a 
          * FloatMatrix which has the same size and the maximal absolute
@@ -918,7 +919,7 @@ public class FloatMatrix {
 		if (!sameSize(a))
 			resize(a.rows, a.columns);
 		
-		SimpleBlas.copy(a, this);
+		System.arraycopy(data, 0, a.data, 0, length);
 		return a;
 	}
 	
@@ -1040,7 +1041,7 @@ public class FloatMatrix {
 	public FloatMatrix diag() {
                 assertSquare(); 
 		FloatMatrix d = new FloatMatrix(rows);
-		Blas.scopy(rows, data, 0, rows + 1, d.data, 0, 1);
+		JavaBlas.rcopy(rows, data, 0, rows + 1, d.data, 0, 1);
 		return d;
 	}
 	
@@ -1102,9 +1103,8 @@ public class FloatMatrix {
         public float[] toArray() {
 		float[] array = new float[length];
 		
-		for (int i = 0; i < length; i++)
-			array[i] = get(i);
-		
+                System.arraycopy(data, 0, array, 0, length);
+                		
 		return array;
 	}
 	
@@ -1579,16 +1579,103 @@ public class FloatMatrix {
 		java.util.Arrays.sort(array);
 		return new FloatMatrix(rows, columns, array);
 	}
-
+        
         /**
          * Sort elements in-place.
          */
         public FloatMatrix sorti() {
-            java.util.Arrays.sort(data);
+            Arrays.sort(data);
             return this;
         }
         
-	/** Return a vector containing the sums of the columns (having number of columns many entries) */
+        /** 
+         * Get the sorting permutation. 
+         * 
+         * @return an int[] array such that which indexes the elements in sorted
+         * order.
+         */
+        public int[] sortingPermutation() {
+            Integer[] indices = new Integer[length];
+            
+            for(int i = 0; i < length; i++)
+                indices[i] = i;
+
+            final float[] array = data;
+            
+            Arrays.sort(indices, new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    int i = (Integer)o1;
+                    int j = (Integer)o2;
+                    if (array[i] < array[j])
+                        return -1;
+                    else if (array[i] == array[j])
+                        return 0;
+                    else
+                        return 1;
+                }    
+            });
+            
+            int[] result = new int[length];
+            
+            for (int i = 0; i < length; i++)
+                result[i] = indices[i];
+            
+            return result;
+        }
+        
+        /**
+         * Sort columns (in-place).
+         */
+        public FloatMatrix sortColumnsi() {
+            for (int i = 0; i < length; i += rows) {
+                Arrays.sort(data, i, i + rows);
+            }
+            return this;
+        }
+        
+        /** Sort columns. */
+        public FloatMatrix sortColumns() {
+            return dup().sortColumnsi();
+        }
+        
+        /** Return matrix of indices which sort all columns. */
+        public int[][] columnSortingPermutations() {
+            int[][] result = new int[columns][];
+            
+            FloatMatrix temp = new FloatMatrix(rows);
+            for (int c = 0; c < columns; c++)
+                result[c] = getColumn(c, temp).sortingPermutation();
+            
+            return result;
+        }
+        
+        /** Sort rows (in-place). */
+        public FloatMatrix sortRowsi() {
+            // actually, this is much harder because the data is not consecutive
+            // in memory...
+            FloatMatrix temp = new FloatMatrix(columns);
+            for (int r = 0; r < rows; r++)
+                putRow(r, getRow(r, temp).sorti());
+            return this;
+        }
+        
+        /** Sort rows. */
+        public FloatMatrix sortRows() {
+            return dup().sortRowsi();
+        }
+        
+        /** Return matrix of indices which sort all columns. */
+        public int[][] rowSortingPermutations() {
+            int[][] result = new int[rows][];
+            
+            FloatMatrix temp = new FloatMatrix(columns);
+            for (int r = 0; r < rows; r++)
+                result[r] = getRow(r, temp).sortingPermutation();
+            
+            return result;
+        }
+
+        /** Return a vector containing the sums of the columns (having number of columns many entries) */
 	public FloatMatrix columnSums() {
             if (rows == 1) {
                 return dup();
@@ -1640,13 +1727,13 @@ public class FloatMatrix {
         /** Copy a column to the given vector. */
         public FloatMatrix getColumn(int c, FloatMatrix result) {
             result.checkLength(rows);
-            Blas.scopy(rows, data, index(0, c), 1, result.data, 0, 1);
+            JavaBlas.rcopy(rows, data, index(0, c), 1, result.data, 0, 1);
             return result;
         }
 	
         /** Copy a column back into the matrix. */
 	public void putColumn(int c, FloatMatrix v) {
-		Blas.scopy(rows, v.data, 0, 1, data, index(0, c), 1);
+		JavaBlas.rcopy(rows, v.data, 0, 1, data, index(0, c), 1);
 	}
 
         /** Get a copy of a row. */
@@ -1657,13 +1744,13 @@ public class FloatMatrix {
         /** Copy a row to a given vector. */
         public FloatMatrix getRow(int r, FloatMatrix result) {
             result.checkLength(columns);
-            Blas.scopy(columns, data, index(r, 0), rows, result.data, 0, 1);
+            JavaBlas.rcopy(columns, data, index(r, 0), rows, result.data, 0, 1);
             return result;
         }
         
         /** Copy a row back into the matrix. */
 	public void putRow(int r, FloatMatrix v) {
-		Blas.scopy(columns, v.data, 0, 1, data, index(r, 0), rows);
+		JavaBlas.rcopy(columns, v.data, 0, 1, data, index(r, 0), rows);
 	}
 
 	/** Return column-wise minimums. */

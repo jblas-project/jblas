@@ -37,15 +37,17 @@ public class Geometry {
 	
         /** Center the rows of a matrix (in-place). */
 	public static DoubleMatrix centerRows(DoubleMatrix x) {
+                DoubleMatrix temp = new DoubleMatrix(x.columns);
 		for (int r = 0; r < x.rows; r++)
-			x.putRow(r, center(x.getRow(r)));
+			x.putRow(r, center(x.getRow(r, temp)));
 		return x;
 	}
 	
         /** Center the columns of a matrix (in-place). */
 	public static DoubleMatrix centerColumns(DoubleMatrix x) {
+                DoubleMatrix temp = new DoubleMatrix(x.rows);
 		for (int c = 0; c < x.columns; c++)
-			x.putColumn(c, center(x.getColumn(c)));
+			x.putColumn(c, center(x.getColumn(c, temp)));
 		return x;
 	}
 	
@@ -56,15 +58,17 @@ public class Geometry {
 
         /** Normalize the rows of a matrix (in-place). */
 	public static DoubleMatrix normalizeRows(DoubleMatrix x) {
+                DoubleMatrix temp = new DoubleMatrix(x.columns);
 		for (int r = 0; r < x.rows; r++)
-			x.putRow(r, normalize(x.getRow(r)));
+			x.putRow(r, normalize(x.getRow(r, temp)));
 		return x;
 	}
 	
         /** Normalize the columns of a matrix (in-place). */
 	public static DoubleMatrix normalizeColumns(DoubleMatrix x) {
+                DoubleMatrix temp = new DoubleMatrix(x.rows);
 		for (int c = 0; c < x.columns; c++)
-			x.putColumn(c, normalize(x.getColumn(c)));
+			x.putColumn(c, normalize(x.getColumn(c, temp)));
 		return x;
 	}
 
@@ -102,15 +106,17 @@ public class Geometry {
 	
         /** Center the rows of a matrix (in-place). */
 	public static FloatMatrix centerRows(FloatMatrix x) {
+                FloatMatrix temp = new FloatMatrix(x.columns);
 		for (int r = 0; r < x.rows; r++)
-			x.putRow(r, center(x.getRow(r)));
+			x.putRow(r, center(x.getRow(r, temp)));
 		return x;
 	}
 	
         /** Center the columns of a matrix (in-place). */
 	public static FloatMatrix centerColumns(FloatMatrix x) {
+                FloatMatrix temp = new FloatMatrix(x.rows);
 		for (int c = 0; c < x.columns; c++)
-			x.putColumn(c, center(x.getColumn(c)));
+			x.putColumn(c, center(x.getColumn(c, temp)));
 		return x;
 	}
 	
@@ -121,15 +127,17 @@ public class Geometry {
 
         /** Normalize the rows of a matrix (in-place). */
 	public static FloatMatrix normalizeRows(FloatMatrix x) {
+                FloatMatrix temp = new FloatMatrix(x.columns);
 		for (int r = 0; r < x.rows; r++)
-			x.putRow(r, normalize(x.getRow(r)));
+			x.putRow(r, normalize(x.getRow(r, temp)));
 		return x;
 	}
 	
         /** Normalize the columns of a matrix (in-place). */
 	public static FloatMatrix normalizeColumns(FloatMatrix x) {
+                FloatMatrix temp = new FloatMatrix(x.rows);
 		for (int c = 0; c < x.columns; c++)
-			x.putColumn(c, normalize(x.getColumn(c)));
+			x.putColumn(c, normalize(x.getColumn(c, temp)));
 		return x;
 	}
 
