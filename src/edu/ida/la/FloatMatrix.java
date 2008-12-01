@@ -1458,10 +1458,10 @@ public class FloatMatrix {
 		return v;
 	}
 	
-        /** 
-         * Returns the linear index of the minimal element. If there are
-         * more than one elements with this value, the first one is returned.
-         */
+    /**
+     * Returns the linear index of the minimal element. If there are
+     * more than one elements with this value, the first one is returned.
+     */
 	public int argmin() {
 		if (isEmpty())
 			return -1;
@@ -1475,8 +1475,69 @@ public class FloatMatrix {
 		
 		return a;
 	}
-	
-        /** Returns the maximal element of the matrix. */
+
+    /**
+     * Computes the minimum between two matrices. Returns the smaller of the
+     * corresponding elements in the matrix (in-place).
+     */
+    public FloatMatrix mini(FloatMatrix other, FloatMatrix result) {
+        if (result == this) {
+            for (int i = 0; i < length; i++)
+                if (get(i) > other.get(i))
+                    put(i, other.get(i));
+        }
+        else {
+            for (int i = 0; i < length; i++)
+               if (get(i) > other.get(i))
+                   result.put(i, other.get(i));
+               else
+                   result.put(i, get(i));
+        }
+       return this;
+    }
+
+    /**
+     * Computes the minimum between two matrices. Returns the smaller of the
+     * corresponding elements in the matrix (in-place on this).
+     */
+    public FloatMatrix mini(FloatMatrix other) {
+        return mini(other, this);
+    }
+
+    /**
+     * Computes the minimum between two matrices. Returns the smaller of the
+     * corresponding elements in the matrix (in-place on this).
+     */
+     public FloatMatrix min(FloatMatrix other) {
+         return mini(other, new FloatMatrix(rows, columns));
+     }
+
+     public FloatMatrix mini(float v, FloatMatrix result) {
+         if (result == this) {
+            for (int i = 0; i < length; i++)
+                if (get(i) > v)
+                    result.put(i, v);
+         }
+         else {
+            for (int i = 0; i < length; i++)
+                if (get(i) > v)
+                    result.put(i, v);
+                else
+                    result.put(i, get(i));
+
+         }
+        return this;
+     }
+
+     public FloatMatrix mini(float v) {
+         return mini(v, this);
+     }
+
+     public FloatMatrix min(float v) {
+         return mini(v, new FloatMatrix(rows, columns));
+     }
+
+    /** Returns the maximal element of the matrix. */
 	public float max() {
 		if (isEmpty())
 			return Float.NEGATIVE_INFINITY;
@@ -1487,11 +1548,11 @@ public class FloatMatrix {
 		return v;
 	}
 	
-        /**
-         * Returns the linear index of the maximal element of the matrix. If
-         * there are more than one elements with this value, the first one
-         * is returned.
-         */
+    /**
+     * Returns the linear index of the maximal element of the matrix. If
+     * there are more than one elements with this value, the first one
+     * is returned.
+     */
 	public int argmax() {
 		if (isEmpty())
 			return -1;
@@ -1505,7 +1566,70 @@ public class FloatMatrix {
 		
 		return a;
 	}
-	
+
+
+    /**
+     * Computes the maximum between two matrices. Returns the larger of the
+     * corresponding elements in the matrix (in-place).
+     */
+    public FloatMatrix maxi(FloatMatrix other, FloatMatrix result) {
+        if (result == this) {
+            for (int i = 0; i < length; i++)
+                if (get(i) < other.get(i))
+                    put(i, other.get(i));
+        }
+        else {
+            for (int i = 0; i < length; i++)
+               if (get(i) < other.get(i))
+                   result.put(i, other.get(i));
+               else
+                   result.put(i, get(i));
+        }
+       return this;
+    }
+
+    /**
+     * Computes the maximum between two matrices. Returns the smaller of the
+     * corresponding elements in the matrix (in-place on this).
+     */
+    public FloatMatrix maxi(FloatMatrix other) {
+        return maxi(other, this);
+    }
+
+    /**
+     * Computes the maximum between two matrices. Returns the larger of the
+     * corresponding elements in the matrix (in-place on this).
+     */
+     public FloatMatrix max(FloatMatrix other) {
+         return maxi(other, new FloatMatrix(rows, columns));
+     }
+
+     public FloatMatrix maxi(float v, FloatMatrix result) {
+         if (result == this) {
+            for (int i = 0; i < length; i++)
+                if (get(i) < v)
+                    result.put(i, v);
+         }
+         else {
+            for (int i = 0; i < length; i++)
+                if (get(i) < v)
+                    result.put(i, v);
+                else
+                    result.put(i, get(i));
+
+         }
+        return this;
+     }
+
+     public FloatMatrix maxi(float v) {
+         return maxi(v, this);
+     }
+
+     public FloatMatrix max(float v) {
+         return maxi(v, new FloatMatrix(rows, columns));
+     }
+
+
         /** Computes the sum of all elements of the matrix. */
 	public float sum() {
 		float s = 0.0f;

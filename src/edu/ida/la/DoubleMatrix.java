@@ -1458,10 +1458,10 @@ public class DoubleMatrix {
 		return v;
 	}
 	
-        /** 
-         * Returns the linear index of the minimal element. If there are
-         * more than one elements with this value, the first one is returned.
-         */
+    /**
+     * Returns the linear index of the minimal element. If there are
+     * more than one elements with this value, the first one is returned.
+     */
 	public int argmin() {
 		if (isEmpty())
 			return -1;
@@ -1475,8 +1475,69 @@ public class DoubleMatrix {
 		
 		return a;
 	}
-	
-        /** Returns the maximal element of the matrix. */
+
+    /**
+     * Computes the minimum between two matrices. Returns the smaller of the
+     * corresponding elements in the matrix (in-place).
+     */
+    public DoubleMatrix mini(DoubleMatrix other, DoubleMatrix result) {
+        if (result == this) {
+            for (int i = 0; i < length; i++)
+                if (get(i) > other.get(i))
+                    put(i, other.get(i));
+        }
+        else {
+            for (int i = 0; i < length; i++)
+               if (get(i) > other.get(i))
+                   result.put(i, other.get(i));
+               else
+                   result.put(i, get(i));
+        }
+       return this;
+    }
+
+    /**
+     * Computes the minimum between two matrices. Returns the smaller of the
+     * corresponding elements in the matrix (in-place on this).
+     */
+    public DoubleMatrix mini(DoubleMatrix other) {
+        return mini(other, this);
+    }
+
+    /**
+     * Computes the minimum between two matrices. Returns the smaller of the
+     * corresponding elements in the matrix (in-place on this).
+     */
+     public DoubleMatrix min(DoubleMatrix other) {
+         return mini(other, new DoubleMatrix(rows, columns));
+     }
+
+     public DoubleMatrix mini(double v, DoubleMatrix result) {
+         if (result == this) {
+            for (int i = 0; i < length; i++)
+                if (get(i) > v)
+                    result.put(i, v);
+         }
+         else {
+            for (int i = 0; i < length; i++)
+                if (get(i) > v)
+                    result.put(i, v);
+                else
+                    result.put(i, get(i));
+
+         }
+        return this;
+     }
+
+     public DoubleMatrix mini(double v) {
+         return mini(v, this);
+     }
+
+     public DoubleMatrix min(double v) {
+         return mini(v, new DoubleMatrix(rows, columns));
+     }
+
+    /** Returns the maximal element of the matrix. */
 	public double max() {
 		if (isEmpty())
 			return Double.NEGATIVE_INFINITY;
@@ -1487,11 +1548,11 @@ public class DoubleMatrix {
 		return v;
 	}
 	
-        /**
-         * Returns the linear index of the maximal element of the matrix. If
-         * there are more than one elements with this value, the first one
-         * is returned.
-         */
+    /**
+     * Returns the linear index of the maximal element of the matrix. If
+     * there are more than one elements with this value, the first one
+     * is returned.
+     */
 	public int argmax() {
 		if (isEmpty())
 			return -1;
@@ -1505,7 +1566,70 @@ public class DoubleMatrix {
 		
 		return a;
 	}
-	
+
+
+    /**
+     * Computes the maximum between two matrices. Returns the larger of the
+     * corresponding elements in the matrix (in-place).
+     */
+    public DoubleMatrix maxi(DoubleMatrix other, DoubleMatrix result) {
+        if (result == this) {
+            for (int i = 0; i < length; i++)
+                if (get(i) < other.get(i))
+                    put(i, other.get(i));
+        }
+        else {
+            for (int i = 0; i < length; i++)
+               if (get(i) < other.get(i))
+                   result.put(i, other.get(i));
+               else
+                   result.put(i, get(i));
+        }
+       return this;
+    }
+
+    /**
+     * Computes the maximum between two matrices. Returns the smaller of the
+     * corresponding elements in the matrix (in-place on this).
+     */
+    public DoubleMatrix maxi(DoubleMatrix other) {
+        return maxi(other, this);
+    }
+
+    /**
+     * Computes the maximum between two matrices. Returns the larger of the
+     * corresponding elements in the matrix (in-place on this).
+     */
+     public DoubleMatrix max(DoubleMatrix other) {
+         return maxi(other, new DoubleMatrix(rows, columns));
+     }
+
+     public DoubleMatrix maxi(double v, DoubleMatrix result) {
+         if (result == this) {
+            for (int i = 0; i < length; i++)
+                if (get(i) < v)
+                    result.put(i, v);
+         }
+         else {
+            for (int i = 0; i < length; i++)
+                if (get(i) < v)
+                    result.put(i, v);
+                else
+                    result.put(i, get(i));
+
+         }
+        return this;
+     }
+
+     public DoubleMatrix maxi(double v) {
+         return maxi(v, this);
+     }
+
+     public DoubleMatrix max(double v) {
+         return maxi(v, new DoubleMatrix(rows, columns));
+     }
+
+
         /** Computes the sum of all elements of the matrix. */
 	public double sum() {
 		double s = 0.0;
