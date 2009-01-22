@@ -163,7 +163,7 @@
             <compilation-unit>
                 <package-root>test</package-root>
                 <unit-tests/>
-                <classpath mode="compile">external/junit.jar:src</classpath>
+                <classpath mode="compile">src:../../../../usr/share/java/junit.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
             <compilation-unit>

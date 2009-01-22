@@ -1193,7 +1193,7 @@ public class FloatMatrix {
 		if (other.isScalar())
 			return addi(other.scalar(), result);
 		if (isScalar())
-                    return other.addi(scalar(), result);
+            return other.addi(scalar(), result);
                 
 		assertSameLength(other);
 		ensureResultLength(other, result);
@@ -1203,8 +1203,9 @@ public class FloatMatrix {
 		else if (result == other)
 			SimpleBlas.axpy(1.0f, this, result);
 		else {
-			SimpleBlas.copy(this, result);
-			SimpleBlas.axpy(1.0f, other, result);
+			/*SimpleBlas.copy(this, result);
+			SimpleBlas.axpy(1.0f, other, result);*/
+            JavaBlas.rzgxpy(length, result.data, data, other.data);
 		}
 
 		return result;

@@ -1,0 +1,111 @@
+h1. JBLAS Tutorial
+
+<em>If you are really impatient, I'd suggest you read the Classes Overview below and otherwise stick to the API Documentation for the classes like DoubleMatrix</em>
+
+h2. An Example
+
+The main goals of JBLAS were to provide very high performance, close to what you get from state-of-the-art BLAS and LAPACK libraries, and easy of use, which means that in the ideal case, you can just mechanically translate a matrix expression from formulas to Java code. Since Java does not support operator overloading (like C++, for example), some work is required, though.
+
+For example, the formula
+
+<pre>
+    y = A * x + c
+</pre>
+
+is translated to (leaving declarations aside)
+
+<pre>
+    y = A.mmul(x).add(c)
+</pre>
+
+In other words, each binary operator like +, or * is translated to a method. This allows to keep the structure of the expression very similar to the original formula.
+
+JBLAS currently supports real and complex matrices in single and double precision. These matrices currently exist next to each other with little infrastructure to mix these matrices in a computation. This is certainly the next step, but for the first version it felt like too much of an overhead, in particular because you usually pick one kind of precision and stick to it.
+
+h2. Classes Overview
+
+The same holds for sparse matrices, and other special storage scheme. JBLAS may not be as feature rich as other packages, but what you get covers most of your applications, and it is really fast (and we think it's pretty convient, too!)
+
+The following four classes exist
+
+|_.Class |_.Number Type |_.Precision |
+|FloatMatrix | real | single precision |
+|DoubleMatrix | real | double precision |
+|ComplexFloatMatrix | complex | single precision |
+|ComplexDoubleMatrix | complex | double precision |
+
+Apart from these Matrix classes, there exist special classes for complex numbers, namely @ComplexFloat@ and @ComplexDouble@ in the @edu.ida.???@ package.
+
+Special routines for computing eigenvalues, or solving linear equations are collected as static members in the following classes:
+
+|_.Class |_.Description|
+|Eigen|eigenproblems|
+|Solve|linear equations|
+|Geometry|geometric computations|
+
+h2. Some Design Decisions
+
+Before we'll finally start to work with some matrices, 
+
+* *Only two-dimensional matrices* This library was planned to be closely tied to BLAS and LAPACK which only support two-dimensional matrices. Therefore, JBLAS only supports two-dimensional matrices.
+* *No difference between vectors and matrices* There is no distinction between vectors and matrices.
+* *In-place Operations* Having support for in-place operations was crucial.
+* *Scalars* Single-element matrices behave like scalars.
+
+h2. Constructing Matrices
+
+Okay, now that we have covered the broad structure of JBLAS, let's discuss how to actually construct a matrix.
+
+h2. Arithmetics
+
+If you peek a look at the documentation of a class like @DoubleMatrix@, you'll at first be overwhelmed by the large number of methods available. However, as we'll shortly discuss, most of these methods are overloads which exist for the sake of convenience. For example, if you want to add two matrices, you can always use the @add@ method, irrespective of whether your adding matrices, vectors, scalars, or primitve double values.
+
+The other factor comes from the support of variants for in-place computation. For example, by adding an "i" to a method you can often get an in-place version. To subtract to vectors in-place, you use @subi@. This again adds a few more overloaded functions, but the general scheme is quite simple.
+
+Maybe the best metaphor is to think in terms of an assembly language where you can also add small little modifiers to mnemonics to do different things.
+
+h3. Basic Arithmetic Operations
+
+h3. In-place Computations
+
+Java's use of a garbage collector is quite convenient, but can really kill your performance with matrix computations. The problem is that every computation generates a new object which will eventually gets recycled, but object construction takes some time. The situation is different from C++, where ideally, the compiler can precompute how many temporary objects it needs and keep that number fixed.
+
+Therefore, most operations can be carried out in-place, where the receiver of the method will hold the final result.
+
+For example,
+
+<pre>
+  x.add(y)
+</pre>
+
+generates a new object, but
+
+<pre>
+  x.addi(y)
+</pre>
+
+basically computes @x += y@, storing the result in @x@.
+
+If you want, you can also supply the matrix holding the result as a third argument:
+
+<pre>
+   x.addi(y, z)
+</pre>
+
+which computes @z = x + y@ without generating a new object.
+
+In all of the in-place computation, the result object is required to have the correct dimension before you call the method!
+
+h3. Elementwise Computations, Vectors and Scalars
+
+h2. Linear Algebra Computations
+
+The already implemented linear algebra routines cover the basic computations only at the moment. LAPACK consists virtually thousands of such functions, but I haven't yet gotten around to wrapping them automatically. Therefore, I'm doing this by hand at the moment and are adding functions as I need them.
+
+If you really need some function, don't hestitate to contact me, preferably with an example of how to use the function. The problem is that there are so many routines in LAPACK that I really can't know what each of them is supposed to do. So I'd happily add a wrapper for you, but you must help me making it run.
+
+That said, here is an overview of what currently exists.
+
+h2. Some Background on the Implementation
+
+[The issue with DirectBuffers]

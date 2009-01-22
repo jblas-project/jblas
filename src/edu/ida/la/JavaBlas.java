@@ -86,7 +86,35 @@ public class JavaBlas {
             }
         }
     }
-    
+
+    /** Computes dz <- dx + dy */
+    public static void rzaxpy(int n, double[] dz, int dzIdx, int incz, double da, double[] dx, int dxIdx, int incx, double[] dy, int dyIdx, int incy) {
+        if (dxIdx == 0 && incx == 1 && dyIdx == 0 && incy == 1 && dzIdx == 0 && incz == 1) {
+            if (da == 1.0) {
+                for (int c = 0; c < n; c++)
+                    dz[c] = dx[c] + dy[c];
+            } else {
+                for (int c = 0; c < n; c++)
+                    dz[c] = da*dx[c] + dy[c];
+            }
+        } else {
+            if (da == 1.0) {
+                for (int c = 0, xi = dxIdx, yi = dyIdx, zi = dzIdx; c < n; c++, xi += incx, yi += incy, zi += incz) {
+                    dz[zi] = dx[xi] + dy[yi];
+                }
+            } else {
+                for (int c = 0, xi = dxIdx, yi = dyIdx, zi = dzIdx; c < n; c++, xi += incx, yi += incy, zi += incz) {
+                    dz[zi] = da*dx[xi] + dy[yi];
+                }
+            }
+        }
+    }
+
+    public static void rzgxpy(int n, double[] dz, double[] dx, double[] dy) {
+        for (int c = 0; c < n; c++)
+            dz[c] = dx[c] + dy[c];       
+    }
+
     /** Compute scalar product between dx and dy. */
     public static double rdot(int n, double[] dx, int dxIdx, int incx, double[] dy, int dyIdx, int incy) {
         double s = 0.0;
@@ -173,7 +201,35 @@ public class JavaBlas {
             }
         }
     }
-    
+
+    /** Computes dz <- dx + dy */
+    public static void rzaxpy(int n, float[] dz, int dzIdx, int incz, float da, float[] dx, int dxIdx, int incx, float[] dy, int dyIdx, int incy) {
+        if (dxIdx == 0 && incx == 1 && dyIdx == 0 && incy == 1 && dzIdx == 0 && incz == 1) {
+            if (da == 1.0f) {
+                for (int c = 0; c < n; c++)
+                    dz[c] = dx[c] + dy[c];
+            } else {
+                for (int c = 0; c < n; c++)
+                    dz[c] = da*dx[c] + dy[c];
+            }
+        } else {
+            if (da == 1.0f) {
+                for (int c = 0, xi = dxIdx, yi = dyIdx, zi = dzIdx; c < n; c++, xi += incx, yi += incy, zi += incz) {
+                    dz[zi] = dx[xi] + dy[yi];
+                }
+            } else {
+                for (int c = 0, xi = dxIdx, yi = dyIdx, zi = dzIdx; c < n; c++, xi += incx, yi += incy, zi += incz) {
+                    dz[zi] = da*dx[xi] + dy[yi];
+                }
+            }
+        }
+    }
+
+    public static void rzgxpy(int n, float[] dz, float[] dx, float[] dy) {
+        for (int c = 0; c < n; c++)
+            dz[c] = dx[c] + dy[c];       
+    }
+
     /** Compute scalar product between dx and dy. */
     public static float rdot(int n, float[] dx, int dxIdx, int incx, float[] dy, int dyIdx, int incy) {
         float s = 0.0f;

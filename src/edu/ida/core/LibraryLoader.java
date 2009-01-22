@@ -56,9 +56,9 @@ public class LibraryLoader {
 
 			System.load(tempfile.getPath());
 		} catch (IOException io) {
-			System.err.println("Could not create the temp file!\n");
+			System.err.println("Could not create the temp file: " + io.toString() + ".\n");
 		} catch (UnsatisfiedLinkError ule) {
-			System.err.println("Couldn't load copied link file...\n");
+			System.err.println("Couldn't load copied link file: " + ule.toString() + ".\n");
 		}
 	}
 }
