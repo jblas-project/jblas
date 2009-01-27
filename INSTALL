@@ -14,11 +14,10 @@ COMPILING LAPACK/BLAS
 
 1. Copy a matching make.inc.* from the INSTALL directory to the base
    directory
-2. Run "make blaslib"
-3. Run "make"
-4. Copy the resulting blas_*.a and lapack_*.a files to somewhere (but 
-   don't override the ATLAS files!), renaming them to libblas.a and 
-   liblapack.a
+2. In make.inc, add the option "-fPIC" to OPTS and NOOPTS
+2. Run "make blaslib lapacklib"
+4. For Linux: move "blas_LINUX.a" to "libblas-fortran.a" and 
+   "lapack_LINUX.a" to "liblapack-fortran.a"
 
 COMPILING ATLAS (after version 3.8.0)
 

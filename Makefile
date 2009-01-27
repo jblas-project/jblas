@@ -8,6 +8,10 @@ ifeq ($(LAPACK_HOME),)
 $(error LAPACK_HOME undefined. Please set LAPACK_HOME to the files containg the lapack libraries and blas and lapack sources.)
 endif
 
+ifeq ($(ATLAS_HOME),)
+$(error ATLAS_HOME undefined. Please ATLAS_HOME to the directory containing the shared atlas libraries.)
+endif
+
 LAPACK=$(LAPACK_HOME)/SRC
 BLAS=$(LAPACK_HOME)/BLAS/SRC
 
@@ -24,14 +28,14 @@ SO=so
 LIB=lib
 ifeq ($(LAPACK_OR_ATLAS),atlas)
 $(info ---Using ATLAS build)
-LD=ld
-LDFLAGS=-shared -L/usr/lib/atlas
-LOADLIBES=-lblas -llapack
+LD=g77
+LDFLAGS=-shared -L$(ATLAS_HOME) -L$(LAPACK_HOME)
+LOADLIBES=-llapack -lf77blas -latlas -llapack-fortran -lblas-fortran
 else
 $(info ---Using LAPACK build)
-LD=ld
+LD=g77
 LDFLAGS=-shared -L$(LAPACK_HOME)
-LOADLIBES=$(LAPACK_HOME)/lapack_LINUX.a $(LAPACK_HOME)/blas_LINUX.a -lg2c
+LOADLIBES=-llapack-fortran -lblas-fortran
 endif
 RUBY=ruby
 #
