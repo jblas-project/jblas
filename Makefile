@@ -11,7 +11,7 @@ endif
 LAPACK=$(LAPACK_HOME)/SRC
 BLAS=$(LAPACK_HOME)/BLAS/SRC
 
-LAPACK_OR_ATLAS=lapack
+LAPACK_OR_ATLAS=atlas
 
 #
 # GNU/Linux (actually, debian) settings

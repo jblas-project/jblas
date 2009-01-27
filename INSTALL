@@ -1,0 +1,40 @@
+INSTALL
+
+jBLAS depends on a BLAS and LAPACK library for most of its
+computational intensive parts. I recommend getting a high-quality
+implementation like ATLAS http://math-atlas.sourceforge.net/, but
+taking the default implementation should also suffice.
+
+For building the stubs, jBLAS also requires the Fortran sources for
+the BLAS and LAPACK functions. These can be found for example, from
+http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz.
+
+
+COMPILING LAPACK/BLAS
+
+1. Copy a matching make.inc.* from the INSTALL directory to the base
+   directory
+2. Run "make blaslib"
+3. Run "make"
+4. Copy the resulting blas_*.a and lapack_*.a files to somewhere (but 
+   don't override the ATLAS files!), renaming them to libblas.a and 
+   liblapack.a
+
+COMPILING ATLAS (after version 3.8.0)
+
+1. Create a build directory with "mkdir build"
+2. Run "configure -Fa alg -fPIC"
+3. Run "make" (takes a lot of time, your machine should also not be 
+   under load)
+4. Change directory to "lib" and run "make shared"
+
+COMPILING JBLAS
+
+1. Set ATLAS_HOME to your atlas directory.
+2. Running "ant" should do the job ;)
+
+INSTALLING JBLAS
+
+1. Add jBLAS.jar to your CLASSPATH
+2. Make sure LD_LIBRARY_PATH contains libjBLASarray.so and the other 
+   shared libraries from ATLAS
