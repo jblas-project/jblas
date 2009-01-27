@@ -22,7 +22,7 @@ http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz.
 Besides that, you need an installation of ruby, for some code
 generation scripts.
 
-If you still want to build the source your own, see README for further
+If you still want to build the source your own, see INSTALL for further
 details.
 
 CONTRIBUTORS

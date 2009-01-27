@@ -11,6 +11,8 @@ endif
 LAPACK=$(LAPACK_HOME)/SRC
 BLAS=$(LAPACK_HOME)/BLAS/SRC
 
+LAPACK_OR_ATLAS=lapack
+
 #
 # GNU/Linux (actually, debian) settings
 #
@@ -20,9 +22,17 @@ CFLAGS=-fPIC -ggdb
 INCDIRS=-Iinclude -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
 SO=so
 LIB=lib
+ifeq ($(LAPACK_OR_ATLAS),atlas)
+$(info ---Using ATLAS build)
 LD=ld
 LDFLAGS=-shared -L/usr/lib/atlas
 LOADLIBES=-lblas -llapack
+else
+$(info ---Using LAPACK build)
+LD=ld
+LDFLAGS=-shared -L$(LAPACK_HOME)
+LOADLIBES=$(LAPACK_HOME)/lapack_LINUX.a $(LAPACK_HOME)/blas_LINUX.a -lg2c
+endif
 RUBY=ruby
 #
 # cygwin settings
