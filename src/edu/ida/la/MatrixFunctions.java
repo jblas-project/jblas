@@ -232,7 +232,20 @@ public class MatrixFunctions {
 		}
 	}
 
-	public static DoubleMatrix signumi(DoubleMatrix x) {	
+    public static DoubleMatrix powi(double base, DoubleMatrix x) {
+        for (int i = 0; i < x.length; i++)
+            x.put(i, (double) Math.pow(base, x.get(i)));
+        return x;
+    }
+
+    public static DoubleMatrix powi(DoubleMatrix x, DoubleMatrix e) {
+        x.checkLength(e.length);
+        for (int i = 0; i < x.length; i++)
+            x.put(i, (double) Math.pow(x.get(i), e.get(i)));
+        return x;
+    }
+
+    public static DoubleMatrix signumi(DoubleMatrix x) {
 		/*# mapfct('Math.signum') #*/
 //RJPP-BEGIN------------------------------------------------------------
 	   for (int i = 0; i < x.length; i++)
@@ -308,7 +321,10 @@ public class MatrixFunctions {
     public static DoubleMatrix floor(DoubleMatrix x)  { return floori(x.dup()); }
     public static DoubleMatrix log(DoubleMatrix x)    { return logi(x.dup()); }
     public static DoubleMatrix log10(DoubleMatrix x)  { return log10i(x.dup()); }
+    public static double pow(double x, double y) { return (double)Math.pow(x, y); }
     public static DoubleMatrix pow(DoubleMatrix x, double e) { return powi(x.dup(), e); }
+    public static DoubleMatrix pow(double b, DoubleMatrix x) { return powi(b, x.dup()); }
+    public static DoubleMatrix pow(DoubleMatrix x, DoubleMatrix e) { return powi(x.dup(), e); }
     public static DoubleMatrix signum(DoubleMatrix x) { return signumi(x.dup()); }
     public static DoubleMatrix sin(DoubleMatrix x)    { return sini(x.dup()); }
     public static DoubleMatrix sinh(DoubleMatrix x)   { return sinhi(x.dup()); }
@@ -568,7 +584,20 @@ public class MatrixFunctions {
 		}
 	}
 
-	public static FloatMatrix signumi(FloatMatrix x) {	
+    public static FloatMatrix powi(float base, FloatMatrix x) {
+        for (int i = 0; i < x.length; i++)
+            x.put(i, (float) Math.pow(base, x.get(i)));
+        return x;
+    }
+
+    public static FloatMatrix powi(FloatMatrix x, FloatMatrix e) {
+        x.checkLength(e.length);
+        for (int i = 0; i < x.length; i++)
+            x.put(i, (float) Math.pow(x.get(i), e.get(i)));
+        return x;
+    }
+
+    public static FloatMatrix signumi(FloatMatrix x) {
 		/*# mapfct('Math.signum') #*/
 //RJPP-BEGIN------------------------------------------------------------
 	   for (int i = 0; i < x.length; i++)
@@ -644,7 +673,10 @@ public class MatrixFunctions {
     public static FloatMatrix floor(FloatMatrix x)  { return floori(x.dup()); }
     public static FloatMatrix log(FloatMatrix x)    { return logi(x.dup()); }
     public static FloatMatrix log10(FloatMatrix x)  { return log10i(x.dup()); }
+    public static float pow(float x, float y) { return (float)Math.pow(x, y); }
     public static FloatMatrix pow(FloatMatrix x, float e) { return powi(x.dup(), e); }
+    public static FloatMatrix pow(float b, FloatMatrix x) { return powi(b, x.dup()); }
+    public static FloatMatrix pow(FloatMatrix x, FloatMatrix e) { return powi(x.dup(), e); }
     public static FloatMatrix signum(FloatMatrix x) { return signumi(x.dup()); }
     public static FloatMatrix sin(FloatMatrix x)    { return sini(x.dup()); }
     public static FloatMatrix sinh(FloatMatrix x)   { return sinhi(x.dup()); }

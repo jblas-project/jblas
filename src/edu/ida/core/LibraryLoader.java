@@ -26,6 +26,7 @@ public class LibraryLoader {
 
 		InputStream is = cl.getResourceAsStream("/" + libname);
 
+        // Hm, let's see if we can find it in the build directory 
 		if (is == null)
 			is = cl.getResourceAsStream("/bin/" + libname);
 
@@ -61,4 +62,14 @@ public class LibraryLoader {
 			System.err.println("Couldn't load copied link file: " + ule.toString() + ".\n");
 		}
 	}
+
+    /** Compute the path to the library. The path is basically
+        "/" + os.name + "/" + os.arch + "/" + libname. */
+    static public String libraryPath(String libname) {
+        return "/" + System.getProperty("os.name") + "/" + System.getProperty("os.arch") + "/" + libname;
+    }
+
+    static public void main(String[] args) {
+        System.out.println(libraryPath(""));
+    }
 }

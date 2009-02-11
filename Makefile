@@ -1,3 +1,4 @@
+include .config
 # setting up compilers and flags
 
 ifeq ($(JAVA_HOME),)
