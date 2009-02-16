@@ -99,7 +99,7 @@ module Fortran
   class Routine
     # name of the routine
     attr_reader :name
-    # argument names of the routines (as array of form [name, type])
+    # argument names of the routines (as array)
     attr_reader :args
     # hash mapping argument names to FortranType objects
     attr_reader :argtype
@@ -136,6 +136,9 @@ module Fortran
       @args.each do |arg|
         s << "   #{arg} of type #{@argtype[arg]}\n"
       end
+      unless workspace_arguments.empty?
+        s << "Workspace Arguments: " + workspace_arguments.join(', ')
+      end
       s.join
     end
 
@@ -147,6 +150,34 @@ module Fortran
         end
       end
       count
+    end
+
+    # Generate some code for each argument and collect the results
+    def gen_each_arg(joinwith="\n")
+      s = []
+      args.each do |name|
+        t = yield name, argtype[name]
+        s << t unless t.nil?
+      end
+      return s.join(joinwith)
+    end
+
+    def workspace_arguments
+      results = []
+      args.each_with_index do |a, i|
+        results << a if workspace_argument? a
+      end
+      return results
+    end
+
+    def workspace_argument?(name)
+      i = args.index(name)
+      name =~ /WORK\Z/ and i < @args.size - 1 and args[i+1] == 'L' + name
+    end
+
+    def workspace_size_argument?(name)
+      i = args.index(name)
+      name =~ /\AL[A-Z]*WORK\Z/ and i > 0 and args[i-1] == name[1..-1]
     end
   end
 
@@ -249,14 +280,16 @@ module Fortran
         type = $1
         args = $2.scan ArgumentParens 
         args.each do |argname| 
-          puts "  #{arg} -> #{type}" if $debug
+          puts "  #{argname} -> #{type}" if $debug
           if argname =~ /([A-Z0-9]+)\ *\(.*\)/
             argname = $1
             array = true
           else
             array = false
           end
-          routine.argtype[argname] = Fortran::FortranType.new(type, array)
+          if routine.args.member? argname
+            routine.argtype[argname] = Fortran::FortranType.new(type, array)
+          end
         end
         # 
         # parse comments which with respect to input/output, e.g.

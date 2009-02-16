@@ -1,4 +1,4 @@
-package edu.ida.la;
+package edu.ida.la.exceptions;
 
 /**
  * LapackException for a specific argument. LAPACK routines routinely check

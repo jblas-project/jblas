@@ -1,7 +1,7 @@
-package edu.ida.la;
+package edu.ida.la.exceptions;
 
 public class SizeException extends RuntimeException {
-	SizeException(String message) {
+	public SizeException(String message) {
 		super(message);
 	}
 }

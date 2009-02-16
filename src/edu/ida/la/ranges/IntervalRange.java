@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package edu.ida.la;
+package edu.ida.la.ranges;
 
 /**
  * Range which varies from a given interval. Endpoints are both inclusive!

@@ -78,7 +78,7 @@ public class Blas {
   public static native void drot(int n, double[] dx, int dxIdx, int incx, double[] dy, int dyIdx, int incy, double c, double s);
   public static native void drotg(double da, double db, double c, double s);
   public static native void drotm(int n, double[] dx, int dxIdx, int incx, double[] dy, int dyIdx, int incy, double[] dparam, int dparamIdx);
-  public static native void drotmg(double dd1, double dd2, double dx1, double dy1, double[] dparam, int dparamIdx);
+  public static native void drotmg(double[] dd1, int dd1Idx, double[] dd2, int dd2Idx, double[] dx1, int dx1Idx, double dy1, double[] dparam, int dparamIdx);
   public static native void dsbmv(char uplo, int n, int k, double alpha, double[] a, int aIdx, int lda, double[] x, int xIdx, int incx, double beta, double[] y, int yIdx, int incy);
   public static native void dscal(int n, double da, double[] dx, int dxIdx, int incx);
   public static native double dsdot(int n, float[] sx, int sxIdx, int incx, float[] sy, int syIdx, int incy);
@@ -122,7 +122,7 @@ public class Blas {
   public static native void srot(int n, float[] sx, int sxIdx, int incx, float[] sy, int syIdx, int incy, float c, float s);
   public static native void srotg(float sa, float sb, float c, float s);
   public static native void srotm(int n, float[] sx, int sxIdx, int incx, float[] sy, int syIdx, int incy, float[] sparam, int sparamIdx);
-  public static native void srotmg(float sd1, float sd2, float sx1, float sy1, float[] sparam, int sparamIdx);
+  public static native void srotmg(float[] sd1, int sd1Idx, float[] sd2, int sd2Idx, float[] sx1, int sx1Idx, float sy1, float[] sparam, int sparamIdx);
   public static native void ssbmv(char uplo, int n, int k, float alpha, float[] a, int aIdx, int lda, float[] x, int xIdx, int incx, float beta, float[] y, int yIdx, int incy);
   public static native void sscal(int n, float sa, float[] sx, int sxIdx, int incx);
   public static native void sspmv(char uplo, int n, float alpha, float[] ap, int apIdx, float[] x, int xIdx, int incx, float beta, float[] y, int yIdx, int incy);
@@ -181,18 +181,174 @@ public class Blas {
   public static native int dgesv(int n, int nrhs, double[] a, int aIdx, int lda, int[] ipiv, int ipivIdx, double[] b, int bIdx, int ldb);
   public static native int sgesv(int n, int nrhs, float[] a, int aIdx, int lda, int[] ipiv, int ipivIdx, float[] b, int bIdx, int ldb);
   public static native int dsysv(char uplo, int n, int nrhs, double[] a, int aIdx, int lda, int[] ipiv, int ipivIdx, double[] b, int bIdx, int ldb, double[] work, int workIdx, int lwork);
+  public static int dsysv(char uplo, int n, int nrhs, double[] a, int aIdx, int lda, int[] ipiv, int ipivIdx, double[] b, int bIdx, int ldb) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    info = dsysv(uplo, n, nrhs, a, aIdx, lda, ipiv, ipivIdx, b, bIdx, ldb, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    info = dsysv(uplo, n, nrhs, a, aIdx, lda, ipiv, ipivIdx, b, bIdx, ldb, work, 0, lwork);
+    return info;
+  }
+
   public static native int ssysv(char uplo, int n, int nrhs, float[] a, int aIdx, int lda, int[] ipiv, int ipivIdx, float[] b, int bIdx, int ldb, float[] work, int workIdx, int lwork);
+  public static int ssysv(char uplo, int n, int nrhs, float[] a, int aIdx, int lda, int[] ipiv, int ipivIdx, float[] b, int bIdx, int ldb) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    info = ssysv(uplo, n, nrhs, a, aIdx, lda, ipiv, ipivIdx, b, bIdx, ldb, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    info = ssysv(uplo, n, nrhs, a, aIdx, lda, ipiv, ipivIdx, b, bIdx, ldb, work, 0, lwork);
+    return info;
+  }
+
   public static native int dsyev(char jobz, char uplo, int n, double[] a, int aIdx, int lda, double[] w, int wIdx, double[] work, int workIdx, int lwork);
+  public static int dsyev(char jobz, char uplo, int n, double[] a, int aIdx, int lda, double[] w, int wIdx) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    info = dsyev(jobz, uplo, n, a, aIdx, lda, w, wIdx, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    info = dsyev(jobz, uplo, n, a, aIdx, lda, w, wIdx, work, 0, lwork);
+    return info;
+  }
+
   public static native int ssyev(char jobz, char uplo, int n, float[] a, int aIdx, int lda, float[] w, int wIdx, float[] work, int workIdx, int lwork);
+  public static int ssyev(char jobz, char uplo, int n, float[] a, int aIdx, int lda, float[] w, int wIdx) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    info = ssyev(jobz, uplo, n, a, aIdx, lda, w, wIdx, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    info = ssyev(jobz, uplo, n, a, aIdx, lda, w, wIdx, work, 0, lwork);
+    return info;
+  }
+
   public static native int dsyevd(char jobz, char uplo, int n, double[] a, int aIdx, int lda, double[] w, int wIdx, double[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int liwork);
-  public static native int dsyevr(char jobz, char range, char uplo, int n, double[] a, int aIdx, int lda, double vl, double vu, int il, int iu, double abstol, int m, double[] w, int wIdx, double[] z, int zIdx, int ldz, int[] isuppz, int isuppzIdx, double[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int liwork);
-  public static native int dsyevx(char jobz, char range, char uplo, int n, double[] a, int aIdx, int lda, double vl, double vu, int il, int iu, double abstol, int m, double[] w, int wIdx, double[] z, int zIdx, int ldz, double[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx);
+  public static int dsyevd(char jobz, char uplo, int n, double[] a, int aIdx, int lda, double[] w, int wIdx) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    int[] iwork = new int[1];
+    int liwork;
+    info = dsyevd(jobz, uplo, n, a, aIdx, lda, w, wIdx, work, 0, -1, iwork, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    liwork = (int) iwork[0]; iwork = new int[liwork];
+    info = dsyevd(jobz, uplo, n, a, aIdx, lda, w, wIdx, work, 0, lwork, iwork, 0, liwork);
+    return info;
+  }
+
+  public static native int dsyevr(char jobz, char range, char uplo, int n, double[] a, int aIdx, int lda, double vl, double vu, int il, int iu, double abstol, int[] m, int mIdx, double[] w, int wIdx, double[] z, int zIdx, int ldz, int[] isuppz, int isuppzIdx, double[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int liwork);
+  public static int dsyevr(char jobz, char range, char uplo, int n, double[] a, int aIdx, int lda, double vl, double vu, int il, int iu, double abstol, int[] m, int mIdx, double[] w, int wIdx, double[] z, int zIdx, int ldz, int[] isuppz, int isuppzIdx) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    int[] iwork = new int[1];
+    int liwork;
+    info = dsyevr(jobz, range, uplo, n, a, aIdx, lda, vl, vu, il, iu, abstol, m, mIdx, w, wIdx, z, zIdx, ldz, isuppz, isuppzIdx, work, 0, -1, iwork, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    liwork = (int) iwork[0]; iwork = new int[liwork];
+    info = dsyevr(jobz, range, uplo, n, a, aIdx, lda, vl, vu, il, iu, abstol, m, mIdx, w, wIdx, z, zIdx, ldz, isuppz, isuppzIdx, work, 0, lwork, iwork, 0, liwork);
+    return info;
+  }
+
+  public static native int dsyevx(char jobz, char range, char uplo, int n, double[] a, int aIdx, int lda, double vl, double vu, int il, int iu, double abstol, int[] m, int mIdx, double[] w, int wIdx, double[] z, int zIdx, int ldz, double[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx);
+  public static int dsyevx(char jobz, char range, char uplo, int n, double[] a, int aIdx, int lda, double vl, double vu, int il, int iu, double abstol, int[] m, int mIdx, double[] w, int wIdx, double[] z, int zIdx, int ldz, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    info = dsyevx(jobz, range, uplo, n, a, aIdx, lda, vl, vu, il, iu, abstol, m, mIdx, w, wIdx, z, zIdx, ldz, work, 0, -1, iwork, iworkIdx, ifail, ifailIdx);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    info = dsyevx(jobz, range, uplo, n, a, aIdx, lda, vl, vu, il, iu, abstol, m, mIdx, w, wIdx, z, zIdx, ldz, work, 0, lwork, iwork, iworkIdx, ifail, ifailIdx);
+    return info;
+  }
+
   public static native int ssyevd(char jobz, char uplo, int n, float[] a, int aIdx, int lda, float[] w, int wIdx, float[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int liwork);
-  public static native int ssyevr(char jobz, char range, char uplo, int n, float[] a, int aIdx, int lda, float vl, float vu, int il, int iu, float abstol, int m, float[] w, int wIdx, float[] z, int zIdx, int ldz, int[] isuppz, int isuppzIdx, float[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int liwork);
-  public static native int ssyevx(char jobz, char range, char uplo, int n, float[] a, int aIdx, int lda, float vl, float vu, int il, int iu, float abstol, int m, float[] w, int wIdx, float[] z, int zIdx, int ldz, float[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx);
+  public static int ssyevd(char jobz, char uplo, int n, float[] a, int aIdx, int lda, float[] w, int wIdx) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    int[] iwork = new int[1];
+    int liwork;
+    info = ssyevd(jobz, uplo, n, a, aIdx, lda, w, wIdx, work, 0, -1, iwork, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    liwork = (int) iwork[0]; iwork = new int[liwork];
+    info = ssyevd(jobz, uplo, n, a, aIdx, lda, w, wIdx, work, 0, lwork, iwork, 0, liwork);
+    return info;
+  }
+
+  public static native int ssyevr(char jobz, char range, char uplo, int n, float[] a, int aIdx, int lda, float vl, float vu, int il, int iu, float abstol, int[] m, int mIdx, float[] w, int wIdx, float[] z, int zIdx, int ldz, int[] isuppz, int isuppzIdx, float[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int liwork);
+  public static int ssyevr(char jobz, char range, char uplo, int n, float[] a, int aIdx, int lda, float vl, float vu, int il, int iu, float abstol, int[] m, int mIdx, float[] w, int wIdx, float[] z, int zIdx, int ldz, int[] isuppz, int isuppzIdx) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    int[] iwork = new int[1];
+    int liwork;
+    info = ssyevr(jobz, range, uplo, n, a, aIdx, lda, vl, vu, il, iu, abstol, m, mIdx, w, wIdx, z, zIdx, ldz, isuppz, isuppzIdx, work, 0, -1, iwork, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    liwork = (int) iwork[0]; iwork = new int[liwork];
+    info = ssyevr(jobz, range, uplo, n, a, aIdx, lda, vl, vu, il, iu, abstol, m, mIdx, w, wIdx, z, zIdx, ldz, isuppz, isuppzIdx, work, 0, lwork, iwork, 0, liwork);
+    return info;
+  }
+
+  public static native int ssyevx(char jobz, char range, char uplo, int n, float[] a, int aIdx, int lda, float vl, float vu, int il, int iu, float abstol, int[] m, int mIdx, float[] w, int wIdx, float[] z, int zIdx, int ldz, float[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx);
+  public static int ssyevx(char jobz, char range, char uplo, int n, float[] a, int aIdx, int lda, float vl, float vu, int il, int iu, float abstol, int[] m, int mIdx, float[] w, int wIdx, float[] z, int zIdx, int ldz, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    info = ssyevx(jobz, range, uplo, n, a, aIdx, lda, vl, vu, il, iu, abstol, m, mIdx, w, wIdx, z, zIdx, ldz, work, 0, -1, iwork, iworkIdx, ifail, ifailIdx);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    info = ssyevx(jobz, range, uplo, n, a, aIdx, lda, vl, vu, il, iu, abstol, m, mIdx, w, wIdx, z, zIdx, ldz, work, 0, lwork, iwork, iworkIdx, ifail, ifailIdx);
+    return info;
+  }
+
   public static native int dposv(char uplo, int n, int nrhs, double[] a, int aIdx, int lda, double[] b, int bIdx, int ldb);
   public static native int sposv(char uplo, int n, int nrhs, float[] a, int aIdx, int lda, float[] b, int bIdx, int ldb);
   public static native int dgeev(char jobvl, char jobvr, int n, double[] a, int aIdx, int lda, double[] wr, int wrIdx, double[] wi, int wiIdx, double[] vl, int vlIdx, int ldvl, double[] vr, int vrIdx, int ldvr, double[] work, int workIdx, int lwork);
+  public static int dgeev(char jobvl, char jobvr, int n, double[] a, int aIdx, int lda, double[] wr, int wrIdx, double[] wi, int wiIdx, double[] vl, int vlIdx, int ldvl, double[] vr, int vrIdx, int ldvr) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    info = dgeev(jobvl, jobvr, n, a, aIdx, lda, wr, wrIdx, wi, wiIdx, vl, vlIdx, ldvl, vr, vrIdx, ldvr, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    info = dgeev(jobvl, jobvr, n, a, aIdx, lda, wr, wrIdx, wi, wiIdx, vl, vlIdx, ldvl, vr, vrIdx, ldvr, work, 0, lwork);
+    return info;
+  }
+
   public static native int sgeev(char jobvl, char jobvr, int n, float[] a, int aIdx, int lda, float[] wr, int wrIdx, float[] wi, int wiIdx, float[] vl, int vlIdx, int ldvl, float[] vr, int vrIdx, int ldvr, float[] work, int workIdx, int lwork);
+  public static int sgeev(char jobvl, char jobvr, int n, float[] a, int aIdx, int lda, float[] wr, int wrIdx, float[] wi, int wiIdx, float[] vl, int vlIdx, int ldvl, float[] vr, int vrIdx, int ldvr) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    info = sgeev(jobvl, jobvr, n, a, aIdx, lda, wr, wrIdx, wi, wiIdx, vl, vlIdx, ldvl, vr, vrIdx, ldvr, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    info = sgeev(jobvl, jobvr, n, a, aIdx, lda, wr, wrIdx, wi, wiIdx, vl, vlIdx, ldvl, vr, vrIdx, ldvr, work, 0, lwork);
+    return info;
+  }
+
 
 }

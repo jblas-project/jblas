@@ -13,10 +13,11 @@ public class Eigen {
 	public static DoubleMatrix symmetricEigenvalues(DoubleMatrix A) {
 		A.assertSquare();
 		DoubleMatrix eigenvalues = new DoubleMatrix(A.rows);
-		SimpleBlas.syevd('N', 'U', A.dup(), eigenvalues);
+        int isuppz[] = new int[2*A.rows];
+		SimpleBlas.syevr('N', 'A', 'U', A.dup(), 0, 0, 0, 0, 0, eigenvalues, dummyDouble, isuppz);
 		return eigenvalues;
 	}
-	
+
         /** 
          * Computes the eigenvalues and eigenvectors for a symmetric matrix. 
          *
@@ -28,7 +29,8 @@ public class Eigen {
 		A.assertSquare();
 		DoubleMatrix eigenvalues = new DoubleMatrix(A.rows);
 		DoubleMatrix eigenvectors = A.dup();
-		SimpleBlas.syevd('V', 'U', eigenvectors, eigenvalues);
+        int isuppz[] = new int[2*A.rows];
+        SimpleBlas.syevr('V', 'A', 'U', A.dup(), 0, 0, 0, 0, 0, eigenvalues, eigenvectors, isuppz);
 		return new DoubleMatrix[] { eigenvectors, DoubleMatrix.diag(eigenvalues) };
 	}
         
@@ -83,10 +85,11 @@ public class Eigen {
 	public static FloatMatrix symmetricEigenvalues(FloatMatrix A) {
 		A.assertSquare();
 		FloatMatrix eigenvalues = new FloatMatrix(A.rows);
-		SimpleBlas.syevd('N', 'U', A.dup(), eigenvalues);
+        int isuppz[] = new int[2*A.rows];
+		SimpleBlas.syevr('N', 'A', 'U', A.dup(), 0, 0, 0, 0, 0, eigenvalues, dummyFloat, isuppz);
 		return eigenvalues;
 	}
-	
+
         /** 
          * Computes the eigenvalues and eigenvectors for a symmetric matrix. 
          *
@@ -98,7 +101,8 @@ public class Eigen {
 		A.assertSquare();
 		FloatMatrix eigenvalues = new FloatMatrix(A.rows);
 		FloatMatrix eigenvectors = A.dup();
-		SimpleBlas.syevd('V', 'U', eigenvectors, eigenvalues);
+        int isuppz[] = new int[2*A.rows];
+        SimpleBlas.syevr('V', 'A', 'U', A.dup(), 0, 0, 0, 0, 0, eigenvalues, eigenvectors, isuppz);
 		return new FloatMatrix[] { eigenvectors, FloatMatrix.diag(eigenvalues) };
 	}
         

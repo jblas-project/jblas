@@ -39,7 +39,7 @@ module Fortran
         self.basetype = 'CHARACTER*N'
       end
       
-      result = if array
+      result = if array or comment =~ /output/
                  ArrayTypeMap[basetype]
                else
                  StdTypeMap[basetype]
@@ -138,7 +138,9 @@ module Fortran
       end
       
   public
-      # Generate the JNI-wrapper code for the fortran routine
+      # Generate the JNI-wrapper code for the fortran routine.
+      # This is a bit more complex and calls other routines for the different
+      # parts.
       def wrapper
         make_fortran_fct_name r.name
 
@@ -162,26 +164,29 @@ EOS
       end
       
       # Generate the native function declaration within a Java class.
+      # Everything you need is HERE!
       def native_declaration
         begin
           return_type = ''
           fct_name = r.name.downcase
           args = []
-          
-          if r.return_type.basetype == 'VOID' and r.args.last == 'INFO'
-            return_type = 'int'
-          else
-            return_type = r.return_type.to_java
-          end
+
+          return_type = java_return_type
           
           r.args.each do |name|
             type = r.argtype[name]
-            args << type.to_java + " " + name.downcase unless name == 'INFO'
-            if type.to_java =~ /\[\]/
-              args << "int #{name.downcase}Idx"
+            if name != 'INFO'
+              args << type.to_java + " " + name.downcase
+              if type.to_java =~ /\[\]/
+                args << "int #{name.downcase}Idx"
+              end
             end
           end
-          "  public static native #{return_type} #{fct_name}(#{args.join(", ")});"
+          result = "  public static native #{return_type} #{fct_name}(#{args.join(", ")});"
+          unless r.workspace_arguments.empty?
+            result += "\n" + with_workspace_query
+          end
+          return result
         rescue
           puts
           puts "---Error for routine #{@routine}"
@@ -190,10 +195,43 @@ EOS
         end
       end
 
+      # Generate Java function with an automatic workspace query.
+      def with_workspace_query
+        args = []
+        r.each_arg do |n, t|
+          unless r.workspace_argument? n or r.workspace_size_argument? n or n == 'INFO'
+            args << t.to_java + " " + n.downcase
+            if t.to_java =~ /\[\]/
+              args << "int #{n.downcase}Idx"
+            end
+          end
+        end
+        return <<EOS
+  public static #{java_return_type} #{r.name.downcase}(#{args.join(", ")}) {
+    int info;
+#{declare_workspace_arrays}
+    info = #{workspace_query};
+    if (info != 0)
+      return info;
+#{allocate_workspaces}
+    info = #{call_with_workspaces};
+    return info;
+  }
+EOS
+      end
+
   private ############################################################
 
       # convenience accessor
       def r; @routine; end
+
+      def java_return_type
+          if r.return_type.basetype == 'VOID' and r.args.last == 'INFO'
+            'int'
+          else
+            r.return_type.to_java
+          end        
+      end
 
       def make_fortran_fct_name name
         fortran_fct_name << name.downcase + '_'
@@ -228,21 +266,89 @@ EOS
       end
 
       # find the correct code generator for the given type
-      def generator(type, name=nil)
+      def generator(type, name=nil)       
         javatype = type.to_java
-        if javatype == 'void'
+        #puts javatype
+        #puts name
+        #puts @routine.return_type.basetype
+        g = if javatype == 'void'
           Java::NilArgument.new(self)
+        elsif javatype == 'int[]' and name == 'info' and @routine.return_type.basetype == 'VOID'
+          Java::InfoArgument.new(self)
         elsif javatype =~ /\[\]/
           Java::BufferArgument.new(self)
         elsif javatype =~ /Complex/
           Java::ComplexArgument.new(self)
         elsif javatype == 'char'
           Java::CharArgument.new(self)
-        elsif javatype == 'int' and name == 'info' and @routine.return_type.basetype == 'VOID'
-          Java::InfoArgument.new(self)
         else
           Java::GenericArgument.new(self)
         end
+        #puts "seleced generator #{g.class}"
+        return g
+      end
+
+      #
+      # Stuff for workspaces below
+      #
+
+      # Declarations for workspace arrays
+      def declare_workspace_arrays
+        r.gen_each_arg do |n, t|
+          if r.workspace_argument? n
+            "    #{t.to_java} #{n.downcase} = new #{t.to_java[0..-3]}[1];"
+          elsif r.workspace_size_argument? n
+            "    #{t.to_java} #{n.downcase};"
+          end
+        end
+      end
+
+      # Generate a call with the workspace queries
+      def workspace_query
+        return "#{r.name.downcase}(" +
+          r.gen_each_arg(', ') do |n,t|
+            if r.workspace_size_argument? n
+              '-1'
+            elsif n != 'INFO'
+              if t.to_java =~ /\[\]\Z/
+                if r.workspace_argument? n
+                  "#{n.downcase}, 0"
+                else
+                  "#{n.downcase}, #{n.downcase}Idx"
+                end
+              else
+                n.downcase
+              end
+            end
+          end + ")"
+      end
+
+      # allocate the actual workspaces
+      def allocate_workspaces
+        r.gen_each_arg do |n, t|
+          if r.workspace_argument? n
+            n = n.downcase
+            "    l#{n} = (int) #{n}[0]; #{n} = new #{t.to_java[0..-3]}[l#{n}];"
+          end
+        end
+      end
+
+      # call with the allocated workspaces
+      def call_with_workspaces
+        return "#{r.name.downcase}(" +
+          r.gen_each_arg(', ') do |n,t|
+            if n != 'INFO'
+              if t.to_java =~ /\[\]\Z/
+                if r.workspace_argument? n
+                  "#{n.downcase}, 0"
+                else
+                  "#{n.downcase}, #{n.downcase}Idx"
+                end
+              else
+                n.downcase
+              end
+            end
+          end + ")"
       end
     end
 
@@ -428,6 +534,10 @@ EOS
       def make_convert_arg
         code.conversions << "  int info;\n"
         code.call_post << "\n  return info;"
+      end
+
+      def make_fortran_arg
+        code.fortran_args << ctype[1...-5] + " *"
       end
     end
   end # module Java

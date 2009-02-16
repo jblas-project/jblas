@@ -1967,20 +1967,62 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drotm(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drotmg(JNIEnv *env, jclass this, jdouble dd1, jdouble dd2, jdouble dx1, jdouble dy1, jdoubleArray dparam, jint dparamIdx)
+JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drotmg(JNIEnv *env, jclass this, jdoubleArray dd1, jint dd1Idx, jdoubleArray dd2, jint dd2Idx, jdoubleArray dx1, jint dx1Idx, jdouble dy1, jdoubleArray dparam, jint dparamIdx)
 {
   extern void drotmg_(double *, double *, double *, double *, double *);
   
+  jdouble *dd1PtrBase = 0, *dd1Ptr = 0;
+  if (dd1) {
+    dd1PtrBase = (*env)->GetDoubleArrayElements(env, dd1, NULL);
+    dd1Ptr = dd1PtrBase + dd1Idx;
+  }
+  jdouble *dd2PtrBase = 0, *dd2Ptr = 0;
+  if (dd2) {
+    if((*env)->IsSameObject(env, dd2, dd1) == JNI_TRUE)
+      dd2PtrBase = dd1PtrBase;
+    else
+      dd2PtrBase = (*env)->GetDoubleArrayElements(env, dd2, NULL);
+    dd2Ptr = dd2PtrBase + dd2Idx;
+  }
+  jdouble *dx1PtrBase = 0, *dx1Ptr = 0;
+  if (dx1) {
+    if((*env)->IsSameObject(env, dx1, dd1) == JNI_TRUE)
+      dx1PtrBase = dd1PtrBase;
+    else
+      if((*env)->IsSameObject(env, dx1, dd2) == JNI_TRUE)
+      dx1PtrBase = dd2PtrBase;
+    else
+      dx1PtrBase = (*env)->GetDoubleArrayElements(env, dx1, NULL);
+    dx1Ptr = dx1PtrBase + dx1Idx;
+  }
   jdouble *dparamPtrBase = 0, *dparamPtr = 0;
   if (dparam) {
-    dparamPtrBase = (*env)->GetDoubleArrayElements(env, dparam, NULL);
+    if((*env)->IsSameObject(env, dparam, dd1) == JNI_TRUE)
+      dparamPtrBase = dd1PtrBase;
+    else
+      if((*env)->IsSameObject(env, dparam, dd2) == JNI_TRUE)
+      dparamPtrBase = dd2PtrBase;
+    else
+      if((*env)->IsSameObject(env, dparam, dx1) == JNI_TRUE)
+      dparamPtrBase = dx1PtrBase;
+    else
+      dparamPtrBase = (*env)->GetDoubleArrayElements(env, dparam, NULL);
     dparamPtr = dparamPtrBase + dparamIdx;
   }
 
   savedEnv = env;
-  drotmg_(&dd1, &dd2, &dx1, &dy1, dparamPtr);
-  if(dparamPtrBase) {        
+  drotmg_(dd1Ptr, dd2Ptr, dx1Ptr, &dy1, dparamPtr);
+  if(dparamPtrBase && dparamPtrBase != dd1PtrBase && dparamPtrBase != dd2PtrBase && dparamPtrBase != dx1PtrBase) {        
     (*env)->ReleaseDoubleArrayElements(env, dparam, dparamPtrBase, 0);
+  }
+  if(dx1PtrBase && dx1PtrBase != dd1PtrBase && dx1PtrBase != dd2PtrBase) {        
+    (*env)->ReleaseDoubleArrayElements(env, dx1, dx1PtrBase, 0);
+  }
+  if(dd2PtrBase && dd2PtrBase != dd1PtrBase) {        
+    (*env)->ReleaseDoubleArrayElements(env, dd2, dd2PtrBase, 0);
+  }
+  if(dd1PtrBase) {        
+    (*env)->ReleaseDoubleArrayElements(env, dd1, dd1PtrBase, 0);
   }
 
 }
@@ -3300,20 +3342,62 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srotm(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srotmg(JNIEnv *env, jclass this, jfloat sd1, jfloat sd2, jfloat sx1, jfloat sy1, jfloatArray sparam, jint sparamIdx)
+JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srotmg(JNIEnv *env, jclass this, jfloatArray sd1, jint sd1Idx, jfloatArray sd2, jint sd2Idx, jfloatArray sx1, jint sx1Idx, jfloat sy1, jfloatArray sparam, jint sparamIdx)
 {
   extern void srotmg_(float *, float *, float *, float *, float *);
   
+  jfloat *sd1PtrBase = 0, *sd1Ptr = 0;
+  if (sd1) {
+    sd1PtrBase = (*env)->GetFloatArrayElements(env, sd1, NULL);
+    sd1Ptr = sd1PtrBase + sd1Idx;
+  }
+  jfloat *sd2PtrBase = 0, *sd2Ptr = 0;
+  if (sd2) {
+    if((*env)->IsSameObject(env, sd2, sd1) == JNI_TRUE)
+      sd2PtrBase = sd1PtrBase;
+    else
+      sd2PtrBase = (*env)->GetFloatArrayElements(env, sd2, NULL);
+    sd2Ptr = sd2PtrBase + sd2Idx;
+  }
+  jfloat *sx1PtrBase = 0, *sx1Ptr = 0;
+  if (sx1) {
+    if((*env)->IsSameObject(env, sx1, sd1) == JNI_TRUE)
+      sx1PtrBase = sd1PtrBase;
+    else
+      if((*env)->IsSameObject(env, sx1, sd2) == JNI_TRUE)
+      sx1PtrBase = sd2PtrBase;
+    else
+      sx1PtrBase = (*env)->GetFloatArrayElements(env, sx1, NULL);
+    sx1Ptr = sx1PtrBase + sx1Idx;
+  }
   jfloat *sparamPtrBase = 0, *sparamPtr = 0;
   if (sparam) {
-    sparamPtrBase = (*env)->GetFloatArrayElements(env, sparam, NULL);
+    if((*env)->IsSameObject(env, sparam, sd1) == JNI_TRUE)
+      sparamPtrBase = sd1PtrBase;
+    else
+      if((*env)->IsSameObject(env, sparam, sd2) == JNI_TRUE)
+      sparamPtrBase = sd2PtrBase;
+    else
+      if((*env)->IsSameObject(env, sparam, sx1) == JNI_TRUE)
+      sparamPtrBase = sx1PtrBase;
+    else
+      sparamPtrBase = (*env)->GetFloatArrayElements(env, sparam, NULL);
     sparamPtr = sparamPtrBase + sparamIdx;
   }
 
   savedEnv = env;
-  srotmg_(&sd1, &sd2, &sx1, &sy1, sparamPtr);
-  if(sparamPtrBase) {        
+  srotmg_(sd1Ptr, sd2Ptr, sx1Ptr, &sy1, sparamPtr);
+  if(sparamPtrBase && sparamPtrBase != sd1PtrBase && sparamPtrBase != sd2PtrBase && sparamPtrBase != sx1PtrBase) {        
     (*env)->ReleaseFloatArrayElements(env, sparam, sparamPtrBase, 0);
+  }
+  if(sx1PtrBase && sx1PtrBase != sd1PtrBase && sx1PtrBase != sd2PtrBase) {        
+    (*env)->ReleaseFloatArrayElements(env, sx1, sx1PtrBase, 0);
+  }
+  if(sd2PtrBase && sd2PtrBase != sd1PtrBase) {        
+    (*env)->ReleaseFloatArrayElements(env, sd2, sd2PtrBase, 0);
+  }
+  if(sd1PtrBase) {        
+    (*env)->ReleaseFloatArrayElements(env, sd1, sd1PtrBase, 0);
   }
 
 }
@@ -5646,7 +5730,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevd(JNIEnv *env, jclass this, jch
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevr(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdouble vl, jdouble vu, jint il, jint iu, jdouble abstol, jint m, jdoubleArray w, jint wIdx, jdoubleArray z, jint zIdx, jint ldz, jintArray isuppz, jint isuppzIdx, jdoubleArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
+JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevr(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdouble vl, jdouble vu, jint il, jint iu, jdouble abstol, jintArray m, jint mIdx, jdoubleArray w, jint wIdx, jdoubleArray z, jint zIdx, jint ldz, jintArray isuppz, jint isuppzIdx, jdoubleArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
 {
   extern void dsyevr_(char *, char *, char *, int *, double *, int *, double *, double *, int *, int *, double *, int *, double *, double *, int *, int *, double *, int *, int *, int *, int *);
   
@@ -5657,6 +5741,11 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevr(JNIEnv *env, jclass this, jch
   if (a) {
     aPtrBase = (*env)->GetDoubleArrayElements(env, a, NULL);
     aPtr = aPtrBase + aIdx;
+  }
+  jint *mPtrBase = 0, *mPtr = 0;
+  if (m) {
+    mPtrBase = (*env)->GetIntArrayElements(env, m, NULL);
+    mPtr = mPtrBase + mIdx;
   }
   jdouble *wPtrBase = 0, *wPtr = 0;
   if (w) {
@@ -5679,7 +5768,10 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevr(JNIEnv *env, jclass this, jch
   }
   jint *isuppzPtrBase = 0, *isuppzPtr = 0;
   if (isuppz) {
-    isuppzPtrBase = (*env)->GetIntArrayElements(env, isuppz, NULL);
+    if((*env)->IsSameObject(env, isuppz, m) == JNI_TRUE)
+      isuppzPtrBase = mPtrBase;
+    else
+      isuppzPtrBase = (*env)->GetIntArrayElements(env, isuppz, NULL);
     isuppzPtr = isuppzPtrBase + isuppzIdx;
   }
   jdouble *workPtrBase = 0, *workPtr = 0;
@@ -5698,7 +5790,10 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevr(JNIEnv *env, jclass this, jch
   }
   jint *iworkPtrBase = 0, *iworkPtr = 0;
   if (iwork) {
-    if((*env)->IsSameObject(env, iwork, isuppz) == JNI_TRUE)
+    if((*env)->IsSameObject(env, iwork, m) == JNI_TRUE)
+      iworkPtrBase = mPtrBase;
+    else
+      if((*env)->IsSameObject(env, iwork, isuppz) == JNI_TRUE)
       iworkPtrBase = isuppzPtrBase;
     else
       iworkPtrBase = (*env)->GetIntArrayElements(env, iwork, NULL);
@@ -5707,14 +5802,14 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevr(JNIEnv *env, jclass this, jch
   int info;
 
   savedEnv = env;
-  dsyevr_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, &m, wPtr, zPtr, &ldz, isuppzPtr, workPtr, &lwork, iworkPtr, &liwork, &info);
-  if(iworkPtrBase && iworkPtrBase != isuppzPtrBase) {        
+  dsyevr_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, mPtr, wPtr, zPtr, &ldz, isuppzPtr, workPtr, &lwork, iworkPtr, &liwork, &info);
+  if(iworkPtrBase && iworkPtrBase != mPtrBase && iworkPtrBase != isuppzPtrBase) {        
     (*env)->ReleaseIntArrayElements(env, iwork, iworkPtrBase, 0);
   }
   if(workPtrBase && workPtrBase != aPtrBase && workPtrBase != wPtrBase && workPtrBase != zPtrBase) {        
     (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
   }
-  if(isuppzPtrBase) {        
+  if(isuppzPtrBase && isuppzPtrBase != mPtrBase) {        
     (*env)->ReleaseIntArrayElements(env, isuppz, isuppzPtrBase, 0);
   }
   if(zPtrBase && zPtrBase != aPtrBase && zPtrBase != wPtrBase) {        
@@ -5723,6 +5818,9 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevr(JNIEnv *env, jclass this, jch
   if(wPtrBase && wPtrBase != aPtrBase) {        
     (*env)->ReleaseDoubleArrayElements(env, w, wPtrBase, 0);
   }
+  if(mPtrBase) {        
+    (*env)->ReleaseIntArrayElements(env, m, mPtrBase, 0);
+  }
   if(aPtrBase) {        
     (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
   }
@@ -5730,7 +5828,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevr(JNIEnv *env, jclass this, jch
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevx(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdouble vl, jdouble vu, jint il, jint iu, jdouble abstol, jint m, jdoubleArray w, jint wIdx, jdoubleArray z, jint zIdx, jint ldz, jdoubleArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jintArray ifail, jint ifailIdx)
+JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevx(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdouble vl, jdouble vu, jint il, jint iu, jdouble abstol, jintArray m, jint mIdx, jdoubleArray w, jint wIdx, jdoubleArray z, jint zIdx, jint ldz, jdoubleArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jintArray ifail, jint ifailIdx)
 {
   extern void dsyevx_(char *, char *, char *, int *, double *, int *, double *, double *, int *, int *, double *, int *, double *, double *, int *, double *, int *, int *, int *, int *);
   
@@ -5741,6 +5839,11 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevx(JNIEnv *env, jclass this, jch
   if (a) {
     aPtrBase = (*env)->GetDoubleArrayElements(env, a, NULL);
     aPtr = aPtrBase + aIdx;
+  }
+  jint *mPtrBase = 0, *mPtr = 0;
+  if (m) {
+    mPtrBase = (*env)->GetIntArrayElements(env, m, NULL);
+    mPtr = mPtrBase + mIdx;
   }
   jdouble *wPtrBase = 0, *wPtr = 0;
   if (w) {
@@ -5777,12 +5880,18 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevx(JNIEnv *env, jclass this, jch
   }
   jint *iworkPtrBase = 0, *iworkPtr = 0;
   if (iwork) {
-    iworkPtrBase = (*env)->GetIntArrayElements(env, iwork, NULL);
+    if((*env)->IsSameObject(env, iwork, m) == JNI_TRUE)
+      iworkPtrBase = mPtrBase;
+    else
+      iworkPtrBase = (*env)->GetIntArrayElements(env, iwork, NULL);
     iworkPtr = iworkPtrBase + iworkIdx;
   }
   jint *ifailPtrBase = 0, *ifailPtr = 0;
   if (ifail) {
-    if((*env)->IsSameObject(env, ifail, iwork) == JNI_TRUE)
+    if((*env)->IsSameObject(env, ifail, m) == JNI_TRUE)
+      ifailPtrBase = mPtrBase;
+    else
+      if((*env)->IsSameObject(env, ifail, iwork) == JNI_TRUE)
       ifailPtrBase = iworkPtrBase;
     else
       ifailPtrBase = (*env)->GetIntArrayElements(env, ifail, NULL);
@@ -5791,11 +5900,11 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevx(JNIEnv *env, jclass this, jch
   int info;
 
   savedEnv = env;
-  dsyevx_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, &m, wPtr, zPtr, &ldz, workPtr, &lwork, iworkPtr, ifailPtr, &info);
-  if(ifailPtrBase && ifailPtrBase != iworkPtrBase) {        
+  dsyevx_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, mPtr, wPtr, zPtr, &ldz, workPtr, &lwork, iworkPtr, ifailPtr, &info);
+  if(ifailPtrBase && ifailPtrBase != mPtrBase && ifailPtrBase != iworkPtrBase) {        
     (*env)->ReleaseIntArrayElements(env, ifail, ifailPtrBase, 0);
   }
-  if(iworkPtrBase) {        
+  if(iworkPtrBase && iworkPtrBase != mPtrBase) {        
     (*env)->ReleaseIntArrayElements(env, iwork, iworkPtrBase, 0);
   }
   if(workPtrBase && workPtrBase != aPtrBase && workPtrBase != wPtrBase && workPtrBase != zPtrBase) {        
@@ -5806,6 +5915,9 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevx(JNIEnv *env, jclass this, jch
   }
   if(wPtrBase && wPtrBase != aPtrBase) {        
     (*env)->ReleaseDoubleArrayElements(env, w, wPtrBase, 0);
+  }
+  if(mPtrBase) {        
+    (*env)->ReleaseIntArrayElements(env, m, mPtrBase, 0);
   }
   if(aPtrBase) {        
     (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
@@ -5869,7 +5981,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevd(JNIEnv *env, jclass this, jch
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevr(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloat vl, jfloat vu, jint il, jint iu, jfloat abstol, jint m, jfloatArray w, jint wIdx, jfloatArray z, jint zIdx, jint ldz, jintArray isuppz, jint isuppzIdx, jfloatArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
+JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevr(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloat vl, jfloat vu, jint il, jint iu, jfloat abstol, jintArray m, jint mIdx, jfloatArray w, jint wIdx, jfloatArray z, jint zIdx, jint ldz, jintArray isuppz, jint isuppzIdx, jfloatArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
 {
   extern void ssyevr_(char *, char *, char *, int *, float *, int *, float *, float *, int *, int *, float *, int *, float *, float *, int *, int *, float *, int *, int *, int *, int *);
   
@@ -5880,6 +5992,11 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevr(JNIEnv *env, jclass this, jch
   if (a) {
     aPtrBase = (*env)->GetFloatArrayElements(env, a, NULL);
     aPtr = aPtrBase + aIdx;
+  }
+  jint *mPtrBase = 0, *mPtr = 0;
+  if (m) {
+    mPtrBase = (*env)->GetIntArrayElements(env, m, NULL);
+    mPtr = mPtrBase + mIdx;
   }
   jfloat *wPtrBase = 0, *wPtr = 0;
   if (w) {
@@ -5902,7 +6019,10 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevr(JNIEnv *env, jclass this, jch
   }
   jint *isuppzPtrBase = 0, *isuppzPtr = 0;
   if (isuppz) {
-    isuppzPtrBase = (*env)->GetIntArrayElements(env, isuppz, NULL);
+    if((*env)->IsSameObject(env, isuppz, m) == JNI_TRUE)
+      isuppzPtrBase = mPtrBase;
+    else
+      isuppzPtrBase = (*env)->GetIntArrayElements(env, isuppz, NULL);
     isuppzPtr = isuppzPtrBase + isuppzIdx;
   }
   jfloat *workPtrBase = 0, *workPtr = 0;
@@ -5921,7 +6041,10 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevr(JNIEnv *env, jclass this, jch
   }
   jint *iworkPtrBase = 0, *iworkPtr = 0;
   if (iwork) {
-    if((*env)->IsSameObject(env, iwork, isuppz) == JNI_TRUE)
+    if((*env)->IsSameObject(env, iwork, m) == JNI_TRUE)
+      iworkPtrBase = mPtrBase;
+    else
+      if((*env)->IsSameObject(env, iwork, isuppz) == JNI_TRUE)
       iworkPtrBase = isuppzPtrBase;
     else
       iworkPtrBase = (*env)->GetIntArrayElements(env, iwork, NULL);
@@ -5930,14 +6053,14 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevr(JNIEnv *env, jclass this, jch
   int info;
 
   savedEnv = env;
-  ssyevr_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, &m, wPtr, zPtr, &ldz, isuppzPtr, workPtr, &lwork, iworkPtr, &liwork, &info);
-  if(iworkPtrBase && iworkPtrBase != isuppzPtrBase) {        
+  ssyevr_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, mPtr, wPtr, zPtr, &ldz, isuppzPtr, workPtr, &lwork, iworkPtr, &liwork, &info);
+  if(iworkPtrBase && iworkPtrBase != mPtrBase && iworkPtrBase != isuppzPtrBase) {        
     (*env)->ReleaseIntArrayElements(env, iwork, iworkPtrBase, 0);
   }
   if(workPtrBase && workPtrBase != aPtrBase && workPtrBase != wPtrBase && workPtrBase != zPtrBase) {        
     (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
   }
-  if(isuppzPtrBase) {        
+  if(isuppzPtrBase && isuppzPtrBase != mPtrBase) {        
     (*env)->ReleaseIntArrayElements(env, isuppz, isuppzPtrBase, 0);
   }
   if(zPtrBase && zPtrBase != aPtrBase && zPtrBase != wPtrBase) {        
@@ -5946,6 +6069,9 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevr(JNIEnv *env, jclass this, jch
   if(wPtrBase && wPtrBase != aPtrBase) {        
     (*env)->ReleaseFloatArrayElements(env, w, wPtrBase, 0);
   }
+  if(mPtrBase) {        
+    (*env)->ReleaseIntArrayElements(env, m, mPtrBase, 0);
+  }
   if(aPtrBase) {        
     (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
   }
@@ -5953,7 +6079,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevr(JNIEnv *env, jclass this, jch
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevx(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloat vl, jfloat vu, jint il, jint iu, jfloat abstol, jint m, jfloatArray w, jint wIdx, jfloatArray z, jint zIdx, jint ldz, jfloatArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jintArray ifail, jint ifailIdx)
+JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevx(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloat vl, jfloat vu, jint il, jint iu, jfloat abstol, jintArray m, jint mIdx, jfloatArray w, jint wIdx, jfloatArray z, jint zIdx, jint ldz, jfloatArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jintArray ifail, jint ifailIdx)
 {
   extern void ssyevx_(char *, char *, char *, int *, float *, int *, float *, float *, int *, int *, float *, int *, float *, float *, int *, float *, int *, int *, int *, int *);
   
@@ -5964,6 +6090,11 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevx(JNIEnv *env, jclass this, jch
   if (a) {
     aPtrBase = (*env)->GetFloatArrayElements(env, a, NULL);
     aPtr = aPtrBase + aIdx;
+  }
+  jint *mPtrBase = 0, *mPtr = 0;
+  if (m) {
+    mPtrBase = (*env)->GetIntArrayElements(env, m, NULL);
+    mPtr = mPtrBase + mIdx;
   }
   jfloat *wPtrBase = 0, *wPtr = 0;
   if (w) {
@@ -6000,12 +6131,18 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevx(JNIEnv *env, jclass this, jch
   }
   jint *iworkPtrBase = 0, *iworkPtr = 0;
   if (iwork) {
-    iworkPtrBase = (*env)->GetIntArrayElements(env, iwork, NULL);
+    if((*env)->IsSameObject(env, iwork, m) == JNI_TRUE)
+      iworkPtrBase = mPtrBase;
+    else
+      iworkPtrBase = (*env)->GetIntArrayElements(env, iwork, NULL);
     iworkPtr = iworkPtrBase + iworkIdx;
   }
   jint *ifailPtrBase = 0, *ifailPtr = 0;
   if (ifail) {
-    if((*env)->IsSameObject(env, ifail, iwork) == JNI_TRUE)
+    if((*env)->IsSameObject(env, ifail, m) == JNI_TRUE)
+      ifailPtrBase = mPtrBase;
+    else
+      if((*env)->IsSameObject(env, ifail, iwork) == JNI_TRUE)
       ifailPtrBase = iworkPtrBase;
     else
       ifailPtrBase = (*env)->GetIntArrayElements(env, ifail, NULL);
@@ -6014,11 +6151,11 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevx(JNIEnv *env, jclass this, jch
   int info;
 
   savedEnv = env;
-  ssyevx_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, &m, wPtr, zPtr, &ldz, workPtr, &lwork, iworkPtr, ifailPtr, &info);
-  if(ifailPtrBase && ifailPtrBase != iworkPtrBase) {        
+  ssyevx_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, mPtr, wPtr, zPtr, &ldz, workPtr, &lwork, iworkPtr, ifailPtr, &info);
+  if(ifailPtrBase && ifailPtrBase != mPtrBase && ifailPtrBase != iworkPtrBase) {        
     (*env)->ReleaseIntArrayElements(env, ifail, ifailPtrBase, 0);
   }
-  if(iworkPtrBase) {        
+  if(iworkPtrBase && iworkPtrBase != mPtrBase) {        
     (*env)->ReleaseIntArrayElements(env, iwork, iworkPtrBase, 0);
   }
   if(workPtrBase && workPtrBase != aPtrBase && workPtrBase != wPtrBase && workPtrBase != zPtrBase) {        
@@ -6029,6 +6166,9 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevx(JNIEnv *env, jclass this, jch
   }
   if(wPtrBase && wPtrBase != aPtrBase) {        
     (*env)->ReleaseFloatArrayElements(env, w, wPtrBase, 0);
+  }
+  if(mPtrBase) {        
+    (*env)->ReleaseIntArrayElements(env, m, mPtrBase, 0);
   }
   if(aPtrBase) {        
     (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);

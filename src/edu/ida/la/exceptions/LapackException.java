@@ -1,4 +1,4 @@
-package edu.ida.la;
+package edu.ida.la.exceptions;
 
 /**
  * Base class for all exceptions within LAPACK. Also reports the function where the

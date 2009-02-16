@@ -4,6 +4,8 @@
  */
 package edu.ida.la;
 
+import edu.ida.la.exceptions.LapackException;
+
 /**
  * <p>Implementation of some Blas functions, mostly those which require linear runtime
  * in the number of matrix elements. Because of the copying overhead when passing

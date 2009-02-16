@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package edu.ida.la;
+package edu.ida.la.ranges;
 
 /**
  * A PointRange is a range which only has a single point.

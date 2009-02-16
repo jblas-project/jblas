@@ -1,5 +1,7 @@
 package edu.ida.la;
 
+import edu.ida.la.exceptions.SizeException;
+import edu.ida.la.ranges.Range;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

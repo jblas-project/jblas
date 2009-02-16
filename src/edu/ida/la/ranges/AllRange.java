@@ -3,7 +3,9 @@
  * and open the template in the editor.
  */
 
-package edu.ida.la;
+package edu.ida.la.ranges;
+
+import edu.ida.la.*;
 
 /**
  * A range over all available indices. Can be used to address whole columns or rows. Like

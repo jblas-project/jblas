@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package edu.ida.la;
+package edu.ida.la.ranges;
 
 /**
  * <p>The Range interface represents basically a set of indices. Before using a range

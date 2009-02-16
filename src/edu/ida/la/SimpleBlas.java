@@ -1,13 +1,10 @@
 package edu.ida.la;
 
+import edu.ida.la.exceptions.LapackException;
+import edu.ida.la.exceptions.LapackArgumentException;
 import edu.ida.core.ComplexDouble; 
 import edu.ida.core.ComplexFloat; 
-
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import static edu.ida.core.BlasUtil.*;
+import edu.ida.la.exceptions.LapackConvergenceException;
 
 //import edu.ida.core.OutputValue;
 
@@ -218,18 +215,8 @@ public class SimpleBlas {
 
 	public static DoubleMatrix sysv(char uplo, DoubleMatrix a, int[] ipiv,
 			DoubleMatrix b) {
-		double[] work = new double[1];
-		int info = Blas.dsysv(uplo, a.rows, b.columns, a.data, 0, a.rows, ipiv,
-				0, b.data, 0, b.rows, work, 0, -1);
-		checkInfo("DSYSV", info);
-
-		int lwork = (int) work[0];
-		work = new double[lwork];
-
-		// System.out.println("Optimal LWORK = " + lwork);
-
-		info = Blas.dsysv(uplo, a.rows, b.columns, a.data, 0, a.rows, ipiv, 0,
-				b.data, 0, b.rows, work, 0, lwork);
+		int info = Blas.dsysv(uplo, a.rows, b.columns, a.data, 0, a.rows, ipiv, 0,
+				b.data, 0, b.rows);
 		checkInfo("DSYSV", info);
 
 		if (info > 0)
@@ -265,23 +252,15 @@ public class SimpleBlas {
 			double vl, double vu, int il, int iu, double abstol,
 			DoubleMatrix w, DoubleMatrix z) {
 		int n = a.rows;
-		double[] work = new double[1];
 		int[] iwork = new int[5 * n];
 		int[] ifail = new int[n];
-
-		int info = Blas.dsyevx(jobz, range, uplo, n, a.data, 0, a.rows, vl, vu,
-				il, iu, abstol, 0, w.data, 0, z.data, 0, z.rows, work, 0, -1,
-				iwork, 0, ifail, 0);
-		checkInfo("DSYEVX", info);
-
-		int lwork = (int) work[0];
-		work = new double[lwork];
-
-		// System.out.println("Optimal LWORK = " + lwork);
+        int[] m = new int[1];
+        int info;
 
 		info = Blas.dsyevx(jobz, range, uplo, n, a.data, 0, a.rows, vl, vu, il,
-				iu, abstol, 0, w.data, 0, z.data, 0, z.rows, work, 0, -1,
-				iwork, 0, ifail, 0);
+				iu, abstol, m, 0, w.data, 0, z.data, 0, z.rows, iwork, 0, ifail, 0);
+
+        //System.out.printf("found eigenvalues = %d\n", m[0]);
 
 		if (info > 0) {
 			StringBuilder msg = new StringBuilder();
@@ -303,27 +282,26 @@ public class SimpleBlas {
 			DoubleMatrix w) {
 		int n = A.rows;
 
-		double[] work = new double[1];
-		int[] iwork = new int[1];
-
-		int info = Blas.dsyevd(jobz, uplo, n, A.data, 0, A.rows, w.data, 0,
-				work, 0, -1, iwork, 0, -1);
-		checkInfo("DSYEVD", info);
-
-		int lwork = (int) work[0];
-		int liwork = iwork[0];
-
-		// System.out.println("Optimal LWORK = " + lwork);
-		// System.out.println("Optimal LIWORK = " + lwork);
-
-		work = new double[lwork];
-		iwork = new int[liwork];
-
-		info = Blas.dsyevd(jobz, uplo, n, A.data, 0, A.rows, w.data, 0, work,
-				0, lwork, iwork, 0, liwork);
+		int info = Blas.dsyevd(jobz, uplo, n, A.data, 0, A.rows, w.data, 0);
 
 		if (info > 0)
-			throw new IllegalArgumentException("Not all eigenvalues converged.");
+			throw new LapackConvergenceException("SYEVD", "Not all eigenvalues converged.");
+
+		return info;
+	}
+
+    public static int syevr(char jobz, char range, char uplo, DoubleMatrix a,
+			double vl, double vu, int il, int iu, double abstol,
+			DoubleMatrix w, DoubleMatrix z, int[] isuppz) {
+		int n = a.rows;
+        int[] m = new int[1];
+
+		int info = Blas.dsyevr(jobz, range, uplo, n, a.data, 0, a.rows, vl, vu,
+                il, iu, abstol, m, 0, w.data, 0, z.data, 0, z.rows, isuppz, 0);
+
+        //System.out.printf("found eigenvalues = %d\n", m[0]);
+
+		checkInfo("SYEVR", info);
 
 		return info;
 	}
@@ -341,15 +319,8 @@ public class SimpleBlas {
         
         public static int geev(char jobvl, char jobvr, DoubleMatrix A, 
                 DoubleMatrix WR, DoubleMatrix WI, DoubleMatrix VL, DoubleMatrix VR) {
-            int n = A.rows;
-            double[] work = new double[1];
             int info = Blas.dgeev(jobvl, jobvr, A.rows, A.data, 0, A.rows, WR.data, 0, 
-                    WI.data, 0, VL.data, 0, VL.rows, VR.data, 0, VR.rows, work, 0, -1);
-            checkInfo("DGEEV", info);
-            int lwork = (int)work[0];
-            work = new double[lwork];
-            info = Blas.dgeev(jobvl, jobvr, A.rows, A.data, 0, A.rows, WR.data, 0, 
-                    WI.data, 0, VL.data, 0, VL.rows, VR.data, 0, VR.rows, work, 0, lwork);
+                    WI.data, 0, VL.data, 0, VL.rows, VR.data, 0, VR.rows);
             if (info > 0)
                 throw new LapackException("DGEEV", "First " + info + " eigenvalues have not converged.");
             return info;
@@ -548,18 +519,8 @@ public class SimpleBlas {
 
 	public static FloatMatrix sysv(char uplo, FloatMatrix a, int[] ipiv,
 			FloatMatrix b) {
-		float[] work = new float[1];
-		int info = Blas.ssysv(uplo, a.rows, b.columns, a.data, 0, a.rows, ipiv,
-				0, b.data, 0, b.rows, work, 0, -1);
-		checkInfo("DSYSV", info);
-
-		int lwork = (int) work[0];
-		work = new float[lwork];
-
-		// System.out.println("Optimal LWORK = " + lwork);
-
-		info = Blas.ssysv(uplo, a.rows, b.columns, a.data, 0, a.rows, ipiv, 0,
-				b.data, 0, b.rows, work, 0, lwork);
+		int info = Blas.ssysv(uplo, a.rows, b.columns, a.data, 0, a.rows, ipiv, 0,
+				b.data, 0, b.rows);
 		checkInfo("DSYSV", info);
 
 		if (info > 0)
@@ -595,23 +556,15 @@ public class SimpleBlas {
 			float vl, float vu, int il, int iu, float abstol,
 			FloatMatrix w, FloatMatrix z) {
 		int n = a.rows;
-		float[] work = new float[1];
 		int[] iwork = new int[5 * n];
 		int[] ifail = new int[n];
-
-		int info = Blas.ssyevx(jobz, range, uplo, n, a.data, 0, a.rows, vl, vu,
-				il, iu, abstol, 0, w.data, 0, z.data, 0, z.rows, work, 0, -1,
-				iwork, 0, ifail, 0);
-		checkInfo("DSYEVX", info);
-
-		int lwork = (int) work[0];
-		work = new float[lwork];
-
-		// System.out.println("Optimal LWORK = " + lwork);
+        int[] m = new int[1];
+        int info;
 
 		info = Blas.ssyevx(jobz, range, uplo, n, a.data, 0, a.rows, vl, vu, il,
-				iu, abstol, 0, w.data, 0, z.data, 0, z.rows, work, 0, -1,
-				iwork, 0, ifail, 0);
+				iu, abstol, m, 0, w.data, 0, z.data, 0, z.rows, iwork, 0, ifail, 0);
+
+        //System.out.printf("found eigenvalues = %d\n", m[0]);
 
 		if (info > 0) {
 			StringBuilder msg = new StringBuilder();
@@ -633,27 +586,26 @@ public class SimpleBlas {
 			FloatMatrix w) {
 		int n = A.rows;
 
-		float[] work = new float[1];
-		int[] iwork = new int[1];
-
-		int info = Blas.ssyevd(jobz, uplo, n, A.data, 0, A.rows, w.data, 0,
-				work, 0, -1, iwork, 0, -1);
-		checkInfo("DSYEVD", info);
-
-		int lwork = (int) work[0];
-		int liwork = iwork[0];
-
-		// System.out.println("Optimal LWORK = " + lwork);
-		// System.out.println("Optimal LIWORK = " + lwork);
-
-		work = new float[lwork];
-		iwork = new int[liwork];
-
-		info = Blas.ssyevd(jobz, uplo, n, A.data, 0, A.rows, w.data, 0, work,
-				0, lwork, iwork, 0, liwork);
+		int info = Blas.ssyevd(jobz, uplo, n, A.data, 0, A.rows, w.data, 0);
 
 		if (info > 0)
-			throw new IllegalArgumentException("Not all eigenvalues converged.");
+			throw new LapackConvergenceException("SYEVD", "Not all eigenvalues converged.");
+
+		return info;
+	}
+
+    public static int syevr(char jobz, char range, char uplo, FloatMatrix a,
+			float vl, float vu, int il, int iu, float abstol,
+			FloatMatrix w, FloatMatrix z, int[] isuppz) {
+		int n = a.rows;
+        int[] m = new int[1];
+
+		int info = Blas.ssyevr(jobz, range, uplo, n, a.data, 0, a.rows, vl, vu,
+                il, iu, abstol, m, 0, w.data, 0, z.data, 0, z.rows, isuppz, 0);
+
+        //System.out.printf("found eigenvalues = %d\n", m[0]);
+
+		checkInfo("SYEVR", info);
 
 		return info;
 	}
@@ -671,15 +623,8 @@ public class SimpleBlas {
         
         public static int geev(char jobvl, char jobvr, FloatMatrix A, 
                 FloatMatrix WR, FloatMatrix WI, FloatMatrix VL, FloatMatrix VR) {
-            int n = A.rows;
-            float[] work = new float[1];
             int info = Blas.sgeev(jobvl, jobvr, A.rows, A.data, 0, A.rows, WR.data, 0, 
-                    WI.data, 0, VL.data, 0, VL.rows, VR.data, 0, VR.rows, work, 0, -1);
-            checkInfo("DGEEV", info);
-            int lwork = (int)work[0];
-            work = new float[lwork];
-            info = Blas.sgeev(jobvl, jobvr, A.rows, A.data, 0, A.rows, WR.data, 0, 
-                    WI.data, 0, VL.data, 0, VL.rows, VR.data, 0, VR.rows, work, 0, lwork);
+                    WI.data, 0, VL.data, 0, VL.rows, VR.data, 0, VR.rows);
             if (info > 0)
                 throw new LapackException("DGEEV", "First " + info + " eigenvalues have not converged.");
             return info;

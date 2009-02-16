@@ -3,7 +3,9 @@
  * and open the template in the editor.
  */
 
-package edu.ida.la;
+package edu.ida.la.ranges;
+
+import edu.ida.la.*;
 
 /**
  * Range which varies over pre-specified indices.

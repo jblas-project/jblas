@@ -394,10 +394,10 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drotm
 /*
  * Class:     edu_ida_la_Blas
  * Method:    drotmg
- * Signature: (DDDD[DI)V
+ * Signature: ([DI[DI[DID[DI)V
  */
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drotmg
-  (JNIEnv *, jclass, jdouble, jdouble, jdouble, jdouble, jdoubleArray, jint);
+  (JNIEnv *, jclass, jdoubleArray, jint, jdoubleArray, jint, jdoubleArray, jint, jdouble, jdoubleArray, jint);
 
 /*
  * Class:     edu_ida_la_Blas
@@ -746,10 +746,10 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srotm
 /*
  * Class:     edu_ida_la_Blas
  * Method:    srotmg
- * Signature: (FFFF[FI)V
+ * Signature: ([FI[FI[FIF[FI)V
  */
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srotmg
-  (JNIEnv *, jclass, jfloat, jfloat, jfloat, jfloat, jfloatArray, jint);
+  (JNIEnv *, jclass, jfloatArray, jint, jfloatArray, jint, jfloatArray, jint, jfloat, jfloatArray, jint);
 
 /*
  * Class:     edu_ida_la_Blas
@@ -1250,18 +1250,18 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevd
 /*
  * Class:     edu_ida_la_Blas
  * Method:    dsyevr
- * Signature: (CCCI[DIIDDIIDI[DI[DII[II[DII[III)I
+ * Signature: (CCCI[DIIDDIID[II[DI[DII[II[DII[III)I
  */
 JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevr
-  (JNIEnv *, jclass, jchar, jchar, jchar, jint, jdoubleArray, jint, jint, jdouble, jdouble, jint, jint, jdouble, jint, jdoubleArray, jint, jdoubleArray, jint, jint, jintArray, jint, jdoubleArray, jint, jint, jintArray, jint, jint);
+  (JNIEnv *, jclass, jchar, jchar, jchar, jint, jdoubleArray, jint, jint, jdouble, jdouble, jint, jint, jdouble, jintArray, jint, jdoubleArray, jint, jdoubleArray, jint, jint, jintArray, jint, jdoubleArray, jint, jint, jintArray, jint, jint);
 
 /*
  * Class:     edu_ida_la_Blas
  * Method:    dsyevx
- * Signature: (CCCI[DIIDDIIDI[DI[DII[DII[II[II)I
+ * Signature: (CCCI[DIIDDIID[II[DI[DII[DII[II[II)I
  */
 JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevx
-  (JNIEnv *, jclass, jchar, jchar, jchar, jint, jdoubleArray, jint, jint, jdouble, jdouble, jint, jint, jdouble, jint, jdoubleArray, jint, jdoubleArray, jint, jint, jdoubleArray, jint, jint, jintArray, jint, jintArray, jint);
+  (JNIEnv *, jclass, jchar, jchar, jchar, jint, jdoubleArray, jint, jint, jdouble, jdouble, jint, jint, jdouble, jintArray, jint, jdoubleArray, jint, jdoubleArray, jint, jint, jdoubleArray, jint, jint, jintArray, jint, jintArray, jint);
 
 /*
  * Class:     edu_ida_la_Blas
@@ -1274,18 +1274,18 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevd
 /*
  * Class:     edu_ida_la_Blas
  * Method:    ssyevr
- * Signature: (CCCI[FIIFFIIFI[FI[FII[II[FII[III)I
+ * Signature: (CCCI[FIIFFIIF[II[FI[FII[II[FII[III)I
  */
 JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevr
-  (JNIEnv *, jclass, jchar, jchar, jchar, jint, jfloatArray, jint, jint, jfloat, jfloat, jint, jint, jfloat, jint, jfloatArray, jint, jfloatArray, jint, jint, jintArray, jint, jfloatArray, jint, jint, jintArray, jint, jint);
+  (JNIEnv *, jclass, jchar, jchar, jchar, jint, jfloatArray, jint, jint, jfloat, jfloat, jint, jint, jfloat, jintArray, jint, jfloatArray, jint, jfloatArray, jint, jint, jintArray, jint, jfloatArray, jint, jint, jintArray, jint, jint);
 
 /*
  * Class:     edu_ida_la_Blas
  * Method:    ssyevx
- * Signature: (CCCI[FIIFFIIFI[FI[FII[FII[II[II)I
+ * Signature: (CCCI[FIIFFIIF[II[FI[FII[FII[II[II)I
  */
 JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevx
-  (JNIEnv *, jclass, jchar, jchar, jchar, jint, jfloatArray, jint, jint, jfloat, jfloat, jint, jint, jfloat, jint, jfloatArray, jint, jfloatArray, jint, jint, jfloatArray, jint, jint, jintArray, jint, jintArray, jint);
+  (JNIEnv *, jclass, jchar, jchar, jchar, jint, jfloatArray, jint, jint, jfloat, jfloat, jint, jint, jfloat, jintArray, jint, jfloatArray, jint, jfloatArray, jint, jint, jfloatArray, jint, jint, jintArray, jint, jintArray, jint);
 
 /*
  * Class:     edu_ida_la_Blas

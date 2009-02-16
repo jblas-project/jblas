@@ -1,5 +1,6 @@
 package edu.ida.la;
 
+import edu.ida.la.exceptions.SizeException;
 import static edu.ida.core.BlasUtil.createFloatBuffer;
 import static edu.ida.core.BlasUtil.createFloatBufferFrom;
 import edu.ida.core.ComplexFloat;

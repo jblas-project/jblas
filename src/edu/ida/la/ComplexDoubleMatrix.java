@@ -1,5 +1,6 @@
 package edu.ida.la;
 
+import edu.ida.la.exceptions.SizeException;
 import static edu.ida.core.BlasUtil.createDoubleBuffer;
 import static edu.ida.core.BlasUtil.createDoubleBufferFrom;
 import edu.ida.core.ComplexDouble;

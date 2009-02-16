@@ -2,7 +2,7 @@ package edu.ida.la;
 
 import junit.framework.TestCase;
 import java.util.Arrays;
-import static edu.ida.la.RangeUtils.*;
+import static edu.ida.la.ranges.RangeUtils.*;
 
 public class TestFloatMatrix extends TestCase {
 

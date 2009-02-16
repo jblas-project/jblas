@@ -3,7 +3,11 @@
  * and open the template in the editor.
  */
 
-package edu.ida.la;
+package edu.ida.la.ranges;
+
+import edu.ida.la.*;
+import edu.ida.la.ranges.IndicesRange;
+import edu.ida.la.ranges.AllRange;
 
 /**
  * A bunch of static functions for making construction of ranges more
