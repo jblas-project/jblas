@@ -1,18 +1,24 @@
 class Opts
   attr_accessor :opts, :args
 
-  def initialize(args, shortcuts={})
+  def initialize(args, shortcuts={}, usage=nil)
     @opts = Hash.new
     @args = Array.new
     args.each do |a|
       case a
+      when '-h'
+        puts usage
+        exit
+      when '--help'
+        puts usage
+        exit
       when /\A--/
         a = a[2..-1]
         if a.index('=')
           key, value = a.split('=')
-          opts[key.to_sym] = value
+          opts[key.gsub(/-/, '_').to_sym] = value
         else
-          opts[a.to_sym] = true
+          opts[a.gsub(/-/, '_').to_sym] = true
         end
       when /\A-/
         key = a[1..1].to_sym
