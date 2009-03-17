@@ -21,8 +21,8 @@ COMPILING LAPACK/BLAS
 
 COMPILING ATLAS (after version 3.8.0)
 
-1. Create a build directory with "mkdir build"
-2. Run "configure -Fa alg -fPIC"
+1. Create a build directory with "mkdir build" and cd into it with "cd build".
+2. Run "../configure -Fa alg -fPIC"
 3. Run "make" (takes a lot of time, your machine should also not be 
    under load)
 4. Change directory to "lib" and run "make shared"

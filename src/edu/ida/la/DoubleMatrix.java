@@ -926,6 +926,18 @@ public class DoubleMatrix {
         return this;
     }
 
+    /** Generate a new matrix which has the given number of replications of this. */
+    public DoubleMatrix repmat(int rowMult, int columnMult) {
+        DoubleMatrix result = new DoubleMatrix(rows * rowMult, columns * columnMult);
+
+        for (int c = 0; c < columnMult; c++)
+            for (int r = 0; r < rowMult; r++)
+                for (int i = 0; i < rows; i++)
+                    for (int j = 0; j < columns; j++)
+                        result.put(r * rows + i, c * columns + j, get(i, j));
+        return result;
+    }
+
     /** Checks whether two matrices have the same size. */
     public boolean sameSize(DoubleMatrix a) {
         return rows == a.rows && columns == a.columns;

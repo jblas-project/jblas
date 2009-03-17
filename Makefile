@@ -29,12 +29,14 @@ SO=so
 LIB=lib
 ifeq ($(LAPACK_OR_ATLAS),atlas)
 $(info ---Using ATLAS build)
-LD=g77
+#LD=g77
 LDFLAGS=-shared -L$(ATLAS_HOME) -L$(LAPACK_HOME)
+LD=gfortran
 LOADLIBES=-llapack -lf77blas -latlas -llapack-fortran -lblas-fortran
 else
 $(info ---Using LAPACK build)
-LD=g77
+#LD=g77
+LD=gfortran
 LDFLAGS=-shared -L$(LAPACK_HOME)
 LOADLIBES=-llapack-fortran -lblas-fortran
 endif
