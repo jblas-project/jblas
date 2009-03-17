@@ -80,16 +80,6 @@ LIB = lib
 RUBY=ruby
 LDFLAGS += -shared
 EOS
-      if opts.defined? :lapack_build
-        config << <<EOS
-LOADLIBES=-llapack-fortran -lblas-fortran
-EOS
-      else # the default - atlas build
-        config << <<EOS
-LOADLIBES=-llapack -lf77blas -latlas -llapack-fortran -lblas-fortran
-EOS
-      end
-        
     when 'Windows XP'
       config.check_cmd('cygpath')
       config << <<EOS
@@ -134,13 +124,11 @@ EOS
           LIBPATH = %w(/usr/lib /lib /usr/lib/sse2)
 	end
 	
-	p LIBPATH
-	
 	case $os_name
 	when 'Windows XP'
-	  ATLASLIBS = %w(libf77blas.a libatlas.a liblapack.a)
+	  ATLASLIBS = %w(libf77blas.a libatlas.a liblapack.a libcblas.a)
 	else
-	  ATLASLIBS = %w(libf77blas.so libatlas.so liblapack.so)
+	  ATLASLIBS = %w(libf77blas.so libatlas.so liblapack.so libcblas.so)
 	end
         
 	$atlas_libs = collect_paths(ATLASLIBS, LIBPATH, config)
@@ -169,7 +157,7 @@ EOS
       end
     end
     config.check_files($lapack_home, *LAPACK_LIBS) do
-      config['LOADLIBES'] << '-llapack-fortran -lblas-fortran'
+      config['LOADLIBES'] <<= '-llapack-fortran -lblas-fortran'
     end
   end
 

@@ -37,7 +37,7 @@ class Config
       end
       var = $1
       op = $2
-      val = $3.chomp
+      val = $3.strip
       if op == '='
         self[var] = val
       elsif op == '+='
