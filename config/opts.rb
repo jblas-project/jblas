@@ -12,7 +12,7 @@ class Opts
           key, value = a.split('=')
           opts[key.to_sym] = value
         else
-          flags << a
+          opts[a.to_sym] = true
         end
       when /\A-/
         key = a[1..1].to_sym
@@ -29,7 +29,7 @@ class Opts
     end
 
     def defined?(v)
-      @opts.has_key? v or @flags.include? v
+      @opts.has_key? v
     end
 
     def [](key)

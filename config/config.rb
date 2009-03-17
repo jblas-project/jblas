@@ -20,7 +20,35 @@ class Config
 
   def []=(k, v)
     @config[k] = v
-    @log.puts "set #{k} to #{v}"
+    log "Setting #{k} to #{v}"
+  end
+
+  def log(msg)
+    @log.puts(msg)
+  end
+
+  def <<(str)
+    str.each_line do |line|
+      next if line.chomp.empty?
+      i = line.index /\A\s*([a-zA-Z_]+)\s*(\+?=)\s*(\S.*)/
+      if i.nil?
+        puts "Warning: Cannot parse config definition '#{line}'"
+        next
+      end
+      var = $1
+      op = $2
+      val = $3
+      if op == '='
+        self[var] = val
+      elsif op == '+='
+        if @config.has_key? var
+          self[var] = [self[var], val]
+        else
+          self[var] <<= val
+        end
+      end
+    end
+    return
   end
 
   def dump(io)
@@ -58,6 +86,7 @@ class Config
 
   def check_cmd(*cmds)
     cmds.each do |cmd|
+      log "Searching for command #{cmd}"
       self.fail("coulnd't find command #{cmd}") unless where cmd
     end
     yield self if block_given?
@@ -67,9 +96,10 @@ class Config
   def check_files(path, *files)
     files.each do |file|
       file = File.join(path, *file)
+      log "Searching for file #{file}"
       self.fail("couldn't find #{file}") unless File.exist? file
     end
-    yield self
+    yield self if block_given?
     return
   end
 end

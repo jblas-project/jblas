@@ -1,4 +1,4 @@
-include .config
+include configure.log
 # setting up compilers and flags
 
 ifeq ($(JAVA_HOME),)

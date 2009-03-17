@@ -12,6 +12,17 @@ opts = Opts.new(ARGV)
 
 config = Config.new
 
+def dir(s)
+  case $os_name
+  when 'Linux'
+    s
+  when 'WinXP'
+    %x(cygpath #{s}).chomp
+  else
+    raise ConfigError.new, "The OS #{$os_name} is currently unsupported!"
+  end
+end
+
 begin
   ######################################################################
   config.msg('checking for java, javac') do 
@@ -31,6 +42,9 @@ begin
   ######################################################################
   config.msg('Determining operating system') do
     $os_name = %x(java -cp config PrintProperty os.name).chomp
+    if $os_name == 'WinXP'
+      config.check_cmd 'cygpath'
+    end
     $os_name
   end
   
@@ -51,6 +65,46 @@ EOS
   end
   
   ######################################################################
+  config.msg('Setting up gcc and flags') do
+    config.check_cmd('gcc', 'make', 'ld')
+    case $os_name
+    when 'Linux'
+      config << <<EOS
+CC = gcc
+CFLAGS = -fPIC -ggdb
+INCDIRS += -Iinclude -I#{$java_home}/include -I#{$java_home}/include/linux
+SO = so
+LIB = lib
+RUBY=ruby
+LDFLAGS += -shared
+EOS
+      if opts.defined? :lapack_build
+        config << <<EOS
+LOADLIBES=-llapack-fortran -lblas-fortran
+EOS
+      else # the default - atlas build
+        config << <<EOS
+LOADLIBES=-llapack -lf77blas -latlas -llapack-fortran -lblas-fortran
+EOS
+      end
+        
+    when 'WinXP'
+      config.check_cmd('cygpath')
+      config << <<EOS
+CC = gcc
+CFLAGS = -ggdb -D__int64='long long'
+INCDIRS += -I"#{dir $java_home}/include" -I"#{dir $java_home}/include/win32" -Iinclude
+LDFLAGS += -mno-cygwin -shared -Wl,--add-stdcall-alias
+SO = dll
+LIB = ""
+RUBY = 
+EOS
+    else
+      config.fail "Sorry, the OS #{$os_name} is currently not supported"
+    end
+  end
+
+  ######################################################################
   config.msg('locating lapack sources') do
     $lapack_home = opts.get :lapack, './lapack-lite-3.1.1'
     begin
@@ -58,6 +112,7 @@ EOS
                          ['BLAS', 'SRC', 'dgemm.f'], 
                          ['SRC', 'dsyev.f']) do
         config['LAPACK_HOME'] = $lapack_home
+        config['LDFLAGS'] <<= '-L' + dir($lapack_home)
       end
     rescue ConfigError => e
       raise ConfigError, <<EOS
@@ -67,53 +122,43 @@ EOS
     end
     $lapack_home
   end
-  
-  ######################################################################
-  config.msg('locating atlas libraries') do
-    LIBPATH = opts.get :libpath, %w(/usr/lib /lib /usr/lib/sse2)
-    ATLASLIBS = %w(libf77blas.so libatlas.so liblapack.so libblas.so liblapack.so)
-    $atlas_libs = collect_paths(ATLASLIBS, LIBPATH)
-    unless $atlas_libs
-      config.fail <<EOS
-Couldn\'t locate the ATLAS libraries #{ATLASLIBS.join(', ')}
-EOS
-    else
-      p $atlas_libs
-      config['LDFLAGS'] <<= $atlas_libs.map {|p| '-L' + p}.join(' ')
-    end
-  end
-  
-  ######################################################################
-  config.msg('Setting up gcc and flags') do
-    config.check_cmd('gcc', 'make', 'ld')
-    case $os_name
-    when 'Linux'
-      config['CC'] = 'gcc'
-      config['CFLAGS'] = '-fPIC -ggdb'
-      config['INCDIRS'] <<= '-Iinclude'
-      config['SO'] = 'so'
-      config['LIB'] = 'lib'
-      config['RUBY'] = 'ruby'
-    when 'WinXP'
-      config.check_cmd('cygpath')
-      config['CC'] = gcc
-      config['CFLAGS'] = "-ggdb -D__int64='long long'"
-      javadir = %x(cygpath -u #{$java_home})
-      atlasdir = %x(cygpath -u #{$atlas_home})
-      lapackir = %x(cygpath -u #{$lapack_home})
-      config['INCDIRS'] <<= "-I\"#{javadir}/include\" -I\"#{javadir}/include/win32\" -Iinclude"
-      config['LDFLAGS'] <<= "-mno-cygwin -shared -Wl,--add-stdcall-alias -L#{atlasdir} -L#{lapackdir})"
-      config['SO'] = 'dll'
-      config['LIB'] = ''
-      config['RUBY'] = 'ruby'
-    else
-      puts "Sorry, the OS #{$os_name} is currently not supported"
-    end
-  end
 
   ######################################################################
+  LAPACK_LIBS = [['libblas-fortran.a'], ['liblapack-fortran.a']]
+  config.msg('checking for LAPACK and BLAS libraries') do
+    begin
+      config.check_files($lapack_home, *LAPACK_LIBS)
+    rescue ConfigError => e
+      config.msg("trying to compile LAPACK and BLAS libraries") do
+        out = %x(bash config/compile_lapack #{$lapack_home})
+        open('configure.compile_log', 'w') {|o| o.print out}
+        config.check_files($lapack_home, *LAPACK_LIBS)
+      end
+    end
+  end
+  
+  ######################################################################
+  unless opts.defined? :lapack_build
+    config.msg('locating atlas libraries') do
+      LIBPATH = opts.get :libpath, %w(/usr/lib /lib /usr/lib/sse2)
+      ATLASLIBS = %w(libf77blas.so libatlas.so liblapack.so libblas.so liblapack.so)
+      $atlas_libs = collect_paths(ATLASLIBS, LIBPATH)
+      unless $atlas_libs
+        config.fail <<EOS
+Couldn\'t locate the ATLAS libraries #{ATLASLIBS.join(', ')}
+EOS
+      else
+        config['LDFLAGS'] <<= $atlas_libs.map {|p| '-L' + dir(p)}.join(' ')
+      end
+      nil
+    end
+  end
+  
+  ######################################################################
   # dumping results
-  open('.config', 'w') {|f| config.dump f}
+  puts
+  puts 'Configuration succesfull, writing out results to configure.out'
+  open('configure.out', 'w') {|f| config.dump f}
 
 rescue ConfigError => e
   puts 
