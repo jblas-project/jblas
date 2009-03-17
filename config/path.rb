@@ -10,11 +10,13 @@ def where(file, path=PATH)
   return
 end
 
-def collect_paths(files, path=PATH)
+def collect_paths(files, path=PATH, config=nil)
   paths = Set.new
   files.each do |f|
+    config.log "Collecting paths for file #{f}" if config
     p = where(f, path)
     return unless p
+    config.log "   found in #{p}" if config
     paths << p
   end
   return paths.to_a

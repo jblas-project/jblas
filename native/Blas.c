@@ -785,6 +785,36 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chemv(JNIEnv *env, jclass this, jcha
 
 }
 
+JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cher(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray a, jint aIdx, jint lda)
+{
+  extern void cher_(char *, int *, float *, float *, int *, float *, int *);
+  
+  char uploChr = (char) uplo;
+  jfloat *xPtrBase = 0, *xPtr = 0;
+  if (x) {
+    xPtrBase = (*env)->GetFloatArrayElements(env, x, NULL);
+    xPtr = xPtrBase + 2*xIdx;
+  }
+  jfloat *aPtrBase = 0, *aPtr = 0;
+  if (a) {
+    if((*env)->IsSameObject(env, a, x) == JNI_TRUE)
+      aPtrBase = xPtrBase;
+    else
+      aPtrBase = (*env)->GetFloatArrayElements(env, a, NULL);
+    aPtr = aPtrBase + 2*aIdx;
+  }
+
+  savedEnv = env;
+  cher_(&uploChr, &n, &alpha, xPtr, &incx, aPtr, &lda);
+  if(aPtrBase && aPtrBase != xPtrBase) {        
+    (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
+  }
+  if(xPtrBase) {        
+    (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
+  }
+
+}
+
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cher2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
 {
   extern void cher2_(char *, int *, ComplexFloat *, float *, int *, float *, int *, float *, int *);
@@ -878,36 +908,6 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cher2k(JNIEnv *env, jclass this, jch
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cher(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray a, jint aIdx, jint lda)
-{
-  extern void cher_(char *, int *, float *, float *, int *, float *, int *);
-  
-  char uploChr = (char) uplo;
-  jfloat *xPtrBase = 0, *xPtr = 0;
-  if (x) {
-    xPtrBase = (*env)->GetFloatArrayElements(env, x, NULL);
-    xPtr = xPtrBase + 2*xIdx;
-  }
-  jfloat *aPtrBase = 0, *aPtr = 0;
-  if (a) {
-    if((*env)->IsSameObject(env, a, x) == JNI_TRUE)
-      aPtrBase = xPtrBase;
-    else
-      aPtrBase = (*env)->GetFloatArrayElements(env, a, NULL);
-    aPtr = aPtrBase + 2*aIdx;
-  }
-
-  savedEnv = env;
-  cher_(&uploChr, &n, &alpha, xPtr, &incx, aPtr, &lda);
-  if(aPtrBase && aPtrBase != xPtrBase) {        
-    (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
-  }
-  if(xPtrBase) {        
-    (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
-  }
-
-}
-
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cherk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void cherk_(char *, char *, int *, int *, float *, float *, int *, float *, float *, int *);
@@ -987,6 +987,36 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chpmv(JNIEnv *env, jclass this, jcha
 
 }
 
+JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chpr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray ap, jint apIdx)
+{
+  extern void chpr_(char *, int *, float *, float *, int *, float *);
+  
+  char uploChr = (char) uplo;
+  jfloat *xPtrBase = 0, *xPtr = 0;
+  if (x) {
+    xPtrBase = (*env)->GetFloatArrayElements(env, x, NULL);
+    xPtr = xPtrBase + 2*xIdx;
+  }
+  jfloat *apPtrBase = 0, *apPtr = 0;
+  if (ap) {
+    if((*env)->IsSameObject(env, ap, x) == JNI_TRUE)
+      apPtrBase = xPtrBase;
+    else
+      apPtrBase = (*env)->GetFloatArrayElements(env, ap, NULL);
+    apPtr = apPtrBase + 2*apIdx;
+  }
+
+  savedEnv = env;
+  chpr_(&uploChr, &n, &alpha, xPtr, &incx, apPtr);
+  if(apPtrBase && apPtrBase != xPtrBase) {        
+    (*env)->ReleaseFloatArrayElements(env, ap, apPtrBase, 0);
+  }
+  if(xPtrBase) {        
+    (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
+  }
+
+}
+
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chpr2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray ap, jint apIdx)
 {
   extern void chpr2_(char *, int *, ComplexFloat *, float *, int *, float *, int *, float *);
@@ -1026,36 +1056,6 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chpr2(JNIEnv *env, jclass this, jcha
   }
   if(yPtrBase && yPtrBase != xPtrBase) {        
     (*env)->ReleaseFloatArrayElements(env, y, yPtrBase, 0);
-  }
-  if(xPtrBase) {        
-    (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
-  }
-
-}
-
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chpr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray ap, jint apIdx)
-{
-  extern void chpr_(char *, int *, float *, float *, int *, float *);
-  
-  char uploChr = (char) uplo;
-  jfloat *xPtrBase = 0, *xPtr = 0;
-  if (x) {
-    xPtrBase = (*env)->GetFloatArrayElements(env, x, NULL);
-    xPtr = xPtrBase + 2*xIdx;
-  }
-  jfloat *apPtrBase = 0, *apPtr = 0;
-  if (ap) {
-    if((*env)->IsSameObject(env, ap, x) == JNI_TRUE)
-      apPtrBase = xPtrBase;
-    else
-      apPtrBase = (*env)->GetFloatArrayElements(env, ap, NULL);
-    apPtr = apPtrBase + 2*apIdx;
-  }
-
-  savedEnv = env;
-  chpr_(&uploChr, &n, &alpha, xPtr, &incx, apPtr);
-  if(apPtrBase && apPtrBase != xPtrBase) {        
-    (*env)->ReleaseFloatArrayElements(env, ap, apPtrBase, 0);
   }
   if(xPtrBase) {        
     (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
@@ -2163,6 +2163,36 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dspmv(JNIEnv *env, jclass this, jcha
 
 }
 
+JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dspr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray ap, jint apIdx)
+{
+  extern void dspr_(char *, int *, double *, double *, int *, double *);
+  
+  char uploChr = (char) uplo;
+  jdouble *xPtrBase = 0, *xPtr = 0;
+  if (x) {
+    xPtrBase = (*env)->GetDoubleArrayElements(env, x, NULL);
+    xPtr = xPtrBase + xIdx;
+  }
+  jdouble *apPtrBase = 0, *apPtr = 0;
+  if (ap) {
+    if((*env)->IsSameObject(env, ap, x) == JNI_TRUE)
+      apPtrBase = xPtrBase;
+    else
+      apPtrBase = (*env)->GetDoubleArrayElements(env, ap, NULL);
+    apPtr = apPtrBase + apIdx;
+  }
+
+  savedEnv = env;
+  dspr_(&uploChr, &n, &alpha, xPtr, &incx, apPtr);
+  if(apPtrBase && apPtrBase != xPtrBase) {        
+    (*env)->ReleaseDoubleArrayElements(env, ap, apPtrBase, 0);
+  }
+  if(xPtrBase) {        
+    (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);
+  }
+
+}
+
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dspr2(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray ap, jint apIdx)
 {
   extern void dspr2_(char *, int *, double *, double *, int *, double *, int *, double *);
@@ -2200,36 +2230,6 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dspr2(JNIEnv *env, jclass this, jcha
   }
   if(yPtrBase && yPtrBase != xPtrBase) {        
     (*env)->ReleaseDoubleArrayElements(env, y, yPtrBase, 0);
-  }
-  if(xPtrBase) {        
-    (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);
-  }
-
-}
-
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dspr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray ap, jint apIdx)
-{
-  extern void dspr_(char *, int *, double *, double *, int *, double *);
-  
-  char uploChr = (char) uplo;
-  jdouble *xPtrBase = 0, *xPtr = 0;
-  if (x) {
-    xPtrBase = (*env)->GetDoubleArrayElements(env, x, NULL);
-    xPtr = xPtrBase + xIdx;
-  }
-  jdouble *apPtrBase = 0, *apPtr = 0;
-  if (ap) {
-    if((*env)->IsSameObject(env, ap, x) == JNI_TRUE)
-      apPtrBase = xPtrBase;
-    else
-      apPtrBase = (*env)->GetDoubleArrayElements(env, ap, NULL);
-    apPtr = apPtrBase + apIdx;
-  }
-
-  savedEnv = env;
-  dspr_(&uploChr, &n, &alpha, xPtr, &incx, apPtr);
-  if(apPtrBase && apPtrBase != xPtrBase) {        
-    (*env)->ReleaseDoubleArrayElements(env, ap, apPtrBase, 0);
   }
   if(xPtrBase) {        
     (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);
@@ -2355,6 +2355,36 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsymv(JNIEnv *env, jclass this, jcha
 
 }
 
+JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray a, jint aIdx, jint lda)
+{
+  extern void dsyr_(char *, int *, double *, double *, int *, double *, int *);
+  
+  char uploChr = (char) uplo;
+  jdouble *xPtrBase = 0, *xPtr = 0;
+  if (x) {
+    xPtrBase = (*env)->GetDoubleArrayElements(env, x, NULL);
+    xPtr = xPtrBase + xIdx;
+  }
+  jdouble *aPtrBase = 0, *aPtr = 0;
+  if (a) {
+    if((*env)->IsSameObject(env, a, x) == JNI_TRUE)
+      aPtrBase = xPtrBase;
+    else
+      aPtrBase = (*env)->GetDoubleArrayElements(env, a, NULL);
+    aPtr = aPtrBase + aIdx;
+  }
+
+  savedEnv = env;
+  dsyr_(&uploChr, &n, &alpha, xPtr, &incx, aPtr, &lda);
+  if(aPtrBase && aPtrBase != xPtrBase) {        
+    (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
+  }
+  if(xPtrBase) {        
+    (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);
+  }
+
+}
+
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyr2(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
 {
   extern void dsyr2_(char *, int *, double *, double *, int *, double *, int *, double *, int *);
@@ -2440,36 +2470,6 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyr2k(JNIEnv *env, jclass this, jch
   }
   if(aPtrBase) {        
     (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
-  }
-
-}
-
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray a, jint aIdx, jint lda)
-{
-  extern void dsyr_(char *, int *, double *, double *, int *, double *, int *);
-  
-  char uploChr = (char) uplo;
-  jdouble *xPtrBase = 0, *xPtr = 0;
-  if (x) {
-    xPtrBase = (*env)->GetDoubleArrayElements(env, x, NULL);
-    xPtr = xPtrBase + xIdx;
-  }
-  jdouble *aPtrBase = 0, *aPtr = 0;
-  if (a) {
-    if((*env)->IsSameObject(env, a, x) == JNI_TRUE)
-      aPtrBase = xPtrBase;
-    else
-      aPtrBase = (*env)->GetDoubleArrayElements(env, a, NULL);
-    aPtr = aPtrBase + aIdx;
-  }
-
-  savedEnv = env;
-  dsyr_(&uploChr, &n, &alpha, xPtr, &incx, aPtr, &lda);
-  if(aPtrBase && aPtrBase != xPtrBase) {        
-    (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
-  }
-  if(xPtrBase) {        
-    (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);
   }
 
 }
@@ -3508,6 +3508,36 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sspmv(JNIEnv *env, jclass this, jcha
 
 }
 
+JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sspr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray ap, jint apIdx)
+{
+  extern void sspr_(char *, int *, float *, float *, int *, float *);
+  
+  char uploChr = (char) uplo;
+  jfloat *xPtrBase = 0, *xPtr = 0;
+  if (x) {
+    xPtrBase = (*env)->GetFloatArrayElements(env, x, NULL);
+    xPtr = xPtrBase + xIdx;
+  }
+  jfloat *apPtrBase = 0, *apPtr = 0;
+  if (ap) {
+    if((*env)->IsSameObject(env, ap, x) == JNI_TRUE)
+      apPtrBase = xPtrBase;
+    else
+      apPtrBase = (*env)->GetFloatArrayElements(env, ap, NULL);
+    apPtr = apPtrBase + apIdx;
+  }
+
+  savedEnv = env;
+  sspr_(&uploChr, &n, &alpha, xPtr, &incx, apPtr);
+  if(apPtrBase && apPtrBase != xPtrBase) {        
+    (*env)->ReleaseFloatArrayElements(env, ap, apPtrBase, 0);
+  }
+  if(xPtrBase) {        
+    (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
+  }
+
+}
+
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sspr2(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray ap, jint apIdx)
 {
   extern void sspr2_(char *, int *, float *, float *, int *, float *, int *, float *);
@@ -3545,36 +3575,6 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sspr2(JNIEnv *env, jclass this, jcha
   }
   if(yPtrBase && yPtrBase != xPtrBase) {        
     (*env)->ReleaseFloatArrayElements(env, y, yPtrBase, 0);
-  }
-  if(xPtrBase) {        
-    (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
-  }
-
-}
-
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sspr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray ap, jint apIdx)
-{
-  extern void sspr_(char *, int *, float *, float *, int *, float *);
-  
-  char uploChr = (char) uplo;
-  jfloat *xPtrBase = 0, *xPtr = 0;
-  if (x) {
-    xPtrBase = (*env)->GetFloatArrayElements(env, x, NULL);
-    xPtr = xPtrBase + xIdx;
-  }
-  jfloat *apPtrBase = 0, *apPtr = 0;
-  if (ap) {
-    if((*env)->IsSameObject(env, ap, x) == JNI_TRUE)
-      apPtrBase = xPtrBase;
-    else
-      apPtrBase = (*env)->GetFloatArrayElements(env, ap, NULL);
-    apPtr = apPtrBase + apIdx;
-  }
-
-  savedEnv = env;
-  sspr_(&uploChr, &n, &alpha, xPtr, &incx, apPtr);
-  if(apPtrBase && apPtrBase != xPtrBase) {        
-    (*env)->ReleaseFloatArrayElements(env, ap, apPtrBase, 0);
   }
   if(xPtrBase) {        
     (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
@@ -3700,6 +3700,36 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssymv(JNIEnv *env, jclass this, jcha
 
 }
 
+JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray a, jint aIdx, jint lda)
+{
+  extern void ssyr_(char *, int *, float *, float *, int *, float *, int *);
+  
+  char uploChr = (char) uplo;
+  jfloat *xPtrBase = 0, *xPtr = 0;
+  if (x) {
+    xPtrBase = (*env)->GetFloatArrayElements(env, x, NULL);
+    xPtr = xPtrBase + xIdx;
+  }
+  jfloat *aPtrBase = 0, *aPtr = 0;
+  if (a) {
+    if((*env)->IsSameObject(env, a, x) == JNI_TRUE)
+      aPtrBase = xPtrBase;
+    else
+      aPtrBase = (*env)->GetFloatArrayElements(env, a, NULL);
+    aPtr = aPtrBase + aIdx;
+  }
+
+  savedEnv = env;
+  ssyr_(&uploChr, &n, &alpha, xPtr, &incx, aPtr, &lda);
+  if(aPtrBase && aPtrBase != xPtrBase) {        
+    (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
+  }
+  if(xPtrBase) {        
+    (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
+  }
+
+}
+
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyr2(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
 {
   extern void ssyr2_(char *, int *, float *, float *, int *, float *, int *, float *, int *);
@@ -3785,36 +3815,6 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyr2k(JNIEnv *env, jclass this, jch
   }
   if(aPtrBase) {        
     (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
-  }
-
-}
-
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray a, jint aIdx, jint lda)
-{
-  extern void ssyr_(char *, int *, float *, float *, int *, float *, int *);
-  
-  char uploChr = (char) uplo;
-  jfloat *xPtrBase = 0, *xPtr = 0;
-  if (x) {
-    xPtrBase = (*env)->GetFloatArrayElements(env, x, NULL);
-    xPtr = xPtrBase + xIdx;
-  }
-  jfloat *aPtrBase = 0, *aPtr = 0;
-  if (a) {
-    if((*env)->IsSameObject(env, a, x) == JNI_TRUE)
-      aPtrBase = xPtrBase;
-    else
-      aPtrBase = (*env)->GetFloatArrayElements(env, a, NULL);
-    aPtr = aPtrBase + aIdx;
-  }
-
-  savedEnv = env;
-  ssyr_(&uploChr, &n, &alpha, xPtr, &incx, aPtr, &lda);
-  if(aPtrBase && aPtrBase != xPtrBase) {        
-    (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
-  }
-  if(xPtrBase) {        
-    (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
   }
 
 }
@@ -4657,6 +4657,36 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhemv(JNIEnv *env, jclass this, jcha
 
 }
 
+JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zher(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray a, jint aIdx, jint lda)
+{
+  extern void zher_(char *, int *, double *, double *, int *, double *, int *);
+  
+  char uploChr = (char) uplo;
+  jdouble *xPtrBase = 0, *xPtr = 0;
+  if (x) {
+    xPtrBase = (*env)->GetDoubleArrayElements(env, x, NULL);
+    xPtr = xPtrBase + 2*xIdx;
+  }
+  jdouble *aPtrBase = 0, *aPtr = 0;
+  if (a) {
+    if((*env)->IsSameObject(env, a, x) == JNI_TRUE)
+      aPtrBase = xPtrBase;
+    else
+      aPtrBase = (*env)->GetDoubleArrayElements(env, a, NULL);
+    aPtr = aPtrBase + 2*aIdx;
+  }
+
+  savedEnv = env;
+  zher_(&uploChr, &n, &alpha, xPtr, &incx, aPtr, &lda);
+  if(aPtrBase && aPtrBase != xPtrBase) {        
+    (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
+  }
+  if(xPtrBase) {        
+    (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);
+  }
+
+}
+
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zher2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
 {
   extern void zher2_(char *, int *, ComplexDouble *, double *, int *, double *, int *, double *, int *);
@@ -4750,36 +4780,6 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zher2k(JNIEnv *env, jclass this, jch
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zher(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray a, jint aIdx, jint lda)
-{
-  extern void zher_(char *, int *, double *, double *, int *, double *, int *);
-  
-  char uploChr = (char) uplo;
-  jdouble *xPtrBase = 0, *xPtr = 0;
-  if (x) {
-    xPtrBase = (*env)->GetDoubleArrayElements(env, x, NULL);
-    xPtr = xPtrBase + 2*xIdx;
-  }
-  jdouble *aPtrBase = 0, *aPtr = 0;
-  if (a) {
-    if((*env)->IsSameObject(env, a, x) == JNI_TRUE)
-      aPtrBase = xPtrBase;
-    else
-      aPtrBase = (*env)->GetDoubleArrayElements(env, a, NULL);
-    aPtr = aPtrBase + 2*aIdx;
-  }
-
-  savedEnv = env;
-  zher_(&uploChr, &n, &alpha, xPtr, &incx, aPtr, &lda);
-  if(aPtrBase && aPtrBase != xPtrBase) {        
-    (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
-  }
-  if(xPtrBase) {        
-    (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);
-  }
-
-}
-
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zherk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void zherk_(char *, char *, int *, int *, double *, double *, int *, double *, double *, int *);
@@ -4859,6 +4859,36 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhpmv(JNIEnv *env, jclass this, jcha
 
 }
 
+JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhpr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray ap, jint apIdx)
+{
+  extern void zhpr_(char *, int *, double *, double *, int *, double *);
+  
+  char uploChr = (char) uplo;
+  jdouble *xPtrBase = 0, *xPtr = 0;
+  if (x) {
+    xPtrBase = (*env)->GetDoubleArrayElements(env, x, NULL);
+    xPtr = xPtrBase + 2*xIdx;
+  }
+  jdouble *apPtrBase = 0, *apPtr = 0;
+  if (ap) {
+    if((*env)->IsSameObject(env, ap, x) == JNI_TRUE)
+      apPtrBase = xPtrBase;
+    else
+      apPtrBase = (*env)->GetDoubleArrayElements(env, ap, NULL);
+    apPtr = apPtrBase + 2*apIdx;
+  }
+
+  savedEnv = env;
+  zhpr_(&uploChr, &n, &alpha, xPtr, &incx, apPtr);
+  if(apPtrBase && apPtrBase != xPtrBase) {        
+    (*env)->ReleaseDoubleArrayElements(env, ap, apPtrBase, 0);
+  }
+  if(xPtrBase) {        
+    (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);
+  }
+
+}
+
 JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhpr2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray ap, jint apIdx)
 {
   extern void zhpr2_(char *, int *, ComplexDouble *, double *, int *, double *, int *, double *);
@@ -4898,36 +4928,6 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhpr2(JNIEnv *env, jclass this, jcha
   }
   if(yPtrBase && yPtrBase != xPtrBase) {        
     (*env)->ReleaseDoubleArrayElements(env, y, yPtrBase, 0);
-  }
-  if(xPtrBase) {        
-    (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);
-  }
-
-}
-
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhpr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray ap, jint apIdx)
-{
-  extern void zhpr_(char *, int *, double *, double *, int *, double *);
-  
-  char uploChr = (char) uplo;
-  jdouble *xPtrBase = 0, *xPtr = 0;
-  if (x) {
-    xPtrBase = (*env)->GetDoubleArrayElements(env, x, NULL);
-    xPtr = xPtrBase + 2*xIdx;
-  }
-  jdouble *apPtrBase = 0, *apPtr = 0;
-  if (ap) {
-    if((*env)->IsSameObject(env, ap, x) == JNI_TRUE)
-      apPtrBase = xPtrBase;
-    else
-      apPtrBase = (*env)->GetDoubleArrayElements(env, ap, NULL);
-    apPtr = apPtrBase + 2*apIdx;
-  }
-
-  savedEnv = env;
-  zhpr_(&uploChr, &n, &alpha, xPtr, &incx, apPtr);
-  if(apPtrBase && apPtrBase != xPtrBase) {        
-    (*env)->ReleaseDoubleArrayElements(env, ap, apPtrBase, 0);
   }
   if(xPtrBase) {        
     (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);

@@ -16,10 +16,11 @@ def dir(s)
   case $os_name
   when 'Linux'
     s
-  when 'WinXP'
-    %x(cygpath #{s}).chomp
+  when 'Windows XP'
+    s = s.gsub /\\/, '\\\\\\\\'
+    %x(cygpath -u #{s}).chomp
   else
-    raise ConfigError.new, "The OS #{$os_name} is currently unsupported!"
+    raise ConfigError, "The OS #{$os_name} is currently unsupported!"
   end
 end
 
@@ -32,20 +33,21 @@ begin
   end
 
   ######################################################################
-  config.msg('locating the Java Development Kit') do
-    $java_home = File.dirname(%x(java -cp config PrintProperty java.home))
-    config.check_files $java_home, ['include', 'jni.h'] do
-      config['JAVA_HOME'] = $java_home
-    end
-  end
-
-  ######################################################################
   config.msg('Determining operating system') do
     $os_name = %x(java -cp config PrintProperty os.name).chomp
-    if $os_name == 'WinXP'
+    if $os_name == 'Windows XP'
       config.check_cmd 'cygpath'
     end
     $os_name
+  end
+
+  ######################################################################
+  config.msg('locating the Java Development Kit') do
+    $java_home = dir(File.dirname(%x(java -cp config PrintProperty java.home)))
+    p $java_home
+    config.check_files $java_home, ['include', 'jni.h'] do
+      config['JAVA_HOME'] = $java_home
+    end
   end
   
   ######################################################################
@@ -88,7 +90,7 @@ LOADLIBES=-llapack -lf77blas -latlas -llapack-fortran -lblas-fortran
 EOS
       end
         
-    when 'WinXP'
+    when 'Windows XP'
       config.check_cmd('cygpath')
       config << <<EOS
 CC = gcc
@@ -96,8 +98,8 @@ CFLAGS = -ggdb -D__int64='long long'
 INCDIRS += -I"#{dir $java_home}/include" -I"#{dir $java_home}/include/win32" -Iinclude
 LDFLAGS += -mno-cygwin -shared -Wl,--add-stdcall-alias
 SO = dll
-LIB = ""
-RUBY = 
+LIB = 
+RUBY = ruby
 EOS
     else
       config.fail "Sorry, the OS #{$os_name} is currently not supported"
@@ -124,6 +126,38 @@ EOS
   end
 
   ######################################################################
+  unless opts.defined? :lapack_build
+     config.msg('locating atlas libraries') do
+	if opts.defined? :libpath
+	  LIBPATH = opts[:libpath].split(',')
+	else
+          LIBPATH = %w(/usr/lib /lib /usr/lib/sse2)
+	end
+	
+	p LIBPATH
+	
+	case $os_name
+	when 'Windows XP'
+	  ATLASLIBS = %w(libf77blas.a libatlas.a liblapack.a)
+	else
+	  ATLASLIBS = %w(libf77blas.so libatlas.so liblapack.so)
+	end
+        
+	$atlas_libs = collect_paths(ATLASLIBS, LIBPATH, config)
+        unless $atlas_libs
+          config.fail <<EOS
+Couldn\'t locate the ATLAS libraries #{ATLASLIBS.join(', ')}. You can
+try to pass the location via --libpath=...
+EOS
+        else
+          config['LDFLAGS'] <<= $atlas_libs.map {|p| '-L' + dir(p)}.join(' ')
+	  config['LOADLIBES'] <<= '-llapack -lf77blas -lcblas -latlas'
+        end
+	nil
+     end
+  end
+  
+  ######################################################################
   LAPACK_LIBS = [['libblas-fortran.a'], ['liblapack-fortran.a']]
   config.msg('checking for LAPACK and BLAS libraries') do
     begin
@@ -132,28 +166,14 @@ EOS
       config.msg("trying to compile LAPACK and BLAS libraries") do
         out = %x(bash config/compile_lapack #{$lapack_home})
         open('configure.compile_log', 'w') {|o| o.print out}
-        config.check_files($lapack_home, *LAPACK_LIBS)
       end
     end
-  end
-  
-  ######################################################################
-  unless opts.defined? :lapack_build
-    config.msg('locating atlas libraries') do
-      LIBPATH = opts.get :libpath, %w(/usr/lib /lib /usr/lib/sse2)
-      ATLASLIBS = %w(libf77blas.so libatlas.so liblapack.so libblas.so liblapack.so)
-      $atlas_libs = collect_paths(ATLASLIBS, LIBPATH)
-      unless $atlas_libs
-        config.fail <<EOS
-Couldn\'t locate the ATLAS libraries #{ATLASLIBS.join(', ')}
-EOS
-      else
-        config['LDFLAGS'] <<= $atlas_libs.map {|p| '-L' + dir(p)}.join(' ')
-      end
-      nil
+    config.check_files($lapack_home, *LAPACK_LIBS) do
+      config['LOADLIBES'] << '-llapack-fortran -lblas-fortran'
     end
   end
-  
+
+
   ######################################################################
   # dumping results
   puts

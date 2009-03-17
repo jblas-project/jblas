@@ -62,7 +62,6 @@
     <target name="compile" depends="prepare,wrapper,generateFloat">
         <javac destdir="${bin}" source="1.6" debug="on" compiler="javac1.6" fork="yes" nowarn="yes">
             <src path="${src}" />
-            <src path="${test}" />
             <classpath>
                 <pathelement location="${external}/junit.jar" />
             </classpath>

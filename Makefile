@@ -1,66 +1,66 @@
-include configure.log
+include configure.out
 # setting up compilers and flags
 
-ifeq ($(JAVA_HOME),)
-$(error JAVA_HOME undefined. Please set JAVA_HOME to your java installation directory.)
-endif
+#ifeq ($(JAVA_HOME),)
+#$(error JAVA_HOME undefined. Please set JAVA_HOME to your java installation directory.)
+#endif
 
-ifeq ($(LAPACK_HOME),)
-$(error LAPACK_HOME undefined. Please set LAPACK_HOME to the files containg the lapack libraries and blas and lapack sources.)
-endif
+#ifeq ($(LAPACK_HOME),)
+#$(error LAPACK_HOME undefined. Please set LAPACK_HOME to the files containg the lapack libraries and blas and lapack sources.)
+#endif
 
-ifeq ($(ATLAS_HOME),)
-$(error ATLAS_HOME undefined. Please ATLAS_HOME to the directory containing the shared atlas libraries.)
-endif
+#ifeq ($(ATLAS_HOME),)
+#$(error ATLAS_HOME undefined. Please ATLAS_HOME to the directory containing the shared atlas libraries.)
+#endif
 
 LAPACK=$(LAPACK_HOME)/SRC
 BLAS=$(LAPACK_HOME)/BLAS/SRC
 
-LAPACK_OR_ATLAS=atlas
+#LAPACK_OR_ATLAS=atlas
 
 #
 # GNU/Linux (actually, debian) settings
 #
-ifeq ($(shell uname -o),GNU/Linux)
-CC=gcc
-CFLAGS=-fPIC -ggdb
-INCDIRS=-Iinclude -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
-SO=so
-LIB=lib
-ifeq ($(LAPACK_OR_ATLAS),atlas)
-$(info ---Using ATLAS build)
+#ifeq ($(shell uname -o),GNU/Linux)
+#CC=gcc
+#CFLAGS=-fPIC -ggdb
+#INCDIRS=-Iinclude -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
+#SO=so
+#LIB=lib
+#ifeq ($(LAPACK_OR_ATLAS),atlas)
+#$(info ---Using ATLAS build)
 #LD=g77
-LDFLAGS=-shared -L$(ATLAS_HOME) -L$(LAPACK_HOME)
-LD=gfortran
-LOADLIBES=-llapack -lf77blas -latlas -llapack-fortran -lblas-fortran
-else
-$(info ---Using LAPACK build)
+#LDFLAGS=-shared -L$(ATLAS_HOME) -L$(LAPACK_HOME)
+#LD=gfortran
+#LOADLIBES=-llapack -lf77blas -latlas -llapack-fortran -lblas-fortran
+#else
+#$(info ---Using LAPACK build)
 #LD=g77
-LD=gfortran
-LDFLAGS=-shared -L$(LAPACK_HOME)
-LOADLIBES=-llapack-fortran -lblas-fortran
-endif
-RUBY=ruby
+#LD=gfortran
+#LDFLAGS=-shared -L$(LAPACK_HOME)
+#LOADLIBES=-llapack-fortran -lblas-fortran
+#endif
+#RUBY=ruby
 #
 # cygwin settings
 #
-else 
-ifeq ($(ATLAS_HOME),)
-$(error ATLAS_HOME undefined. Please set ATLAS_HOME to the files containg the atlas libraries.)
-endif
-CC=gcc
-CFLAGS=-ggdb -D__int64='long long'
-JAVADIR=$(shell cygpath -u $$JAVA_HOME)
-ATLASDIR=$(shell cygpath -u $$ATLAS_HOME)
-LAPACKDIR=$(shell cygpath -u $$LAPACK_HOME)
-INCDIRS=-I"$(JAVADIR)/include/" -I"$(JAVADIR)/include/win32" -Iinclude
-LD=gcc
-LDFLAGS=-mno-cygwin -shared -Wl,--add-stdcall-alias -L$(ATLASDIR) -L$(LAPACKDIR) 
-LOADLIBES=-llapack_WINXP -llapack -lf77blas -lcblas -latlas -lg2c
-SO=dll
-LIB=
-RUBY=ruby
-endif
+#else 
+#ifeq ($(ATLAS_HOME),)
+#$(error ATLAS_HOME undefined. Please set ATLAS_HOME to the files containg the atlas libraries.)
+#endif
+#CC=gcc
+#CFLAGS=-ggdb -D__int64='long long'
+#JAVADIR=$(shell cygpath -u $$JAVA_HOME)
+#ATLASDIR=$(shell cygpath -u $$ATLAS_HOME)
+#LAPACKDIR=$(shell cygpath -u $$LAPACK_HOME)
+#INCDIRS=-I"$(JAVADIR)/include/" -I"$(JAVADIR)/include/win32" -Iinclude
+#LD=gcc
+#LDFLAGS=-mno-cygwin -shared -Wl,--add-stdcall-alias -L$(ATLASDIR) -L$(LAPACKDIR) 
+#LOADLIBES=-llapack_WINXP -llapack -lf77blas -lcblas -latlas -lg2c
+#SO=dll
+#LIB=
+#RUBY=ruby
+#endif
 
 PACKAGE=edu.ida.la
 

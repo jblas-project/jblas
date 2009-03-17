@@ -30,14 +30,14 @@ class Config
   def <<(str)
     str.each_line do |line|
       next if line.chomp.empty?
-      i = line.index /\A\s*([a-zA-Z_]+)\s*(\+?=)\s*(\S.*)/
+      i = line.index /\A\s*([a-zA-Z_]+)\s*(\+?=)(.*)/
       if i.nil?
         puts "Warning: Cannot parse config definition '#{line}'"
         next
       end
       var = $1
       op = $2
-      val = $3
+      val = $3.chomp
       if op == '='
         self[var] = val
       elsif op == '+='
