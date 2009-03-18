@@ -19,7 +19,7 @@ public class <%= classname %> {
 
   static {
 	  try {
-		  System.loadLibrary("j<%= classname %>Array");
+		  System.loadLibrary("j<%= classname.downcase %>");
 	  }
 	  catch(UnsatisfiedLinkError e) {
 		  System.err.println(

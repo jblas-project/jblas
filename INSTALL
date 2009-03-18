@@ -1,39 +1,77 @@
 INSTALL
 
-jBLAS depends on a BLAS and LAPACK library for most of its
+jblas depends on a BLAS and LAPACK library for most of its
 computational intensive parts. I recommend getting a high-quality
 implementation like ATLAS http://math-atlas.sourceforge.net/, but
 taking the default implementation should also suffice.
 
-For building the stubs, jBLAS also requires the Fortran sources for
+For building the stubs, jblas also requires the Fortran sources for
 the BLAS and LAPACK functions. These can be found for example, from
 http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz.
+
+
+SOME NOTES
+
+Compiling jblas seems quite complex and it actually is. Part of the
+reason is that both lapack and ATLAS have quite non-standard
+compilation procedures as well. In addition, ATLAS produces a lapack
+library which is quite incomplete, so you also need the original one
+from lapack and you have to make sure that the names don't clash.
+
+In any case, below are the instructions, assuming that you have
+neither lapack nor ATLAS installed.
 
 
 COMPILING LAPACK/BLAS
 
 1. Copy a matching make.inc.* from the INSTALL directory to the base
-   directory
+   directory, where * stands for your operating system (for example, *
+   = LINUX for Linux and Windows/Cygwin, * = gfortran if you have the
+   (newer) gfortran instead of g77)
+
 2. In make.inc, add the option "-fPIC" to OPTS and NOOPTS
+
 2. Run "make blaslib lapacklib"
-4. For Linux: move "blas_LINUX.a" to "libblas-fortran.a" and 
-   "lapack_LINUX.a" to "liblapack-fortran.a"
 
-COMPILING ATLAS (after version 3.8.0)
+4. Rename "blas_*.a" to "libblas-fortran.a" and 
+   "lapack_*.a" to "liblapack-fortran.a"
 
-1. Create a build directory with "mkdir build" and cd into it with "cd build".
-2. Run "../configure -Fa alg -fPIC"
-3. Run "make" (takes a lot of time, your machine should also not be 
-   under load)
+
+COMPILING ATLAS 
+
+On Linux, a version more recent than 3.8.0 should work
+
+1. Create a build directory with "mkdir build" and cd into it with "cd
+   build".
+
+2. Run "../configure -Fa alg -fPIC". (Note: for 3.8.3 on my system, I
+   had to add the "-b 32" flag to set the pointer width. Also make
+   sure to turn of any CPU throttling with 'cpufreq-set'.  
+
+3. Run "make" (takes a lot of time, your machine should also not be
+   under load) 
+
 4. Change directory to "lib" and run "make shared"
+
+For Windows/Cygwin, the 3.8.x versions seem to be broken, so you should
+use one of the 3.6.x versions.
+
 
 COMPILING JBLAS
 
-1. Set ATLAS_HOME to your atlas directory.
-2. Running "ant" should do the job ;)
+1. Run ./configure This requires ruby to be installed
+
+2. Running "ant clean jar" should do the job ;)
+
 
 INSTALLING JBLAS
 
-1. Add jBLAS.jar to your CLASSPATH
-2. Make sure LD_LIBRARY_PATH contains libjBLASarray.so and the other 
-   shared libraries from ATLAS
+1. Add jblas.jar to your CLASSPATH
+
+2. By default, the dynamic libraries are extracted from the jar file
+   to the default temporary directory and loaded from there. If you
+   don't want to do this, extract the dynamic library and copy it
+   somewhere where it can be found.
+
+   For Linux, use LD_LIBRARY_PATH, for Windows, PATH
+   

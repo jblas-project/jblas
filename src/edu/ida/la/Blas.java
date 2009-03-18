@@ -19,7 +19,7 @@ public class Blas {
 
   static {
 	  try {
-		  System.loadLibrary("jBlasArray");
+		  System.loadLibrary("jblas");
 	  }
 	  catch(UnsatisfiedLinkError e) {
 		  System.err.println(
