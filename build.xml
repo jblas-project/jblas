@@ -17,6 +17,7 @@
     <property name="include" value="${basedir}/include" />
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
+    <property name="pkgbase" value="org.jblas" />
     <macrodef name="class-to-float">
         <attribute name="class"/>
         <attribute name="path" default="src"/>
@@ -79,7 +80,7 @@
     </target>
     <target name="javah" depends="prepare,wrapper,compile">
         <javah destdir="${include}" force="yes">
-            <class name="edu.ida.la.Blas" />
+            <class name="${pkgbase}.la.Blas" />
             <classpath>
                 <pathelement path="${bin}" />
             </classpath>
@@ -96,29 +97,29 @@
         </exec>
     </target>
     <target name="generate-float" depends="preprocess">
-        <class-to-float class="edu.ida.la.DoubleMatrix"/>
-        <class-to-float class="edu.ida.la.DoubleFunction"/>
-        <class-to-float class="edu.ida.core.ComplexDouble"/>
-        <class-to-float path="test" class="edu.ida.la.TestDoubleMatrix"/>
-        <class-to-float path="test" class="edu.ida.la.TestBlasDouble"/>
-        <class-to-float class="edu.ida.la.ComplexDoubleMatrix"/>
-        <static-class-to-float class="edu.ida.la.SimpleBlas"/>
-        <static-class-to-float class="edu.ida.la.Solve"/>
-        <static-class-to-float class="edu.ida.la.Eigen"/>
-        <static-class-to-float class="edu.ida.la.Geometry"/>
-        <static-class-to-float class="edu.ida.la.MatrixFunctions"/>
-        <static-class-to-float class="edu.ida.la.JavaBlas"/>
+        <class-to-float class="${pkgbase}.la.DoubleMatrix"/>
+        <class-to-float class="${pkgbase}.la.DoubleFunction"/>
+        <class-to-float class="${pkgbase}.core.ComplexDouble"/>
+        <class-to-float path="test" class="${pkgbase}.la.TestDoubleMatrix"/>
+        <class-to-float path="test" class="${pkgbase}.la.TestBlasDouble"/>
+        <class-to-float class="${pkgbase}.la.ComplexDoubleMatrix"/>
+        <static-class-to-float class="${pkgbase}.la.SimpleBlas"/>
+        <static-class-to-float class="${pkgbase}.la.Solve"/>
+        <static-class-to-float class="${pkgbase}.la.Eigen"/>
+        <static-class-to-float class="${pkgbase}.la.Geometry"/>
+        <static-class-to-float class="${pkgbase}.la.MatrixFunctions"/>
+        <static-class-to-float class="${pkgbase}.la.JavaBlas"/>
     </target>
     <target name="preprocess">
-        <rjpp file="src/edu/ida/la/DoubleMatrix.java"/>
-        <rjpp file="test/edu/ida/la/TestDoubleMatrix.java"/>
-        <rjpp file="src/edu/ida/la/MatrixFunctions.java"/>
-        <rjpp file="src/edu/ida/la/ComplexDoubleMatrix.java"/>
+        <rjpp file="src/org/jblas/la/DoubleMatrix.java"/>
+        <rjpp file="test/org/jblas/la/TestDoubleMatrix.java"/>
+        <rjpp file="src/org/jblas/la/MatrixFunctions.java"/>
+        <rjpp file="src/org/jblas/la/ComplexDoubleMatrix.java"/>
     </target>
     <target name="jar" depends="compile,compile-native">
         <jar destfile="${jar}">
             <fileset dir="${bin}">
-                <include name="edu/**" />
+                <include name="org/**" />
                 <include name="lib*.so"/>
                 <include name="*.dll"/>
             </fileset>
@@ -152,12 +153,12 @@
                 <pathelement path="${bin}" />
             </classpath>
             <formatter type="plain" usefile="false" />
-            <test name="edu.ida.la.TestBlasDouble" />
+            <test name="${pkgbase}.la.TestBlasDouble" />
         </junit>
     </target>
     <target name="all" depends="jar, javadoc">
     </target>
     <target name="debugDirectBufferGC" depends="jar">
-        <java classname="edu.ida.la.DebugDirectBufferGC" classpath="${basedir}/jBLAS.jar" />
+        <java classname="${pkgbase}.la.DebugDirectBufferGC" classpath="${basedir}/jBLAS.jar" />
     </target>
 </project>

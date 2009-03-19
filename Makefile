@@ -51,7 +51,7 @@ endif
 #RUBY=ruby
 #endif
 
-PACKAGE=edu.ida.la
+PACKAGE=org.jblas.la
 
 # generate path from package name
 PACKAGE_PATH=$(subst .,/,$(PACKAGE))

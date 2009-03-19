@@ -1,6 +1,6 @@
-#include "edu_ida_la_Blas.h"
+#include "org_jblas_la_Blas.h"
 
-#define CORE_PACKAGE "edu/ida/core/"
+#define CORE_PACKAGE "org/jblas/core/"
 
 /*
  * For convenience, we define some typedefs here which have the
@@ -283,7 +283,7 @@ void xerbla_(char *fct, int *info)
 /**********************************************************************/
 
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_caxpy(JNIEnv *env, jclass this, jint n, jobject ca, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_caxpy(JNIEnv *env, jclass this, jint n, jobject ca, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
 {
   extern void caxpy_(int *, ComplexFloat *, float *, int *, float *, int *);
   
@@ -314,7 +314,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_caxpy(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ccopy(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ccopy(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
 {
   extern void ccopy_(int *, float *, int *, float *, int *);
   
@@ -343,7 +343,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ccopy(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT jobject JNICALL Java_edu_ida_la_Blas_cdotc(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
+JNIEXPORT jobject JNICALL Java_org_jblas_la_Blas_cdotc(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
 {
   extern void cdotc_(ComplexFloat *, int *, float *, int *, float *, int *);
   
@@ -374,7 +374,7 @@ JNIEXPORT jobject JNICALL Java_edu_ida_la_Blas_cdotc(JNIEnv *env, jclass this, j
   return createComplexFloat(env, &retval);
 }
 
-JNIEXPORT jobject JNICALL Java_edu_ida_la_Blas_cdotu(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
+JNIEXPORT jobject JNICALL Java_org_jblas_la_Blas_cdotu(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
 {
   extern void cdotu_(ComplexFloat *, int *, float *, int *, float *, int *);
   
@@ -405,7 +405,7 @@ JNIEXPORT jobject JNICALL Java_edu_ida_la_Blas_cdotu(JNIEnv *env, jclass this, j
   return createComplexFloat(env, &retval);
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cgbmv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jint kl, jint ku, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jobject beta, jfloatArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_cgbmv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jint kl, jint ku, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jobject beta, jfloatArray y, jint yIdx, jint incy)
 {
   extern void cgbmv_(char *, int *, int *, int *, int *, ComplexFloat *, float *, int *, float *, int *, ComplexFloat *, float *, int *);
   
@@ -453,7 +453,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cgbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cgemm(JNIEnv *env, jclass this, jchar transa, jchar transb, jint m, jint n, jint k, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jobject beta, jfloatArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_cgemm(JNIEnv *env, jclass this, jchar transa, jchar transb, jint m, jint n, jint k, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jobject beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void cgemm_(char *, char *, int *, int *, int *, ComplexFloat *, float *, int *, float *, int *, ComplexFloat *, float *, int *);
   
@@ -502,7 +502,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cgemm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cgemv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jobject beta, jfloatArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_cgemv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jobject beta, jfloatArray y, jint yIdx, jint incy)
 {
   extern void cgemv_(char *, int *, int *, ComplexFloat *, float *, int *, float *, int *, ComplexFloat *, float *, int *);
   
@@ -550,7 +550,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cgemv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cgerc(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_cgerc(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
 {
   extern void cgerc_(int *, int *, ComplexFloat *, float *, int *, float *, int *, float *, int *);
   
@@ -595,7 +595,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cgerc(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cgeru(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_cgeru(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
 {
   extern void cgeru_(int *, int *, ComplexFloat *, float *, int *, float *, int *, float *, int *);
   
@@ -640,7 +640,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cgeru(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chbmv(JNIEnv *env, jclass this, jchar uplo, jint n, jint k, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jobject beta, jfloatArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_chbmv(JNIEnv *env, jclass this, jchar uplo, jint n, jint k, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jobject beta, jfloatArray y, jint yIdx, jint incy)
 {
   extern void chbmv_(char *, int *, int *, ComplexFloat *, float *, int *, float *, int *, ComplexFloat *, float *, int *);
   
@@ -688,7 +688,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chemm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jobject beta, jfloatArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_chemm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jobject beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void chemm_(char *, char *, int *, int *, ComplexFloat *, float *, int *, float *, int *, ComplexFloat *, float *, int *);
   
@@ -737,7 +737,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chemm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chemv(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jobject beta, jfloatArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_chemv(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jobject beta, jfloatArray y, jint yIdx, jint incy)
 {
   extern void chemv_(char *, int *, ComplexFloat *, float *, int *, float *, int *, ComplexFloat *, float *, int *);
   
@@ -785,7 +785,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chemv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cher2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_cher2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
 {
   extern void cher2_(char *, int *, ComplexFloat *, float *, int *, float *, int *, float *, int *);
   
@@ -831,7 +831,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cher2(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cher2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_cher2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void cher2k_(char *, char *, int *, int *, ComplexFloat *, float *, int *, float *, int *, float *, float *, int *);
   
@@ -878,7 +878,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cher2k(JNIEnv *env, jclass this, jch
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cher(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_cher(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray a, jint aIdx, jint lda)
 {
   extern void cher_(char *, int *, float *, float *, int *, float *, int *);
   
@@ -908,7 +908,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cher(JNIEnv *env, jclass this, jchar
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cherk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_cherk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void cherk_(char *, char *, int *, int *, float *, float *, int *, float *, float *, int *);
   
@@ -939,7 +939,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cherk(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chpmv(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx, jobject beta, jfloatArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_chpmv(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx, jobject beta, jfloatArray y, jint yIdx, jint incy)
 {
   extern void chpmv_(char *, int *, ComplexFloat *, float *, float *, int *, ComplexFloat *, float *, int *);
   
@@ -987,7 +987,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chpmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chpr2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray ap, jint apIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_chpr2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray ap, jint apIdx)
 {
   extern void chpr2_(char *, int *, ComplexFloat *, float *, int *, float *, int *, float *);
   
@@ -1033,7 +1033,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chpr2(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chpr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray ap, jint apIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_chpr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray ap, jint apIdx)
 {
   extern void chpr_(char *, int *, float *, float *, int *, float *);
   
@@ -1063,7 +1063,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_chpr(JNIEnv *env, jclass this, jchar
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_crotg(JNIEnv *env, jclass this, jobject ca, jobject cb, jfloat c, jobject s)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_crotg(JNIEnv *env, jclass this, jobject ca, jobject cb, jfloat c, jobject s)
 {
   extern void crotg_(ComplexFloat *, ComplexFloat *, float *, ComplexFloat *);
   
@@ -1079,7 +1079,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_crotg(JNIEnv *env, jclass this, jobj
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cscal(JNIEnv *env, jclass this, jint n, jobject ca, jfloatArray cx, jint cxIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_cscal(JNIEnv *env, jclass this, jint n, jobject ca, jfloatArray cx, jint cxIdx, jint incx)
 {
   extern void cscal_(int *, ComplexFloat *, float *, int *);
   
@@ -1099,7 +1099,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cscal(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_csrot(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy, jfloat c, jfloat s)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_csrot(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy, jfloat c, jfloat s)
 {
   extern void csrot_(int *, float *, int *, float *, int *, float *, float *);
   
@@ -1128,7 +1128,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_csrot(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_csscal(JNIEnv *env, jclass this, jint n, jfloat sa, jfloatArray cx, jint cxIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_csscal(JNIEnv *env, jclass this, jint n, jfloat sa, jfloatArray cx, jint cxIdx, jint incx)
 {
   extern void csscal_(int *, float *, float *, int *);
   
@@ -1146,7 +1146,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_csscal(JNIEnv *env, jclass this, jin
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cswap(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_cswap(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
 {
   extern void cswap_(int *, float *, int *, float *, int *);
   
@@ -1175,7 +1175,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_cswap(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_csymm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jobject beta, jfloatArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_csymm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jobject beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void csymm_(char *, char *, int *, int *, ComplexFloat *, float *, int *, float *, int *, ComplexFloat *, float *, int *);
   
@@ -1224,7 +1224,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_csymm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_csyr2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jobject beta, jfloatArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_csyr2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jobject beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void csyr2k_(char *, char *, int *, int *, ComplexFloat *, float *, int *, float *, int *, ComplexFloat *, float *, int *);
   
@@ -1273,7 +1273,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_csyr2k(JNIEnv *env, jclass this, jch
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_csyrk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jfloatArray a, jint aIdx, jint lda, jobject beta, jfloatArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_csyrk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jfloatArray a, jint aIdx, jint lda, jobject beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void csyrk_(char *, char *, int *, int *, ComplexFloat *, float *, int *, ComplexFloat *, float *, int *);
   
@@ -1308,7 +1308,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_csyrk(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctbmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ctbmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
 {
   extern void ctbmv_(char *, char *, char *, int *, int *, float *, int *, float *, int *);
   
@@ -1340,7 +1340,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctbsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ctbsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
 {
   extern void ctbsv_(char *, char *, char *, int *, int *, float *, int *, float *, int *);
   
@@ -1372,7 +1372,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctbsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctpmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ctpmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx)
 {
   extern void ctpmv_(char *, char *, char *, int *, float *, float *, int *);
   
@@ -1404,7 +1404,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctpmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctpsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ctpsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx)
 {
   extern void ctpsv_(char *, char *, char *, int *, float *, float *, int *);
   
@@ -1436,7 +1436,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctpsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctrmm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ctrmm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb)
 {
   extern void ctrmm_(char *, char *, char *, char *, int *, int *, ComplexFloat *, float *, int *, float *, int *);
   
@@ -1471,7 +1471,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctrmm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctrmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ctrmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
 {
   extern void ctrmv_(char *, char *, char *, int *, float *, int *, float *, int *);
   
@@ -1503,7 +1503,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctrmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctrsm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ctrsm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb)
 {
   extern void ctrsm_(char *, char *, char *, char *, int *, int *, ComplexFloat *, float *, int *, float *, int *);
   
@@ -1538,7 +1538,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctrsm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctrsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ctrsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
 {
   extern void ctrsv_(char *, char *, char *, int *, float *, int *, float *, int *);
   
@@ -1570,7 +1570,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ctrsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dasum(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx)
+JNIEXPORT jdouble JNICALL Java_org_jblas_la_Blas_dasum(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx)
 {
   extern jdouble dasum_(int *, double *, int *);
   
@@ -1589,7 +1589,7 @@ JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dasum(JNIEnv *env, jclass this, j
   return retval;
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_daxpy(JNIEnv *env, jclass this, jint n, jdouble da, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_daxpy(JNIEnv *env, jclass this, jint n, jdouble da, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy)
 {
   extern void daxpy_(int *, double *, double *, int *, double *, int *);
   
@@ -1618,7 +1618,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_daxpy(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dcabs1(JNIEnv *env, jclass this, jobject z)
+JNIEXPORT jdouble JNICALL Java_org_jblas_la_Blas_dcabs1(JNIEnv *env, jclass this, jobject z)
 {
   extern jdouble dcabs1_(ComplexDouble *);
   
@@ -1631,7 +1631,7 @@ JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dcabs1(JNIEnv *env, jclass this, 
   return retval;
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dcopy(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dcopy(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy)
 {
   extern void dcopy_(int *, double *, int *, double *, int *);
   
@@ -1660,7 +1660,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dcopy(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_ddot(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy)
+JNIEXPORT jdouble JNICALL Java_org_jblas_la_Blas_ddot(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy)
 {
   extern jdouble ddot_(int *, double *, int *, double *, int *);
   
@@ -1690,7 +1690,7 @@ JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_ddot(JNIEnv *env, jclass this, ji
   return retval;
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dgbmv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jint kl, jint ku, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jdouble beta, jdoubleArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dgbmv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jint kl, jint ku, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jdouble beta, jdoubleArray y, jint yIdx, jint incy)
 {
   extern void dgbmv_(char *, int *, int *, int *, int *, double *, double *, int *, double *, int *, double *, double *, int *);
   
@@ -1734,7 +1734,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dgbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dgemm(JNIEnv *env, jclass this, jchar transa, jchar transb, jint m, jint n, jint k, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dgemm(JNIEnv *env, jclass this, jchar transa, jchar transb, jint m, jint n, jint k, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void dgemm_(char *, char *, int *, int *, int *, double *, double *, int *, double *, int *, double *, double *, int *);
   
@@ -1779,7 +1779,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dgemm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dgemv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jdouble beta, jdoubleArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dgemv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jdouble beta, jdoubleArray y, jint yIdx, jint incy)
 {
   extern void dgemv_(char *, int *, int *, double *, double *, int *, double *, int *, double *, double *, int *);
   
@@ -1823,7 +1823,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dgemv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dger(JNIEnv *env, jclass this, jint m, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dger(JNIEnv *env, jclass this, jint m, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
 {
   extern void dger_(int *, int *, double *, double *, int *, double *, int *, double *, int *);
   
@@ -1866,7 +1866,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dger(JNIEnv *env, jclass this, jint 
 
 }
 
-JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dnrm2(JNIEnv *env, jclass this, jint n, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT jdouble JNICALL Java_org_jblas_la_Blas_dnrm2(JNIEnv *env, jclass this, jint n, jdoubleArray x, jint xIdx, jint incx)
 {
   extern jdouble dnrm2_(int *, double *, int *);
   
@@ -1885,7 +1885,7 @@ JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dnrm2(JNIEnv *env, jclass this, j
   return retval;
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drot(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy, jdouble c, jdouble s)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_drot(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy, jdouble c, jdouble s)
 {
   extern void drot_(int *, double *, int *, double *, int *, double *, double *);
   
@@ -1914,7 +1914,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drot(JNIEnv *env, jclass this, jint 
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drotg(JNIEnv *env, jclass this, jdouble da, jdouble db, jdouble c, jdouble s)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_drotg(JNIEnv *env, jclass this, jdouble da, jdouble db, jdouble c, jdouble s)
 {
   extern void drotg_(double *, double *, double *, double *);
   
@@ -1924,7 +1924,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drotg(JNIEnv *env, jclass this, jdou
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drotm(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy, jdoubleArray dparam, jint dparamIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_drotm(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy, jdoubleArray dparam, jint dparamIdx)
 {
   extern void drotm_(int *, double *, int *, double *, int *, double *);
   
@@ -1967,7 +1967,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drotm(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drotmg(JNIEnv *env, jclass this, jdoubleArray dd1, jint dd1Idx, jdoubleArray dd2, jint dd2Idx, jdoubleArray dx1, jint dx1Idx, jdouble dy1, jdoubleArray dparam, jint dparamIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_drotmg(JNIEnv *env, jclass this, jdoubleArray dd1, jint dd1Idx, jdoubleArray dd2, jint dd2Idx, jdoubleArray dx1, jint dx1Idx, jdouble dy1, jdoubleArray dparam, jint dparamIdx)
 {
   extern void drotmg_(double *, double *, double *, double *, double *);
   
@@ -2027,7 +2027,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_drotmg(JNIEnv *env, jclass this, jdo
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsbmv(JNIEnv *env, jclass this, jchar uplo, jint n, jint k, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jdouble beta, jdoubleArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dsbmv(JNIEnv *env, jclass this, jchar uplo, jint n, jint k, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jdouble beta, jdoubleArray y, jint yIdx, jint incy)
 {
   extern void dsbmv_(char *, int *, int *, double *, double *, int *, double *, int *, double *, double *, int *);
   
@@ -2071,7 +2071,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dscal(JNIEnv *env, jclass this, jint n, jdouble da, jdoubleArray dx, jint dxIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dscal(JNIEnv *env, jclass this, jint n, jdouble da, jdoubleArray dx, jint dxIdx, jint incx)
 {
   extern void dscal_(int *, double *, double *, int *);
   
@@ -2089,7 +2089,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dscal(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dsdot(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
+JNIEXPORT jdouble JNICALL Java_org_jblas_la_Blas_dsdot(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
 {
   extern jdouble dsdot_(int *, float *, int *, float *, int *);
   
@@ -2119,7 +2119,7 @@ JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dsdot(JNIEnv *env, jclass this, j
   return retval;
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dspmv(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx, jdouble beta, jdoubleArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dspmv(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx, jdouble beta, jdoubleArray y, jint yIdx, jint incy)
 {
   extern void dspmv_(char *, int *, double *, double *, double *, int *, double *, double *, int *);
   
@@ -2163,7 +2163,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dspmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dspr2(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray ap, jint apIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dspr2(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray ap, jint apIdx)
 {
   extern void dspr2_(char *, int *, double *, double *, int *, double *, int *, double *);
   
@@ -2207,7 +2207,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dspr2(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dspr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray ap, jint apIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dspr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray ap, jint apIdx)
 {
   extern void dspr_(char *, int *, double *, double *, int *, double *);
   
@@ -2237,7 +2237,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dspr(JNIEnv *env, jclass this, jchar
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dswap(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dswap(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy)
 {
   extern void dswap_(int *, double *, int *, double *, int *);
   
@@ -2266,7 +2266,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dswap(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsymm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dsymm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void dsymm_(char *, char *, int *, int *, double *, double *, int *, double *, int *, double *, double *, int *);
   
@@ -2311,7 +2311,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsymm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsymv(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jdouble beta, jdoubleArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dsymv(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jdouble beta, jdoubleArray y, jint yIdx, jint incy)
 {
   extern void dsymv_(char *, int *, double *, double *, int *, double *, int *, double *, double *, int *);
   
@@ -2355,7 +2355,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsymv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyr2(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dsyr2(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
 {
   extern void dsyr2_(char *, int *, double *, double *, int *, double *, int *, double *, int *);
   
@@ -2399,7 +2399,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyr2(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyr2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dsyr2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void dsyr2k_(char *, char *, int *, int *, double *, double *, int *, double *, int *, double *, double *, int *);
   
@@ -2444,7 +2444,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyr2k(JNIEnv *env, jclass this, jch
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dsyr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray a, jint aIdx, jint lda)
 {
   extern void dsyr_(char *, int *, double *, double *, int *, double *, int *);
   
@@ -2474,7 +2474,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyr(JNIEnv *env, jclass this, jchar
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyrk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dsyrk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void dsyrk_(char *, char *, int *, int *, double *, double *, int *, double *, double *, int *);
   
@@ -2505,7 +2505,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dsyrk(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtbmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dtbmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void dtbmv_(char *, char *, char *, int *, int *, double *, int *, double *, int *);
   
@@ -2537,7 +2537,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtbsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dtbsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void dtbsv_(char *, char *, char *, int *, int *, double *, int *, double *, int *);
   
@@ -2569,7 +2569,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtbsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtpmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dtpmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void dtpmv_(char *, char *, char *, int *, double *, double *, int *);
   
@@ -2601,7 +2601,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtpmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtpsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dtpsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void dtpsv_(char *, char *, char *, int *, double *, double *, int *);
   
@@ -2633,7 +2633,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtpsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtrmm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dtrmm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb)
 {
   extern void dtrmm_(char *, char *, char *, char *, int *, int *, double *, double *, int *, double *, int *);
   
@@ -2666,7 +2666,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtrmm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtrmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dtrmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void dtrmv_(char *, char *, char *, int *, double *, int *, double *, int *);
   
@@ -2698,7 +2698,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtrmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtrsm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dtrsm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb)
 {
   extern void dtrsm_(char *, char *, char *, char *, int *, int *, double *, double *, int *, double *, int *);
   
@@ -2731,7 +2731,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtrsm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtrsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_dtrsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void dtrsv_(char *, char *, char *, int *, double *, int *, double *, int *);
   
@@ -2763,7 +2763,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_dtrsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dzasum(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx)
+JNIEXPORT jdouble JNICALL Java_org_jblas_la_Blas_dzasum(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx)
 {
   extern jdouble dzasum_(int *, double *, int *);
   
@@ -2782,7 +2782,7 @@ JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dzasum(JNIEnv *env, jclass this, 
   return retval;
 }
 
-JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dznrm2(JNIEnv *env, jclass this, jint n, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT jdouble JNICALL Java_org_jblas_la_Blas_dznrm2(JNIEnv *env, jclass this, jint n, jdoubleArray x, jint xIdx, jint incx)
 {
   extern jdouble dznrm2_(int *, double *, int *);
   
@@ -2801,7 +2801,7 @@ JNIEXPORT jdouble JNICALL Java_edu_ida_la_Blas_dznrm2(JNIEnv *env, jclass this, 
   return retval;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_icamax(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_icamax(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx)
 {
   extern jint icamax_(int *, float *, int *);
   
@@ -2820,7 +2820,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_icamax(JNIEnv *env, jclass this, jin
   return retval;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_idamax(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_idamax(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx)
 {
   extern jint idamax_(int *, double *, int *);
   
@@ -2839,7 +2839,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_idamax(JNIEnv *env, jclass this, jin
   return retval;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_isamax(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_isamax(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx)
 {
   extern jint isamax_(int *, float *, int *);
   
@@ -2858,7 +2858,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_isamax(JNIEnv *env, jclass this, jin
   return retval;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_izamax(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_izamax(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx)
 {
   extern jint izamax_(int *, double *, int *);
   
@@ -2877,7 +2877,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_izamax(JNIEnv *env, jclass this, jin
   return retval;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_lsame(JNIEnv *env, jclass this, jchar ca, jchar cb)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_lsame(JNIEnv *env, jclass this, jchar ca, jchar cb)
 {
   extern jint lsame_(char *, char *);
   
@@ -2890,7 +2890,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_lsame(JNIEnv *env, jclass this, jcha
   return retval;
 }
 
-JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_sasum(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx)
+JNIEXPORT jfloat JNICALL Java_org_jblas_la_Blas_sasum(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx)
 {
   extern jdouble sasum_(int *, float *, int *);
   
@@ -2909,7 +2909,7 @@ JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_sasum(JNIEnv *env, jclass this, ji
   return (jdouble) retval;
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_saxpy(JNIEnv *env, jclass this, jint n, jfloat sa, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_saxpy(JNIEnv *env, jclass this, jint n, jfloat sa, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
 {
   extern void saxpy_(int *, float *, float *, int *, float *, int *);
   
@@ -2938,7 +2938,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_saxpy(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_scasum(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx)
+JNIEXPORT jfloat JNICALL Java_org_jblas_la_Blas_scasum(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx)
 {
   extern jdouble scasum_(int *, float *, int *);
   
@@ -2957,7 +2957,7 @@ JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_scasum(JNIEnv *env, jclass this, j
   return (jdouble) retval;
 }
 
-JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_scnrm2(JNIEnv *env, jclass this, jint n, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT jfloat JNICALL Java_org_jblas_la_Blas_scnrm2(JNIEnv *env, jclass this, jint n, jfloatArray x, jint xIdx, jint incx)
 {
   extern jdouble scnrm2_(int *, float *, int *);
   
@@ -2976,7 +2976,7 @@ JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_scnrm2(JNIEnv *env, jclass this, j
   return (jdouble) retval;
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_scopy(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_scopy(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
 {
   extern void scopy_(int *, float *, int *, float *, int *);
   
@@ -3005,7 +3005,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_scopy(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_sdot(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
+JNIEXPORT jfloat JNICALL Java_org_jblas_la_Blas_sdot(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
 {
   extern jdouble sdot_(int *, float *, int *, float *, int *);
   
@@ -3035,7 +3035,7 @@ JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_sdot(JNIEnv *env, jclass this, jin
   return (jdouble) retval;
 }
 
-JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_sdsdot(JNIEnv *env, jclass this, jint n, jfloat sb, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
+JNIEXPORT jfloat JNICALL Java_org_jblas_la_Blas_sdsdot(JNIEnv *env, jclass this, jint n, jfloat sb, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
 {
   extern jdouble sdsdot_(int *, float *, float *, int *, float *, int *);
   
@@ -3065,7 +3065,7 @@ JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_sdsdot(JNIEnv *env, jclass this, j
   return (jdouble) retval;
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sgbmv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jint kl, jint ku, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jfloat beta, jfloatArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_sgbmv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jint kl, jint ku, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jfloat beta, jfloatArray y, jint yIdx, jint incy)
 {
   extern void sgbmv_(char *, int *, int *, int *, int *, float *, float *, int *, float *, int *, float *, float *, int *);
   
@@ -3109,7 +3109,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sgbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sgemm(JNIEnv *env, jclass this, jchar transa, jchar transb, jint m, jint n, jint k, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_sgemm(JNIEnv *env, jclass this, jchar transa, jchar transb, jint m, jint n, jint k, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void sgemm_(char *, char *, int *, int *, int *, float *, float *, int *, float *, int *, float *, float *, int *);
   
@@ -3154,7 +3154,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sgemm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sgemv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jfloat beta, jfloatArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_sgemv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jfloat beta, jfloatArray y, jint yIdx, jint incy)
 {
   extern void sgemv_(char *, int *, int *, float *, float *, int *, float *, int *, float *, float *, int *);
   
@@ -3198,7 +3198,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sgemv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sger(JNIEnv *env, jclass this, jint m, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_sger(JNIEnv *env, jclass this, jint m, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
 {
   extern void sger_(int *, int *, float *, float *, int *, float *, int *, float *, int *);
   
@@ -3241,7 +3241,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sger(JNIEnv *env, jclass this, jint 
 
 }
 
-JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_snrm2(JNIEnv *env, jclass this, jint n, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT jfloat JNICALL Java_org_jblas_la_Blas_snrm2(JNIEnv *env, jclass this, jint n, jfloatArray x, jint xIdx, jint incx)
 {
   extern jdouble snrm2_(int *, float *, int *);
   
@@ -3260,7 +3260,7 @@ JNIEXPORT jfloat JNICALL Java_edu_ida_la_Blas_snrm2(JNIEnv *env, jclass this, ji
   return (jdouble) retval;
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srot(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy, jfloat c, jfloat s)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_srot(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy, jfloat c, jfloat s)
 {
   extern void srot_(int *, float *, int *, float *, int *, float *, float *);
   
@@ -3289,7 +3289,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srot(JNIEnv *env, jclass this, jint 
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srotg(JNIEnv *env, jclass this, jfloat sa, jfloat sb, jfloat c, jfloat s)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_srotg(JNIEnv *env, jclass this, jfloat sa, jfloat sb, jfloat c, jfloat s)
 {
   extern void srotg_(float *, float *, float *, float *);
   
@@ -3299,7 +3299,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srotg(JNIEnv *env, jclass this, jflo
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srotm(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy, jfloatArray sparam, jint sparamIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_srotm(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy, jfloatArray sparam, jint sparamIdx)
 {
   extern void srotm_(int *, float *, int *, float *, int *, float *);
   
@@ -3342,7 +3342,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srotm(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srotmg(JNIEnv *env, jclass this, jfloatArray sd1, jint sd1Idx, jfloatArray sd2, jint sd2Idx, jfloatArray sx1, jint sx1Idx, jfloat sy1, jfloatArray sparam, jint sparamIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_srotmg(JNIEnv *env, jclass this, jfloatArray sd1, jint sd1Idx, jfloatArray sd2, jint sd2Idx, jfloatArray sx1, jint sx1Idx, jfloat sy1, jfloatArray sparam, jint sparamIdx)
 {
   extern void srotmg_(float *, float *, float *, float *, float *);
   
@@ -3402,7 +3402,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_srotmg(JNIEnv *env, jclass this, jfl
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssbmv(JNIEnv *env, jclass this, jchar uplo, jint n, jint k, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jfloat beta, jfloatArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ssbmv(JNIEnv *env, jclass this, jchar uplo, jint n, jint k, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jfloat beta, jfloatArray y, jint yIdx, jint incy)
 {
   extern void ssbmv_(char *, int *, int *, float *, float *, int *, float *, int *, float *, float *, int *);
   
@@ -3446,7 +3446,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sscal(JNIEnv *env, jclass this, jint n, jfloat sa, jfloatArray sx, jint sxIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_sscal(JNIEnv *env, jclass this, jint n, jfloat sa, jfloatArray sx, jint sxIdx, jint incx)
 {
   extern void sscal_(int *, float *, float *, int *);
   
@@ -3464,7 +3464,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sscal(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sspmv(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx, jfloat beta, jfloatArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_sspmv(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx, jfloat beta, jfloatArray y, jint yIdx, jint incy)
 {
   extern void sspmv_(char *, int *, float *, float *, float *, int *, float *, float *, int *);
   
@@ -3508,7 +3508,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sspmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sspr2(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray ap, jint apIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_sspr2(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray ap, jint apIdx)
 {
   extern void sspr2_(char *, int *, float *, float *, int *, float *, int *, float *);
   
@@ -3552,7 +3552,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sspr2(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sspr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray ap, jint apIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_sspr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray ap, jint apIdx)
 {
   extern void sspr_(char *, int *, float *, float *, int *, float *);
   
@@ -3582,7 +3582,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sspr(JNIEnv *env, jclass this, jchar
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sswap(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_sswap(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
 {
   extern void sswap_(int *, float *, int *, float *, int *);
   
@@ -3611,7 +3611,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_sswap(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssymm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ssymm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void ssymm_(char *, char *, int *, int *, float *, float *, int *, float *, int *, float *, float *, int *);
   
@@ -3656,7 +3656,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssymm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssymv(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jfloat beta, jfloatArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ssymv(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jfloat beta, jfloatArray y, jint yIdx, jint incy)
 {
   extern void ssymv_(char *, int *, float *, float *, int *, float *, int *, float *, float *, int *);
   
@@ -3700,7 +3700,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssymv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyr2(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ssyr2(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
 {
   extern void ssyr2_(char *, int *, float *, float *, int *, float *, int *, float *, int *);
   
@@ -3744,7 +3744,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyr2(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyr2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ssyr2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void ssyr2k_(char *, char *, int *, int *, float *, float *, int *, float *, int *, float *, float *, int *);
   
@@ -3789,7 +3789,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyr2k(JNIEnv *env, jclass this, jch
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ssyr(JNIEnv *env, jclass this, jchar uplo, jint n, jfloat alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray a, jint aIdx, jint lda)
 {
   extern void ssyr_(char *, int *, float *, float *, int *, float *, int *);
   
@@ -3819,7 +3819,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyr(JNIEnv *env, jclass this, jchar
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyrk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ssyrk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloat beta, jfloatArray c, jint cIdx, jint ldc)
 {
   extern void ssyrk_(char *, char *, int *, int *, float *, float *, int *, float *, float *, int *);
   
@@ -3850,7 +3850,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ssyrk(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_stbmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_stbmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
 {
   extern void stbmv_(char *, char *, char *, int *, int *, float *, int *, float *, int *);
   
@@ -3882,7 +3882,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_stbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_stbsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_stbsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
 {
   extern void stbsv_(char *, char *, char *, int *, int *, float *, int *, float *, int *);
   
@@ -3914,7 +3914,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_stbsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_stpmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_stpmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx)
 {
   extern void stpmv_(char *, char *, char *, int *, float *, float *, int *);
   
@@ -3946,7 +3946,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_stpmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_stpsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_stpsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray ap, jint apIdx, jfloatArray x, jint xIdx, jint incx)
 {
   extern void stpsv_(char *, char *, char *, int *, float *, float *, int *);
   
@@ -3978,7 +3978,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_stpsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_strmm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_strmm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb)
 {
   extern void strmm_(char *, char *, char *, char *, int *, int *, float *, float *, int *, float *, int *);
   
@@ -4011,7 +4011,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_strmm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_strmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_strmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
 {
   extern void strmv_(char *, char *, char *, int *, float *, int *, float *, int *);
   
@@ -4043,7 +4043,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_strmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_strsm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_strsm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jfloat alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb)
 {
   extern void strsm_(char *, char *, char *, char *, int *, int *, float *, float *, int *, float *, int *);
   
@@ -4076,7 +4076,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_strsm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_strsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_strsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx)
 {
   extern void strsv_(char *, char *, char *, int *, float *, int *, float *, int *);
   
@@ -4108,7 +4108,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_strsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zaxpy(JNIEnv *env, jclass this, jint n, jobject za, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zaxpy(JNIEnv *env, jclass this, jint n, jobject za, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
 {
   extern void zaxpy_(int *, ComplexDouble *, double *, int *, double *, int *);
   
@@ -4139,7 +4139,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zaxpy(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zcopy(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zcopy(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
 {
   extern void zcopy_(int *, double *, int *, double *, int *);
   
@@ -4168,7 +4168,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zcopy(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT jobject JNICALL Java_edu_ida_la_Blas_zdotc(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
+JNIEXPORT jobject JNICALL Java_org_jblas_la_Blas_zdotc(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
 {
   extern void zdotc_(ComplexDouble *, int *, double *, int *, double *, int *);
   
@@ -4199,7 +4199,7 @@ JNIEXPORT jobject JNICALL Java_edu_ida_la_Blas_zdotc(JNIEnv *env, jclass this, j
   return createComplexDouble(env, &retval);
 }
 
-JNIEXPORT jobject JNICALL Java_edu_ida_la_Blas_zdotu(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
+JNIEXPORT jobject JNICALL Java_org_jblas_la_Blas_zdotu(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
 {
   extern void zdotu_(ComplexDouble *, int *, double *, int *, double *, int *);
   
@@ -4230,7 +4230,7 @@ JNIEXPORT jobject JNICALL Java_edu_ida_la_Blas_zdotu(JNIEnv *env, jclass this, j
   return createComplexDouble(env, &retval);
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zdrot(JNIEnv *env, jclass this, jint n, jdoubleArray cx, jint cxIdx, jint incx, jdoubleArray cy, jint cyIdx, jint incy, jdouble c, jdouble s)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zdrot(JNIEnv *env, jclass this, jint n, jdoubleArray cx, jint cxIdx, jint incx, jdoubleArray cy, jint cyIdx, jint incy, jdouble c, jdouble s)
 {
   extern void zdrot_(int *, double *, int *, double *, int *, double *, double *);
   
@@ -4259,7 +4259,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zdrot(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zdscal(JNIEnv *env, jclass this, jint n, jdouble da, jdoubleArray zx, jint zxIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zdscal(JNIEnv *env, jclass this, jint n, jdouble da, jdoubleArray zx, jint zxIdx, jint incx)
 {
   extern void zdscal_(int *, double *, double *, int *);
   
@@ -4277,7 +4277,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zdscal(JNIEnv *env, jclass this, jin
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zgbmv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jint kl, jint ku, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jobject beta, jdoubleArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zgbmv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jint kl, jint ku, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jobject beta, jdoubleArray y, jint yIdx, jint incy)
 {
   extern void zgbmv_(char *, int *, int *, int *, int *, ComplexDouble *, double *, int *, double *, int *, ComplexDouble *, double *, int *);
   
@@ -4325,7 +4325,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zgbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zgemm(JNIEnv *env, jclass this, jchar transa, jchar transb, jint m, jint n, jint k, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jobject beta, jdoubleArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zgemm(JNIEnv *env, jclass this, jchar transa, jchar transb, jint m, jint n, jint k, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jobject beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void zgemm_(char *, char *, int *, int *, int *, ComplexDouble *, double *, int *, double *, int *, ComplexDouble *, double *, int *);
   
@@ -4374,7 +4374,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zgemm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zgemv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jobject beta, jdoubleArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zgemv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jobject beta, jdoubleArray y, jint yIdx, jint incy)
 {
   extern void zgemv_(char *, int *, int *, ComplexDouble *, double *, int *, double *, int *, ComplexDouble *, double *, int *);
   
@@ -4422,7 +4422,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zgemv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zgerc(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zgerc(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
 {
   extern void zgerc_(int *, int *, ComplexDouble *, double *, int *, double *, int *, double *, int *);
   
@@ -4467,7 +4467,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zgerc(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zgeru(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zgeru(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
 {
   extern void zgeru_(int *, int *, ComplexDouble *, double *, int *, double *, int *, double *, int *);
   
@@ -4512,7 +4512,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zgeru(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhbmv(JNIEnv *env, jclass this, jchar uplo, jint n, jint k, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jobject beta, jdoubleArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zhbmv(JNIEnv *env, jclass this, jchar uplo, jint n, jint k, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jobject beta, jdoubleArray y, jint yIdx, jint incy)
 {
   extern void zhbmv_(char *, int *, int *, ComplexDouble *, double *, int *, double *, int *, ComplexDouble *, double *, int *);
   
@@ -4560,7 +4560,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhemm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jobject beta, jdoubleArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zhemm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jobject beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void zhemm_(char *, char *, int *, int *, ComplexDouble *, double *, int *, double *, int *, ComplexDouble *, double *, int *);
   
@@ -4609,7 +4609,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhemm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhemv(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jobject beta, jdoubleArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zhemv(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jobject beta, jdoubleArray y, jint yIdx, jint incy)
 {
   extern void zhemv_(char *, int *, ComplexDouble *, double *, int *, double *, int *, ComplexDouble *, double *, int *);
   
@@ -4657,7 +4657,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhemv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zher2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zher2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
 {
   extern void zher2_(char *, int *, ComplexDouble *, double *, int *, double *, int *, double *, int *);
   
@@ -4703,7 +4703,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zher2(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zher2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zher2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void zher2k_(char *, char *, int *, int *, ComplexDouble *, double *, int *, double *, int *, double *, double *, int *);
   
@@ -4750,7 +4750,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zher2k(JNIEnv *env, jclass this, jch
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zher(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray a, jint aIdx, jint lda)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zher(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray a, jint aIdx, jint lda)
 {
   extern void zher_(char *, int *, double *, double *, int *, double *, int *);
   
@@ -4780,7 +4780,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zher(JNIEnv *env, jclass this, jchar
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zherk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zherk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jdouble alpha, jdoubleArray a, jint aIdx, jint lda, jdouble beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void zherk_(char *, char *, int *, int *, double *, double *, int *, double *, double *, int *);
   
@@ -4811,7 +4811,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zherk(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhpmv(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx, jobject beta, jdoubleArray y, jint yIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zhpmv(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx, jobject beta, jdoubleArray y, jint yIdx, jint incy)
 {
   extern void zhpmv_(char *, int *, ComplexDouble *, double *, double *, int *, ComplexDouble *, double *, int *);
   
@@ -4859,7 +4859,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhpmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhpr2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray ap, jint apIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zhpr2(JNIEnv *env, jclass this, jchar uplo, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray ap, jint apIdx)
 {
   extern void zhpr2_(char *, int *, ComplexDouble *, double *, int *, double *, int *, double *);
   
@@ -4905,7 +4905,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhpr2(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhpr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray ap, jint apIdx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zhpr(JNIEnv *env, jclass this, jchar uplo, jint n, jdouble alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray ap, jint apIdx)
 {
   extern void zhpr_(char *, int *, double *, double *, int *, double *);
   
@@ -4935,7 +4935,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zhpr(JNIEnv *env, jclass this, jchar
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zrotg(JNIEnv *env, jclass this, jobject ca, jobject cb, jdouble c, jobject s)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zrotg(JNIEnv *env, jclass this, jobject ca, jobject cb, jdouble c, jobject s)
 {
   extern void zrotg_(ComplexDouble *, ComplexDouble *, double *, ComplexDouble *);
   
@@ -4951,7 +4951,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zrotg(JNIEnv *env, jclass this, jobj
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zscal(JNIEnv *env, jclass this, jint n, jobject za, jdoubleArray zx, jint zxIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zscal(JNIEnv *env, jclass this, jint n, jobject za, jdoubleArray zx, jint zxIdx, jint incx)
 {
   extern void zscal_(int *, ComplexDouble *, double *, int *);
   
@@ -4971,7 +4971,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zscal(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zswap(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zswap(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
 {
   extern void zswap_(int *, double *, int *, double *, int *);
   
@@ -5000,7 +5000,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zswap(JNIEnv *env, jclass this, jint
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zsymm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jobject beta, jdoubleArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zsymm(JNIEnv *env, jclass this, jchar side, jchar uplo, jint m, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jobject beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void zsymm_(char *, char *, int *, int *, ComplexDouble *, double *, int *, double *, int *, ComplexDouble *, double *, int *);
   
@@ -5049,7 +5049,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zsymm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zsyr2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jobject beta, jdoubleArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zsyr2k(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jobject beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void zsyr2k_(char *, char *, int *, int *, ComplexDouble *, double *, int *, double *, int *, ComplexDouble *, double *, int *);
   
@@ -5098,7 +5098,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zsyr2k(JNIEnv *env, jclass this, jch
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zsyrk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jobject beta, jdoubleArray c, jint cIdx, jint ldc)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_zsyrk(JNIEnv *env, jclass this, jchar uplo, jchar trans, jint n, jint k, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jobject beta, jdoubleArray c, jint cIdx, jint ldc)
 {
   extern void zsyrk_(char *, char *, int *, int *, ComplexDouble *, double *, int *, ComplexDouble *, double *, int *);
   
@@ -5133,7 +5133,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_zsyrk(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztbmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ztbmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void ztbmv_(char *, char *, char *, int *, int *, double *, int *, double *, int *);
   
@@ -5165,7 +5165,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztbmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztbsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ztbsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jint k, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void ztbsv_(char *, char *, char *, int *, int *, double *, int *, double *, int *);
   
@@ -5197,7 +5197,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztbsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztpmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ztpmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void ztpmv_(char *, char *, char *, int *, double *, double *, int *);
   
@@ -5229,7 +5229,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztpmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztpsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ztpsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray ap, jint apIdx, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void ztpsv_(char *, char *, char *, int *, double *, double *, int *);
   
@@ -5261,7 +5261,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztpsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztrmm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ztrmm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb)
 {
   extern void ztrmm_(char *, char *, char *, char *, int *, int *, ComplexDouble *, double *, int *, double *, int *);
   
@@ -5296,7 +5296,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztrmm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztrmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ztrmv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void ztrmv_(char *, char *, char *, int *, double *, int *, double *, int *);
   
@@ -5328,7 +5328,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztrmv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztrsm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ztrsm(JNIEnv *env, jclass this, jchar side, jchar uplo, jchar transa, jchar diag, jint m, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb)
 {
   extern void ztrsm_(char *, char *, char *, char *, int *, int *, ComplexDouble *, double *, int *, double *, int *);
   
@@ -5363,7 +5363,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztrsm(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztrsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
+JNIEXPORT void JNICALL Java_org_jblas_la_Blas_ztrsv(JNIEnv *env, jclass this, jchar uplo, jchar trans, jchar diag, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx)
 {
   extern void ztrsv_(char *, char *, char *, int *, double *, int *, double *, int *);
   
@@ -5395,7 +5395,7 @@ JNIEXPORT void JNICALL Java_edu_ida_la_Blas_ztrsv(JNIEnv *env, jclass this, jcha
 
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dgesv(JNIEnv *env, jclass this, jint n, jint nrhs, jdoubleArray a, jint aIdx, jint lda, jintArray ipiv, jint ipivIdx, jdoubleArray b, jint bIdx, jint ldb)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_dgesv(JNIEnv *env, jclass this, jint n, jint nrhs, jdoubleArray a, jint aIdx, jint lda, jintArray ipiv, jint ipivIdx, jdoubleArray b, jint bIdx, jint ldb)
 {
   extern void dgesv_(int *, int *, double *, int *, int *, double *, int *, int *);
   
@@ -5434,7 +5434,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dgesv(JNIEnv *env, jclass this, jint
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_sgesv(JNIEnv *env, jclass this, jint n, jint nrhs, jfloatArray a, jint aIdx, jint lda, jintArray ipiv, jint ipivIdx, jfloatArray b, jint bIdx, jint ldb)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_sgesv(JNIEnv *env, jclass this, jint n, jint nrhs, jfloatArray a, jint aIdx, jint lda, jintArray ipiv, jint ipivIdx, jfloatArray b, jint bIdx, jint ldb)
 {
   extern void sgesv_(int *, int *, float *, int *, int *, float *, int *, int *);
   
@@ -5473,7 +5473,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_sgesv(JNIEnv *env, jclass this, jint
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsysv(JNIEnv *env, jclass this, jchar uplo, jint n, jint nrhs, jdoubleArray a, jint aIdx, jint lda, jintArray ipiv, jint ipivIdx, jdoubleArray b, jint bIdx, jint ldb, jdoubleArray work, jint workIdx, jint lwork)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_dsysv(JNIEnv *env, jclass this, jchar uplo, jint n, jint nrhs, jdoubleArray a, jint aIdx, jint lda, jintArray ipiv, jint ipivIdx, jdoubleArray b, jint bIdx, jint ldb, jdoubleArray work, jint workIdx, jint lwork)
 {
   extern void dsysv_(char *, int *, int *, double *, int *, int *, double *, int *, double *, int *, int *);
   
@@ -5527,7 +5527,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsysv(JNIEnv *env, jclass this, jcha
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssysv(JNIEnv *env, jclass this, jchar uplo, jint n, jint nrhs, jfloatArray a, jint aIdx, jint lda, jintArray ipiv, jint ipivIdx, jfloatArray b, jint bIdx, jint ldb, jfloatArray work, jint workIdx, jint lwork)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_ssysv(JNIEnv *env, jclass this, jchar uplo, jint n, jint nrhs, jfloatArray a, jint aIdx, jint lda, jintArray ipiv, jint ipivIdx, jfloatArray b, jint bIdx, jint ldb, jfloatArray work, jint workIdx, jint lwork)
 {
   extern void ssysv_(char *, int *, int *, float *, int *, int *, float *, int *, float *, int *, int *);
   
@@ -5581,7 +5581,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssysv(JNIEnv *env, jclass this, jcha
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyev(JNIEnv *env, jclass this, jchar jobz, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray w, jint wIdx, jdoubleArray work, jint workIdx, jint lwork)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_dsyev(JNIEnv *env, jclass this, jchar jobz, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray w, jint wIdx, jdoubleArray work, jint workIdx, jint lwork)
 {
   extern void dsyev_(char *, char *, int *, double *, int *, double *, double *, int *, int *);
   
@@ -5628,7 +5628,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyev(JNIEnv *env, jclass this, jcha
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyev(JNIEnv *env, jclass this, jchar jobz, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray w, jint wIdx, jfloatArray work, jint workIdx, jint lwork)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_ssyev(JNIEnv *env, jclass this, jchar jobz, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray w, jint wIdx, jfloatArray work, jint workIdx, jint lwork)
 {
   extern void ssyev_(char *, char *, int *, float *, int *, float *, float *, int *, int *);
   
@@ -5675,7 +5675,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyev(JNIEnv *env, jclass this, jcha
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevd(JNIEnv *env, jclass this, jchar jobz, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray w, jint wIdx, jdoubleArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_dsyevd(JNIEnv *env, jclass this, jchar jobz, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray w, jint wIdx, jdoubleArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
 {
   extern void dsyevd_(char *, char *, int *, double *, int *, double *, double *, int *, int *, int *, int *);
   
@@ -5730,7 +5730,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevd(JNIEnv *env, jclass this, jch
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevr(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdouble vl, jdouble vu, jint il, jint iu, jdouble abstol, jintArray m, jint mIdx, jdoubleArray w, jint wIdx, jdoubleArray z, jint zIdx, jint ldz, jintArray isuppz, jint isuppzIdx, jdoubleArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_dsyevr(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdouble vl, jdouble vu, jint il, jint iu, jdouble abstol, jintArray m, jint mIdx, jdoubleArray w, jint wIdx, jdoubleArray z, jint zIdx, jint ldz, jintArray isuppz, jint isuppzIdx, jdoubleArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
 {
   extern void dsyevr_(char *, char *, char *, int *, double *, int *, double *, double *, int *, int *, double *, int *, double *, double *, int *, int *, double *, int *, int *, int *, int *);
   
@@ -5828,7 +5828,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevr(JNIEnv *env, jclass this, jch
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevx(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdouble vl, jdouble vu, jint il, jint iu, jdouble abstol, jintArray m, jint mIdx, jdoubleArray w, jint wIdx, jdoubleArray z, jint zIdx, jint ldz, jdoubleArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jintArray ifail, jint ifailIdx)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_dsyevx(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdouble vl, jdouble vu, jint il, jint iu, jdouble abstol, jintArray m, jint mIdx, jdoubleArray w, jint wIdx, jdoubleArray z, jint zIdx, jint ldz, jdoubleArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jintArray ifail, jint ifailIdx)
 {
   extern void dsyevx_(char *, char *, char *, int *, double *, int *, double *, double *, int *, int *, double *, int *, double *, double *, int *, double *, int *, int *, int *, int *);
   
@@ -5926,7 +5926,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dsyevx(JNIEnv *env, jclass this, jch
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevd(JNIEnv *env, jclass this, jchar jobz, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray w, jint wIdx, jfloatArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_ssyevd(JNIEnv *env, jclass this, jchar jobz, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray w, jint wIdx, jfloatArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
 {
   extern void ssyevd_(char *, char *, int *, float *, int *, float *, float *, int *, int *, int *, int *);
   
@@ -5981,7 +5981,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevd(JNIEnv *env, jclass this, jch
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevr(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloat vl, jfloat vu, jint il, jint iu, jfloat abstol, jintArray m, jint mIdx, jfloatArray w, jint wIdx, jfloatArray z, jint zIdx, jint ldz, jintArray isuppz, jint isuppzIdx, jfloatArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_ssyevr(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloat vl, jfloat vu, jint il, jint iu, jfloat abstol, jintArray m, jint mIdx, jfloatArray w, jint wIdx, jfloatArray z, jint zIdx, jint ldz, jintArray isuppz, jint isuppzIdx, jfloatArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jint liwork)
 {
   extern void ssyevr_(char *, char *, char *, int *, float *, int *, float *, float *, int *, int *, float *, int *, float *, float *, int *, int *, float *, int *, int *, int *, int *);
   
@@ -6079,7 +6079,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevr(JNIEnv *env, jclass this, jch
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevx(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloat vl, jfloat vu, jint il, jint iu, jfloat abstol, jintArray m, jint mIdx, jfloatArray w, jint wIdx, jfloatArray z, jint zIdx, jint ldz, jfloatArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jintArray ifail, jint ifailIdx)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_ssyevx(JNIEnv *env, jclass this, jchar jobz, jchar range, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloat vl, jfloat vu, jint il, jint iu, jfloat abstol, jintArray m, jint mIdx, jfloatArray w, jint wIdx, jfloatArray z, jint zIdx, jint ldz, jfloatArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx, jintArray ifail, jint ifailIdx)
 {
   extern void ssyevx_(char *, char *, char *, int *, float *, int *, float *, float *, int *, int *, float *, int *, float *, float *, int *, float *, int *, int *, int *, int *);
   
@@ -6177,7 +6177,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_ssyevx(JNIEnv *env, jclass this, jch
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dposv(JNIEnv *env, jclass this, jchar uplo, jint n, jint nrhs, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_dposv(JNIEnv *env, jclass this, jchar uplo, jint n, jint nrhs, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb)
 {
   extern void dposv_(char *, int *, int *, double *, int *, double *, int *, int *);
   
@@ -6209,7 +6209,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dposv(JNIEnv *env, jclass this, jcha
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_sposv(JNIEnv *env, jclass this, jchar uplo, jint n, jint nrhs, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_sposv(JNIEnv *env, jclass this, jchar uplo, jint n, jint nrhs, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb)
 {
   extern void sposv_(char *, int *, int *, float *, int *, float *, int *, int *);
   
@@ -6241,7 +6241,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_sposv(JNIEnv *env, jclass this, jcha
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dgeev(JNIEnv *env, jclass this, jchar jobvl, jchar jobvr, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray wr, jint wrIdx, jdoubleArray wi, jint wiIdx, jdoubleArray vl, jint vlIdx, jint ldvl, jdoubleArray vr, jint vrIdx, jint ldvr, jdoubleArray work, jint workIdx, jint lwork)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_dgeev(JNIEnv *env, jclass this, jchar jobvl, jchar jobvr, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray wr, jint wrIdx, jdoubleArray wi, jint wiIdx, jdoubleArray vl, jint vlIdx, jint ldvl, jdoubleArray vr, jint vrIdx, jint ldvr, jdoubleArray work, jint workIdx, jint lwork)
 {
   extern void dgeev_(char *, char *, int *, double *, int *, double *, double *, double *, int *, double *, int *, double *, int *, int *);
   
@@ -6348,7 +6348,7 @@ JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_dgeev(JNIEnv *env, jclass this, jcha
   return info;
 }
 
-JNIEXPORT jint JNICALL Java_edu_ida_la_Blas_sgeev(JNIEnv *env, jclass this, jchar jobvl, jchar jobvr, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray wr, jint wrIdx, jfloatArray wi, jint wiIdx, jfloatArray vl, jint vlIdx, jint ldvl, jfloatArray vr, jint vrIdx, jint ldvr, jfloatArray work, jint workIdx, jint lwork)
+JNIEXPORT jint JNICALL Java_org_jblas_la_Blas_sgeev(JNIEnv *env, jclass this, jchar jobvl, jchar jobvr, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray wr, jint wrIdx, jfloatArray wi, jint wiIdx, jfloatArray vl, jint vlIdx, jint ldvl, jfloatArray vr, jint vrIdx, jint ldvr, jfloatArray work, jint workIdx, jint lwork)
 {
   extern void sgeev_(char *, char *, int *, float *, int *, float *, float *, float *, int *, float *, int *, float *, int *, int *);
   

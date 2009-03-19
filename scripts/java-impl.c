@@ -1,6 +1,6 @@
 #include "<%= header_file_name %>.h"
 
-#define CORE_PACKAGE "edu/ida/core/"
+#define CORE_PACKAGE "org/jblas/core/"
 
 /*
  * For convenience, we define some typedefs here which have the

@@ -6,8 +6,8 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
-import edu.ida.core.ComplexFloat;
-import edu.ida.core.ComplexDouble;
+import org.jblas.core.ComplexFloat;
+import org.jblas.core.ComplexDouble;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.File;
@@ -26,7 +26,7 @@ public class <%= classname %> {
 				  "BLAS native library not found in path. Copying native library\n" +
 				  "from the archive. Consider installing the library somewhere\n" +
 				  "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
-		  new edu.ida.core.LibraryLoader().loadLibrary("j<%= classname.downcase %>");
+		  new org.jblas.core.LibraryLoader().loadLibrary("j<%= classname.downcase %>");
 	  }
   } 
 

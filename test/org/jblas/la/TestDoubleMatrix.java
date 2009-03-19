@@ -1,0 +1,605 @@
+package org.jblas.la;
+
+import org.jblas.la.DoubleMatrix;
+import org.jblas.la.Geometry;
+import org.jblas.la.Solve;
+import junit.framework.TestCase;
+import java.util.Arrays;
+import static org.jblas.la.ranges.RangeUtils.*;
+
+public class TestDoubleMatrix extends TestCase {
+
+    DoubleMatrix A, B, C, D, E, F;
+
+    public void setUp() {
+        A = new DoubleMatrix(4, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0);
+        B = new DoubleMatrix(3, 1, 2.0, 4.0, 8.0);
+        C = new DoubleMatrix(3, 1, -1.0, 2.0, -3.0);
+        D = new DoubleMatrix(3, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+        E = new DoubleMatrix(3, 3, 1.0, -2.0, 3.0, -4.0, 5.0, -6.0, 7.0, -8.0, 9.0);
+        F = new DoubleMatrix(3, 1, 3.0, 4.0, 7.0);
+    }
+
+    public void testConstructionAndSetGet() {
+        double[][] dataA = {{1.0, 5.0, 9.0}, {2.0, 6.0, 10.0}, {3.0, 7.0, 11.0}, {4.0, 8.0, 12.0}};
+
+        assertEquals(A.rows, 4);
+        assertEquals(A.columns, 3);
+
+        for (int r = 0; r < 4; r++) {
+            for (int c = 0; c < 3; c++) {
+                assertEquals(dataA[r][c], A.get(r, c));
+            }
+        }
+    }
+
+    public void testSetAndGet() {
+        DoubleMatrix M = new DoubleMatrix(3, 3);
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                M.put(i, j, i + j);
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                assertEquals((double) i + j, M.get(i, j));
+            }
+        }
+    }
+
+    public void testCopy() {
+        DoubleMatrix M = new DoubleMatrix();
+
+        assertFalse(M.equals(A));
+
+        M.copy(A);
+        assertEquals(M, A);
+    }
+
+    public void testDup() {
+        DoubleMatrix M = A.dup();
+        assertEquals(M, A);
+
+        M.put(0, 0, 2.0);
+        assertFalse(M.equals(A));
+    }
+
+    public void testResize() {
+        DoubleMatrix M = A.dup();
+
+        assertEquals(4, M.rows);
+        assertEquals(3, M.columns);
+
+        M.resize(4, 5);
+        assertEquals(4, M.rows);
+        assertEquals(5, M.columns);
+
+        assertEquals(0.0, M.get(3, 4));
+    }
+
+    public void testReshape() {
+        DoubleMatrix M = new DoubleMatrix(2, 2, 1.0, 2.0, 3.0, 4.0);
+
+        M.reshape(1, 4);
+        assertEquals(1.0, M.get(0, 0));
+        assertEquals(4.0, M.get(0, 3));
+
+        M.reshape(4, 1);
+        assertEquals(1.0, M.get(0, 0));
+        assertEquals(4.0, M.get(3, 0));
+    }
+
+    public void testMmul() {
+        DoubleMatrix R = A.dup();
+        DoubleMatrix result = new DoubleMatrix(4, 1, 94.0, 108.0, 122.0, 136.0);
+
+        A.mmuli(B, R);
+        assertEquals(result, R);
+
+        assertEquals(result, A.mmul(B));
+
+        DoubleMatrix resultDE = new DoubleMatrix(3, 3, 14.0, 16.0, 18.0, -26.0, -31.0, -36.0, 38.0, 46.0, 54.0);
+
+        // In-place with independent operands
+        assertEquals(resultDE, D.mmuli(E, R));
+
+        // In-place on this
+        R = D.dup();
+        assertEquals(resultDE, R.mmuli(E, R));
+
+        // In-place on this
+        R = E.dup();
+        assertEquals(resultDE, D.mmuli(R, R));
+
+        // Fully dynamic
+        assertEquals(resultDE, D.mmul(E));
+    }
+
+    public void testAdd() {
+        DoubleMatrix result = new DoubleMatrix(3, 1, 1.0, 6.0, 5.0);
+
+        DoubleMatrix R = new DoubleMatrix();
+
+        // In-place, but independent operands
+        B.addi(C, R);
+        assertEquals(result, R);
+
+        // In-place on this
+        R = B.dup();
+        assertEquals(result, R.addi(C, R));
+
+        // In-place on other
+        R = C.dup();
+        assertEquals(result, B.addi(R, R));
+
+        // fully dynamic
+        assertEquals(result, B.add(C));
+
+        result = new DoubleMatrix(3, 1, 3.0, 5.0, 9.0);
+
+        // In-place, but independent operands
+        assertEquals(result, B.addi(1.0, R));
+
+        // In-place on this
+        R = B.dup();
+        assertEquals(result, R.addi(1.0, R));
+
+        // fully dynamic
+        assertEquals(result, B.add(1.0));
+    }
+
+    public void testSub() {
+        DoubleMatrix result = new DoubleMatrix(3, 1, 3.0, 2.0, 11.0);
+
+        DoubleMatrix R = new DoubleMatrix();
+
+        // In-place, but independent operands
+        assertEquals(result, B.subi(C, R));
+
+        // In-place on this
+        R = B.dup();
+        assertEquals(result, R.subi(C, R));
+
+        // In-place on other
+        R = C.dup();
+        assertEquals(result, B.subi(R, R));
+
+        // fully dynamic
+        assertEquals(result, B.sub(C));
+
+        result = new DoubleMatrix(3, 1, 1.0, 3.0, 7.0);
+
+        // In-place, but independent operands
+        assertEquals(result, B.subi(1.0, R));
+
+        // In-place on this
+        R = B.dup();
+        assertEquals(result, R.subi(1.0, R));
+
+        // fully dynamic
+        assertEquals(result, B.sub(1.0));
+    }
+
+    public void testRsub() {
+        DoubleMatrix result = new DoubleMatrix(3, 1, 3.0, 2.0, 11.0);
+
+        DoubleMatrix R = new DoubleMatrix();
+
+        // In-place, but independent operands
+        assertEquals(result, C.rsubi(B, R));
+
+        // In-place on this
+        R = C.dup();
+        assertEquals(result, R.rsubi(B, R));
+
+        // In-place on other
+        R = B.dup();
+        assertEquals(result, C.rsubi(R, R));
+
+        // fully dynamic
+        assertEquals(result, C.rsub(B));
+
+        result = new DoubleMatrix(3, 1, -1.0, -3.0, -7.0);
+
+        // In-place, but independent operands
+        assertEquals(result, B.rsubi(1.0, R));
+
+        // In-place on this
+        R = B.dup();
+        assertEquals(result, R.rsubi(1.0, R));
+
+        // fully dynamic
+        assertEquals(result, B.rsub(1.0));
+    }
+
+    public void testMul() {
+        DoubleMatrix result = new DoubleMatrix(3, 1, -2.0, 8.0, -24.0);
+
+        DoubleMatrix R = new DoubleMatrix();
+
+        // In-place, but independent operands
+        assertEquals(result, B.muli(C, R));
+
+        // In-place on this
+        R = B.dup();
+        assertEquals(result, R.muli(C, R));
+
+        // In-place on other
+        R = C.dup();
+        assertEquals(result, B.muli(R, R));
+
+        // fully dynamic
+        assertEquals(result, B.mul(C));
+
+        result = new DoubleMatrix(3, 1, 1.0, 2.0, 4.0);
+
+        // In-place, but independent operands
+        assertEquals(result, B.muli(0.5, R));
+
+        // In-place on this
+        R = B.dup();
+        assertEquals(result, R.muli(0.5, R));
+
+        // fully dynamic
+        assertEquals(result, B.mul(0.5));
+    }
+
+    public void testDiv() {
+        DoubleMatrix result = new DoubleMatrix(3, 1, -2.0, 2.0, -2.666666666);
+
+        DoubleMatrix R = new DoubleMatrix();
+
+        // In-place, but independent operands
+        assertEquals(result, B.divi(C, R));
+
+        // In-place on this
+        R = B.dup();
+        assertEquals(result, R.divi(C, R));
+
+        // In-place on other
+        R = C.dup();
+        assertEquals(result, B.divi(R, R));
+
+        // fully dynamic
+        assertEquals(result, B.div(C));
+
+        result = new DoubleMatrix(3, 1, 1.0, 2.0, 4.0);
+
+        // In-place, but independent operands
+        assertEquals(result, B.divi(2.0, R));
+
+        // In-place on this
+        R = B.dup();
+        assertEquals(result, R.divi(2.0, R));
+
+        // fully dynamic
+        assertEquals(result, B.div(2.0));
+    }
+
+    public void testRdiv() {
+        DoubleMatrix result = new DoubleMatrix(3, 1, -2.0, 2.0, -2.666666666);
+
+        DoubleMatrix R = new DoubleMatrix();
+
+        // In-place, but independent operands
+        assertEquals(result, C.rdivi(B, R));
+
+        // In-place on this
+        R = C.dup();
+        assertEquals(result, R.rdivi(B, R));
+
+        // In-place on other
+        R = B.dup();
+        assertEquals(result, C.rdivi(R, R));
+
+        // fully dynamic
+        assertEquals(result, C.rdiv(B));
+
+        result = new DoubleMatrix(3, 1, 0.5, 0.25, 0.125);
+
+        // In-place, but independent operands
+        assertEquals(result, B.rdivi(1.0, R));
+
+        // In-place on this
+        R = B.dup();
+        assertEquals(result, R.rdivi(1.0, R));
+
+        // fully dynamic
+        assertEquals(result, B.rdiv(1.0));
+    }
+
+    /*# def test_logical(op, result, scalar, result2); <<-EOS
+    public void test#{op.upcase}() {
+    DoubleMatrix result = new DoubleMatrix(3, 1, #{result});
+    DoubleMatrix result2 = new DoubleMatrix(3, 1, #{result2});
+    DoubleMatrix R = new DoubleMatrix();
+    
+    // in-place but independent operands
+    assertEquals(result, B.#{op}i(F, R));
+    
+    // in-place but in other
+    R = F.dup();
+    assertEquals(result, B.#{op}i(R, R));
+    
+    // in-place in this
+    R = B.dup();
+    assertEquals(result, R.#{op}i(F, R));
+    
+    // fully dynamic
+    assertEquals(result, B.#{op}(F));
+    
+    // in-place in this
+    R = B.dup();
+    assertEquals(result2, R.#{op}i(#{scalar}, R));
+    
+    // fully dynamic
+    assertEquals(result2, B.#{op}(#{scalar}));	
+    }
+    EOS
+    end	
+    #*/
+    /*# test_logical('lt', '1.0, 0.0, 0.0', 4.0, '1.0, 0.0, 0.0') #*/
+//RJPP-BEGIN------------------------------------------------------------
+    public void testLT() {
+    DoubleMatrix result = new DoubleMatrix(3, 1, 1.0, 0.0, 0.0);
+    DoubleMatrix result2 = new DoubleMatrix(3, 1, 1.0, 0.0, 0.0);
+    DoubleMatrix R = new DoubleMatrix();
+    
+    // in-place but independent operands
+    assertEquals(result, B.lti(F, R));
+    
+    // in-place but in other
+    R = F.dup();
+    assertEquals(result, B.lti(R, R));
+    
+    // in-place in this
+    R = B.dup();
+    assertEquals(result, R.lti(F, R));
+    
+    // fully dynamic
+    assertEquals(result, B.lt(F));
+    
+    // in-place in this
+    R = B.dup();
+    assertEquals(result2, R.lti(4.0, R));
+    
+    // fully dynamic
+    assertEquals(result2, B.lt(4.0));	
+    }
+//RJPP-END--------------------------------------------------------------
+	/*# test_logical('le', '1.0, 1.0, 0.0', 4.0, '1.0, 1.0, 0.0') #*/
+//RJPP-BEGIN------------------------------------------------------------
+    public void testLE() {
+    DoubleMatrix result = new DoubleMatrix(3, 1, 1.0, 1.0, 0.0);
+    DoubleMatrix result2 = new DoubleMatrix(3, 1, 1.0, 1.0, 0.0);
+    DoubleMatrix R = new DoubleMatrix();
+    
+    // in-place but independent operands
+    assertEquals(result, B.lei(F, R));
+    
+    // in-place but in other
+    R = F.dup();
+    assertEquals(result, B.lei(R, R));
+    
+    // in-place in this
+    R = B.dup();
+    assertEquals(result, R.lei(F, R));
+    
+    // fully dynamic
+    assertEquals(result, B.le(F));
+    
+    // in-place in this
+    R = B.dup();
+    assertEquals(result2, R.lei(4.0, R));
+    
+    // fully dynamic
+    assertEquals(result2, B.le(4.0));	
+    }
+//RJPP-END--------------------------------------------------------------
+	/*# test_logical('gt', '0.0, 0.0, 1.0', 4.0, '0.0, 0.0, 1.0') #*/
+//RJPP-BEGIN------------------------------------------------------------
+    public void testGT() {
+    DoubleMatrix result = new DoubleMatrix(3, 1, 0.0, 0.0, 1.0);
+    DoubleMatrix result2 = new DoubleMatrix(3, 1, 0.0, 0.0, 1.0);
+    DoubleMatrix R = new DoubleMatrix();
+    
+    // in-place but independent operands
+    assertEquals(result, B.gti(F, R));
+    
+    // in-place but in other
+    R = F.dup();
+    assertEquals(result, B.gti(R, R));
+    
+    // in-place in this
+    R = B.dup();
+    assertEquals(result, R.gti(F, R));
+    
+    // fully dynamic
+    assertEquals(result, B.gt(F));
+    
+    // in-place in this
+    R = B.dup();
+    assertEquals(result2, R.gti(4.0, R));
+    
+    // fully dynamic
+    assertEquals(result2, B.gt(4.0));	
+    }
+//RJPP-END--------------------------------------------------------------
+	/*# test_logical('ge', '0.0, 1.0, 1.0', 4.0, '0.0, 1.0, 1.0') #*/
+//RJPP-BEGIN------------------------------------------------------------
+    public void testGE() {
+    DoubleMatrix result = new DoubleMatrix(3, 1, 0.0, 1.0, 1.0);
+    DoubleMatrix result2 = new DoubleMatrix(3, 1, 0.0, 1.0, 1.0);
+    DoubleMatrix R = new DoubleMatrix();
+    
+    // in-place but independent operands
+    assertEquals(result, B.gei(F, R));
+    
+    // in-place but in other
+    R = F.dup();
+    assertEquals(result, B.gei(R, R));
+    
+    // in-place in this
+    R = B.dup();
+    assertEquals(result, R.gei(F, R));
+    
+    // fully dynamic
+    assertEquals(result, B.ge(F));
+    
+    // in-place in this
+    R = B.dup();
+    assertEquals(result2, R.gei(4.0, R));
+    
+    // fully dynamic
+    assertEquals(result2, B.ge(4.0));	
+    }
+//RJPP-END--------------------------------------------------------------
+    public void testMinMax() {
+        assertEquals(1.0, A.min());
+        assertEquals(12.0, A.max());
+    }
+
+    public void testArgMinMax() {
+        assertEquals(0, A.argmin());
+        assertEquals(11, A.argmax());
+    }
+
+    public void testTranspose() {
+        DoubleMatrix At = A.transpose();
+        assertEquals(1.0, At.get(0, 0));
+        assertEquals(2.0, At.get(0, 1));
+        assertEquals(5.0, At.get(1, 0));
+    }
+
+    public void testGetRowVector() {
+        for (int r = 0; r < A.rows; r++) {
+            A.getRow(r);
+        }
+
+        for (int c = 0; c < A.columns; c++) {
+            A.getColumn(c);
+        }
+
+        A.addiRowVector(new DoubleMatrix(3, 1, 10.0, 100.0, 1000.0));
+        A.addiColumnVector(new DoubleMatrix(1, 4, 10.0, 100.0, 1000.0, 10000.0));
+    }
+
+    public void testPairwiseDistance() {
+        DoubleMatrix D = Geometry.pairwiseSquaredDistances(A, A);
+
+        DoubleMatrix X = new DoubleMatrix(1, 3, 1.0, 0.0, -1.0);
+
+        Geometry.pairwiseSquaredDistances(X, X);
+
+        DoubleMatrix A1 = new DoubleMatrix(1, 2, 1.0, 2.0);
+        DoubleMatrix A2 = new DoubleMatrix(1, 3, 1.0, 2.0, 3.0);
+
+        Geometry.pairwiseSquaredDistances(A1, A2);
+    }
+
+    public void testSwapColumns() {
+        DoubleMatrix AA = A.dup();
+
+        System.out.println("testSwapColumns");
+        AA.swapColumns(1, 2);
+        assertEquals(new DoubleMatrix(4, 3, 1.0, 2.0, 3.0, 4.0, 9.0, 10.0, 11.0, 12.0, 5.0, 6.0, 7.0, 8.0), AA);
+    }
+
+    public void testSwapRows() {
+        DoubleMatrix AA = A.dup();
+
+        AA.swapRows(1, 2);
+        assertEquals(new DoubleMatrix(4, 3, 1.0, 3.0, 2.0, 4.0, 5.0, 7.0, 6.0, 8.0, 9.0, 11.0, 10.0, 12.0), AA);
+    }
+
+    public void testSolve() {
+        DoubleMatrix A = new DoubleMatrix(3, 3, 3.0, 5.0, 6.0, 1.0, 0.0, 0.0, 2.0, 4.0, 0.0);
+        DoubleMatrix B = new DoubleMatrix(3, 1, 1.0, 2.0, 3.0);
+
+        DoubleMatrix Adup = A.dup();
+        DoubleMatrix Bdup = B.dup();
+
+        DoubleMatrix X = Solve.solve(A, B);
+
+        assertEquals(Adup, A);
+        assertEquals(Bdup, B);
+    }
+
+    public void testConstructFromArray() {
+        double[][] data = {
+            {1.0, 2.0, 3.0},
+            {4.0, 5.0, 6.0},
+            {7.0, 8.0, 9.0}
+        };
+
+        DoubleMatrix A = new DoubleMatrix(data);
+
+        for (int r = 0; r < 3; r++) {
+            for (int c = 0; c < 3; c++) {
+                assertEquals(data[r][c], A.get(r, c));
+            }
+        }
+    }
+
+    public void testDiag() {
+        DoubleMatrix A = new DoubleMatrix(new double[][]{
+                    {1.0, 2.0, 3.0},
+                    {4.0, 5.0, 6.0},
+                    {7.0, 8.0, 9.0}
+                });
+
+        assertEquals(new DoubleMatrix(3, 1, 1.0, 5.0, 9.0), A.diag());
+
+        assertEquals(new DoubleMatrix(new double[][]{
+                    {1.0, 0.0, 0.0},
+                    {0.0, 2.0, 0.0},
+                    {0.0, 0.0, 3.0}
+                }), DoubleMatrix.diag(new DoubleMatrix(3, 1, 1.0, 2.0, 3.0)));
+    }
+
+    public void testColumnAndRowMinMax() {
+        assertEquals(new DoubleMatrix(1, 3, 1.0, 5.0, 9.0), A.columnMins());
+        assertEquals(new DoubleMatrix(4, 1, 1.0, 2.0, 3.0, 4.0), A.rowMins());
+        assertEquals(new DoubleMatrix(1, 3, 4.0, 8.0, 12.0), A.columnMaxs());
+        assertEquals(new DoubleMatrix(4, 1, 9.0, 10.0, 11.0, 12.0), A.rowMaxs());
+        int[] i = A.columnArgmins();
+        assertEquals(0, i[0]);
+        assertEquals(0, i[1]);
+        assertEquals(0, i[2]);
+        i = A.columnArgmaxs();
+        assertEquals(3, i[0]);
+        assertEquals(3, i[1]);
+        assertEquals(3, i[2]);
+        i = A.rowArgmins();
+        assertEquals(0, i[0]);
+        assertEquals(0, i[1]);
+        assertEquals(0, i[2]);
+        assertEquals(0, i[3]);
+        i = A.rowArgmaxs();
+        assertEquals(2, i[0]);
+        assertEquals(2, i[1]);
+        assertEquals(2, i[2]);
+        assertEquals(2, i[3]);
+    }
+
+    public void testToArray() {
+        assertTrue(Arrays.equals(new double[]{2.0, 4.0, 8.0}, B.toArray()));
+        assertTrue(Arrays.equals(new int[]{2, 4, 8}, B.toIntArray()));
+        assertTrue(Arrays.equals(new boolean[]{true, true, true}, B.toBooleanArray()));
+    }
+
+    public void testLoadAsciiFile() {
+        try {
+            DoubleMatrix result = DoubleMatrix.loadAsciiFile("/home/mikio/datasets/banana/banana_train_data_1.asc");
+            result.print();
+        } catch (Exception e) {
+            fail("Caught exception " + e);
+        }
+    }
+    
+    public void testRanges() {
+        A.print();
+        A.get(interval(0, 2), interval(0, 1)).print();
+    }
+}
