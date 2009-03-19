@@ -1,20 +1,9 @@
 include configure.out
-# setting up compilers and flags
 
-#ifeq ($(JAVA_HOME),)
-#$(error JAVA_HOME undefined. Please set JAVA_HOME to your java installation directory.)
-#endif
-
-#ifeq ($(LAPACK_HOME),)
-#$(error LAPACK_HOME undefined. Please set LAPACK_HOME to the files containg the lapack libraries and blas and lapack sources.)
-#endif
-
-#ifeq ($(ATLAS_HOME),)
-#$(error ATLAS_HOME undefined. Please ATLAS_HOME to the directory containing the shared atlas libraries.)
-#endif
-
+ifneq ($(LAPACK_HOME),)
 LAPACK=$(LAPACK_HOME)/SRC
 BLAS=$(LAPACK_HOME)/BLAS/SRC
+endif
 
 #LAPACK_OR_ATLAS=atlas
 
@@ -86,12 +75,21 @@ PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 # the default target
 all	: compileNative
 
-compileNative : bin/$(LIB)jblas.$(SO)
+compile-native : bin/$(LIB)jblas.$(SO)
 
-generateWrapper: src/$(PACKAGE_PATH)/Blas.java native/Blas.c
+generate-wrapper: src/$(PACKAGE_PATH)/Blas.java native/Blas.c
 
 clean:
 	rm -f native/*.o native/*.$(SO) bin/*.$(SO) src/$(PACKAGE_PATH)/Blas.java
+
+ifeq ($(LAPACK_HOME),)
+realclean:
+	@echo "Since you don't have LAPACK sources, I cannot rebuild stubs and deleting the cached information is not a good idea."
+	@echo "(nothing deleted)"
+else
+realclean:
+	rm -f fortranwrapper.dump
+endif
 
 # Generating the stubs. This target requires that the blas sources can be found in ~/src/blas/*.f
 src/$(PACKAGE_PATH)/Blas.java native/Blas.c: scripts/fortranwrapper scripts/fortran.rb scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c

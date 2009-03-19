@@ -2,27 +2,38 @@ require 'config/path'
 require 'config/config'
 require 'config/opts'
 
+# I shouldn't assume that things have certain layout but instead just try
+# to find the resources:
+#
+# - LAPACK and BLAS sources if I want to recompile (otherwise, not)
+# - lapack_build: complete lapack and blas libraries
+# - atlas_build: complete lapack libraries, atlas libraries
+
 #Todo:
 #  - find/download/compile LAPACK
 #  - find ATLAS
 #  - write out stuff to .config
 # EOS
 
-opts = Opts.new(ARGV, {}, <<EOS)
+$opts = Opts.new(ARGV, {}, <<EOS)
 Usage: ./configure [options]
 
 options summary:
-  --lapack=DIR       lapack-lite directory
-  --lapack_build     build against fortran lapack instead of ATLAS
-  --libpath          comma separated list of directories to contain
-                     the ATLAS libraries
-  --build-lapack     try to compile lapack if not found
-  --download-lapack  try to download and compile lapack if not
-                     found
+  --lapack=DIR             lapack-lite directory
+  --lapack-build           build against fortran lapack instead of ATLAS
+  --libpath=DIR1:DIR2:...  comma separated list of directories to contain
+                           the ATLAS libraries
+  --download-lapack        try to download and compile lapack if not
+                           found
+  --static-libs            look for static libraries only. Results in a
+                           dynamically loaded jblas library which does
+                           not depend on lapack or atlas libraries. 
+                           (default for Windows!)
 EOS
 
 config = Config.new
 
+# translate dir (mainly necessary for cygwin)
 def dir(s)
   case $os_name
   when 'Linux'
@@ -35,12 +46,36 @@ def dir(s)
   end
 end
 
+def libname(name)
+  if $opts.defined? :static_libs
+    'lib' + name + '.a'
+  else
+    case $os_name
+    when 'Linux'
+      'lib' + name + '.so'
+    when 'Windows XP'
+      'lib' + name + '.a'
+    end
+  end
+end
+
+# returns an array of the symbols defined in the library +fn+.
+def libsyms(fn)
+  nmopt = File.extname(fn) == '.so' ? '-D' : ''
+  %x(nm #{nmopt} #{fn}).grep(/ T ([a-zA-Z0-9_]+)/) {|m| $1}
+end
+
 begin
   ######################################################################
   config.msg('checking for java, javac') do 
     config.check_cmd('java', 'javac')
     %x(javac config/PrintProperty.java)
     nil
+  end
+
+  ######################################################################
+  config.msg('checking for nm') do
+    config.check_cmd 'nm'
   end
 
   ######################################################################
@@ -110,90 +145,180 @@ EOS
   end
 
   ######################################################################
-  unless opts.defined? :lapack_build
-     config.msg('locating atlas libraries') do
-      if opts.defined? :libpath
-        LIBPATH = opts[:libpath].split(',')
-      else
-        LIBPATH = %w(/usr/lib /lib /usr/lib/sse2)
-      end
-      
-      # Choose static libraries for Windows XP
-      case $os_name
-      when 'Windows XP'
-        ATLASLIBS = %w(libf77blas.a libatlas.a liblapack.a libcblas.a)
-      else
-        ATLASLIBS = %w(libf77blas.so libatlas.so liblapack.so libcblas.so)
-      end
-      
-      $atlas_libs = collect_paths(ATLASLIBS, LIBPATH, config)
-      unless $atlas_libs
-        config.fail <<EOS
-Couldn\'t locate the ATLAS libraries #{ATLASLIBS.join(', ')}. You can
-try to pass the location via --libpath=...
-EOS
-      else
-        config['LDFLAGS'] <<= $atlas_libs.map {|p| '-L' + dir(p)}.join(' ')
-        config['LOADLIBES'] <<= '-llapack -lf77blas -lcblas -latlas'
-      end
-      nil
-    end
-  end
-  
-  ######################################################################
   def check_lapack_home(config)
     config.check_files($lapack_home, 
                        ['BLAS', 'SRC', 'dgemm.f'], 
                        ['SRC', 'dsyev.f']) do
       config['LAPACK_HOME'] = $lapack_home
-      config['LDFLAGS'] <<= '-L' + dir($lapack_home)
     end
   end
   
   config.msg('locating lapack sources') do
-    $lapack_home = opts.get :lapack, './lapack-lite-3.1.1'
+    $lapack_home = $opts.get :lapack, './lapack-lite-3.1.1'
     begin
       check_lapack_home(config)
     rescue ConfigError => e
-      if opts.defined? :download_lapack
+      if $opts.defined? :download_lapack
         puts "trying to download lapack (about 5M)"
         File.delete(File.join('.', 'lapack-lite-3.1.1.tgz'))
         system("wget http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz")
         system("tar xzvf lapack-lite-3.1.1.tgz")
         check_lapack_home(config)
       else
-        raise ConfigError, <<EOS
+        puts <<EOS
 Couldn\'t locate sources for LAPACK and BLAS. Sources for lapack can be
 found at http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz or try
 running configure with the --download-lapack option.
+
+Compling jblas should work, but unless you have the LAPACK and BLAS sources
+you cannot add further stubs.
 EOS
+        config['LAPACK_HOME'] = ''
+        $lapack_home = ''
       end
     end
     $lapack_home
   end
 
   ######################################################################
-  LAPACK_LIBS = [['libblas-fortran.a'], ['liblapack-fortran.a']]
-  config.msg('checking for LAPACK and BLAS libraries') do
-    begin
-      config.check_files($lapack_home, *LAPACK_LIBS)
-    rescue ConfigError => e
-      if opts.defined? :build_lapack
-        config.msg("trying to compile LAPACK and BLAS libraries") do
-          out = %x(bash config/compile_lapack #{$lapack_home})
-          open('configure.compile_log', 'w') {|o| o.print out}
-        end
-      else
-        raise ConfigError, <<EOS
-Couldn\'t find LAPACK libraries. Try running with the --build-lapack option.
-EOS
-      end
-    end
-    config.check_files($lapack_home, *LAPACK_LIBS) do
-      config['LOADLIBES'] <<= '-llapack-fortran -lblas-fortran'
-    end
+  #
+  # Locating the libraries
+  #
+  # This is a bit involved since the standard ATLAS compilation produces
+  # a liblapack.so which only implements a subset of the lapack functions.
+  # So the basic strategy is to
+  # 
+  # (a) find the path to the atlas specific library
+  # (b) find the path to a full lapack library
+  #
+  # Pass the lapack libraries and theirs paths first.
+  #
+  # Of course, if you want to build a lapack-only path, we only search
+  # for the full lapack libraries.
+
+  if $opts.defined? :libpath
+    LIBPATH = $opts[:libpath].split(':')
+  else
+    LIBPATH = %w(/usr/lib /lib /usr/lib/sse2)
   end
 
+  $libpaths = []
+  
+  # Like Set, but retains order in which elements were added
+  def addpath(path)
+    $libpaths << path unless $libpaths.include?
+  end
+  
+  def locate_lib(config, name, symbol=nil)
+    p = where(libname(name), LIBPATH) do |fn| 
+      symbol.nil? or libsyms(fn).include? symbol
+    end
+
+    if not p
+      config.fail("couldn't find library '#{name}' in\npath #{LIBPATH.join ':'}")
+    end
+    
+    config.log "found library #{name} in #{p}"
+    return p
+  end
+
+  # Tries to find one of the libraries +names+ in LIBPATH,
+  # potentially containing the +symbol+.
+  # Returns the path and the actual name of the library
+  def locate_one_of_libs(config, names, symbol=nil)
+    p = nil
+    l = nil
+    for name in names
+      p = where(libname(name), LIBPATH) do |fn| 
+        symbol.nil? or libsyms(fn).include? symbol
+      end
+
+      if p
+        l = name
+        break
+      end
+    end
+
+    if not p
+      config.fail("couldn't find library '#{name}' in\npath #{LIBPATH.join ':'}")
+    end
+
+    config.log "found library #{l} in #{p}"
+    return p, l
+  end
+
+  ######################################################################
+  config.msg('locating lapack and blas libraries') do 
+    begin      
+      $lapack_path, $lapack_name = 
+        locate_one_of_libs(config, ['lapack_fortran', 'lapack'], 'dsyev_')
+      $blas_path, $blas_name = 
+        locate_one_of_libs(config, ['blas_fortran', 'blas', 'f77blas'], 'daxpy_')
+    rescue ConfigError => e
+      config.fail <<EOS
+Couldn\'t locate LAPACK and BLAS libraries.
+
+Reason: #{e.message}
+
+You can try to pass the location via --libpath=...
+or build your own LAPACK and BLAS libraries (see INSTALL)
+EOS
+    end
+    $libpaths << $lapack_path
+    $libpaths << $blas_path
+    nil
+  end
+  
+  unless $opts.defined? :lapack_build
+    config.msg('locating atlas libraries') do
+      begin
+        $atlas_path = locate_lib(config, 'atlas')
+        $lapack_atlas_path, $lapack_atlas_name = 
+          locate_one_of_libs(config, ['lapack_atlas', 'lapack'], 'ATL_dgetri')
+        #cblas_path = locate_lib(config, 'cblas', 'cblas_daxpy')
+      rescue ConfigError => e
+        config.fail <<EOS
+Couldn\'t locate ATLAS libraries.
+
+Reason: #{e.message}
+
+You can try to pass the location via --libpath=...
+or build your own ATLAS libraries (see INSTALL)
+EOS
+      end
+      $libpaths << $atlas_path
+      $libpaths << $lapack_atlas_path
+      nil
+    end
+  end
+  
+
+  ######################################################################
+  # Some sanity checks, in particular that ATLAS's and LAPACK's lapack
+  # library doesn't have the same name... . 
+  if $lapack_name == $lapack_atlas_name
+    config.fail <<EOS
+The full lapack library and the one from ATLAS have the same name which
+makes it impossible to link in both. Either fiddle with --libpath=... or
+try renaming some of the libraries:
+
+lapack's #{libname $lapack_name} to #{libname 'lapack_fortran'}
+ATLAS' #{libname $lapack_name} to #{libname 'lapack_atlas'}
+EOS
+  end
+
+  # Okay, then we're done!
+  if $opts.defined? :lapack_build
+    config << <<EOS
+LDFLAGS += #{$libpaths.map {|s| '-L' + s}.join ' '}
+LOADLIBES = -l#{$lapack_name} -l#{$blas_name}
+EOS
+  else
+    config << <<EOS
+LDFLAGS += #{$libpaths.map {|s| '-L' + s}.join ' '}
+LOADLIBES = -l#{$lapack_atlas_name} -l#{$lapack_name} -l#{$blas_name} -latlas 
+EOS
+  end
 
   ######################################################################
   # dumping results

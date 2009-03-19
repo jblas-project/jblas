@@ -12,12 +12,12 @@
     <property name="test" value="${basedir}/test" />
     <property name="bin" value="${basedir}/bin" />
     <property name="deploy" value="${basedir}/deploy" />
-    <property name="doc" value="${basedir}/doc" />
+    <property name="doc" value="${basedir}/javadoc" />
     <property name="jar" value="${basedir}/jblas.jar" />
     <property name="include" value="${basedir}/include" />
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
-    <macrodef name="classToFloat">
+    <macrodef name="class-to-float">
         <attribute name="class"/>
         <attribute name="path" default="src"/>
         <sequential>
@@ -27,7 +27,7 @@
             </exec>
         </sequential>
     </macrodef>
-    <macrodef name="staticClassToFloat">
+    <macrodef name="static-class-to-float">
         <attribute name="class"/>
         <sequential>
             <echo message="Add float versions to class @{class}"/>
@@ -54,14 +54,24 @@
         </exec>
     </target>
     <target name="realclean" depends="clean">
-        <delete file="fortranwrapper.dump"/>
+      <exec executable="make">
+	<arg line="realclean" />
+      </exec>
     </target>
     <target name="prepare">
         <mkdir dir="${bin}" />
     </target>
-    <target name="compile" depends="prepare,wrapper,generateFloat">
+    <target name="compile" depends="prepare,wrapper,generate-float">
         <javac destdir="${bin}" source="1.6" debug="on" compiler="javac1.6" fork="yes" nowarn="yes">
             <src path="${src}" />
+            <classpath>
+                <pathelement location="${external}/junit.jar" />
+            </classpath>
+        </javac>
+    </target>
+    <target name="compile-test" depends="prepare,wrapper,generate-float">
+        <javac destdir="${bin}" source="1.6" debug="on" compiler="javac1.6" fork="yes" nowarn="yes">
+            <src path="${test}" />
             <classpath>
                 <pathelement location="${external}/junit.jar" />
             </classpath>
@@ -75,29 +85,29 @@
             </classpath>
         </javah>
     </target>
-    <target name="compileNative" depends="prepare,javah">
+    <target name="compile-native" depends="prepare,javah">
         <exec executable="make">
-            <arg line="compileNative" />
+            <arg line="compile-native" />
         </exec>
     </target>
     <target name="wrapper">
         <exec executable="make">
-            <arg line="generateWrapper" />
+            <arg line="generate-wrapper" />
         </exec>
     </target>
-    <target name="generateFloat" depends="preprocess">
-        <classToFloat class="edu.ida.la.DoubleMatrix"/>
-        <classToFloat class="edu.ida.la.DoubleFunction"/>
-        <classToFloat class="edu.ida.core.ComplexDouble"/>
-        <classToFloat path="test" class="edu.ida.la.TestDoubleMatrix"/>
-        <classToFloat path="test" class="edu.ida.la.TestBlasDouble"/>
-        <classToFloat class="edu.ida.la.ComplexDoubleMatrix"/>
-        <staticClassToFloat class="edu.ida.la.SimpleBlas"/>
-        <staticClassToFloat class="edu.ida.la.Solve"/>
-        <staticClassToFloat class="edu.ida.la.Eigen"/>
-        <staticClassToFloat class="edu.ida.la.Geometry"/>
-        <staticClassToFloat class="edu.ida.la.MatrixFunctions"/>
-        <staticClassToFloat class="edu.ida.la.JavaBlas"/>
+    <target name="generate-float" depends="preprocess">
+        <class-to-float class="edu.ida.la.DoubleMatrix"/>
+        <class-to-float class="edu.ida.la.DoubleFunction"/>
+        <class-to-float class="edu.ida.core.ComplexDouble"/>
+        <class-to-float path="test" class="edu.ida.la.TestDoubleMatrix"/>
+        <class-to-float path="test" class="edu.ida.la.TestBlasDouble"/>
+        <class-to-float class="edu.ida.la.ComplexDoubleMatrix"/>
+        <static-class-to-float class="edu.ida.la.SimpleBlas"/>
+        <static-class-to-float class="edu.ida.la.Solve"/>
+        <static-class-to-float class="edu.ida.la.Eigen"/>
+        <static-class-to-float class="edu.ida.la.Geometry"/>
+        <static-class-to-float class="edu.ida.la.MatrixFunctions"/>
+        <static-class-to-float class="edu.ida.la.JavaBlas"/>
     </target>
     <target name="preprocess">
         <rjpp file="src/edu/ida/la/DoubleMatrix.java"/>
@@ -105,7 +115,7 @@
         <rjpp file="src/edu/ida/la/MatrixFunctions.java"/>
         <rjpp file="src/edu/ida/la/ComplexDoubleMatrix.java"/>
     </target>
-    <target name="jar" depends="compile,compileNative">
+    <target name="jar" depends="compile,compile-native">
         <jar destfile="${jar}">
             <fileset dir="${bin}">
                 <include name="edu/**" />
@@ -117,9 +127,9 @@
             </manifest>
         </jar>
     </target>
-    <target name="javadoc" depends="generateFloat">
+    <target name="javadoc" depends="generate-float">
         <mkdir dir="${doc}" />
-        <javadoc packagenames="com.fhg.theseus.*"
+        <javadoc packagenames="org.jblas.*"
 		sourcepath="${src}" defaultexcludes="yes"
 		destdir="${doc}" author="true" version="true"
 		use="true" windowtitle="jBLAS" linksource="yes"
@@ -135,7 +145,7 @@
             </fileset>
         </javadoc>
     </target>
-    <target name="test" depends="jar">
+    <target name="test" depends="compile-test,jar">
         <junit printsummary="yes" haltonfailure="yes" showoutput="yes">
             <classpath>
                 <pathelement location="${external}/junit.jar" />

@@ -26,7 +26,7 @@ public class Blas {
 				  "BLAS native library not found in path. Copying native library\n" +
 				  "from the archive. Consider installing the library somewhere\n" +
 				  "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
-		  new edu.ida.core.LibraryLoader().loadLibrary("jBlasArray");
+		  new edu.ida.core.LibraryLoader().loadLibrary("jblas");
 	  }
   } 
 

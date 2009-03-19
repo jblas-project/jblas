@@ -1,25 +1,113 @@
-INSTALL
+INSTALL Guide v0.1 - March 19, 2009
 
 jblas depends on a BLAS and LAPACK library for most of its
 computational intensive parts. I recommend getting a high-quality
 implementation like ATLAS http://math-atlas.sourceforge.net/, but
-taking the default implementation should also suffice.
+taking the default implementation should also suffice. 
 
-For building the stubs, jblas also requires the Fortran sources for
-the BLAS and LAPACK functions. These can be found for example, from
-http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz.
+Since the LAPACK libraries which come with ATLAS are incomplete (for
+example, no eigenvalue computations), you also need the Fortran LAPACK
+and BLAS libraries. These will be linked in a way such that the
+optimized ATLAS versions are used when available.
 
 
-SOME NOTES
+STANDARD PROCEDURE
+==================
 
-Compiling jblas seems quite complex and it actually is. Part of the
-reason is that both lapack and ATLAS have quite non-standard
-compilation procedures as well. In addition, ATLAS produces a lapack
-library which is quite incomplete, so you also need the original one
-from lapack and you have to make sure that the names don't clash.
+COMPILING JBLAS
 
-In any case, below are the instructions, assuming that you have
-neither lapack nor ATLAS installed.
+Assuming that you already have LAPACK and ATLAS libraries
+somewhere. This has been tested on Linux (debian lenny) and Windows
+XP/Cygwin.
+
+Prerequisites: 
+  - java JDK
+  - ant
+  - ruby
+  - Windows XP: cygwin with gcc, nm, etc.
+
+1. Run "./configure".
+
+2. Running "ant clean all" should do the job ;)
+
+
+INSTALLING JBLAS
+
+1. Add "jblas.jar" to your CLASSPATH
+
+2. By default, the dynamic libraries are extracted from the jar file
+   to the default temporary directory and loaded from there. If you
+   don't want to do this, extract the dynamic library from jblas.jar
+   and copy it somewhere where it can be found.
+
+   For Linux, use LD_LIBRARY_PATH, for Windows, PATH
+   
+
+CONFIGURE FLAGS
+
+The configure script understands the following options:
+
+--lapack=DIR
+   Location where the LAPACK and BLAS sources can be found. Location of
+   the extracted lapack-lite files. Otherwise it is assumed that they
+   can be found in the jblas directory
+
+--lapack-build
+   Build only against LAPACK and BLAS, not ATLAS. Note that depending on
+   your configuration, you might still get an ATLAS version (for example, when
+   you compile under debian and ATLAS is installed). Use --static-libs then.
+
+--download-lapack
+   Download and unpack lapack-lite here if not found.
+
+--static-libs
+   Searches for static libraries only. Resulting jblas will not depend on
+   shared LAPACK/BLAS/ATLAS libraries. Default for Windows XP.
+
+--help
+   print this help
+
+
+FURTHER BUILD OPTIONS
+=====================
+
+ADDING OTHER FUNCTIONS FROM LAPACK
+
+Currently, I've only added stubs for LAPACK routines I have needed so
+far.  If you want to add further stubs, you need the LAPACK
+sources. Currently, the build is set up to work with the directory
+structure of lapack-lite
+http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz If you want to play
+around with other LAPACK routines, it is best to download the archive
+and unpack it in the jblas directory. You can also type in
+"./configure --download-lapack" to let the configure script handle
+this (requires "wget" and "tar" to be installed)
+
+Then, you have to do a "ant realclean jar" to delete the cached
+information about the Fortran routines and reparse the definitions.
+
+
+ANT TARGETS
+
+javadoc
+  generate javadoc pages
+
+compile-test
+  compiles tests (need junit3)
+
+test
+  run some tests (not that good coverage so far)
+
+compile
+  recompile classes
+
+
+COMPILING LAPACK/BLAS AND ATLAS
+===============================
+
+Here are some hints when you want to compile LAPACK/BLAS and LAPACK
+from scratch. Note that the installation processes for both these
+packages are quite non-standard... .
 
 
 COMPILING LAPACK/BLAS
@@ -33,8 +121,11 @@ COMPILING LAPACK/BLAS
 
 2. Run "make blaslib lapacklib"
 
-4. Rename "blas_*.a" to "libblas-fortran.a" and 
-   "lapack_*.a" to "liblapack-fortran.a"
+4. Rename "blas_*.a" to "libblas_fortran.a" and 
+   "lapack_*.a" to "liblapack_fortran.a"
+
+If you want to make a LAPACK build, make sure to specify --static-libs
+when configuring jblas as well.
 
 
 COMPILING ATLAS 
@@ -46,32 +137,14 @@ On Linux, a version more recent than 3.8.0 should work
 
 2. Run "../configure -Fa alg -fPIC". (Note: for 3.8.3 on my system, I
    had to add the "-b 32" flag to set the pointer width. Also make
-   sure to turn of any CPU throttling with 'cpufreq-set'.  
+   sure to turn of any CPU throttling with 'cpufreq-set'.)
 
 3. Run "make" (takes a lot of time, your machine should also not be
    under load) 
 
-4. Change directory to "lib" and run "make shared"
+4. Change directory to "build/lib" and run "make shared"
 
 For Windows/Cygwin, the 3.8.x versions seem to be broken, so you should
 use one of the 3.6.x versions.
 
 
-COMPILING JBLAS
-
-1. Run ./configure This requires ruby to be installed
-
-2. Running "ant clean jar" should do the job ;)
-
-
-INSTALLING JBLAS
-
-1. Add jblas.jar to your CLASSPATH
-
-2. By default, the dynamic libraries are extracted from the jar file
-   to the default temporary directory and loaded from there. If you
-   don't want to do this, extract the dynamic library and copy it
-   somewhere where it can be found.
-
-   For Linux, use LD_LIBRARY_PATH, for Windows, PATH
-   
