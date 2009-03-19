@@ -1,8 +1,6 @@
 package org.jblas.la;
 
 import org.jblas.la.exceptions.SizeException;
-import static org.jblas.core.BlasUtil.createFloatBuffer;
-import static org.jblas.core.BlasUtil.createFloatBufferFrom;
 import org.jblas.core.ComplexFloat;
 
 import java.io.DataInputStream;

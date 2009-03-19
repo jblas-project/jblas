@@ -1,4 +1,4 @@
-package org.jblas.core;
+package org.jblas.util;
 
 import java.io.*;
 

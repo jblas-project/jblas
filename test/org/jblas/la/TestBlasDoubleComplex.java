@@ -2,12 +2,7 @@ package org.jblas.la;
 
 import junit.framework.TestCase;
 
-import java.nio.DoubleBuffer;
-
-
 import org.jblas.core.ComplexDouble;
-import org.jblas.la.Blas;
-import static org.jblas.core.BlasUtil.createDoubleBufferFrom;
 
 public class TestBlasDoubleComplex extends TestCase {
 

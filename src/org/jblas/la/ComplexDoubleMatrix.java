@@ -1,8 +1,6 @@
 package org.jblas.la;
 
 import org.jblas.la.exceptions.SizeException;
-import static org.jblas.core.BlasUtil.createDoubleBuffer;
-import static org.jblas.core.BlasUtil.createDoubleBufferFrom;
 import org.jblas.core.ComplexDouble;
 
 import java.io.DataInputStream;

@@ -1,18 +1,8 @@
 package org.jblas.la;
 
-import org.jblas.la.SimpleBlas;
-import org.jblas.la.Geometry;
 import junit.framework.TestCase;
 
-import org.jblas.core.BlasUtil;
-
-import org.jblas.la.Blas;
-import static java.lang.Math.abs;
-
-import static org.jblas.core.BlasUtil.*;
-
 import static org.jblas.la.MatrixFunctions.*;
-import org.jblas.la.DoubleMatrix;
 
 public class TestBlasDouble extends TestCase {
 

@@ -15,7 +15,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Comparator;
-import static org.jblas.core.BlasUtil.*;
 
 /**
  * A general matrix class for <tt>double</tt> typed values.

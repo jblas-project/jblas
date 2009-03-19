@@ -1,7 +1,5 @@
 package org.jblas.la;
 
-import org.jblas.la.DoubleMatrix;
-import org.jblas.la.Blas;
 import junit.framework.TestCase;
 
 import static org.jblas.la.TicToc.*;

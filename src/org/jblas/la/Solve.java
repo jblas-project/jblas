@@ -1,9 +1,5 @@
 package org.jblas.la;
 
-import static org.jblas.core.BlasUtil.createIntBuffer;
-
-import java.nio.IntBuffer;
-
 /**
  * Solving linear equations.
  */
