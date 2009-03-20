@@ -15,9 +15,11 @@
     <property name="doc" value="${basedir}/javadoc" />
     <property name="jar" value="${basedir}/jblas.jar" />
     <property name="include" value="${basedir}/include" />
+    <property name="native" value="${basedir}/native" />
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
     <property name="pkgbase" value="org.jblas" />
+    <property name="version" value="0.1RC1" />
     <macrodef name="class-to-float">
         <attribute name="class"/>
         <attribute name="path" default="src"/>
@@ -48,7 +50,8 @@
     <target name="clean">
         <delete dir="${doc}" />
         <delete dir="${bin}" />
-        <delete dir="${deploy}" />
+        <delete dir="${native}" />
+        <delete dir="${include}" />
         <delete file="${jar}" />
         <exec executable="make">
             <arg line="clean" />
@@ -61,6 +64,8 @@
     </target>
     <target name="prepare">
         <mkdir dir="${bin}" />
+        <mkdir dir="${native}" />
+        <mkdir dir="${include}" />
     </target>
     <target name="compile" depends="prepare,wrapper,generate-float">
         <javac destdir="${bin}" source="1.6" debug="on" compiler="javac1.6" fork="yes" nowarn="yes">
@@ -160,5 +165,30 @@
     </target>
     <target name="debugDirectBufferGC" depends="jar">
         <java classname="${pkgbase}.la.DebugDirectBufferGC" classpath="${basedir}/jBLAS.jar" />
+    </target>
+    <target name="tar" depends="jar">
+      <tar destfile="jblas-${version}.tgz" compression="gzip">
+	<tarfileset dir="${basedir}" prefix="jblas-${version}">
+	  <include name="src/**" />
+	  <include name="test/**" />
+	  <exclude name="**/*.rjpp" />
+	  <exclude name="**/semantic.cache" />
+	  <include name="scripts/**" />
+	  <exclude name="**/*~" />
+	  <include name="build.xml" />
+	  <include name="Makefile" />
+	  <include name="config/*.rb" />
+	  <include name="config/*.java" />
+	  <include name="configure.rb" />
+	  <include name="fortranwrapper.dump" />
+	  <include name="README" />
+	  <include name="INSTALL" />
+	  <include name="docs/**" />
+	  <include name="javadoc.css" />
+	  <include name="nbproject/**" />
+	</tarfileset>
+	<tarfileset dir="${basedir}" prefix="jblas-${version}" mode="755"
+		    includes="configure" />
+      </tar>
     </target>
 </project>
