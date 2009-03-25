@@ -236,9 +236,9 @@ EOS
   def locate_one_of_libs(config, names, symbol=nil)
     p = nil
     l = nil
-    config.log "Searching for one of #{names.join ', '} in #{LIBPATH.join ':'}"
+    config.log "Searching for one of #{names.join ', '} in #{LIBPATH.join ':'}#{if symbol then ' having symbol ' + symbol.to_s end}"
     for name in names
-      #puts "  Searching for #{libname(name)}"
+      config.log "  Searching for #{libname(name)}"
       p = where(libname(name), LIBPATH) do |fn| 
         symbol.nil? or libsyms(fn).include? symbol
       end

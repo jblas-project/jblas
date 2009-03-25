@@ -52,7 +52,7 @@ else
   # The main loop.
   # For all files, read the file and loop over all lines.
   ARGV[2..-1].each do |fn|
-    next if fn =~ /xerbla/ or fn =~ /scabs1/
+    next if fn =~ /xerbla/ or fn =~ /scabs1/ or fn =~ /dsdot/
     open(fn) do |f|
       begin
         routine = Fortran.parse_file f

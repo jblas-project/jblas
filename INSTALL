@@ -135,16 +135,17 @@ On Linux, a version more recent than 3.8.0 should work
 1. Create a build directory with "mkdir build" and cd into it with "cd
    build".
 
-2. Run "../configure -Fa alg -fPIC". (Note: for 3.8.3 on my system, I
-   had to add the "-b 32" flag to set the pointer width. Also make
-   sure to turn of any CPU throttling with 'cpufreq-set'.)
+2. For Linux, run "../configure -Fa alg -fPIC". (Note: for 3.8.3 on my
+   system, I had to add the "-b 32" flag to set the pointer
+   width. Also make sure to turn of any CPU throttling with
+   'cpufreq-set'.)
+
+   For Windows/Cygwin, run "../configure -O 1", maybe also add "-b 32"
+   for 32bit systems. This basically configures ATLAS as if you
+   compiled on a Linux system, because the Windows/Cygwin option
+   seems to be broken (at least when you're using Cygwin).
 
 3. Run "make" (takes a lot of time, your machine should also not be
    under load) 
 
-4. Change directory to "build/lib" and run "make shared"
-
-For Windows/Cygwin, the 3.8.x versions seem to be broken, so you should
-use one of the 3.6.x versions.
-
-
+4. Only for Linux: Change directory to "build/lib" and run "make shared"
