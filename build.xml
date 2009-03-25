@@ -179,7 +179,6 @@
 	  <include name="Makefile" />
 	  <include name="config/*.rb" />
 	  <include name="config/*.java" />
-	  <include name="configure.rb" />
 	  <include name="fortranwrapper.dump" />
 	  <include name="README" />
 	  <include name="INSTALL" />
