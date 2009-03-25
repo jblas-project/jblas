@@ -62,7 +62,14 @@ end
 # returns an array of the symbols defined in the library +fn+.
 def libsyms(fn)
   nmopt = File.extname(fn) == '.so' ? '-D' : ''
-  %x(nm #{nmopt} #{fn}).grep(/ T ([a-zA-Z0-9_]+)/) {|m| $1}
+  %x(nm #{nmopt} #{fn}).grep(/ T _?([a-zA-Z0-9_]+)/) {|m| $1}
+end
+
+# indent a multiline text
+class String
+  def indent(cnt)
+    split("\n").map {|l| ' ' * cnt + l}.join("\n")
+  end
 end
 
 begin
@@ -107,7 +114,7 @@ begin
     elsif gfortran
       config['LD'] = 'gfortran'
     else
-      config.fail <<EOS
+      config.fail <<EOS.indent 2
 Either g77 or gfortran have to be installed to compile against the
 fortran libraries.
 EOS
@@ -165,8 +172,9 @@ EOS
         system("tar xzvf lapack-lite-3.1.1.tgz")
         check_lapack_home(config)
       else
-        puts <<EOS
-Couldn\'t locate sources for LAPACK and BLAS. Sources for lapack can be
+        puts <<EOS.indent 2
+Couldn\'t locate sources for LAPACK and BLAS. Supply the location
+of the lapack sources with the --lapack=... switch. Sources for lapack can be
 found at http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz or try
 running configure with the --download-lapack option.
 
@@ -228,18 +236,22 @@ EOS
   def locate_one_of_libs(config, names, symbol=nil)
     p = nil
     l = nil
+    config.log "Searching for one of #{names.join ', '} in #{LIBPATH.join ':'}"
     for name in names
+      #puts "  Searching for #{libname(name)}"
       p = where(libname(name), LIBPATH) do |fn| 
         symbol.nil? or libsyms(fn).include? symbol
       end
 
       if p
         l = name
+        config.log "Found at #{l} at #{p}"
         break
       end
     end
 
     if not p
+      config.log "Haven't found any of #{names.join ', '}!"
       config.fail("couldn't find library '#{name}' in\npath #{LIBPATH.join ':'}")
     end
 
@@ -255,7 +267,7 @@ EOS
       $blas_path, $blas_name = 
         locate_one_of_libs(config, ['blas_fortran', 'blas', 'f77blas'], 'daxpy_')
     rescue ConfigError => e
-      config.fail <<EOS
+      config.fail <<EOS.indent 2
 Couldn\'t locate LAPACK and BLAS libraries.
 
 Reason: #{e.message}
@@ -275,9 +287,9 @@ EOS
         $atlas_path = locate_lib(config, 'atlas')
         $lapack_atlas_path, $lapack_atlas_name = 
           locate_one_of_libs(config, ['lapack_atlas', 'lapack'], 'ATL_dgetri')
-        #cblas_path = locate_lib(config, 'cblas', 'cblas_daxpy')
+        $cblas_path = locate_lib(config, 'cblas', 'cblas_daxpy')
       rescue ConfigError => e
-        config.fail <<EOS
+        config.fail <<EOS.indent 2
 Couldn\'t locate ATLAS libraries.
 
 Reason: #{e.message}
@@ -288,6 +300,7 @@ EOS
       end
       $libpaths << $atlas_path
       $libpaths << $lapack_atlas_path
+      $libpaths << $cblas_path
       nil
     end
   end
@@ -297,7 +310,7 @@ EOS
   # Some sanity checks, in particular that ATLAS's and LAPACK's lapack
   # library doesn't have the same name... . 
   if $lapack_name == $lapack_atlas_name
-    config.fail <<EOS
+    config.fail <<EOS.indent 2
 The full lapack library and the one from ATLAS have the same name which
 makes it impossible to link in both. Either fiddle with --libpath=... or
 try renaming some of the libraries:
@@ -316,7 +329,7 @@ EOS
   else
     config << <<EOS
 LDFLAGS += #{$libpaths.map {|s| '-L' + s}.join ' '}
-LOADLIBES = -l#{$lapack_atlas_name} -l#{$lapack_name} -l#{$blas_name} -latlas 
+LOADLIBES = -l#{$lapack_atlas_name} -l#{$lapack_name} -l#{$blas_name} -lcblas -latlas
 EOS
   end
 

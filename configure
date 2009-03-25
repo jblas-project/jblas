@@ -1,4 +1,4 @@
 #!/bin/sh
 
-ruby configure.rb $*
+ruby config/configure.rb $*
 

@@ -406,7 +406,7 @@ EOS
       end
 
       def make_fortran_arg
-        code.fortran_args << javatype + " *"
+        code.fortran_args << "j" + javatype + " *"
       end
       
       def make_convert_arg
@@ -426,7 +426,7 @@ EOS
       end
 
       def make_fortran_arg
-        code.fortran_args << ctype[1...-5] + " *"
+        code.fortran_args << "j" + ctype[1...-5] + " *"
       end
       
       # Okay, my apologies for this method. What makes it so difficult
@@ -488,6 +488,10 @@ EOS
         code.fortran_return_type << "void"
       end
 
+      def make_fortran_arg
+        code.fortran_args << javatype + " *"
+      end
+
       def make_convert_return_type
         code.conversions << "  #{javatype} retval;\n"
       end
@@ -516,6 +520,10 @@ EOS
 
       def make_call_arg
         code.call_args << "&#{name}Chr"
+      end
+
+      def make_fortran_arg
+        code.fortran_args << javatype + " *"
       end
     end
     

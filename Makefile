@@ -102,5 +102,5 @@ src/$(PACKAGE_PATH)/Blas.java native/Blas.c: scripts/fortranwrapper scripts/fort
 	$(LAPACK)/[sd]posv.f \
 	$(LAPACK)/[sd]geev.f
 
-bin/$(LIB)jblas.$(SO) : native/Blas.so
+bin/$(LIB)jblas.$(SO) : native/Blas.$(SO)
 	mv $< $@
