@@ -1,55 +1,14 @@
+# Load the output of the configuration files
+ifneq ($(wildcard configure.out),)
 include configure.out
+else
+$(error Please run "./configure" first...)
+endif
 
 ifneq ($(LAPACK_HOME),)
 LAPACK=$(LAPACK_HOME)/SRC
 BLAS=$(LAPACK_HOME)/BLAS/SRC
 endif
-
-#LAPACK_OR_ATLAS=atlas
-
-#
-# GNU/Linux (actually, debian) settings
-#
-#ifeq ($(shell uname -o),GNU/Linux)
-#CC=gcc
-#CFLAGS=-fPIC -ggdb
-#INCDIRS=-Iinclude -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/linux
-#SO=so
-#LIB=lib
-#ifeq ($(LAPACK_OR_ATLAS),atlas)
-#$(info ---Using ATLAS build)
-#LD=g77
-#LDFLAGS=-shared -L$(ATLAS_HOME) -L$(LAPACK_HOME)
-#LD=gfortran
-#LOADLIBES=-llapack -lf77blas -latlas -llapack-fortran -lblas-fortran
-#else
-#$(info ---Using LAPACK build)
-#LD=g77
-#LD=gfortran
-#LDFLAGS=-shared -L$(LAPACK_HOME)
-#LOADLIBES=-llapack-fortran -lblas-fortran
-#endif
-#RUBY=ruby
-#
-# cygwin settings
-#
-#else 
-#ifeq ($(ATLAS_HOME),)
-#$(error ATLAS_HOME undefined. Please set ATLAS_HOME to the files containg the atlas libraries.)
-#endif
-#CC=gcc
-#CFLAGS=-ggdb -D__int64='long long'
-#JAVADIR=$(shell cygpath -u $$JAVA_HOME)
-#ATLASDIR=$(shell cygpath -u $$ATLAS_HOME)
-#LAPACKDIR=$(shell cygpath -u $$LAPACK_HOME)
-#INCDIRS=-I"$(JAVADIR)/include/" -I"$(JAVADIR)/include/win32" -Iinclude
-#LD=gcc
-#LDFLAGS=-mno-cygwin -shared -Wl,--add-stdcall-alias -L$(ATLASDIR) -L$(LAPACKDIR) 
-#LOADLIBES=-llapack_WINXP -llapack -lf77blas -lcblas -latlas -lg2c
-#SO=dll
-#LIB=
-#RUBY=ruby
-#endif
 
 PACKAGE=org.jblas.la
 
@@ -73,7 +32,7 @@ PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 	$(LD) $(LDFLAGS) -o $@ $^ $(LOADLIBES)
 
 # the default target
-all	: compileNative
+all	: compile-native
 
 compile-native : bin/$(LIB)jblas.$(SO)
 
@@ -92,8 +51,8 @@ realclean:
 endif
 
 # Generating the stubs. This target requires that the blas sources can be found in ~/src/blas/*.f
-src/$(PACKAGE_PATH)/Blas.java native/Blas.c: scripts/fortranwrapper scripts/fortran.rb scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c
-	$(RUBY) scripts/fortranwrapper $(PACKAGE) Blas \
+src/$(PACKAGE_PATH)/Blas.java native/Blas.c: scripts/fortranwrapper.rb scripts/fortran.rb scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c
+	$(RUBY) scripts/fortranwrapper.rb $(PACKAGE) Blas \
 	$(BLAS)/*.f \
 	$(LAPACK)/[sd]gesv.f \
 	$(LAPACK)/[sd]sysv.f \
