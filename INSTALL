@@ -1,4 +1,4 @@
-INSTALL Guide v0.1 - March 19, 2009
+INSTALL Guide v0.1 - March 30, 2009
 
 jblas depends on a BLAS and LAPACK library for most of its
 computational intensive parts. I recommend getting a high-quality
@@ -24,7 +24,7 @@ Prerequisites:
   - java JDK
   - ant
   - ruby
-  - Windows XP: cygwin with gcc, nm, etc.
+  - Windows XP: cygwin with gcc, nm, ruby, make, etc.
 
 1. Run "./configure".
 
@@ -130,7 +130,7 @@ when configuring jblas as well.
 
 COMPILING ATLAS 
 
-On Linux, a version more recent than 3.8.0 should work
+A version more recent than 3.8.0 should work
 
 1. Create a build directory with "mkdir build" and cd into it with "cd
    build".

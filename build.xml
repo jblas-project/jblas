@@ -1,10 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+Copyright (c) 2009, Mikio L. Braun
+Copyright (c) 2008, Johannes Schaback
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+
+    * Neither the name of the Technische Universität Berlin nor the
+      names of its contributors may be used to endorse or promote
+      products derived from this software without specific prior
+      written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
 <project name="java-blas" basedir="." default="jar">
     <description>
 		This is the build script to compile and deploy the java-blas project.
 		It also generates JavaDoc from source in ../doc.
-		
-		$Id: build.xml 361 2007-09-30 15:23:58Z charlierby $
     </description>
 
 	<!-- Define directories -->
@@ -19,7 +51,7 @@
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
     <property name="pkgbase" value="org.jblas" />
-    <property name="version" value="0.1RC1" />
+    <property name="version" value="0.1" />
     <macrodef name="class-to-float">
         <attribute name="class"/>
         <attribute name="path" default="src"/>
@@ -58,9 +90,9 @@
         </exec>
     </target>
     <target name="realclean" depends="clean">
-      <exec executable="make">
-	<arg line="realclean" />
-      </exec>
+        <exec executable="make">
+            <arg line="realclean" />
+        </exec>
     </target>
     <target name="prepare">
         <mkdir dir="${bin}" />
@@ -138,17 +170,15 @@
         <javadoc packagenames="org.jblas.*"
 		sourcepath="${src}" defaultexcludes="yes"
 		destdir="${doc}" author="true" version="true"
-		use="true" windowtitle="jBLAS" linksource="yes"
-			stylesheetfile="javadoc.css">
+		use="true" windowtitle="jblas" linksource="yes"
+			stylesheetfile="javadoc.css" overview="${src}/overview.html">
             <doctitle>
-				<![CDATA[ <h1>jBLAS - Lightweight Linear Algebra for JAVA</h1> ]]>
+	<![CDATA[ <h1>jblas - Linear Algebra for Java</h1> ]]>
             </doctitle>
             <bottom>
-			<![CDATA[ written by Mikio L. Braun and Johannes Schaback ]]>
+	<![CDATA[ written by Mikio L. Braun and Johannes Schaback ]]>
             </bottom>
             <tag name="dedication" scope="all" description="Dedication:" />
-            <fileset dir="${src}" id="id">
-            </fileset>
         </javadoc>
     </target>
     <target name="test" depends="compile-test,jar">
@@ -166,28 +196,30 @@
     <target name="debugDirectBufferGC" depends="jar">
         <java classname="${pkgbase}.la.DebugDirectBufferGC" classpath="${basedir}/jBLAS.jar" />
     </target>
-    <target name="tar" depends="jar">
-      <tar destfile="jblas-${version}.tgz" compression="gzip">
-	<tarfileset dir="${basedir}" prefix="jblas-${version}">
-	  <include name="src/**" />
-	  <include name="test/**" />
-	  <exclude name="**/*.rjpp" />
-	  <exclude name="**/semantic.cache" />
-	  <include name="scripts/**" />
-	  <exclude name="**/*~" />
-	  <include name="build.xml" />
-	  <include name="Makefile" />
-	  <include name="config/*.rb" />
-	  <include name="config/*.java" />
-	  <include name="fortranwrapper.dump" />
-	  <include name="README" />
-	  <include name="INSTALL" />
-	  <include name="docs/**" />
-	  <include name="javadoc.css" />
-	  <include name="nbproject/**" />
-	</tarfileset>
-	<tarfileset dir="${basedir}" prefix="jblas-${version}" mode="755"
+    <target name="tar" depends="javadoc">
+        <tar destfile="jblas-${version}.tgz" compression="gzip">
+            <tarfileset dir="${basedir}" prefix="jblas-${version}">
+                <include name="src/**" />
+                <include name="test/**" />
+                <exclude name="**/*.rjpp" />
+                <exclude name="**/semantic.cache" />
+                <include name="scripts/**" />
+                <exclude name="**/*~" />
+                <include name="build.xml" />
+                <include name="Makefile" />
+                <include name="config/*.rb" />
+                <include name="config/*.java" />
+                <include name="fortranwrapper.dump" />
+                <include name="README" />
+                <include name="INSTALL" />
+                <include name="COPYING" />
+                <include name="AUTHORS" />
+                <include name="javadoc.css" />
+                <include name="javadoc/**" />
+                <include name="nbproject/**" />
+            </tarfileset>
+            <tarfileset dir="${basedir}" prefix="jblas-${version}" mode="755"
 		    includes="configure" />
-      </tar>
+        </tar>
     </target>
 </project>
