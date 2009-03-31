@@ -53,3 +53,19 @@ def where(file, path=PATH)
   end
   return
 end
+
+# returns the path to the command as specified by
+# line or nil if the command does not exist, or
+# it did not produce the right result
+def where_with_output(line, output)
+   cmd = line.split[0]
+   p = where(cmd)
+   return unless p
+   out = %x(#{File.join(p,line)})
+   if out =~ output
+     return p
+   else
+     return
+   end
+end
+

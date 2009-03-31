@@ -39,6 +39,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		It also generates JavaDoc from source in ../doc.
     </description>
 
+    <import file="configure.xml" />
+
 	<!-- Define directories -->
     <property name="src" value="${basedir}/src" />
     <property name="test" value="${basedir}/test" />
@@ -85,12 +87,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <delete dir="${native}" />
         <delete dir="${include}" />
         <delete file="${jar}" />
-        <exec executable="make">
+        <exec executable="${make}">
             <arg line="clean" />
         </exec>
     </target>
     <target name="realclean" depends="clean">
-        <exec executable="make">
+        <exec executable="${make}">
             <arg line="realclean" />
         </exec>
     </target>
@@ -124,12 +126,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </javah>
     </target>
     <target name="compile-native" depends="prepare,javah">
-        <exec executable="make">
+        <exec executable="${make}">
             <arg line="compile-native" />
         </exec>
     </target>
     <target name="wrapper">
-        <exec executable="make">
+        <exec executable="${make}">
             <arg line="generate-wrapper" />
         </exec>
     </target>

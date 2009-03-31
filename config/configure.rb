@@ -70,13 +70,11 @@ config = Config.new
 # translate dir (mainly necessary for cygwin)
 def dir(s)
   case $os_name
-  when 'Linux'
-    s
   when 'Windows XP'
     s = s.gsub /\\/, '\\\\\\\\'
     %x(cygpath -u #{s}).chomp
   else
-    raise ConfigError, "The OS #{$os_name} is currently unsupported!"
+    s # safe default... 
   end
 end
 
@@ -87,6 +85,8 @@ def libname(name)
     case $os_name
     when 'Linux'
       'lib' + name + '.so'
+    when 'SunOS'
+      'lib' + name + '.so'
     when 'Windows XP'
       'lib' + name + '.a'
     end
@@ -96,7 +96,7 @@ end
 # returns an array of the symbols defined in the library +fn+.
 def libsyms(fn)
   nmopt = File.extname(fn) == '.so' ? '-D' : ''
-  %x(nm #{nmopt} #{fn}).grep(/ T _?([a-zA-Z0-9_]+)/) {|m| $1}
+  %x(nm -p #{nmopt} #{fn}).grep(/ T _?([a-zA-Z0-9_]+)/) {|m| $1}
 end
 
 # indent a multiline text
@@ -143,10 +143,13 @@ begin
   config.msg('deciding whether to use g77 or gfortran') do
     g77 = where('g77')
     gfortran = where('gfortran')
+    f77 = where('f77')
     if g77
       config['LD'] = 'g77'
     elsif gfortran
       config['LD'] = 'gfortran'
+    elsif f77
+      config['LD'] = 'f77'
     else
       config.fail <<EOS.indent 2
 Either g77 or gfortran have to be installed to compile against the
@@ -169,6 +172,16 @@ LIB = lib
 RUBY=ruby
 LDFLAGS += -shared
 EOS
+    when 'SunOS'
+      config << <<EOS
+CC = gcc
+CFLAGS = -fPIC -ggdb
+INCDIRS += -Iinclude -I#{$java_home}/include -I#{$java_home}/include/solaris
+SO = so
+LIB = lib
+RUBY=ruby
+LDFLAGS += -G
+EOS
     when 'Windows XP'
       config.check_cmd('cygpath')
       config << <<EOS
@@ -183,6 +196,21 @@ EOS
     else
       config.fail "Sorry, the OS #{$os_name} is currently not supported"
     end
+  end
+
+  ######################################################################
+  config.msg('looking for version of make') do
+     if where('gmake')
+	puts 'gmake'
+        config['MAKE'] = 'gmake'
+	config.add_xml '<property name="make" value="gmake" />'
+     else
+        if where_with_output('make -v', /GNU Make/).nil?
+      	  config.fail('I need GNU make to run...')
+	end
+        config['MAKE'] = 'make'
+	config.add_xml '<property name="make" value="make" />'
+     end
   end
 
   ######################################################################
@@ -372,6 +400,7 @@ EOS
   puts
   puts 'Configuration succesfull, writing out results to configure.out'
   open('configure.out', 'w') {|f| config.dump f}
+  open('configure.xml', 'w') {|f| config.dump_xml f}
 
 rescue ConfigError => e
   puts 

@@ -46,6 +46,7 @@ class Config
   def initialize
     @config = Hash.new {|h,k| Array.new }
     @log = open('configure.log', 'w')
+    @xmlstuff = Array.new
   end
 
   def [](k)
@@ -55,6 +56,17 @@ class Config
   def []=(k, v)
     @config[k] = v
     log "Setting #{k} to #{v}"
+  end
+
+  def add_xml(str)
+    @xmlstuff << str
+    return
+  end
+
+  def dump_xml(io)
+    io.puts "<project name=\"imported-configuration-settings\">"
+    io.puts(@xmlstuff.join "\n")
+    io.puts "</project>"
   end
 
   def log(msg)
