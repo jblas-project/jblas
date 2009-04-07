@@ -393,6 +393,26 @@ public class MatrixFunctions {
     public static double tan(double x) { return (double)Math.tan(x); }
     public static double tanh(double x) { return (double)Math.tanh(x); }
 //RJPP-END--------------------------------------------------------------
+
+//STOP
+    public static DoubleMatrix floatToDouble(FloatMatrix fm) {
+    	DoubleMatrix dm = new DoubleMatrix(fm.rows, fm.columns);
+
+        for (int i = 0; i < fm.length; i++)
+            dm.put(i, (double) fm.get(i));
+
+        return dm;
+    }
+
+    public static FloatMatrix doubleToFloat(DoubleMatrix dm) {
+        FloatMatrix fm = new FloatMatrix(dm.rows, dm.columns);
+
+        for (int i = 0; i < dm.length; i++)
+            fm.put(i, (float) dm.get(i));
+
+        return fm;
+    }
+//START
     
 //BEGIN
   // The code below has been automatically generated.
@@ -745,6 +765,7 @@ public class MatrixFunctions {
     public static float tan(float x) { return (float)Math.tan(x); }
     public static float tanh(float x) { return (float)Math.tanh(x); }
 //RJPP-END--------------------------------------------------------------
+
     
 //END
 }
