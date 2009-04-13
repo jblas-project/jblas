@@ -53,7 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
     <property name="pkgbase" value="org.jblas" />
-    <property name="version" value="0.1" />
+    <property name="version" value="0.2" />
     <macrodef name="class-to-float">
         <attribute name="class"/>
         <attribute name="path" default="src"/>
