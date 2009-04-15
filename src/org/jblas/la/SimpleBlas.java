@@ -41,6 +41,7 @@ import org.jblas.la.exceptions.LapackArgumentException;
 import org.jblas.core.ComplexDouble;
 import org.jblas.core.ComplexFloat;
 import org.jblas.la.exceptions.LapackConvergenceException;
+import org.jblas.la.exceptions.LapackSingularityException;
 
 //import edu.ida.core.OutputValue;
 
@@ -260,31 +261,20 @@ public class SimpleBlas {
 			DoubleMatrix b) {
 		int info = Blas.dsysv(uplo, a.rows, b.columns, a.data, 0, a.rows, ipiv, 0,
 				b.data, 0, b.rows);
-		checkInfo("DSYSV", info);
+		checkInfo("SYSV", info);
 
 		if (info > 0)
-			throw new IllegalArgumentException(
+			throw new LapackSingularityException("SYV",
 					"Linear equation cannot be solved because the matrix was singular.");
 
 		return b;
 	}
 
 	public static int syev(char jobz, char uplo, DoubleMatrix a, DoubleMatrix w) {
-		double[] work = new double[1];
-		int info = Blas.dsyev(jobz, uplo, a.rows, a.data, 0, a.rows, w.data, 0,
-				work, 0, -1);
-		checkInfo("DSYEV", info);
-
-		int lwork = (int) work[0];
-		work = new double[lwork];
-
-		// System.out.println("Optimal LWORK = " + lwork);
-
-		info = Blas.dsyev(jobz, uplo, a.rows, a.data, 0, a.rows, w.data, 0,
-				work, 0, lwork);
+		int info = Blas.dsyev(jobz, uplo, a.rows, a.data, 0, a.rows, w.data, 0);
 
 		if (info > 0)
-			throw new IllegalArgumentException(
+			throw new LapackConvergenceException("SYEV",
 					"Eigenvalues could not be computed " + info
 							+ " off-diagonal elements did not converge");
 
@@ -303,8 +293,6 @@ public class SimpleBlas {
 		info = Blas.dsyevx(jobz, range, uplo, n, a.data, 0, a.rows, vl, vu, il,
 				iu, abstol, m, 0, w.data, 0, z.data, 0, z.rows, iwork, 0, ifail, 0);
 
-        //System.out.printf("found eigenvalues = %d\n", m[0]);
-
 		if (info > 0) {
 			StringBuilder msg = new StringBuilder();
 			msg
@@ -315,7 +303,7 @@ public class SimpleBlas {
 				msg.append(ifail[i]);
 			}
 			msg.append(".");
-			throw new IllegalArgumentException(msg.toString());
+			throw new LapackConvergenceException("SYEVX", msg.toString());
 		}
 
 		return info;
@@ -342,8 +330,6 @@ public class SimpleBlas {
 		int info = Blas.dsyevr(jobz, range, uplo, n, a.data, 0, a.rows, vl, vu,
                 il, iu, abstol, m, 0, w.data, 0, z.data, 0, z.rows, isuppz, 0);
 
-        //System.out.printf("found eigenvalues = %d\n", m[0]);
-
 		checkInfo("SYEVR", info);
 
 		return info;
@@ -356,7 +342,7 @@ public class SimpleBlas {
 				B.rows);
 		checkInfo("DPOSV", info);
 		if (info > 0)
-			throw new LapackException("DPOSV",
+			throw new LapackArgumentException("DPOSV",
 					"Leading minor of order i of A is not positive definite.");
 	}
         
@@ -365,7 +351,7 @@ public class SimpleBlas {
             int info = Blas.dgeev(jobvl, jobvr, A.rows, A.data, 0, A.rows, WR.data, 0, 
                     WI.data, 0, VL.data, 0, VL.rows, VR.data, 0, VR.rows);
             if (info > 0)
-                throw new LapackException("DGEEV", "First " + info + " eigenvalues have not converged.");
+                throw new LapackConvergenceException("DGEEV", "First " + info + " eigenvalues have not converged.");
             return info;
         }
 
@@ -571,31 +557,20 @@ public class SimpleBlas {
 			FloatMatrix b) {
 		int info = Blas.ssysv(uplo, a.rows, b.columns, a.data, 0, a.rows, ipiv, 0,
 				b.data, 0, b.rows);
-		checkInfo("DSYSV", info);
+		checkInfo("SYSV", info);
 
 		if (info > 0)
-			throw new IllegalArgumentException(
+			throw new LapackSingularityException("SYV",
 					"Linear equation cannot be solved because the matrix was singular.");
 
 		return b;
 	}
 
 	public static int syev(char jobz, char uplo, FloatMatrix a, FloatMatrix w) {
-		float[] work = new float[1];
-		int info = Blas.ssyev(jobz, uplo, a.rows, a.data, 0, a.rows, w.data, 0,
-				work, 0, -1);
-		checkInfo("DSYEV", info);
-
-		int lwork = (int) work[0];
-		work = new float[lwork];
-
-		// System.out.println("Optimal LWORK = " + lwork);
-
-		info = Blas.ssyev(jobz, uplo, a.rows, a.data, 0, a.rows, w.data, 0,
-				work, 0, lwork);
+		int info = Blas.ssyev(jobz, uplo, a.rows, a.data, 0, a.rows, w.data, 0);
 
 		if (info > 0)
-			throw new IllegalArgumentException(
+			throw new LapackConvergenceException("SYEV",
 					"Eigenvalues could not be computed " + info
 							+ " off-diagonal elements did not converge");
 
@@ -614,8 +589,6 @@ public class SimpleBlas {
 		info = Blas.ssyevx(jobz, range, uplo, n, a.data, 0, a.rows, vl, vu, il,
 				iu, abstol, m, 0, w.data, 0, z.data, 0, z.rows, iwork, 0, ifail, 0);
 
-        //System.out.printf("found eigenvalues = %d\n", m[0]);
-
 		if (info > 0) {
 			StringBuilder msg = new StringBuilder();
 			msg
@@ -626,7 +599,7 @@ public class SimpleBlas {
 				msg.append(ifail[i]);
 			}
 			msg.append(".");
-			throw new IllegalArgumentException(msg.toString());
+			throw new LapackConvergenceException("SYEVX", msg.toString());
 		}
 
 		return info;
@@ -653,8 +626,6 @@ public class SimpleBlas {
 		int info = Blas.ssyevr(jobz, range, uplo, n, a.data, 0, a.rows, vl, vu,
                 il, iu, abstol, m, 0, w.data, 0, z.data, 0, z.rows, isuppz, 0);
 
-        //System.out.printf("found eigenvalues = %d\n", m[0]);
-
 		checkInfo("SYEVR", info);
 
 		return info;
@@ -667,7 +638,7 @@ public class SimpleBlas {
 				B.rows);
 		checkInfo("DPOSV", info);
 		if (info > 0)
-			throw new LapackException("DPOSV",
+			throw new LapackArgumentException("DPOSV",
 					"Leading minor of order i of A is not positive definite.");
 	}
         
@@ -676,7 +647,7 @@ public class SimpleBlas {
             int info = Blas.sgeev(jobvl, jobvr, A.rows, A.data, 0, A.rows, WR.data, 0, 
                     WI.data, 0, VL.data, 0, VL.rows, VR.data, 0, VR.rows);
             if (info > 0)
-                throw new LapackException("DGEEV", "First " + info + " eigenvalues have not converged.");
+                throw new LapackConvergenceException("DGEEV", "First " + info + " eigenvalues have not converged.");
             return info;
         }
 

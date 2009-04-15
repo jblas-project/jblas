@@ -40,19 +40,15 @@
  */
 package org.jblas.la;
 
-import org.jblas.la.Eigen;
-import org.jblas.la.DoubleMatrix;
-import org.jblas.la.ComplexDoubleMatrix;
 import junit.framework.TestCase;
-import static org.jblas.la.TicToc.*;
 
 /**
  *
  * @author mikio
  */
-public class EigenTest extends TestCase {
+public class TestEigen extends TestCase {
 
-    public EigenTest(String testName) {
+    public TestEigen(String testName) {
         super(testName);
     }
 
@@ -61,19 +57,11 @@ public class EigenTest extends TestCase {
 
         ComplexDoubleMatrix E = Eigen.eigenvalues(A);
         
-        System.out.printf("E = %s\n", E.toString());
+        //System.out.printf("E = %s\n", E.toString());
         
         ComplexDoubleMatrix[] EV = Eigen.eigenvectors(A);
         
-        System.out.printf("values = %s\n", EV[1].toString());
-        System.out.printf("vectors = %s\n", EV[0].toString());
-    }
-    
-    public void testBenchmarkEigenvalues() {
-        tic("Computing eigenvalues of random 1000*1000 matrix");
-        ComplexDoubleMatrix EV = Eigen.eigenvalues(DoubleMatrix.randn(500,500));
-        toc();
-        
-        System.out.printf("EV = %s\n", EV.toString());
+        //System.out.printf("values = %s\n", EV[1].toString());
+        //System.out.printf("vectors = %s\n", EV[0].toString());
     }
 }

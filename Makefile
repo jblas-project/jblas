@@ -93,7 +93,7 @@ src/$(PACKAGE_PATH)/Blas.java native/Blas.c: scripts/fortranwrapper.rb scripts/f
 	$(LAPACK)/[sd]syev.f \
 	$(LAPACK)/[sd]syev[rdx].f \
 	$(LAPACK)/[sd]posv.f \
-	$(LAPACK)/[sd]geev.f
+	$(LAPACK)/[sdcz]geev.f
 
 bin/$(LIB)jblas.$(SO) : native/Blas.$(SO)
 	mv $< $@

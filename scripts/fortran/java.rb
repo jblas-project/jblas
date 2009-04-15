@@ -198,7 +198,8 @@ EOS
       end
       
       # Generate the native function declaration within a Java class.
-      # Everything you need is HERE!
+      # Unlike the Java version, which is a bit over-engineered, EVERYTHING
+      # YOU NEED IS HERE!
       def native_declaration
         begin
           return_type = ''
@@ -228,6 +229,9 @@ EOS
           raise
         end
       end
+      #
+      # That's it ;)
+      ########################################################################
 
       # Generate Java function with an automatic workspace query.
       def with_workspace_query
@@ -348,7 +352,10 @@ EOS
                 if r.workspace_argument? n
                   "#{n.downcase}, 0"
                 else
-                  "#{n.downcase}, #{n.downcase}Idx"
+                  # replace array arguments by their type
+                  dummy_name = t.to_java.gsub /\[\]/, 'Dummy'
+                  #"#{t.to_java} #{n.downcase}, #{n.downcase}Idx"
+                  "#{dummy_name}, 0"
                 end
               else
                 n.downcase

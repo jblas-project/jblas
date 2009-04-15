@@ -49,4 +49,8 @@ public class LapackArgumentException extends LapackException {
 	public LapackArgumentException(String function, int info) {
 		super(function, "Argument " + info + " had an illegal value.");
 	}
+
+    public LapackArgumentException(String function, String message) {
+        super(function, message);
+    }
 }
