@@ -2,4 +2,23 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <data xmlns="http://www.netbeans.org/ns/profiler/1" profile-file-target="" profile-target="debugDirectBufferGC" version="0.4"/>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/home/mikio/projects/jblas/Makefile</file>
+        <file>file:/home/mikio/projects/jblas/build.xml</file>
+        <file>file:/home/mikio/projects/jblas/scripts/fortran.rb</file>
+        <file>file:/home/mikio/projects/jblas/scripts/fortran/c.rb</file>
+        <file>file:/home/mikio/projects/jblas/scripts/fortran/java.rb</file>
+        <file>file:/home/mikio/projects/jblas/scripts/java-class.java</file>
+        <file>file:/home/mikio/projects/jblas/src/org/jblas/la/Blas.java</file>
+        <file>file:/home/mikio/projects/jblas/src/org/jblas/la/DoubleMatrix.java</file>
+        <file>file:/home/mikio/projects/jblas/src/org/jblas/la/Eigen.java</file>
+        <file>file:/home/mikio/projects/jblas/src/org/jblas/la/SimpleBlas.java</file>
+        <file>file:/home/mikio/projects/jblas/src/org/jblas/la/exceptions/LapackArgumentException.java</file>
+        <file>file:/home/mikio/projects/jblas/src/org/jblas/la/exceptions/LapackConvergenceException.java</file>
+        <file>file:/home/mikio/projects/jblas/src/org/jblas/la/exceptions/LapackException.java</file>
+        <file>file:/home/mikio/projects/jblas/src/org/jblas/util/LibraryLoader.java</file>
+        <file>file:/home/mikio/projects/jblas/test/org/jblas/la/TestBlasDouble.java</file>
+        <file>file:/home/mikio/projects/jblas/test/org/jblas/la/TestDoubleMatrix.java</file>
+        <file>file:/home/mikio/projects/jblas/test/org/jblas/la/TestEigen.java</file>
+    </open-files>
 </project-private>
