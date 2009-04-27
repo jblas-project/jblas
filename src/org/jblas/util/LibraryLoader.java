@@ -118,7 +118,7 @@ public class LibraryLoader {
     /** Compute the path to the library. The path is basically
         "/" + os.name + "/" + os.arch + "/" + libname. */
     static public String fatJarLibraryPath(String libname) {
-        String sep = System.getProperty("file.separator");
+        String sep = "/"; //System.getProperty("file.separator");
         String os_name = unifyOSName(System.getProperty("os.name"));
         String os_arch = System.getProperty("os.arch");
         return sep + "lib" + sep + os_name + sep + os_arch + sep + libname;
