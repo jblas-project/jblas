@@ -108,10 +108,19 @@ public class LibraryLoader {
 		}
 	}
 
+    static public String unifyOSName(String osname) {
+        if (osname.startsWith("Windows")) {
+            return "Windows";
+        }
+        return osname;
+    }
+
     /** Compute the path to the library. The path is basically
         "/" + os.name + "/" + os.arch + "/" + libname. */
     static public String fatJarLibraryPath(String libname) {
         String sep = System.getProperty("file.separator");
-        return sep + "lib" + sep + System.getProperty("os.name") + sep + System.getProperty("os.arch") + sep + libname;
+        String os_name = unifyOSName(System.getProperty("os.name"));
+        String os_arch = System.getProperty("os.arch");
+        return sep + "lib" + sep + os_name + sep + os_arch + sep + libname;
     }
 }

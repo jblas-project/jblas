@@ -70,7 +70,7 @@ config = Config.new
 # translate dir (mainly necessary for cygwin)
 def dir(s)
   case $os_name
-  when 'Windows XP'
+  when 'Windows'
     s = s.gsub /\\/, '\\\\\\\\'
     %x(cygpath -u #{s}).chomp
   else
@@ -87,7 +87,7 @@ def libname(name)
       'lib' + name + '.so'
     when 'SunOS'
       'lib' + name + '.so'
-    when 'Windows XP'
+    when 'Windows'
       'lib' + name + '.a'
     end
   end
@@ -122,7 +122,10 @@ begin
   ######################################################################
   config.msg('determining operating system') do
     $os_name = %x(java -cp config PrintProperty os.name).chomp
-    if $os_name == 'Windows XP'
+    if $os_name.start_with? 'Windows'
+      $os_name = 'Windows'
+    end
+    if $os_name == 'Windows'
       config.msg 'checking for cygpath' do
         config.check_cmd 'cygpath'
       end
@@ -189,7 +192,7 @@ LIB = lib
 RUBY=ruby
 LDFLAGS += -G
 EOS
-    when 'Windows XP'
+    when 'Windows'
       config.check_cmd('cygpath')
       config << <<EOS
 CC = gcc
