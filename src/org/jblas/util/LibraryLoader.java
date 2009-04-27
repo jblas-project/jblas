@@ -61,10 +61,19 @@ public class LibraryLoader {
 		Class cl = getClass();
 
 		InputStream is = cl.getResourceAsStream("/" + libname);
-
-        // Hm, let's see if we can find it in the build directory 
-		if (is == null)
+        if (is != null) {
+            System.err.println("Copying from /" + libname + ".");
+        }
+        else {
 			is = cl.getResourceAsStream("/bin/" + libname);
+            if (is != null) {
+                System.err.println("Copying from /bin/" + libname + ".");
+            }
+            else {
+                is = cl.getResourceAsStream(fatJarLibraryPath(libname));
+                System.err.println("Copying from " + fatJarLibraryPath(libname) + ".");
+            }
+        }
 
 		if (is == null) {
 			System.err.println("Couldn't find the resource " + libname + ".");
@@ -87,7 +96,7 @@ public class LibraryLoader {
 			}
 
 			double seconds = (double) (System.currentTimeMillis() - savedTime) / 1e3;
-			System.out.println("Copying took " + seconds + " seconds.");
+			System.err.println("Copying took " + seconds + " seconds.");
 
 			os.close();
 
@@ -101,11 +110,8 @@ public class LibraryLoader {
 
     /** Compute the path to the library. The path is basically
         "/" + os.name + "/" + os.arch + "/" + libname. */
-    static public String libraryPath(String libname) {
-        return "/" + System.getProperty("os.name") + "/" + System.getProperty("os.arch") + "/" + libname;
-    }
-
-    static public void main(String[] args) {
-        System.out.println(libraryPath(""));
+    static public String fatJarLibraryPath(String libname) {
+        String sep = System.getProperty("file.separator");
+        return sep + "lib" + sep + System.getProperty("os.name") + sep + System.getProperty("os.arch") + sep + libname;
     }
 }

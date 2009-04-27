@@ -49,6 +49,8 @@ PACKAGE=org.jblas.la
 # generate path from package name
 PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 
+LIB_PATH=bin/lib/$(OS_NAME)/$(OS_ARCH)
+
 #
 # Pattern rules
 #
@@ -68,12 +70,12 @@ PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 # the default target
 all	: compile-native
 
-compile-native : bin/$(LIB)jblas.$(SO)
+compile-native : $(LIB_PATH)/$(LIB)jblas.$(SO)
 
 generate-wrapper: src/$(PACKAGE_PATH)/Blas.java native/Blas.c
 
 clean:
-	rm -f native/*.o native/*.$(SO) bin/*.$(SO) src/$(PACKAGE_PATH)/Blas.java
+	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) src/$(PACKAGE_PATH)/Blas.java
 
 ifeq ($(LAPACK_HOME),)
 realclean:
@@ -95,7 +97,8 @@ src/$(PACKAGE_PATH)/Blas.java native/Blas.c: scripts/fortranwrapper.rb scripts/f
 	$(LAPACK)/[sd]posv.f \
 	$(LAPACK)/[sdcz]geev.f
 
-bin/$(LIB)jblas.$(SO) : native/Blas.$(SO)
+$(LIB_PATH)/$(LIB)jblas.$(SO) : native/Blas.$(SO)
+	mkdir -p $(LIB_PATH)
 	mv $< $@
 
 #

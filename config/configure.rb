@@ -127,7 +127,14 @@ begin
         config.check_cmd 'cygpath'
       end
     end
+    config['OS_NAME'] = $os_name
     $os_name
+  end
+
+  config.msg('determining architecture') do
+    $os_arch = %x(java -cp config PrintProperty os.arch).chomp
+    config['OS_ARCH'] = $os_arch
+    $os_arch
   end
 
   ######################################################################

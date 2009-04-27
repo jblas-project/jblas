@@ -156,8 +156,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <jar destfile="${jar}">
             <fileset dir="${bin}">
                 <include name="org/**" />
-                <include name="lib*.so"/>
-                <include name="*.dll"/>
+                <include name="lib/**/lib*.so"/>
+                <include name="lib/**/*.dll"/>
             </fileset>
             <manifest>
                 <attribute name="Built-By" value="IDA Group, TU Berlin" />

@@ -50,6 +50,13 @@
                     <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
                     <encoding>UTF-8</encoding>
                 </source-folder>
+                <source-folder>
+                    <label>config</label>
+                    <type>java</type>
+                    <location>config</location>
+                    <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
             </folders>
             <ide-actions>
                 <action name="build">
@@ -140,6 +147,11 @@
                         <location>include</location>
                         <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
                     </source-folder>
+                    <source-folder style="packages">
+                        <label>config</label>
+                        <location>config</location>
+                        <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
+                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -176,6 +188,10 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>include</package-root>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>config</package-root>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
