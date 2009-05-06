@@ -87,7 +87,7 @@ realclean:
 endif
 
 # Generating the stubs. This target requires that the blas sources can be found in ~/src/blas/*.f
-src/$(PACKAGE_PATH)/Blas.java native/Blas.c: scripts/fortranwrapper.rb scripts/fortran.rb scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c
+src/$(PACKAGE_PATH)/Blas.java native/Blas.c: scripts/fortranwrapper.rb scripts/fortran/types.rb scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c
 	$(RUBY) scripts/fortranwrapper.rb $(PACKAGE) Blas \
 	$(BLAS)/*.f \
 	$(LAPACK)/[sd]gesv.f \

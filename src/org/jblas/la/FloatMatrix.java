@@ -1016,7 +1016,7 @@ public class FloatMatrix {
             resize(a.rows, a.columns);
         }
 
-        System.arraycopy(data, 0, a.data, 0, length);
+        System.arraycopy(a.data, 0, data, 0, length);
         return a;
     }
 

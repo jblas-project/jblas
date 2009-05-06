@@ -39,6 +39,40 @@ package <%= package %>;
 import org.jblas.core.ComplexFloat;
 import org.jblas.core.ComplexDouble;
 
+/**
+ * Native BLAS and LAPACK functions.
+ *
+ * <p>The <%= classname %> class contains the native BLAS and LAPACK functions. Each
+ * Fortran function is mapped to a static method of this class. For each array argument,
+ * an additional parameter is introduced which gives the offset from the beginning of
+ * the passed array. In C, you would be able to pass a different pointer, but
+ * in Java, you can only pass the whole array.</p>
+ *
+ * <p>Note that due to the way the JNI is usually implemented, the arrays are first
+ * copied outside of the JVM before the function is called. This means that
+ * functions whose runtime is linear in the amount of memory do usually not
+ * run faster just because you are using a native implementation. This holds true
+ * for most Level 1 BLAS routines (like vector addition), and unfortunately also
+ * for most Level 2 BLAS routines (like matrix-vector multiplication). For these,
+ * there exists a class JavaBlas which contains Java implementations.</p>
+ *
+ * <p>In LAPACK, there exist routines which require workspace to be allocated together
+ * with a standard procedure for computing the size of these workspaces. jblas
+ * automatically also generates wrappers for these routines with automatic
+ * workspace allocation. These routines have the same name, but the workspace
+ * arguments are removed.</p>
+ *
+ * <p>Finally, an example: The fortran routine<pre>
+ * SUBROUTINE DAXPY(N,DA,DX,INCX,DY,INCY)
+ *     DOUBLE PRECISION DA
+ *     INTEGER INCX,INCY,N
+ *     DOUBLE PRECISION DX(*),DY(*)
+ * </pre>
+ * becomes <pre>
+ * public static native void daxpy(int n, double da, double[] dx, int dxIdx,
+ *    int incx, double[] dy, int dyIdx, int incy);
+ * </pre>
+ */
 public class <%= classname %> {
 
   static {
