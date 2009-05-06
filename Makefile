@@ -65,7 +65,7 @@ LIB_PATH=native-libs/$(OS_NAME)/$(OS_ARCH)
 
 # rule to generate shared library from object file 
 %.$(SO) : %.o
-	$(LD) $(LDFLAGS) -o $@ $(LOADLIBES) $^ 
+	$(LD) $(LDFLAGS) -o $@ $^ $(LOADLIBES)
 
 # the default target
 all	: compile-native
