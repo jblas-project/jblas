@@ -32,6 +32,28 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## --- END LICENSE BLOCK ---
 
+# This function contains the code to generate both Java and C wrapper
+# classes for the JNI between Java and the Fortran code.
+#
+# The main entry point is the class Generator which can be used
+# together with templates to generate the code for all routines.
+# 
+# The Generator class in turn constructs a WrapperCodeGenerator object
+# which constructs the code for a single routine. Unfortunately, the
+# code here is rather unwieldy and is a prime goal for refactoring.
+#
+# Suffice to say that some things like the java wrapper code and the
+# automatic workspace methods are generated in one function (namely
+# native_declaration and with_workspace_query).
+#
+# Generation of the C wrapper code is much more involved,
+# unfortunately, in particular because I chose to write some fairly
+# complex OO-style code. Basically, ther exists a GenericArgument or
+# derived class for each type of object which overloads the different
+# parts of the wrapper code.
+
+require 'template_context'
+
 module Fortran
 
   class FortranType
@@ -153,6 +175,7 @@ module Fortran
       attr_accessor :fortran_args, :fortran_return_type
       attr_accessor :conversions
       attr_accessor :call_pre, :call_post, :fortran_fct_name, :call_args
+      attr_accessor :release_arrays
       attr_accessor :arrays
       
       def initialize(prefix, r)
@@ -168,6 +191,7 @@ module Fortran
         @fortran_fct_name = ''
         @call_args = []
         @call_post = ''
+        @release_arrays = ''
         @arrays = [] # already seen arrays
       end
       
@@ -180,8 +204,22 @@ module Fortran
 
         code_for_return_type(r.return_type)
 
-        r.each_arg do |name, type| 
+        r.each_arg do |name, type|
           code_for_argument(name, type)
+        end
+
+        # first we generate the code for the non-output arguments
+        r.each_arg do |name, type|
+          if not type.output?
+            code_for_array_management(name, type)
+          end
+        end
+
+        # and now for the output arguments
+        r.each_arg do |name, type|
+          if type.output?
+            code_for_array_management(name, type)
+          end
         end
 
         return <<EOS
@@ -192,11 +230,12 @@ JNIEXPORT #{return_type} JNICALL Java_#{fct_name}(JNIEnv *env, jclass this#{decl
 #{conversions}
   savedEnv = env;
   #{call_pre}#{fortran_fct_name}(#{call_args.join(', ')});
-#{call_post}
+#{release_arrays}#{call_post}
 }
 EOS
       end
       
+      ######################################################################
       # Generate the native function declaration within a Java class.
       # Unlike the Java version, which is a bit over-engineered, EVERYTHING
       # YOU NEED IS HERE!
@@ -233,6 +272,7 @@ EOS
       # That's it ;)
       ########################################################################
 
+      ######################################################################
       # Generate Java function with an automatic workspace query.
       def with_workspace_query
         args = []
@@ -257,11 +297,14 @@ EOS
   }
 EOS
       end
+      # That's it
+      ######################################################################
+
+      def r; @routine; end
 
   private ############################################################
 
       # convenience accessor
-      def r; @routine; end
 
       def java_return_type
           if r.return_type.basetype == 'VOID' and r.args.last == 'INFO'
@@ -299,12 +342,23 @@ EOS
 
         gen.make_decl_arg
         gen.make_fortran_arg
-        gen.make_convert_arg
         gen.make_call_arg
       end
 
+      def code_for_array_management(name, type)
+        javatype = type.to_java
+        ctype = type.to_c
+        name = name.downcase
+
+        gen = generator(type, name)
+        gen.set_type(type, javatype, ctype)
+        gen.set_name(name)
+
+        gen.make_convert_arg
+      end
+
       # find the correct code generator for the given type
-      def generator(type, name=nil)       
+      def generator(type, name=nil)    
         javatype = type.to_java
         #puts javatype
         #puts name
@@ -398,6 +452,7 @@ EOS
     # Actual code generators
     #
     
+    #----------------------------------------------------------------------
     # The default case: Just convert types to their java and C
     # equivalents, pass the reference to the fortran routine and 
     # return the result 
@@ -458,6 +513,7 @@ EOS
       end
     end
 
+    #----------------------------------------------------------------------
     # For arrays: Add an additional argument to the declaration,
     # and get the array from the direct buffer
     class BufferArgument < GenericArgument
@@ -496,19 +552,20 @@ EOS
 EOS
         
         # and releasing the stuff again...
-        release = "  if(#{name}PtrBase"
-        code.arrays.each do |a, t| 
+        release = []
+        release << "  if(#{name}PtrBase) {"
+        release << "    (*env)->Release#{basectype[1..-1].capitalize}ArrayElements(env, #{name}, #{name}PtrBase, #{@type.output? ? '0' : 'JNI_ABORT'});"
+        code.arrays.each do |a, t|
           if t == basectype
-            release << " && #{name}PtrBase != #{a}PtrBase"
+            release << "    if (#{name}PtrBase == #{a}PtrBase)"
+            release << "      #{a}PtrBase = 0;"
           end
         end
-        release << ") {" + <<EOS
-        
-    (*env)->Release#{basectype[1..-1].capitalize}ArrayElements(env, #{name}, #{name}PtrBase, 0);
-  }
-EOS
-        code.call_post = release + code.call_post
-        
+        release << "    #{name}PtrBase = 0;"
+        release << "  }\n"
+
+        code.release_arrays = release.join("\n") + code.release_arrays
+                   
         # store information about the arrays we have already handled
         code.arrays << [name, basectype]
       end
@@ -518,6 +575,7 @@ EOS
       end
     end
 
+    #----------------------------------------------------------------------
     # For complex values (scalars only!): fortran returns the value in the
     # first argument, therefore declare the return value, modify the 
     # fortran argument list, and generate the *Complex object.
@@ -552,6 +610,7 @@ EOS
       end
     end
     
+    #----------------------------------------------------------------------
     # For characters: This handles only the first byte. Now idea if it
     # is really worth dealing with UTF-8 and all the rest...
     class CharArgument < GenericArgument
@@ -568,12 +627,14 @@ EOS
       end
     end
     
+    #----------------------------------------------------------------------
     # For nil arguments (only return value): don't add a return value
     class NilArgument < GenericArgument
       def make_call_return
       end
     end
 
+    #----------------------------------------------------------------------
     # For info arguments
     class InfoArgument < GenericArgument
       def make_decl_arg

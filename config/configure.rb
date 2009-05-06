@@ -239,7 +239,8 @@ EOS
     rescue ConfigError => e
       if $opts.defined? :download_lapack
         puts "trying to download lapack (about 5M)"
-        File.delete(File.join('.', 'lapack-lite-3.1.1.tgz'))
+        lapack_tgz = File.join('.', 'lapack-lite-3.1.1.tgz')
+        File.delete(lapack_tgz) if File.exist?(lapack_tgz)
         system("wget http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz")
         system("tar xzvf lapack-lite-3.1.1.tgz")
         check_lapack_home(config)

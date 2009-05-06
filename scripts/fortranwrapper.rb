@@ -44,9 +44,9 @@ $LOAD_PATH << $SCRIPT_DIR
 require 'erb'
 require 'optparse'
 
-require 'fortran'
+require 'fortran/types'
+require 'fortran/parser'
 require 'fortran/java'
-require 'fortran/c'
 
 Banner = <<EOS
 A wrapper of fortran functions for JNI
@@ -104,9 +104,13 @@ else
       routines << routine
     end
   end
+  File.open(FORTRANWRAPPER_DUMP, "w") {|f| Marshal.dump(routines, f)}
 end
 
-File.open(FORTRANWRAPPER_DUMP, "w") {|f| Marshal.dump(routines, f)}
+#routines.each do |r|
+#  puts r
+#end
+#exit
 
 #puts "Parsed #{number_of_routines} routines"
 def generate(template_file, package, klass, routines)
