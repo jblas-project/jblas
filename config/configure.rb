@@ -131,12 +131,14 @@ begin
       end
     end
     config['OS_NAME'] = $os_name
+    config.add_xml "<property name=\"os_name\" value=\"#{$os_name}\" />"
     $os_name
   end
 
   config.msg('determining architecture') do
     $os_arch = %x(java -cp config PrintProperty os.arch).chomp
     config['OS_ARCH'] = $os_arch
+    config.add_xml "<property name=\"os_arch\" value=\"#{$os_arch}\" />"
     $os_arch
   end
 
@@ -394,16 +396,19 @@ EOS
   end
 
   # Okay, then we're done!
+  config << "LDFLAGS += #{$libpaths.map {|s| '-L' + s}.join ' '}"
+
   if $opts.defined? :lapack_build
-    config << <<EOS
-LDFLAGS += #{$libpaths.map {|s| '-L' + s}.join ' '}
-LOADLIBES = -l#{$lapack_name} -l#{$blas_name}
-EOS
+    loadlibes = [$lapack_name, $blas_name]
   else
-    config << <<EOS
-LDFLAGS += #{$libpaths.map {|s| '-L' + s}.join ' '}
-LOADLIBES = -l#{$lapack_atlas_name} -l#{$lapack_name} -l#{$blas_name} -lcblas -latlas
-EOS
+    loadlibes = [$lapack_atlas_name, $lapack_name, $blas_name, 'cblas', 'atlas']
+  end
+
+  if $opts.defined? :static_libs
+    #config << "LDFLAGS +=#{loadlibes.map {|l| ' lib' + l + '.a'}}"
+    config << "LOADLIBES =#{loadlibes.map {|l| ' -l:lib' + l + '.a'}}"
+  else
+    config << "LOADLIBES =#{loadlibes.map {|l| ' -l' + l}}"
   end
 
   ######################################################################

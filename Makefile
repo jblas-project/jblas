@@ -49,7 +49,7 @@ PACKAGE=org.jblas.la
 # generate path from package name
 PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 
-LIB_PATH=bin/lib/$(OS_NAME)/$(OS_ARCH)
+LIB_PATH=native-libs/$(OS_NAME)/$(OS_ARCH)
 
 #
 # Pattern rules
@@ -65,7 +65,7 @@ LIB_PATH=bin/lib/$(OS_NAME)/$(OS_ARCH)
 
 # rule to generate shared library from object file 
 %.$(SO) : %.o
-	$(LD) $(LDFLAGS) -o $@ $^ $(LOADLIBES)
+	$(LD) $(LDFLAGS) -o $@ $(LOADLIBES) $^ 
 
 # the default target
 all	: compile-native
@@ -114,3 +114,11 @@ make test-dist:
 	./configure
 	ant clean jar
 	cd ..
+
+#
+# Building different kinds of jar files
+#
+all-jars:
+	rm -f jblas*.jar
+	./configure
+	ant clean local-jar

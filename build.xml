@@ -45,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <property name="src" value="${basedir}/src" />
     <property name="test" value="${basedir}/test" />
     <property name="bin" value="${basedir}/bin" />
-    <property name="deploy" value="${basedir}/deploy" />
+    <property name="native-libs" value="${basedir}/native-libs" />
     <property name="doc" value="${basedir}/javadoc" />
     <property name="jar" value="${basedir}/jblas.jar" />
     <property name="include" value="${basedir}/include" />
@@ -163,6 +163,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <attribute name="Built-By" value="IDA Group, TU Berlin" />
             </manifest>
         </jar>
+    </target>
+    <target name="local-jar" depends="compile,compile-native">
+      <delete dir="${bin}/lib" />
+      <copy todir="${bin}/lib">
+	<fileset dir="${native-libs}">
+	  <include name="${os_name}/${os_arch}/*" />
+	</fileset>
+      </copy>
+      <antcall target="jar">
+	<param name="jar" value="jblas-${os_name}-${os_arch}.jar" />
+      </antcall>
+    </target>
+    <target name="fat-jar" depends="compile,compile-native">
+      <delete dir="${bin}/lib" />
+      <copy todir="${bin}/lib">
+	<fileset dir="${native-libs}" />
+      </copy>
+      <antcall target="jar">
+	<param name="jar" value="jblas-multiplatform.jar" />
+      </antcall>
     </target>
     <target name="lean-jar" depends="compile,compile-native">
         <jar destfile="${jar}">
