@@ -68,4 +68,3 @@ def where_with_output(line, output)
      return
    end
 end
-
