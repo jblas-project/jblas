@@ -1,5 +1,3 @@
-foobar
-
 jblas is a matrix library for Java which uses existing high
 performance BLAS and LAPACK libraries like ATLAS.
 
