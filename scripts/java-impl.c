@@ -122,7 +122,7 @@ static char *routine_arguments[][<%= (routines.map do |r| r.args.length end).max
 static JNIEnv *savedEnv = 0;
 
 
-static void xerbla_(char *fct, int *info)
+void xerbla_(char *fct, int *info)
 {
 	static char name[7];
 	static char buffer[256];

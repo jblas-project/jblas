@@ -104,7 +104,7 @@ $(LIB_PATH)/$(LIB)jblas.$(SO) : native/Blas.$(SO)
 #
 # For testing
 #
-VERSION=0.1
+VERSION=0.2
 
 make test-dist:
 	ant clean tar
@@ -119,6 +119,20 @@ make test-dist:
 # Building different kinds of jar files
 #
 all-jars:
-	rm -f jblas*.jar
+	ant clean-jars
 	./configure
-	ant clean local-jar
+	ant jar 
+	ant lean-jar
+	./configure --static-libs
+	ant clean static-jar
+	ant clean fat-jar
+
+all-static-jars:
+	./configure --static-libs
+	ant compile-native
+	for os_name in native-libs/*; do \
+	  for os_arch in $$os_name/* ; do \
+	    ant static-jar -Dos_name=$$(basename $$os_name) \
+		-Dos_arch=$$(basename $$os_arch); \
+	  done; \
+	done

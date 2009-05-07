@@ -177,7 +177,7 @@ EOS
     when 'Linux'
       config << <<EOS
 CC = gcc
-CFLAGS = -fPIC -ggdb
+CFLAGS = -fPIC
 INCDIRS += -Iinclude -I#{$java_home}/include -I#{$java_home}/include/linux
 SO = so
 LIB = lib
@@ -187,7 +187,7 @@ EOS
     when 'SunOS'
       config << <<EOS
 CC = gcc
-CFLAGS = -fPIC -ggdb
+CFLAGS = -fPIC
 INCDIRS += -Iinclude -I#{$java_home}/include -I#{$java_home}/include/solaris
 SO = so
 LIB = lib
@@ -405,8 +405,7 @@ EOS
   end
 
   if $opts.defined? :static_libs
-    #config << "LDFLAGS +=#{loadlibes.map {|l| ' lib' + l + '.a'}}"
-    config << "LOADLIBES =#{loadlibes.map {|l| ' -l:lib' + l + '.a'}}"
+    config << "LOADLIBES = -Wl,--allow-multiple-definition #{loadlibes.map {|l| ' -l:lib' + l + '.a'}} -l:libgfortran.a"
   else
     config << "LOADLIBES =#{loadlibes.map {|l| ' -l' + l}}"
   end
