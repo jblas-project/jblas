@@ -121,15 +121,14 @@ make test-dist:
 #
 all-jars:
 	ant clean-jars
-	./configure
+	./configure --keep-options $$(cat configure.options)
 	ant jar 
 	ant lean-jar
-	./configure --static-libs
-	ant clean static-jar
-	ant clean fat-jar
+	./configure --keep-options --static-libs $$(cat configure.options)
+	ant compile-native static-jar fat-jar
 
 all-static-jars:
-	./configure --static-libs
+	./configure --keep-options --static-libs $$(cat configure.options)
 	ant compile-native
 	for os_name in native-libs/*; do \
 	  for os_arch in $$os_name/* ; do \

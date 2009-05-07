@@ -1,4 +1,4 @@
-INSTALL Guide v0.1 - March 30, 2009
+INSTALL Guide v0.2 - May 7, 2009
 
 jblas depends on a BLAS and LAPACK library for most of its
 computational intensive parts. I recommend getting a high-quality
@@ -28,12 +28,12 @@ Prerequisites:
 
 1. Run "./configure".
 
-2. Running "ant clean all" should do the job ;)
+2. Running "ant clean jar" should do the job ;)
 
 
 INSTALLING JBLAS
 
-1. Add "jblas.jar" to your CLASSPATH
+1. Add "jblas-0.2.jar" to your CLASSPATH
 
 2. By default, the dynamic libraries are extracted from the jar file
    to the default temporary directory and loaded from there. If you
@@ -66,6 +66,50 @@ The configure script understands the following options:
 
 --help
    print this help
+
+
+JAR BUILDING OPTIONS
+
+You can generate different kinds of jar-files. By default, you get a
+jar file which contains the JNI wrapper code for your platform which
+is named jblas-VERSION.jar
+
+"make all-jars" generates a number of other options, including
+
+jblas-VERSION-OS_NAME-OS_ARCH.jar 
+    - default build for your platform, links BLAS / LAPACK / ATLAS
+      libraries dynamically if available
+
+jblas-VERSION-OS_NAME-OS_ARCH-static.jar 
+    - with static libraries, for standalone deployment
+
+jblas-VERSION-multiplatform.jar
+    - with libraries for all available platforms, for OS independent
+      standalone deployment.
+      
+The available platforms are those which are found in the native-libs
+directory. In order to build these, merge the contents of the
+native-libs directory from different platforms.
+
+In other words, for each OS, you do
+
+  > ./configure --static-libs ... further options ...
+  > ant compile-native
+
+And then collect the files in native-libs. For example, your
+native-libs directory can then look like this:
+
+  > find native-libs
+  native-libs/
+  native-libs/Linux
+  native-libs/Linux/i386
+  native-libs/Linux/i386/libjblas.so
+  native-libs/Windows
+  native-libs/Windows/x86
+  native-libs/Windows/x86/jblas.dll
+
+If you now run "make all-jars", you get a jar file which can be used
+on the Linux and Windows platform.
 
 
 FURTHER BUILD OPTIONS
