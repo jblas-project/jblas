@@ -43,7 +43,7 @@ package org.jblas.la;
 
 import org.jblas.la.DoubleMatrix;
 import org.jblas.la.ComplexDoubleMatrix;
-import org.jblas.core.ComplexDouble;
+import org.jblas.la.ComplexDouble;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import junit.framework.TestCase;

@@ -36,12 +36,12 @@
 
 package org.jblas.la;
 
-import org.jblas.la.exceptions.LapackException;
-import org.jblas.la.exceptions.LapackArgumentException;
-import org.jblas.core.ComplexDouble;
-import org.jblas.core.ComplexFloat;
-import org.jblas.la.exceptions.LapackConvergenceException;
-import org.jblas.la.exceptions.LapackSingularityException;
+import org.jblas.exceptions.LapackException;
+import org.jblas.exceptions.LapackArgumentException;
+import org.jblas.la.ComplexDouble;
+import org.jblas.la.ComplexFloat;
+import org.jblas.exceptions.LapackConvergenceException;
+import org.jblas.exceptions.LapackSingularityException;
 
 //import edu.ida.core.OutputValue;
 
