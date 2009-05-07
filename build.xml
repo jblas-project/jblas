@@ -213,7 +213,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- javadoc -->
 
-    <target name="javadoc" depends="generate-float">
+    <target name="javadoc" depends="generate-float,wrapper">
         <mkdir dir="${doc}" />
         <javadoc packagenames="org.jblas.*"
 		sourcepath="${src}" defaultexcludes="yes"

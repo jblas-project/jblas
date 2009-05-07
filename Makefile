@@ -113,6 +113,7 @@ make test-dist:
 	cd jblas-$(VERSION)
 	./configure
 	ant clean jar
+	java -cp jblas-$(VERSION).jar org.jblas.core.SanityChecks
 	cd ..
 
 #
