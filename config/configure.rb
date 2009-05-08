@@ -71,7 +71,7 @@ config = Config.new
 def dir(s)
   case $os_name
   when 'Windows'
-    s = s.gsub /\\/, '\\\\\\\\'
+    s = s.gsub(/\\/, '\\\\\\\\')
     %x(cygpath -u #{s}).chomp
   else
     s # safe default... 
@@ -405,10 +405,16 @@ EOS
   end
 
   if $opts.defined? :static_libs
-    config << "LOADLIBES = -Wl,--allow-multiple-definition #{loadlibes.map {|l| ' -l:lib' + l + '.a'}} -l:libgfortran.a"
+    loadlibes = "LOADLIBES = -Wl,--allow-multiple-definition #{loadlibes.map {|l| ' -l:lib' + l + '.a'}}"
   else
-    config << "LOADLIBES =#{loadlibes.map {|l| ' -l' + l}}"
+    loadlibes = "LOADLIBES =#{loadlibes.map {|l| ' -l' + l}}"
   end
+
+  # add fortran static library if we're using gfortran
+  if $opts.defined? :static_libs and config['LD'] == 'gfortran'
+    loadlibes += " -l:libgfortran.a"
+  end
+  config << loadlibes
 
   ######################################################################
   # dumping results

@@ -62,16 +62,16 @@ public class LibraryLoader {
 
 		InputStream is = cl.getResourceAsStream("/" + libname);
         if (is != null) {
-            System.err.println("Copying from /" + libname + ".");
+            System.err.println("Trying to copy from /" + libname + ".");
         }
         else {
 			is = cl.getResourceAsStream("/bin/" + libname);
             if (is != null) {
-                System.err.println("Copying from /bin/" + libname + ".");
+                System.err.println("Trying to copy from /bin/" + libname + ".");
             }
             else {
                 is = cl.getResourceAsStream(fatJarLibraryPath(libname));
-                System.err.println("Copying from " + fatJarLibraryPath(libname) + ".");
+                System.err.println("Trying to copy from " + fatJarLibraryPath(libname) + ".");
             }
         }
 
