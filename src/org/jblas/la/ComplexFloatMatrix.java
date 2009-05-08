@@ -36,8 +36,7 @@
 
 package org.jblas.la;
 
-import org.jblas.la.exceptions.SizeException;
-import org.jblas.core.ComplexFloat;
+import org.jblas.exceptions.SizeException;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

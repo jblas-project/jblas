@@ -37,8 +37,8 @@
 
 package org.jblas.la;
 
-import org.jblas.la.exceptions.SizeException;
-import org.jblas.la.ranges.Range;
+import org.jblas.exceptions.SizeException;
+import org.jblas.ranges.Range;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

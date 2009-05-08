@@ -38,7 +38,7 @@ package org.jblas.la;
 
 import junit.framework.TestCase;
 
-import org.jblas.core.ComplexDouble;
+import org.jblas.la.ComplexDouble;
 
 public class TestBlasDoubleComplex extends TestCase {
 

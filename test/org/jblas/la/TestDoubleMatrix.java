@@ -40,7 +40,7 @@ import java.io.File;
 import java.io.PrintStream;
 import junit.framework.TestCase;
 import java.util.Arrays;
-import static org.jblas.la.ranges.RangeUtils.*;
+import static org.jblas.ranges.RangeUtils.*;
 
 public class TestDoubleMatrix extends TestCase {
 

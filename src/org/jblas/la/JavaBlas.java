@@ -40,7 +40,7 @@
  */
 package org.jblas.la;
 
-import org.jblas.la.exceptions.LapackException;
+import org.jblas.exceptions.LapackException;
 
 /**
  * <p>Implementation of some Blas functions, mostly those which require linear runtime

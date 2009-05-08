@@ -36,7 +36,7 @@
 
 package org.jblas.core;
 
-import org.jblas.core.ComplexFloat;
+import org.jblas.la.ComplexFloat;
 import junit.framework.TestCase;
 
 public class TestComplexFloat extends TestCase {

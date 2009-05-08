@@ -36,8 +36,8 @@
 
 package <%= package %>;
 
-import org.jblas.core.ComplexFloat;
-import org.jblas.core.ComplexDouble;
+import org.jblas.la.ComplexFloat;
+import org.jblas.la.ComplexDouble;
 
 /**
  * Native BLAS and LAPACK functions.
