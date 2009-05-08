@@ -1,10 +1,10 @@
-Release v2.0 - May 8, 2009
+Release v0.2 - May 8, 2009
 
-Release v2.0 mostly adds features to the build process and renames some
+Release v0.2 mostly adds features to the build process and renames some
 packages and classes to make the structure simpler. No new significant
 functionality has been added.
 
-Changes from version v1.0:
+Changes from version v0.1:
 
 - fixed a bug in DoubleMatrix.copy()
 - Renamed packages to make structure simpler
