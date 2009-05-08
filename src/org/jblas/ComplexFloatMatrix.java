@@ -34,7 +34,7 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
 import org.jblas.exceptions.SizeException;
 
@@ -114,7 +114,7 @@ public class ComplexFloatMatrix {
         public ComplexFloatMatrix(FloatMatrix m) {
             this(m.rows, m.columns);
             
-            Blas.scopy(m.length, m.data, 0, 1, data, 0, 2);
+            NativeBlas.scopy(m.length, m.data, 0, 1, data, 0, 2);
         }
 
         /** Construct a complex matrix from separate real and imaginary parts. Either 
@@ -125,9 +125,9 @@ public class ComplexFloatMatrix {
             real.assertSameSize(imag);
             
             if (real != null)
-                Blas.scopy(length, real.data, 0, 1, data, 0, 2);
+                NativeBlas.scopy(length, real.data, 0, 1, data, 0, 2);
             if (imag != null)
-                Blas.scopy(length, imag.data, 0, 1, data, 1, 2);
+                NativeBlas.scopy(length, imag.data, 0, 1, data, 1, 2);
         }
         
         /**
@@ -240,7 +240,7 @@ public class ComplexFloatMatrix {
 		
 		ComplexFloatMatrix result = new ComplexFloatMatrix(A.rows, A.columns + B.columns);
 		SimpleBlas.copy(A, result);
-		Blas.ccopy(B.length, B.data, 0, 1, result.data, A.length, 1);
+		NativeBlas.ccopy(B.length, B.data, 0, 1, result.data, A.length, 1);
 		return result;
 	}
 
@@ -251,8 +251,8 @@ public class ComplexFloatMatrix {
 		ComplexFloatMatrix result = new ComplexFloatMatrix(A.rows + B.rows, A.columns);
 
 		for (int i = 0; i < A.columns; i++) {
-			Blas.ccopy(A.rows, A.data, A.index(0, i), 1, result.data, result.index(0, i), 1);
-			Blas.ccopy(B.rows, B.data, B.index(0, i), 1, result.data, result.index(A.rows, i), 1);
+			NativeBlas.ccopy(A.rows, A.data, A.index(0, i), 1, result.data, result.index(0, i), 1);
+			NativeBlas.ccopy(B.rows, B.data, B.index(0, i), 1, result.data, result.index(A.rows, i), 1);
 		}
 		
 		return result;
@@ -693,12 +693,12 @@ public class ComplexFloatMatrix {
 	}
 	
 	public ComplexFloatMatrix swapColumns(int i, int j) {
-		Blas.cswap(rows, data, index(0, i), 1, data, index(0, j), 1);
+		NativeBlas.cswap(rows, data, index(0, i), 1, data, index(0, j), 1);
 		return this;
 	}
 	
 	public ComplexFloatMatrix swapRows(int i, int j) {
-		Blas.cswap(columns, data, index(i, 0), rows, data, index(j, 0), rows);
+		NativeBlas.cswap(columns, data, index(i, 0), rows, data, index(j, 0), rows);
 		return this;
 	}
 		
@@ -733,7 +733,7 @@ public class ComplexFloatMatrix {
 	public FloatMatrix getReal() {
 		FloatMatrix result = new FloatMatrix(rows, columns);
 		
-		Blas.scopy(length, data, 0, 2, result.data, 0, 1);
+		NativeBlas.scopy(length, data, 0, 2, result.data, 0, 1);
 		
 		return result;
 	}
@@ -823,21 +823,21 @@ public class ComplexFloatMatrix {
         /** Get diagonal of the matrix. */
 	public ComplexFloatMatrix diag() {
 		ComplexFloatMatrix d = new ComplexFloatMatrix(rows);
-		Blas.ccopy(rows, data, 0, rows + 1, d.data, 0, 1);
+		NativeBlas.ccopy(rows, data, 0, rows + 1, d.data, 0, 1);
 		return d;
 	}
         
         /** Get real part of the matrix. */
         public FloatMatrix real() {
             FloatMatrix result = new FloatMatrix(rows, columns);
-            Blas.scopy(length, data, 0, 2, result.data, 0, 1);
+            NativeBlas.scopy(length, data, 0, 2, result.data, 0, 1);
             return result;
         }
         
         /** Get imaginary part of the matrix. */
         public FloatMatrix imag() {
             FloatMatrix result = new FloatMatrix(rows, columns);
-            Blas.scopy(length, data, 1, 2, result.data, 0, 1);
+            NativeBlas.scopy(length, data, 1, 2, result.data, 0, 1);
             return result;            
         }
 
@@ -1310,22 +1310,22 @@ public class ComplexFloatMatrix {
 
 	public ComplexFloatMatrix getColumn(int c) {
 		ComplexFloatMatrix result = new ComplexFloatMatrix(rows, 1);
-		Blas.ccopy(rows, data, index(0, c), 1, result.data, 0, 1);
+		NativeBlas.ccopy(rows, data, index(0, c), 1, result.data, 0, 1);
 		return result;
 	}
 	
 	public void putColumn(int c, ComplexFloatMatrix v) {
-		Blas.ccopy(rows, v.data, 0, 1, data, index(0, c), 1);
+		NativeBlas.ccopy(rows, v.data, 0, 1, data, index(0, c), 1);
 	}
 
 	public ComplexFloatMatrix getRow(int r) {
 		ComplexFloatMatrix result = new ComplexFloatMatrix(1, columns);
-		Blas.ccopy(columns, data, index(r, 0), rows, result.data, 0, 1);
+		NativeBlas.ccopy(columns, data, index(r, 0), rows, result.data, 0, 1);
 		return result;
 	}
 	
 	public void putRow(int r, ComplexFloatMatrix v) {
-		Blas.ccopy(columns, v.data, 0, 1, data, index(r, 0), rows);
+		NativeBlas.ccopy(columns, v.data, 0, 1, data, index(r, 0), rows);
 	}
 
 	/**************************************************************************
@@ -1335,28 +1335,28 @@ public class ComplexFloatMatrix {
 	/** Add a row vector to all rows of the matrix */
 	public void addRowVector(ComplexFloatMatrix x) {
 		for (int r = 0; r < rows; r++) {
-			Blas.caxpy(columns, ComplexFloat.UNIT, x.data, 0, 1, data, index(r, 0), rows);
+			NativeBlas.caxpy(columns, ComplexFloat.UNIT, x.data, 0, 1, data, index(r, 0), rows);
 		}
 	}
 
 	/** Add a vector to all columns of the matrix */
 	public void addColumnVector(ComplexFloatMatrix x) {
 		for (int c = 0; c < columns; c++) {
-			Blas.caxpy(rows, ComplexFloat.UNIT, x.data, 0, 1, data, index(0, c), 1);
+			NativeBlas.caxpy(rows, ComplexFloat.UNIT, x.data, 0, 1, data, index(0, c), 1);
 		}
 	}
 
        	/** Add a row vector to all rows of the matrix */
 	public void subRowVector(ComplexFloatMatrix x) {
 		for (int r = 0; r < rows; r++) {
-			Blas.caxpy(columns, ComplexFloat.NEG_UNIT, x.data, 0, 1, data, index(r, 0), rows);
+			NativeBlas.caxpy(columns, ComplexFloat.NEG_UNIT, x.data, 0, 1, data, index(r, 0), rows);
 		}
 	}
 
 	/** Add a vector to all columns of the matrix */
 	public void subColumnVector(ComplexFloatMatrix x) {
 		for (int c = 0; c < columns; c++) {
-			Blas.caxpy(rows, ComplexFloat.NEG_UNIT, x.data, 0, 1, data, index(0, c), 1);
+			NativeBlas.caxpy(rows, ComplexFloat.NEG_UNIT, x.data, 0, 1, data, index(0, c), 1);
 		}
 	}
 

@@ -4,8 +4,8 @@
  */
 package org.jblas.util;
 
-import org.jblas.la.Blas;
-import org.jblas.la.DoubleMatrix;
+import org.jblas.NativeBlas;
+import org.jblas.DoubleMatrix;
 
 /**
  *
@@ -56,7 +56,7 @@ public class SanityChecks {
     public static void checkXerbla() {
         double[] x = new double[9];
         try {
-            Blas.dgemm('N', 'N', 3, -1, 3, 1.0, x, 0, 3, x, 0, 3, 0.0, x, 0, 3);
+            NativeBlas.dgemm('N', 'N', 3, -1, 3, 1.0, x, 0, 3, x, 0, 3, 0.0, x, 0, 3);
         }
         catch(IllegalArgumentException e) {
             check("checking XERBLA", e.getMessage().contains("XERBLA"));

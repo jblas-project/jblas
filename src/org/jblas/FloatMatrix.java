@@ -35,7 +35,7 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
 import org.jblas.exceptions.SizeException;
 import org.jblas.ranges.Range;
@@ -1034,13 +1034,13 @@ public class FloatMatrix {
 
     /** Swap two columns of a matrix. */
     public FloatMatrix swapColumns(int i, int j) {
-        Blas.sswap(rows, data, index(0, i), 1, data, index(0, j), 1);
+        NativeBlas.sswap(rows, data, index(0, i), 1, data, index(0, j), 1);
         return this;
     }
 
     /** Swap two rows of a matrix. */
     public FloatMatrix swapRows(int i, int j) {
-        Blas.sswap(columns, data, index(i, 0), rows, data, index(j, 0), rows);
+        NativeBlas.sswap(columns, data, index(i, 0), rows, data, index(j, 0), rows);
         return this;
     }
 
@@ -2175,13 +2175,13 @@ public class FloatMatrix {
 
     /** Multiply a row by a scalar. */
     public FloatMatrix mulRow(int r, float scale) {
-        Blas.sscal(columns, scale, data, index(r, 0), rows);
+        NativeBlas.sscal(columns, scale, data, index(r, 0), rows);
         return this;
     }
 
     /** Multiply a column by a scalar. */
     public FloatMatrix mulColumn(int c, float scale) {
-        Blas.sscal(rows, scale, data, index(0, c), 1);
+        NativeBlas.sscal(rows, scale, data, index(0, c), 1);
         return this;
     }
 

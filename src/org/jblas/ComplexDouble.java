@@ -34,7 +34,7 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
 import static java.lang.Math.sqrt;
 

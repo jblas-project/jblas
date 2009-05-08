@@ -141,7 +141,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </target>
     <target name="javah" depends="prepare,wrapper,compile" description="run javah">
         <javah destdir="${include}" force="yes">
-            <class name="${pkgbase}.la.Blas" />
+            <class name="${pkgbase}.NativeBlas" />
             <classpath>
                 <pathelement path="${bin}" />
             </classpath>
@@ -158,24 +158,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </exec>
     </target>
     <target name="generate-float" depends="preprocess" description="generate float versions of classes">
-        <class-to-float class="${pkgbase}.la.DoubleMatrix"/>
-        <class-to-float class="${pkgbase}.la.DoubleFunction"/>
-        <class-to-float class="${pkgbase}.core.ComplexDouble"/>
+        <class-to-float class="${pkgbase}.DoubleMatrix"/>
+        <class-to-float class="${pkgbase}.DoubleFunction"/>
+        <class-to-float class="${pkgbase}.ComplexDouble"/>
         <class-to-float path="test" class="${pkgbase}.la.TestDoubleMatrix"/>
         <class-to-float path="test" class="${pkgbase}.la.TestBlasDouble"/>
-        <class-to-float class="${pkgbase}.la.ComplexDoubleMatrix"/>
-        <static-class-to-float class="${pkgbase}.la.SimpleBlas"/>
-        <static-class-to-float class="${pkgbase}.la.Solve"/>
-        <static-class-to-float class="${pkgbase}.la.Eigen"/>
-        <static-class-to-float class="${pkgbase}.la.Geometry"/>
-        <static-class-to-float class="${pkgbase}.la.MatrixFunctions"/>
-        <static-class-to-float class="${pkgbase}.la.JavaBlas"/>
+        <class-to-float class="${pkgbase}.ComplexDoubleMatrix"/>
+        <static-class-to-float class="${pkgbase}.SimpleBlas"/>
+        <static-class-to-float class="${pkgbase}.Solve"/>
+        <static-class-to-float class="${pkgbase}.Eigen"/>
+        <static-class-to-float class="${pkgbase}.Geometry"/>
+        <static-class-to-float class="${pkgbase}.MatrixFunctions"/>
+        <static-class-to-float class="${pkgbase}.JavaBlas"/>
     </target>
     <target name="preprocess" description="run the ruby preprocessor on necessary files">
-        <rjpp file="src/org/jblas/la/DoubleMatrix.java"/>
+        <rjpp file="src/org/jblas/DoubleMatrix.java"/>
         <rjpp file="test/org/jblas/la/TestDoubleMatrix.java"/>
-        <rjpp file="src/org/jblas/la/MatrixFunctions.java"/>
-        <rjpp file="src/org/jblas/la/ComplexDoubleMatrix.java"/>
+        <rjpp file="src/org/jblas/MatrixFunctions.java"/>
+        <rjpp file="src/org/jblas/ComplexDoubleMatrix.java"/>
     </target>
 
     <!-- jar files -->
@@ -244,9 +244,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </junit>
     </target>
     <target name="all" depends="jar, javadoc">
-    </target>
-    <target name="debugDirectBufferGC" depends="jar">
-        <java classname="${pkgbase}.la.DebugDirectBufferGC" classpath="${basedir}/jBLAS.jar" />
     </target>
     <target name="tar" depends="javadoc">
         <tar destfile="jblas-${version}.tgz" compression="gzip">

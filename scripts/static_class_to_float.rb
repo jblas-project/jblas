@@ -71,11 +71,11 @@ def translate(cl, s)
   copybody.gsub! /ComplexDouble/, 'ComplexFloat'
   copybody.gsub! /([0-9]+\.[0-9]+)/, '\1f'
   copybody.gsub! /double/, 'float'
-  copybody.gsub! /Blas\.dz/, 'Blas.sc'
-  copybody.gsub! /Blas\.d/, 'Blas.s'
-  copybody.gsub! /Blas\.z/, 'Blas.c'
-  copybody.gsub! /Blas\.idamax/, 'Blas.isamax'
-  copybody.gsub! /Blas\.izamax/, 'Blas.icamax'
+  copybody.gsub! /NativeBlas\.dz/, 'NativeBlas.sc'
+  copybody.gsub! /NativeBlas\.d/, 'NativeBlas.s'
+  copybody.gsub! /NativeBlas\.z/, 'NativeBlas.c'
+  copybody.gsub! /NativeBlas\.idamax/, 'NativeBlas.isamax'
+  copybody.gsub! /NativeBlas\.izamax/, 'NativeBlas.icamax'
   copybody.gsub!(/([a-z]+)Double/, '\1Float')
 
   # construct output file
