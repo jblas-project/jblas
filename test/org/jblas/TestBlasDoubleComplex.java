@@ -34,55 +34,30 @@
  */
 // --- END LICENSE BLOCK ---
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+package org.jblas;
 
-package org.jblas.la;
-
-import org.jblas.la.DoubleMatrix;
-import org.jblas.la.ComplexDoubleMatrix;
-import org.jblas.la.ComplexDouble;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import junit.framework.TestCase;
 
-/**
- *
- * @author mikio
- */
-public class ComplexDoubleMatrixTest extends TestCase {
-    
-    public ComplexDoubleMatrixTest(String testName) {
-        super(testName);
-    }            
+import org.jblas.ComplexDouble;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
+public class TestBlasDoubleComplex extends TestCase {
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
+	public void testDotc() {
+		double[] a = new double[] { 1.0, 1.0, 2.0, 0.0, 3.0, 0.0 };
+		
+		ComplexDouble c = NativeBlas.zdotu(3, a, 0, 1, a, 0, 1);
+		System.out.println(c);
+	}
 
-    public void testConstruction() {
-        ComplexDoubleMatrix A = new ComplexDoubleMatrix(3, 3);
-        
-        for (int i = 0; i < A.rows; i++)
-            for (int j = 0; j < A.columns; j++)
-                A.put(i, j, new ComplexDouble(i, j));
-        System.out.printf("A = %s\n", A.toString());
-        
-        System.out.println(A.mmul(A));
-        
-        DoubleMatrix R = new DoubleMatrix(3, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
-        A = new ComplexDoubleMatrix(R, R.transpose());
-        System.out.println(A);
-        
-        assertEquals(A.real(), R);
-        assertEquals(A.imag(), R.transpose());
-    }
+	public void testAxpy() {
+		double[] x = new double[] { 0.0, -1.0 };
+		double[] y = new double[] { 0.0, 1.0 };
+		ComplexDouble a = new ComplexDouble(0.0, 1.0);
+		
+		NativeBlas.zdscal(1, 2.0, x, 0, 1);
+		assertEquals(new ComplexDouble(0.0, -2.0), new ComplexDouble(x[0], x[1]));
+		
+		NativeBlas.zaxpy(1, a, x, 0, 1, y, 0, 1);
+		assertEquals(new ComplexDouble(2.0, 1.0), new ComplexDouble(y[0], y[1]));
+	}
 }

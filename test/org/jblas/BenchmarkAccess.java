@@ -34,47 +34,56 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.core;
+package org.jblas;
 
-import org.jblas.la.ComplexFloat;
 import junit.framework.TestCase;
 
-public class TestComplexFloat extends TestCase {
-    public TestComplexFloat() {
-    }
+import static org.jblas.TicToc.*;
 
-	private ComplexFloat a, b;
-	
-	public void setUp() {
-		a = new ComplexFloat(1, 2);
-		b = new ComplexFloat(3, 4);
-	}
-	
-	public void testAdd() {
-		ComplexFloat c = a.add(b);
+public class BenchmarkAccess extends TestCase {
+	public void testArrayVsDirectBuffer() {
+		System.out.println("Testing array access versus direct buffer access");
 		
-		assertEquals(4.0f, c.real());
-		assertEquals(6.0f, c.imag());
-	}
+		int SIZE = 100;
+		int ITERS = 10000000;
+		DoubleMatrix ma = new DoubleMatrix(1, SIZE);
+		double[] aa = new double[SIZE];
+		DoubleMatrix mb = new DoubleMatrix(1, SIZE);
+		double[] ab = new double[SIZE];
+		
+		tic("double[]:");
+		for (int j = 0; j < ITERS; j++)
+			for (int i = 0; i < SIZE; i++) {
+				aa[i] = ab[i];
+			}
+		toc();
+		
+		/*tic("DoubleBuffer.put()");
+		for (int j = 0; j < ITERS; j++)
+			for (int i = 0; i < SIZE; i++) {
+				mb.data.put(i, ma.data.get(i));
+			}
+		toc();*/
 
-	public void testMul() {
-		ComplexFloat c = a.mul(b);
+		tic("DoubleMatrix.put()");
+		for (int j = 0; j < ITERS; j++)
+			for (int i = 0; i < SIZE; i++) {
+				mb.put(i, ma.get(i));
+			}
+		toc();
 		
-		assertEquals(-5.0f, c.real());
-		assertEquals(10.0f, c.imag());
-	}
-	
-	public void testMulAndDiv() {
-		ComplexFloat d = a.mul(b).div(b);
+		tic("DoubleMatrix.put() (two-dim)");
+		for (int j = 0; j < ITERS; j++)
+			for (int i = 0; i < SIZE; i++) {
+				mb.put(0, i, ma.get(0, i));
+			}
+		toc();
 		
-		assertEquals(new ComplexFloat(1.0f, 2.0f), d);
+		tic("NativeBlas.dcopy");
+		for (int j = 0; j < ITERS; j++)
+			NativeBlas.dcopy(SIZE, mb.data, 0, 1, ma.data, 0, 1);
+		toc();
 		
-		d = a.mul(b).mul(b.inv());
-
-		assertEquals(new ComplexFloat(1.0f, 2.0f), d);
-	}
-	
-	public void testDivByZero() {
-		a.div(new ComplexFloat(0.0f, 0.0f));
+		System.out.println("Done");
 	}
 }

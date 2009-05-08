@@ -34,11 +34,11 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
 import junit.framework.TestCase;
 
-import static org.jblas.la.MatrixFunctions.*;
+import static org.jblas.MatrixFunctions.*;
 
 public class TestBlasDouble extends TestCase {
 
@@ -46,9 +46,9 @@ public class TestBlasDouble extends TestCase {
 	public void testAsum() {
 		double[] a = new double[]{1.0, 2.0, 3.0, 4.0};
 		
-		assertEquals(10.0, Blas.dasum(4, a, 0, 1));
-		assertEquals(4.0, Blas.dasum(2, a, 0, 2));
-		assertEquals(5.0, Blas.dasum(2, a, 1, 1));
+		assertEquals(10.0, NativeBlas.dasum(4, a, 0, 1));
+		assertEquals(4.0, NativeBlas.dasum(2, a, 0, 2));
+		assertEquals(5.0, NativeBlas.dasum(2, a, 1, 1));
 	}
 	
 	/** test scalar product */
@@ -56,9 +56,9 @@ public class TestBlasDouble extends TestCase {
 		double[] a = new double[] { 1.0, 2.0, 3.0, 4.0 };
 		double[] b = new double[] { 4.0, 5.0, 6.0, 7.0 };
 
-		assertEquals(32.0, Blas.ddot(3, a, 0, 1, b, 0, 1));
-		assertEquals(22.0, Blas.ddot(2, a, 0, 2, b, 0, 2));
-		assertEquals(5.0 + 12.0 + 21.0, Blas.ddot(3, a, 0, 1, b, 1, 1));
+		assertEquals(32.0, NativeBlas.ddot(3, a, 0, 1, b, 0, 1));
+		assertEquals(22.0, NativeBlas.ddot(2, a, 0, 2, b, 0, 2));
+		assertEquals(5.0 + 12.0 + 21.0, NativeBlas.ddot(3, a, 0, 1, b, 1, 1));
 	}
 	
         public void testSwap() {
@@ -68,12 +68,12 @@ public class TestBlasDouble extends TestCase {
             double[] d = new double[] { 4.0, 5.0, 6.0, 7.0 };
             
             System.out.println("dswap");
-            Blas.dswap(4, a, 0, 1, b, 0, 1);
+            NativeBlas.dswap(4, a, 0, 1, b, 0, 1);
             assertTrue(arraysEqual(a, d));
             assertTrue(arraysEqual(b, c));
 
             System.out.println("dswap same");
-            Blas.dswap(2, a, 0, 2, a, 1, 2);
+            NativeBlas.dswap(2, a, 0, 2, a, 1, 2);
             assertTrue(arraysEqual(a, 5.0, 4.0, 7.0, 6.0));
         }
         
@@ -82,7 +82,7 @@ public class TestBlasDouble extends TestCase {
 		double[] x = new double[] { 1.0, 2.0, 3.0, 4.0 };
 		double[] y = new double[] { 0.0, 0.0, 0.0, 0.0 };
 		
-		Blas.daxpy(4, 2.0, x, 0, 1, y, 0, 1);
+		NativeBlas.daxpy(4, 2.0, x, 0, 1, y, 0, 1);
 		
 		for(int i = 0; i < 4; i++)
 			assertEquals(2*x[i], y[i]);
@@ -97,7 +97,7 @@ public class TestBlasDouble extends TestCase {
 		double[] x = new double[] {1.0, 3.0, 7.0 };
 		double[] y = new double[] { 0.0, 0.0, 0.0 };
 		
-		Blas.dgemv('N', 3, 3, 1.0, A, 0, 3, x, 0, 1, 0.0, y, 0, 1);
+		NativeBlas.dgemv('N', 3, 3, 1.0, A, 0, 3, x, 0, 1, 0.0, y, 0, 1);
 		
 		//printMatrix(3, 3, A);
 		//printMatrix(3, 1, x);
@@ -105,7 +105,7 @@ public class TestBlasDouble extends TestCase {
 		
 		assertTrue(arraysEqual(y, 62.0, 73.0, 84.0));
 		
-		Blas.dgemv('T', 3, 3, 1.0, A, 0, 3, x, 0, 1, 0.5, y, 0, 1);
+		NativeBlas.dgemv('T', 3, 3, 1.0, A, 0, 3, x, 0, 1, 0.5, y, 0, 1);
 
 		//printMatrix(3, 1, y);
 		assertTrue(arraysEqual(y, 59.0, 97.5, 136.0));

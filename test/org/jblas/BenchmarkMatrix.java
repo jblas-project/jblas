@@ -39,14 +39,11 @@
  * and open the template in the editor.
  */
 
-package org.jblas.la;
+package org.jblas;
 
-import org.jblas.la.SimpleBlas;
-import org.jblas.la.DoubleMatrix;
-import org.jblas.la.FloatMatrix;
 import junit.framework.TestCase;
 
-import static org.jblas.la.TicToc.*;
+import static org.jblas.TicToc.*;
 
 /**
  *

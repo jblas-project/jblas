@@ -34,16 +34,15 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.core;
+package org.jblas;
 
-public class Dynamic {
-	public static native void hello();
-	
-	public static void main(String[] args) {
-		System.out.println("trying to load library");
-		System.loadLibrary("Dynamic");
-		System.out.println("done");
-		hello();
-		System.out.println("done calling hello");
+import junit.framework.TestCase;
+import static org.jblas.MatrixFunctions.*;
+
+public class TestMatrixFunctions extends TestCase {
+	public void testAbs() {
+		DoubleMatrix m = new DoubleMatrix(1, 2, 1.0, -1.0);
+		
+		assertEquals(new DoubleMatrix(1, 2, 1.0, 1.0), abs(m));
 	}
 }

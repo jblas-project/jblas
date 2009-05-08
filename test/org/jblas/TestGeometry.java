@@ -34,37 +34,43 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
-public class TicToc {
-    private static long savedTime;
+import junit.framework.TestCase;
 
-    public static void tic(String message) {
-        System.out.print(message);
-        System.out.print("...");
-        System.out.flush();
-        savedTime = System.currentTimeMillis();
-    }
-
-    public static void tic(String message, Object... args) {
-        System.out.printf(message, args);
-        System.out.print("...");
-        System.out.flush();
-        savedTime = System.currentTimeMillis();
-    }
-
-    public static double toc() {
-        long elapsedTime = System.currentTimeMillis() - savedTime;
-        System.out.printf(" (%.2fs)", (double)elapsedTime / 1000d);
-        System.out.println();
-        return (double)elapsedTime / 1000d;
-    }
-
-    public static void main(String args[]) {
-        tic("counting to 10000000");
-        int counter = 0;
-        for (int i = 0; i < 10000000; i++)
-                counter++;
-        toc();
-    }
+public class TestGeometry extends TestCase {
+	public void testCenter() {
+		DoubleMatrix x = new DoubleMatrix(3, 1, 1.0, 2.0, 3.0);
+		
+		Geometry.center(x);
+		
+		assertEquals(new DoubleMatrix(3, 1, -1.0, 0.0, 1.0), x);
+		
+		DoubleMatrix M = new DoubleMatrix(new double[][] {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}});
+		
+		//M.print();
+		
+		DoubleMatrix MR = Geometry.centerRows(M.dup());
+		DoubleMatrix MC = Geometry.centerColumns(M.dup());
+		
+		//MR.print();
+		//MC.print();
+		
+		assertEquals(new DoubleMatrix(new double[][] {{-1.0, 0.0, 1.0}, {-1.0, 0.0, 1.0}, {-1.0, 0.0, 1.0}}), MR);
+		assertEquals(new DoubleMatrix(new double[][] {{-3.0, -3.0, -3.0}, {0.0, 0.0, 0.0}, {3.0, 3.0, 3.0}}), MC);
+	}				
+	
+	public void testPwDist() {
+		DoubleMatrix M = new DoubleMatrix(3, 5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0);
+		
+		DoubleMatrix D = Geometry.pairwiseSquaredDistances(M, M);
+		
+		D.print();
+		
+		M = M.transpose();
+				
+		D = Geometry.pairwiseSquaredDistances(M, M);
+		
+		D.print();
+	}
 }

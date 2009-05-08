@@ -34,16 +34,15 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
-import org.jblas.la.DoubleMatrix;
 import junit.framework.TestCase;
-import static org.jblas.la.MatrixFunctions.*;
 
-public class TestMatrixFunctions extends TestCase {
-	public void testAbs() {
-		DoubleMatrix m = new DoubleMatrix(1, 2, 1.0, -1.0);
+public class TestSolve extends TestCase {
+	public void testFaultySolveSymmetric() {
+		DoubleMatrix A = new DoubleMatrix(3, 3, 2d, 1d, 0d, 2d, 1d, 2d, 0d, 1d, 2d);
+		DoubleMatrix x = new DoubleMatrix(1, 3, 1d, 2d, 3d);
 		
-		assertEquals(new DoubleMatrix(1, 2, 1.0, 1.0), abs(m));
+		Solve.solveSymmetric(A, x);
 	}
 }
