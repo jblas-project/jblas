@@ -1,7 +1,7 @@
 <html><body><h1>jblas &#8211; Linear Algebra for Java</h1>
 <p><em>If you are really impatient, I&#8217;d suggest you read the Classes
 Overview below and otherwise stick to the <span class="caps">API</span> Documentation for the
-classes like <a href="org/jblas/la/DoubleMatrix.html">DoubleMatrix</a>.</em></p>
+classes like <a href="org/jblas/DoubleMatrix.html">DoubleMatrix</a>.</em></p>
 <p>The main goals of jblas were to provide very high performance, close
 to what you get from state-of-the-art <span class="caps">BLAS</span> and <span class="caps">LAPACK</span> libraries, and
 easy of use, which means that in the ideal case, you can just
@@ -9,14 +9,14 @@ mechanically translate a matrix expression from formulas to Java
 code.</p>
 <p>In all brevity, here is what you need to know to get started:</p>
 <ul>
-	<li>There exist four classes: <a href="org/jblas/la/ComplexFloatMatrix.html">FloatMatrix</a>, <a href="org/jblas/la/DoubleMatrix.html">DoubleMatrix</a>,
-  <a href="org/jblas/la/ComplexFloatMatrix.html">ComplexFloatMatrix</a> and <a href="org/jblas/la/ComplexDoubleMatrix.html">ComplexDoubleMatrix</a> in the package
-  org.jblas.la which represent real and complex matrices in single and
+	<li>There exist four classes: <a href="org/jblas/ComplexFloatMatrix.html">FloatMatrix</a>, <a href="org/jblas/DoubleMatrix.html">DoubleMatrix</a>,
+  <a href="org/jblas/ComplexFloatMatrix.html">ComplexFloatMatrix</a> and <a href="org/jblas/ComplexDoubleMatrix.html">ComplexDoubleMatrix</a> in the package
+  <code>org.jblas</code> which represent real and complex matrices in single and
   double precision.</li>
 </ul>
 <ul>
 	<li>Higher-level routines for solving equations, or computing
-  eigenvalues are grouped in classes like <a href="org/jblas/la/Eigen.html">Eigen</a>, <a href="org/jblas/la/Solve.html">Solve</a>, or <a href="org/jblas/la/Geometry.html">Geometry</a>.</li>
+  eigenvalues are grouped in classes like <a href="org/jblas/Eigen.html">Eigen</a>, <a href="org/jblas/Solve.html">Solve</a>, or <a href="org/jblas/Geometry.html">Geometry</a>.</li>
 </ul>
 <ul>
 	<li>To construct a new matrix, you can either use the constructor, or

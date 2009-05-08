@@ -14,7 +14,7 @@ In all brevity, here is what you need to know to get started:
 
 * There exist four classes: FloatMatrix, DoubleMatrix,
   ComplexFloatMatrix and ComplexDoubleMatrix in the package
-  org.jblas.la which represent real and complex matrices in single and
+  @org.jblas@ which represent real and complex matrices in single and
   double precision.
 
 * Higher-level routines for solving equations, or computing
