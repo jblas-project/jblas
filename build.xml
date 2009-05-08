@@ -161,8 +161,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <class-to-float class="${pkgbase}.DoubleMatrix"/>
         <class-to-float class="${pkgbase}.DoubleFunction"/>
         <class-to-float class="${pkgbase}.ComplexDouble"/>
-        <class-to-float path="test" class="${pkgbase}.la.TestDoubleMatrix"/>
-        <class-to-float path="test" class="${pkgbase}.la.TestBlasDouble"/>
+        <class-to-float path="test" class="${pkgbase}.TestDoubleMatrix"/>
+        <class-to-float path="test" class="${pkgbase}.TestBlasDouble"/>
         <class-to-float class="${pkgbase}.ComplexDoubleMatrix"/>
         <static-class-to-float class="${pkgbase}.SimpleBlas"/>
         <static-class-to-float class="${pkgbase}.Solve"/>
@@ -173,7 +173,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </target>
     <target name="preprocess" description="run the ruby preprocessor on necessary files">
         <rjpp file="src/org/jblas/DoubleMatrix.java"/>
-        <rjpp file="test/org/jblas/la/TestDoubleMatrix.java"/>
+        <rjpp file="test/org/jblas/TestDoubleMatrix.java"/>
         <rjpp file="src/org/jblas/MatrixFunctions.java"/>
         <rjpp file="src/org/jblas/ComplexDoubleMatrix.java"/>
     </target>
@@ -239,8 +239,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <pathelement path="${bin}" />
             </classpath>
             <formatter type="plain" usefile="false" />
-            <test name="${pkgbase}.la.TestDoubleMatrix" />
-            <test name="${pkgbase}.la.TestEigen" />
+            <test name="${pkgbase}.TestDoubleMatrix" />
+            <test name="${pkgbase}.TestEigen" />
         </junit>
     </target>
     <target name="all" depends="jar, javadoc">

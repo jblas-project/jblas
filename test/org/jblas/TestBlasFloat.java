@@ -34,11 +34,11 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
 import junit.framework.TestCase;
 
-import static org.jblas.la.MatrixFunctions.*;
+import static org.jblas.MatrixFunctions.*;
 
 public class TestBlasFloat extends TestCase {
 
@@ -46,9 +46,9 @@ public class TestBlasFloat extends TestCase {
 	public void testAsum() {
 		float[] a = new float[]{1.0f, 2.0f, 3.0f, 4.0f};
 		
-		assertEquals(10.0f, Blas.dasum(4, a, 0, 1));
-		assertEquals(4.0f, Blas.dasum(2, a, 0, 2));
-		assertEquals(5.0f, Blas.dasum(2, a, 1, 1));
+		assertEquals(10.0f, NativeBlas.sasum(4, a, 0, 1));
+		assertEquals(4.0f, NativeBlas.sasum(2, a, 0, 2));
+		assertEquals(5.0f, NativeBlas.sasum(2, a, 1, 1));
 	}
 	
 	/** test scalar product */
@@ -56,9 +56,9 @@ public class TestBlasFloat extends TestCase {
 		float[] a = new float[] { 1.0f, 2.0f, 3.0f, 4.0f };
 		float[] b = new float[] { 4.0f, 5.0f, 6.0f, 7.0f };
 
-		assertEquals(32.0f, Blas.ddot(3, a, 0, 1, b, 0, 1));
-		assertEquals(22.0f, Blas.ddot(2, a, 0, 2, b, 0, 2));
-		assertEquals(5.0f + 12.0f + 21.0f, Blas.ddot(3, a, 0, 1, b, 1, 1));
+		assertEquals(32.0f, NativeBlas.sdot(3, a, 0, 1, b, 0, 1));
+		assertEquals(22.0f, NativeBlas.sdot(2, a, 0, 2, b, 0, 2));
+		assertEquals(5.0f + 12.0f + 21.0f, NativeBlas.sdot(3, a, 0, 1, b, 1, 1));
 	}
 	
         public void testSwap() {
@@ -68,12 +68,12 @@ public class TestBlasFloat extends TestCase {
             float[] d = new float[] { 4.0f, 5.0f, 6.0f, 7.0f };
             
             System.out.println("dswap");
-            Blas.dswap(4, a, 0, 1, b, 0, 1);
+            NativeBlas.sswap(4, a, 0, 1, b, 0, 1);
             assertTrue(arraysEqual(a, d));
             assertTrue(arraysEqual(b, c));
 
             System.out.println("dswap same");
-            Blas.dswap(2, a, 0, 2, a, 1, 2);
+            NativeBlas.sswap(2, a, 0, 2, a, 1, 2);
             assertTrue(arraysEqual(a, 5.0f, 4.0f, 7.0f, 6.0f));
         }
         
@@ -82,7 +82,7 @@ public class TestBlasFloat extends TestCase {
 		float[] x = new float[] { 1.0f, 2.0f, 3.0f, 4.0f };
 		float[] y = new float[] { 0.0f, 0.0f, 0.0f, 0.0f };
 		
-		Blas.daxpy(4, 2.0f, x, 0, 1, y, 0, 1);
+		NativeBlas.saxpy(4, 2.0f, x, 0, 1, y, 0, 1);
 		
 		for(int i = 0; i < 4; i++)
 			assertEquals(2*x[i], y[i]);
@@ -97,7 +97,7 @@ public class TestBlasFloat extends TestCase {
 		float[] x = new float[] {1.0f, 3.0f, 7.0f };
 		float[] y = new float[] { 0.0f, 0.0f, 0.0f };
 		
-		Blas.dgemv('N', 3, 3, 1.0f, A, 0, 3, x, 0, 1, 0.0f, y, 0, 1);
+		NativeBlas.sgemv('N', 3, 3, 1.0f, A, 0, 3, x, 0, 1, 0.0f, y, 0, 1);
 		
 		//printMatrix(3, 3, A);
 		//printMatrix(3, 1, x);
@@ -105,7 +105,7 @@ public class TestBlasFloat extends TestCase {
 		
 		assertTrue(arraysEqual(y, 62.0f, 73.0f, 84.0f));
 		
-		Blas.dgemv('T', 3, 3, 1.0f, A, 0, 3, x, 0, 1, 0.5f, y, 0, 1);
+		NativeBlas.sgemv('T', 3, 3, 1.0f, A, 0, 3, x, 0, 1, 0.5f, y, 0, 1);
 
 		//printMatrix(3, 1, y);
 		assertTrue(arraysEqual(y, 59.0f, 97.5f, 136.0f));

@@ -34,17 +34,15 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
-import org.jblas.la.DoubleMatrix;
-import org.jblas.la.Blas;
 import junit.framework.TestCase;
-import static org.jblas.la.TicToc.*;
+import static org.jblas.TicToc.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import static org.jblas.la.MatrixFunctions.*;
+import static org.jblas.MatrixFunctions.*;
 import java.util.Arrays;
 
 public class DemoImages extends TestCase {
@@ -62,7 +60,7 @@ public class DemoImages extends TestCase {
 
 	private void copyRect2(DoubleMatrix result, int counter, DoubleMatrix x, int wx, int wy, int i, int j) {
 		for (int jj = 0; jj < wx; jj++)
-			Blas.dcopy(wy, x.data, x.index(i, j + jj), 1, result.data, result.index(counter, jj * wy), result.rows);
+			NativeBlas.dcopy(wy, x.data, x.index(i, j + jj), 1, result.data, result.index(counter, jj * wy), result.rows);
 	}
 	
 	private void copyRect(DoubleMatrix result, int counter, DoubleMatrix x, int wx, int wy, int i, int j) {
@@ -215,7 +213,7 @@ public class DemoImages extends TestCase {
 		
 		for (int i = 0; i < img.columns - weights.rows; i++) {
 			// compute all filter for all columns
-			Blas.dgemm('N', 'N', img.rows, weights.rows, weights.columns, 
+			NativeBlas.dgemm('N', 'N', img.rows, weights.rows, weights.columns,
 						1.0, img.data, img.index(0, i), img.rows,
 						weights.data, 0, weights.rows,
 						0.0, w.data, 0, w.rows);
@@ -224,11 +222,11 @@ public class DemoImages extends TestCase {
 			// collect results
 			// add rows of length w.rows - w.columns from j, j to first row.
 			for (int j = 1; j < w.columns; j++) {
-				Blas.daxpy(w.rows - w.columns, 1.0, w.data, img.index(j, j), 1, w.data, 0, 1);
+				NativeBlas.daxpy(w.rows - w.columns, 1.0, w.data, img.index(j, j), 1, w.data, 0, 1);
 				ops += w.rows - w.columns;
 			}
 			// copy the result back to the output vector.
-			Blas.dcopy(w.rows - w.columns, w.data, 0, 1, result.data, result.index(0, i), 1);
+			NativeBlas.dcopy(w.rows - w.columns, w.data, 0, 1, result.data, result.index(0, i), 1);
 		}
 		return result;
 	}

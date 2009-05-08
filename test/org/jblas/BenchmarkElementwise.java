@@ -34,45 +34,66 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
-import org.jblas.la.DoubleMatrix;
-import org.jblas.la.Geometry;
 import junit.framework.TestCase;
+import static org.jblas.TicToc.*;
+import static org.jblas.DoubleMatrix.*;
 
-public class TestGeometry extends TestCase {
-	public void testCenter() {
-		DoubleMatrix x = new DoubleMatrix(3, 1, 1.0, 2.0, 3.0);
+public class BenchmarkElementwise extends TestCase {
+	public void testMuli() {
+		int SIZE = 1000;
+		int ITERS = 1000000;
+		DoubleMatrix x = rand(SIZE);
+		DoubleMatrix y = rand(SIZE);
+		DoubleMatrix z = zeros(SIZE);
 		
-		Geometry.center(x);
+		tic("muli():");
+		for (int i = 0; i < ITERS; i++)
+			x.muli(y, z);
+		toc();
+
+		double xa[]= new double[SIZE];
+		double ya[]= new double[SIZE];
+		double za[]= new double[SIZE];
 		
-		assertEquals(new DoubleMatrix(3, 1, -1.0, 0.0, 1.0), x);
+		tic("muli (array):");
+		for (int i = 0; i < ITERS; i++)
+			for (int j = 0; j < SIZE; j++)
+				za[j] = xa[j] * ya[j];
+		toc();
+
+		/*tic("muli (double buffer:");
+		for (int i = 0; i < ITERS; i++)
+			for (int j = 0; j < SIZE; j++)
+				z.data.put(j, x.data.get(j) * y.data.get(j));
+		toc();*/
 		
-		DoubleMatrix M = new DoubleMatrix(new double[][] {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}});
+		tic("divi():");
+		for (int i = 0; i < ITERS/10; i++)
+			x.divi(y, z);
+		toc();
+
+		tic("addi():");
+		for (int i = 0; i < ITERS; i++)
+			x.addi(y, z);
+		toc();
+
+		tic("addi() array:");
+		for (int i = 0; i < ITERS; i++)
+			for (int j = 0; j < SIZE; j++)
+				za[j] = xa[j] + ya[j];
+		toc();
+
+		/*tic("addi() doublebuffer:");
+		for (int i = 0; i < ITERS; i++)
+			for (int j = 0; j < SIZE; j++)
+				z.data.put(j, x.data.get(j) + y.data.get(j));
+		toc();*/
 		
-		//M.print();
-		
-		DoubleMatrix MR = Geometry.centerRows(M.dup());
-		DoubleMatrix MC = Geometry.centerColumns(M.dup());
-		
-		//MR.print();
-		//MC.print();
-		
-		assertEquals(new DoubleMatrix(new double[][] {{-1.0, 0.0, 1.0}, {-1.0, 0.0, 1.0}, {-1.0, 0.0, 1.0}}), MR);
-		assertEquals(new DoubleMatrix(new double[][] {{-3.0, -3.0, -3.0}, {0.0, 0.0, 0.0}, {3.0, 3.0, 3.0}}), MC);
-	}				
-	
-	public void testPwDist() {
-		DoubleMatrix M = new DoubleMatrix(3, 5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0);
-		
-		DoubleMatrix D = Geometry.pairwiseSquaredDistances(M, M);
-		
-		D.print();
-		
-		M = M.transpose();
-				
-		D = Geometry.pairwiseSquaredDistances(M, M);
-		
-		D.print();
+		tic("subi():");
+		for (int i = 0; i < ITERS; i++)
+			x.subi(y, z);
+		toc();
 	}
 }

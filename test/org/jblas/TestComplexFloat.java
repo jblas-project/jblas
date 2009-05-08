@@ -34,44 +34,46 @@
  */
 // --- END LICENSE BLOCK ---
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+package org.jblas;
 
-package org.jblas.la;
-
-import org.jblas.la.SimpleBlas;
-import org.jblas.la.DoubleMatrix;
 import junit.framework.TestCase;
 
-/**
- *
- * @author mikio
- */
-public class SimpleBlasTest extends TestCase {
-    
-    public SimpleBlasTest(String testName) {
-        super(testName);
+public class TestComplexFloat extends TestCase {
+    public TestComplexFloat() {
     }
 
-    public void testGeev() {
-        DoubleMatrix A = new DoubleMatrix(2, 2, 3.0, -3.0, 1.0, 1.0);
-        DoubleMatrix WR = new DoubleMatrix(2);
-        DoubleMatrix WI = new DoubleMatrix(2);
-        DoubleMatrix VR = new DoubleMatrix(2,2);
-        DoubleMatrix VL = new DoubleMatrix(2,2);
-        
-        SimpleBlas.geev('V', 'N', A, WR, WI, VR, VL);
-        
-        assertEquals(new DoubleMatrix(2, 1, 2.0, 2.0), WR);
-        assertEquals(new DoubleMatrix(2, 1, Math.sqrt(2.0), -Math.sqrt(2.0)), WI);
-        
-        System.out.printf("WR = %s\n", WR.toString());
-        System.out.printf("WI = %s\n", WI.toString());
-        System.out.printf("VR = %s\n", VR.toString());
-        System.out.printf("VL = %s\n", VL.toString());
-        System.out.printf("A = %s\n", A.toString());
-        
-    }
+	private ComplexFloat a, b;
+	
+	public void setUp() {
+		a = new ComplexFloat(1, 2);
+		b = new ComplexFloat(3, 4);
+	}
+	
+	public void testAdd() {
+		ComplexFloat c = a.add(b);
+		
+		assertEquals(4.0f, c.real());
+		assertEquals(6.0f, c.imag());
+	}
+
+	public void testMul() {
+		ComplexFloat c = a.mul(b);
+		
+		assertEquals(-5.0f, c.real());
+		assertEquals(10.0f, c.imag());
+	}
+	
+	public void testMulAndDiv() {
+		ComplexFloat d = a.mul(b).div(b);
+		
+		assertEquals(new ComplexFloat(1.0f, 2.0f), d);
+		
+		d = a.mul(b).mul(b.inv());
+
+		assertEquals(new ComplexFloat(1.0f, 2.0f), d);
+	}
+	
+	public void testDivByZero() {
+		a.div(new ComplexFloat(0.0f, 0.0f));
+	}
 }

@@ -34,7 +34,7 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -42,21 +42,21 @@ import junit.framework.TestCase;
 import java.util.Arrays;
 import static org.jblas.ranges.RangeUtils.*;
 
-public class TestFloatMatrix extends TestCase {
+public class TestDoubleMatrix extends TestCase {
 
-    FloatMatrix A, B, C, D, E, F;
+    DoubleMatrix A, B, C, D, E, F;
 
     public void setUp() {
-        A = new FloatMatrix(4, 3, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f);
-        B = new FloatMatrix(3, 1, 2.0f, 4.0f, 8.0f);
-        C = new FloatMatrix(3, 1, -1.0f, 2.0f, -3.0f);
-        D = new FloatMatrix(3, 3, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f);
-        E = new FloatMatrix(3, 3, 1.0f, -2.0f, 3.0f, -4.0f, 5.0f, -6.0f, 7.0f, -8.0f, 9.0f);
-        F = new FloatMatrix(3, 1, 3.0f, 4.0f, 7.0f);
+        A = new DoubleMatrix(4, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0);
+        B = new DoubleMatrix(3, 1, 2.0, 4.0, 8.0);
+        C = new DoubleMatrix(3, 1, -1.0, 2.0, -3.0);
+        D = new DoubleMatrix(3, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+        E = new DoubleMatrix(3, 3, 1.0, -2.0, 3.0, -4.0, 5.0, -6.0, 7.0, -8.0, 9.0);
+        F = new DoubleMatrix(3, 1, 3.0, 4.0, 7.0);
     }
 
     public void testConstructionAndSetGet() {
-        float[][] dataA = {{1.0f, 5.0f, 9.0f}, {2.0f, 6.0f, 10.0f}, {3.0f, 7.0f, 11.0f}, {4.0f, 8.0f, 12.0f}};
+        double[][] dataA = {{1.0, 5.0, 9.0}, {2.0, 6.0, 10.0}, {3.0, 7.0, 11.0}, {4.0, 8.0, 12.0}};
 
         assertEquals(A.rows, 4);
         assertEquals(A.columns, 3);
@@ -69,7 +69,7 @@ public class TestFloatMatrix extends TestCase {
     }
 
     public void testSetAndGet() {
-        FloatMatrix M = new FloatMatrix(3, 3);
+        DoubleMatrix M = new DoubleMatrix(3, 3);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -78,13 +78,13 @@ public class TestFloatMatrix extends TestCase {
         }
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                assertEquals((float) i + j, M.get(i, j));
+                assertEquals((double) i + j, M.get(i, j));
             }
         }
     }
 
     public void testCopy() {
-        FloatMatrix M = new FloatMatrix();
+        DoubleMatrix M = new DoubleMatrix();
 
         assertFalse(M.equals(A));
 
@@ -93,15 +93,15 @@ public class TestFloatMatrix extends TestCase {
     }
 
     public void testDup() {
-        FloatMatrix M = A.dup();
+        DoubleMatrix M = A.dup();
         assertEquals(M, A);
 
-        M.put(0, 0, 2.0f);
+        M.put(0, 0, 2.0);
         assertFalse(M.equals(A));
     }
 
     public void testResize() {
-        FloatMatrix M = A.dup();
+        DoubleMatrix M = A.dup();
 
         assertEquals(4, M.rows);
         assertEquals(3, M.columns);
@@ -110,31 +110,31 @@ public class TestFloatMatrix extends TestCase {
         assertEquals(4, M.rows);
         assertEquals(5, M.columns);
 
-        assertEquals(0.0f, M.get(3, 4));
+        assertEquals(0.0, M.get(3, 4));
     }
 
     public void testReshape() {
-        FloatMatrix M = new FloatMatrix(2, 2, 1.0f, 2.0f, 3.0f, 4.0f);
+        DoubleMatrix M = new DoubleMatrix(2, 2, 1.0, 2.0, 3.0, 4.0);
 
         M.reshape(1, 4);
-        assertEquals(1.0f, M.get(0, 0));
-        assertEquals(4.0f, M.get(0, 3));
+        assertEquals(1.0, M.get(0, 0));
+        assertEquals(4.0, M.get(0, 3));
 
         M.reshape(4, 1);
-        assertEquals(1.0f, M.get(0, 0));
-        assertEquals(4.0f, M.get(3, 0));
+        assertEquals(1.0, M.get(0, 0));
+        assertEquals(4.0, M.get(3, 0));
     }
 
     public void testMmul() {
-        FloatMatrix R = A.dup();
-        FloatMatrix result = new FloatMatrix(4, 1, 94.0f, 108.0f, 122.0f, 136.0f);
+        DoubleMatrix R = A.dup();
+        DoubleMatrix result = new DoubleMatrix(4, 1, 94.0, 108.0, 122.0, 136.0);
 
         A.mmuli(B, R);
         assertEquals(result, R);
 
         assertEquals(result, A.mmul(B));
 
-        FloatMatrix resultDE = new FloatMatrix(3, 3, 14.0f, 16.0f, 18.0f, -26.0f, -31.0f, -36.0f, 38.0f, 46.0f, 54.0f);
+        DoubleMatrix resultDE = new DoubleMatrix(3, 3, 14.0, 16.0, 18.0, -26.0, -31.0, -36.0, 38.0, 46.0, 54.0);
 
         // In-place with independent operands
         assertEquals(resultDE, D.mmuli(E, R));
@@ -152,9 +152,9 @@ public class TestFloatMatrix extends TestCase {
     }
 
     public void testAdd() {
-        FloatMatrix result = new FloatMatrix(3, 1, 1.0f, 6.0f, 5.0f);
+        DoubleMatrix result = new DoubleMatrix(3, 1, 1.0, 6.0, 5.0);
 
-        FloatMatrix R = new FloatMatrix();
+        DoubleMatrix R = new DoubleMatrix();
 
         // In-place, but independent operands
         B.addi(C, R);
@@ -171,23 +171,23 @@ public class TestFloatMatrix extends TestCase {
         // fully dynamic
         assertEquals(result, B.add(C));
 
-        result = new FloatMatrix(3, 1, 3.0f, 5.0f, 9.0f);
+        result = new DoubleMatrix(3, 1, 3.0, 5.0, 9.0);
 
         // In-place, but independent operands
-        assertEquals(result, B.addi(1.0f, R));
+        assertEquals(result, B.addi(1.0, R));
 
         // In-place on this
         R = B.dup();
-        assertEquals(result, R.addi(1.0f, R));
+        assertEquals(result, R.addi(1.0, R));
 
         // fully dynamic
-        assertEquals(result, B.add(1.0f));
+        assertEquals(result, B.add(1.0));
     }
 
     public void testSub() {
-        FloatMatrix result = new FloatMatrix(3, 1, 3.0f, 2.0f, 11.0f);
+        DoubleMatrix result = new DoubleMatrix(3, 1, 3.0, 2.0, 11.0);
 
-        FloatMatrix R = new FloatMatrix();
+        DoubleMatrix R = new DoubleMatrix();
 
         // In-place, but independent operands
         assertEquals(result, B.subi(C, R));
@@ -203,23 +203,23 @@ public class TestFloatMatrix extends TestCase {
         // fully dynamic
         assertEquals(result, B.sub(C));
 
-        result = new FloatMatrix(3, 1, 1.0f, 3.0f, 7.0f);
+        result = new DoubleMatrix(3, 1, 1.0, 3.0, 7.0);
 
         // In-place, but independent operands
-        assertEquals(result, B.subi(1.0f, R));
+        assertEquals(result, B.subi(1.0, R));
 
         // In-place on this
         R = B.dup();
-        assertEquals(result, R.subi(1.0f, R));
+        assertEquals(result, R.subi(1.0, R));
 
         // fully dynamic
-        assertEquals(result, B.sub(1.0f));
+        assertEquals(result, B.sub(1.0));
     }
 
     public void testRsub() {
-        FloatMatrix result = new FloatMatrix(3, 1, 3.0f, 2.0f, 11.0f);
+        DoubleMatrix result = new DoubleMatrix(3, 1, 3.0, 2.0, 11.0);
 
-        FloatMatrix R = new FloatMatrix();
+        DoubleMatrix R = new DoubleMatrix();
 
         // In-place, but independent operands
         assertEquals(result, C.rsubi(B, R));
@@ -235,23 +235,23 @@ public class TestFloatMatrix extends TestCase {
         // fully dynamic
         assertEquals(result, C.rsub(B));
 
-        result = new FloatMatrix(3, 1, -1.0f, -3.0f, -7.0f);
+        result = new DoubleMatrix(3, 1, -1.0, -3.0, -7.0);
 
         // In-place, but independent operands
-        assertEquals(result, B.rsubi(1.0f, R));
+        assertEquals(result, B.rsubi(1.0, R));
 
         // In-place on this
         R = B.dup();
-        assertEquals(result, R.rsubi(1.0f, R));
+        assertEquals(result, R.rsubi(1.0, R));
 
         // fully dynamic
-        assertEquals(result, B.rsub(1.0f));
+        assertEquals(result, B.rsub(1.0));
     }
 
     public void testMul() {
-        FloatMatrix result = new FloatMatrix(3, 1, -2.0f, 8.0f, -24.0f);
+        DoubleMatrix result = new DoubleMatrix(3, 1, -2.0, 8.0, -24.0);
 
-        FloatMatrix R = new FloatMatrix();
+        DoubleMatrix R = new DoubleMatrix();
 
         // In-place, but independent operands
         assertEquals(result, B.muli(C, R));
@@ -267,23 +267,23 @@ public class TestFloatMatrix extends TestCase {
         // fully dynamic
         assertEquals(result, B.mul(C));
 
-        result = new FloatMatrix(3, 1, 1.0f, 2.0f, 4.0f);
+        result = new DoubleMatrix(3, 1, 1.0, 2.0, 4.0);
 
         // In-place, but independent operands
-        assertEquals(result, B.muli(0.5f, R));
+        assertEquals(result, B.muli(0.5, R));
 
         // In-place on this
         R = B.dup();
-        assertEquals(result, R.muli(0.5f, R));
+        assertEquals(result, R.muli(0.5, R));
 
         // fully dynamic
-        assertEquals(result, B.mul(0.5f));
+        assertEquals(result, B.mul(0.5));
     }
 
     public void testDiv() {
-        FloatMatrix result = new FloatMatrix(3, 1, -2.0f, 2.0f, -2.666666666f);
+        DoubleMatrix result = new DoubleMatrix(3, 1, -2.0, 2.0, -2.666666666);
 
-        FloatMatrix R = new FloatMatrix();
+        DoubleMatrix R = new DoubleMatrix();
 
         // In-place, but independent operands
         assertEquals(result, B.divi(C, R));
@@ -299,23 +299,23 @@ public class TestFloatMatrix extends TestCase {
         // fully dynamic
         assertEquals(result, B.div(C));
 
-        result = new FloatMatrix(3, 1, 1.0f, 2.0f, 4.0f);
+        result = new DoubleMatrix(3, 1, 1.0, 2.0, 4.0);
 
         // In-place, but independent operands
-        assertEquals(result, B.divi(2.0f, R));
+        assertEquals(result, B.divi(2.0, R));
 
         // In-place on this
         R = B.dup();
-        assertEquals(result, R.divi(2.0f, R));
+        assertEquals(result, R.divi(2.0, R));
 
         // fully dynamic
-        assertEquals(result, B.div(2.0f));
+        assertEquals(result, B.div(2.0));
     }
 
     public void testRdiv() {
-        FloatMatrix result = new FloatMatrix(3, 1, -2.0f, 2.0f, -2.666666666f);
+        DoubleMatrix result = new DoubleMatrix(3, 1, -2.0, 2.0, -2.666666666);
 
-        FloatMatrix R = new FloatMatrix();
+        DoubleMatrix R = new DoubleMatrix();
 
         // In-place, but independent operands
         assertEquals(result, C.rdivi(B, R));
@@ -331,24 +331,24 @@ public class TestFloatMatrix extends TestCase {
         // fully dynamic
         assertEquals(result, C.rdiv(B));
 
-        result = new FloatMatrix(3, 1, 0.5f, 0.25f, 0.125f);
+        result = new DoubleMatrix(3, 1, 0.5, 0.25, 0.125);
 
         // In-place, but independent operands
-        assertEquals(result, B.rdivi(1.0f, R));
+        assertEquals(result, B.rdivi(1.0, R));
 
         // In-place on this
         R = B.dup();
-        assertEquals(result, R.rdivi(1.0f, R));
+        assertEquals(result, R.rdivi(1.0, R));
 
         // fully dynamic
-        assertEquals(result, B.rdiv(1.0f));
+        assertEquals(result, B.rdiv(1.0));
     }
 
     /*# def test_logical(op, result, scalar, result2); <<-EOS
     public void test#{op.upcase}() {
-    FloatMatrix result = new FloatMatrix(3, 1, #{result});
-    FloatMatrix result2 = new FloatMatrix(3, 1, #{result2});
-    FloatMatrix R = new FloatMatrix();
+    DoubleMatrix result = new DoubleMatrix(3, 1, #{result});
+    DoubleMatrix result2 = new DoubleMatrix(3, 1, #{result2});
+    DoubleMatrix R = new DoubleMatrix();
     
     // in-place but independent operands
     assertEquals(result, B.#{op}i(F, R));
@@ -374,12 +374,12 @@ public class TestFloatMatrix extends TestCase {
     EOS
     end	
     #*/
-    /*# test_logical('lt', '1.0f, 0.0f, 0.0f', 4.0f, '1.0f, 0.0f, 0.0f') #*/
+    /*# test_logical('lt', '1.0, 0.0, 0.0', 4.0, '1.0, 0.0, 0.0') #*/
 //RJPP-BEGIN------------------------------------------------------------
     public void testLT() {
-    FloatMatrix result = new FloatMatrix(3, 1, 1.0f, 0.0f, 0.0f);
-    FloatMatrix result2 = new FloatMatrix(3, 1, 1.0f, 0.0f, 0.0f);
-    FloatMatrix R = new FloatMatrix();
+    DoubleMatrix result = new DoubleMatrix(3, 1, 1.0, 0.0, 0.0);
+    DoubleMatrix result2 = new DoubleMatrix(3, 1, 1.0, 0.0, 0.0);
+    DoubleMatrix R = new DoubleMatrix();
     
     // in-place but independent operands
     assertEquals(result, B.lti(F, R));
@@ -397,18 +397,18 @@ public class TestFloatMatrix extends TestCase {
     
     // in-place in this
     R = B.dup();
-    assertEquals(result2, R.lti(4.0f, R));
+    assertEquals(result2, R.lti(4.0, R));
     
     // fully dynamic
-    assertEquals(result2, B.lt(4.0f));	
+    assertEquals(result2, B.lt(4.0));	
     }
 //RJPP-END--------------------------------------------------------------
-	/*# test_logical('le', '1.0f, 1.0f, 0.0f', 4.0f, '1.0f, 1.0f, 0.0f') #*/
+	/*# test_logical('le', '1.0, 1.0, 0.0', 4.0, '1.0, 1.0, 0.0') #*/
 //RJPP-BEGIN------------------------------------------------------------
     public void testLE() {
-    FloatMatrix result = new FloatMatrix(3, 1, 1.0f, 1.0f, 0.0f);
-    FloatMatrix result2 = new FloatMatrix(3, 1, 1.0f, 1.0f, 0.0f);
-    FloatMatrix R = new FloatMatrix();
+    DoubleMatrix result = new DoubleMatrix(3, 1, 1.0, 1.0, 0.0);
+    DoubleMatrix result2 = new DoubleMatrix(3, 1, 1.0, 1.0, 0.0);
+    DoubleMatrix R = new DoubleMatrix();
     
     // in-place but independent operands
     assertEquals(result, B.lei(F, R));
@@ -426,18 +426,18 @@ public class TestFloatMatrix extends TestCase {
     
     // in-place in this
     R = B.dup();
-    assertEquals(result2, R.lei(4.0f, R));
+    assertEquals(result2, R.lei(4.0, R));
     
     // fully dynamic
-    assertEquals(result2, B.le(4.0f));	
+    assertEquals(result2, B.le(4.0));	
     }
 //RJPP-END--------------------------------------------------------------
-	/*# test_logical('gt', '0.0f, 0.0f, 1.0f', 4.0f, '0.0f, 0.0f, 1.0f') #*/
+	/*# test_logical('gt', '0.0, 0.0, 1.0', 4.0, '0.0, 0.0, 1.0') #*/
 //RJPP-BEGIN------------------------------------------------------------
     public void testGT() {
-    FloatMatrix result = new FloatMatrix(3, 1, 0.0f, 0.0f, 1.0f);
-    FloatMatrix result2 = new FloatMatrix(3, 1, 0.0f, 0.0f, 1.0f);
-    FloatMatrix R = new FloatMatrix();
+    DoubleMatrix result = new DoubleMatrix(3, 1, 0.0, 0.0, 1.0);
+    DoubleMatrix result2 = new DoubleMatrix(3, 1, 0.0, 0.0, 1.0);
+    DoubleMatrix R = new DoubleMatrix();
     
     // in-place but independent operands
     assertEquals(result, B.gti(F, R));
@@ -455,18 +455,18 @@ public class TestFloatMatrix extends TestCase {
     
     // in-place in this
     R = B.dup();
-    assertEquals(result2, R.gti(4.0f, R));
+    assertEquals(result2, R.gti(4.0, R));
     
     // fully dynamic
-    assertEquals(result2, B.gt(4.0f));	
+    assertEquals(result2, B.gt(4.0));	
     }
 //RJPP-END--------------------------------------------------------------
-	/*# test_logical('ge', '0.0f, 1.0f, 1.0f', 4.0f, '0.0f, 1.0f, 1.0f') #*/
+	/*# test_logical('ge', '0.0, 1.0, 1.0', 4.0, '0.0, 1.0, 1.0') #*/
 //RJPP-BEGIN------------------------------------------------------------
     public void testGE() {
-    FloatMatrix result = new FloatMatrix(3, 1, 0.0f, 1.0f, 1.0f);
-    FloatMatrix result2 = new FloatMatrix(3, 1, 0.0f, 1.0f, 1.0f);
-    FloatMatrix R = new FloatMatrix();
+    DoubleMatrix result = new DoubleMatrix(3, 1, 0.0, 1.0, 1.0);
+    DoubleMatrix result2 = new DoubleMatrix(3, 1, 0.0, 1.0, 1.0);
+    DoubleMatrix R = new DoubleMatrix();
     
     // in-place but independent operands
     assertEquals(result, B.gei(F, R));
@@ -484,15 +484,15 @@ public class TestFloatMatrix extends TestCase {
     
     // in-place in this
     R = B.dup();
-    assertEquals(result2, R.gei(4.0f, R));
+    assertEquals(result2, R.gei(4.0, R));
     
     // fully dynamic
-    assertEquals(result2, B.ge(4.0f));	
+    assertEquals(result2, B.ge(4.0));	
     }
 //RJPP-END--------------------------------------------------------------
     public void testMinMax() {
-        assertEquals(1.0f, A.min());
-        assertEquals(12.0f, A.max());
+        assertEquals(1.0, A.min());
+        assertEquals(12.0, A.max());
     }
 
     public void testArgMinMax() {
@@ -501,10 +501,10 @@ public class TestFloatMatrix extends TestCase {
     }
 
     public void testTranspose() {
-        FloatMatrix At = A.transpose();
-        assertEquals(1.0f, At.get(0, 0));
-        assertEquals(2.0f, At.get(0, 1));
-        assertEquals(5.0f, At.get(1, 0));
+        DoubleMatrix At = A.transpose();
+        assertEquals(1.0, At.get(0, 0));
+        assertEquals(2.0, At.get(0, 1));
+        assertEquals(5.0, At.get(1, 0));
     }
 
     public void testGetRowVector() {
@@ -516,58 +516,58 @@ public class TestFloatMatrix extends TestCase {
             A.getColumn(c);
         }
 
-        A.addiRowVector(new FloatMatrix(3, 1, 10.0f, 100.0f, 1000.0f));
-        A.addiColumnVector(new FloatMatrix(1, 4, 10.0f, 100.0f, 1000.0f, 10000.0f));
+        A.addiRowVector(new DoubleMatrix(3, 1, 10.0, 100.0, 1000.0));
+        A.addiColumnVector(new DoubleMatrix(1, 4, 10.0, 100.0, 1000.0, 10000.0));
     }
 
     public void testPairwiseDistance() {
-        FloatMatrix D = Geometry.pairwiseSquaredDistances(A, A);
+        DoubleMatrix D = Geometry.pairwiseSquaredDistances(A, A);
 
-        FloatMatrix X = new FloatMatrix(1, 3, 1.0f, 0.0f, -1.0f);
+        DoubleMatrix X = new DoubleMatrix(1, 3, 1.0, 0.0, -1.0);
 
         Geometry.pairwiseSquaredDistances(X, X);
 
-        FloatMatrix A1 = new FloatMatrix(1, 2, 1.0f, 2.0f);
-        FloatMatrix A2 = new FloatMatrix(1, 3, 1.0f, 2.0f, 3.0f);
+        DoubleMatrix A1 = new DoubleMatrix(1, 2, 1.0, 2.0);
+        DoubleMatrix A2 = new DoubleMatrix(1, 3, 1.0, 2.0, 3.0);
 
         Geometry.pairwiseSquaredDistances(A1, A2);
     }
 
     public void testSwapColumns() {
-        FloatMatrix AA = A.dup();
+        DoubleMatrix AA = A.dup();
 
         AA.swapColumns(1, 2);
-        assertEquals(new FloatMatrix(4, 3, 1.0f, 2.0f, 3.0f, 4.0f, 9.0f, 10.0f, 11.0f, 12.0f, 5.0f, 6.0f, 7.0f, 8.0f), AA);
+        assertEquals(new DoubleMatrix(4, 3, 1.0, 2.0, 3.0, 4.0, 9.0, 10.0, 11.0, 12.0, 5.0, 6.0, 7.0, 8.0), AA);
     }
 
     public void testSwapRows() {
-        FloatMatrix AA = A.dup();
+        DoubleMatrix AA = A.dup();
 
         AA.swapRows(1, 2);
-        assertEquals(new FloatMatrix(4, 3, 1.0f, 3.0f, 2.0f, 4.0f, 5.0f, 7.0f, 6.0f, 8.0f, 9.0f, 11.0f, 10.0f, 12.0f), AA);
+        assertEquals(new DoubleMatrix(4, 3, 1.0, 3.0, 2.0, 4.0, 5.0, 7.0, 6.0, 8.0, 9.0, 11.0, 10.0, 12.0), AA);
     }
 
     public void testSolve() {
-        FloatMatrix AA = new FloatMatrix(3, 3, 3.0f, 5.0f, 6.0f, 1.0f, 0.0f, 0.0f, 2.0f, 4.0f, 0.0f);
-        FloatMatrix BB = new FloatMatrix(3, 1, 1.0f, 2.0f, 3.0f);
+        DoubleMatrix AA = new DoubleMatrix(3, 3, 3.0, 5.0, 6.0, 1.0, 0.0, 0.0, 2.0, 4.0, 0.0);
+        DoubleMatrix BB = new DoubleMatrix(3, 1, 1.0, 2.0, 3.0);
 
-        FloatMatrix Adup = AA.dup();
-        FloatMatrix Bdup = BB.dup();
+        DoubleMatrix Adup = AA.dup();
+        DoubleMatrix Bdup = BB.dup();
 
-        FloatMatrix X = Solve.solve(AA, BB);
+        DoubleMatrix X = Solve.solve(AA, BB);
 
         assertEquals(Adup, AA);
         assertEquals(Bdup, BB);
     }
 
     public void testConstructFromArray() {
-        float[][] data = {
-            {1.0f, 2.0f, 3.0f},
-            {4.0f, 5.0f, 6.0f},
-            {7.0f, 8.0f, 9.0f}
+        double[][] data = {
+            {1.0, 2.0, 3.0},
+            {4.0, 5.0, 6.0},
+            {7.0, 8.0, 9.0}
         };
 
-        FloatMatrix A = new FloatMatrix(data);
+        DoubleMatrix A = new DoubleMatrix(data);
 
         for (int r = 0; r < 3; r++) {
             for (int c = 0; c < 3; c++) {
@@ -577,26 +577,26 @@ public class TestFloatMatrix extends TestCase {
     }
 
     public void testDiag() {
-        FloatMatrix A = new FloatMatrix(new float[][]{
-                    {1.0f, 2.0f, 3.0f},
-                    {4.0f, 5.0f, 6.0f},
-                    {7.0f, 8.0f, 9.0f}
+        DoubleMatrix A = new DoubleMatrix(new double[][]{
+                    {1.0, 2.0, 3.0},
+                    {4.0, 5.0, 6.0},
+                    {7.0, 8.0, 9.0}
                 });
 
-        assertEquals(new FloatMatrix(3, 1, 1.0f, 5.0f, 9.0f), A.diag());
+        assertEquals(new DoubleMatrix(3, 1, 1.0, 5.0, 9.0), A.diag());
 
-        assertEquals(new FloatMatrix(new float[][]{
-                    {1.0f, 0.0f, 0.0f},
-                    {0.0f, 2.0f, 0.0f},
-                    {0.0f, 0.0f, 3.0f}
-                }), FloatMatrix.diag(new FloatMatrix(3, 1, 1.0f, 2.0f, 3.0f)));
+        assertEquals(new DoubleMatrix(new double[][]{
+                    {1.0, 0.0, 0.0},
+                    {0.0, 2.0, 0.0},
+                    {0.0, 0.0, 3.0}
+                }), DoubleMatrix.diag(new DoubleMatrix(3, 1, 1.0, 2.0, 3.0)));
     }
 
     public void testColumnAndRowMinMax() {
-        assertEquals(new FloatMatrix(1, 3, 1.0f, 5.0f, 9.0f), A.columnMins());
-        assertEquals(new FloatMatrix(4, 1, 1.0f, 2.0f, 3.0f, 4.0f), A.rowMins());
-        assertEquals(new FloatMatrix(1, 3, 4.0f, 8.0f, 12.0f), A.columnMaxs());
-        assertEquals(new FloatMatrix(4, 1, 9.0f, 10.0f, 11.0f, 12.0f), A.rowMaxs());
+        assertEquals(new DoubleMatrix(1, 3, 1.0, 5.0, 9.0), A.columnMins());
+        assertEquals(new DoubleMatrix(4, 1, 1.0, 2.0, 3.0, 4.0), A.rowMins());
+        assertEquals(new DoubleMatrix(1, 3, 4.0, 8.0, 12.0), A.columnMaxs());
+        assertEquals(new DoubleMatrix(4, 1, 9.0, 10.0, 11.0, 12.0), A.rowMaxs());
         int[] i = A.columnArgmins();
         assertEquals(0, i[0]);
         assertEquals(0, i[1]);
@@ -618,7 +618,7 @@ public class TestFloatMatrix extends TestCase {
     }
 
     public void testToArray() {
-        assertTrue(Arrays.equals(new float[]{2.0f, 4.0f, 8.0f}, B.toArray()));
+        assertTrue(Arrays.equals(new double[]{2.0, 4.0, 8.0}, B.toArray()));
         assertTrue(Arrays.equals(new int[]{2, 4, 8}, B.toIntArray()));
         assertTrue(Arrays.equals(new boolean[]{true, true, true}, B.toBooleanArray()));
     }
@@ -628,12 +628,12 @@ public class TestFloatMatrix extends TestCase {
             File f = File.createTempFile("jblas-test", "txt");
             f.deleteOnExit();
             PrintStream out = new PrintStream(f);
-            out.println("1.0f 2.0f 3.0f");
-            out.println("4.0f 5.0f 6.0f");
+            out.println("1.0 2.0 3.0");
+            out.println("4.0 5.0 6.0");
             out.close();
 
-            FloatMatrix result = FloatMatrix.loadAsciiFile(f.getAbsolutePath());
-            assertEquals(new FloatMatrix(2, 3, 1.0f, 4.0f, 2.0f, 5.0f, 3.0f, 6.0f), result);
+            DoubleMatrix result = DoubleMatrix.loadAsciiFile(f.getAbsolutePath());
+            assertEquals(new DoubleMatrix(2, 3, 1.0, 4.0, 2.0, 5.0, 3.0, 6.0), result);
         } catch (Exception e) {
             fail("Caught exception " + e);
         }
@@ -642,6 +642,6 @@ public class TestFloatMatrix extends TestCase {
     public void testRanges() {
         // Hm... Broken?
         //System.out.printf("Ranges: %s\n", A.get(interval(0, 2), interval(0, 1)).toString());
-        //assertEquals(new FloatMatrix(3, 2, 1.0f, 2.0f, 3.0f, 5.0f, 6.0f, 7.0f), );
+        //assertEquals(new DoubleMatrix(3, 2, 1.0, 2.0, 3.0, 5.0, 6.0, 7.0), );
     }
 }
