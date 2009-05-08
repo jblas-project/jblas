@@ -1,0 +1,35 @@
+Release v2.0 - May 8, 2009
+
+Release v2.0 mostly adds features to the build process and renames some
+packages and classes to make the structure simpler. No new significant
+functionality has been added.
+
+Changes from version v1.0:
+
+- fixed a bug in DoubleMatrix.copy()
+- Renamed packages to make structure simpler
+
+  org.jblas.la -> org.jblas
+  org.jblas.la.exceptions -> org.jblas.exceptions
+  org.jblas.la.ranges -> org.jblas.ranges
+  org.jblas.core -> moved content to org.jblas and org.jblas.util
+
+- Renamed classes
+
+  Blas -> NativeBlas
+
+- Build process can now generate different kinds of jar files, and also
+  generate shared libraries which are statically linked against BLAS,
+  LAPACK or ATLAS. You can also generate a multiplatform jar file which
+  contains shared libraries for different platforms.
+
+- Generated wrapper code has been optimized a bit:
+
+  - in the lapack wrapper with automatic workspace allocation, only
+    small dummy arrays are passed in the workspace query, meaning that
+    the real arrays are only passed once, not twice.
+
+  - The wrapper now also parses information whether output variables
+    are input or output and releases the arrays with JNI_ABORT in case
+    they are not output variables. This should also reduce the amount
+    of copying.
