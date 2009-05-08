@@ -1,4 +1,7 @@
-INSTALL Guide v0.2 - May 7, 2009
+INSTALL Guide 
+
+Version 0.2, May 8, 2009
+Version 0.1, March 28, 2009
 
 jblas depends on a BLAS and LAPACK library for most of its
 computational intensive parts. I recommend getting a high-quality
@@ -37,7 +40,7 @@ INSTALLING JBLAS
 
 2. By default, the dynamic libraries are extracted from the jar file
    to the default temporary directory and loaded from there. If you
-   don't want to do this, extract the dynamic library from jblas.jar
+   don't want to do this, extract the dynamic library from jblas-0.2.jar
    and copy it somewhere where it can be found.
 
    For Linux, use LD_LIBRARY_PATH, for Windows, PATH
