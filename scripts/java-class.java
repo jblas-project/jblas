@@ -36,9 +36,6 @@
 
 package <%= package %>;
 
-import org.jblas.la.ComplexFloat;
-import org.jblas.la.ComplexDouble;
-
 /**
  * Native BLAS and LAPACK functions.
  *
@@ -77,14 +74,14 @@ public class <%= classname %> {
 
   static {
 	  try {
-		  System.loadLibrary("j<%= classname.downcase %>");
+		  System.loadLibrary("jblas");
 	  }
 	  catch(UnsatisfiedLinkError e) {
 		  System.err.println(
 				  "BLAS native library not found in path. Copying native library\n" +
 				  "from the archive. Consider installing the library somewhere\n" +
 				  "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
-		  new org.jblas.util.LibraryLoader().loadLibrary("j<%= classname.downcase %>");
+		  new org.jblas.util.LibraryLoader().loadLibrary("jblas");
 	  }
   } 
 

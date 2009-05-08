@@ -34,7 +34,7 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
 /**
  * <p>General functions which are geometric in nature.</p>

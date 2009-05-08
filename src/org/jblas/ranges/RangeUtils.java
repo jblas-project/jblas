@@ -41,9 +41,7 @@
 
 package org.jblas.ranges;
 
-import org.jblas.la.*;
-import org.jblas.ranges.IndicesRange;
-import org.jblas.ranges.AllRange;
+import org.jblas.*;
 
 /**
  * A bunch of static functions for making construction of ranges more

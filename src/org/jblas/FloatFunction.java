@@ -34,9 +34,12 @@
  */
 // --- END LICENSE BLOCK ---
 
+package org.jblas;
+
 /**
- * Main linear algebra package.
- * 
- * This package contains the linear algebra packages from jBLAS.
+ * Represents a function on floats.
  */
-package org.jblas.la;
+public interface FloatFunction {
+        /** Compute the function. */
+	public float compute(float x);
+}

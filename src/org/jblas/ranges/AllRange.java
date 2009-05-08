@@ -41,7 +41,7 @@
 
 package org.jblas.ranges;
 
-import org.jblas.la.*;
+import org.jblas.*;
 
 /**
  * A range over all available indices. Can be used to address whole columns or rows. Like

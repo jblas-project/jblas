@@ -41,7 +41,7 @@
 
 package org.jblas.ranges;
 
-import org.jblas.la.*;
+import org.jblas.*;
 
 /**
  * Range which varies over pre-specified indices.

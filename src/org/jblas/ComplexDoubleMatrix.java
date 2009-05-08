@@ -34,7 +34,7 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
+package org.jblas;
 
 import org.jblas.exceptions.SizeException;
 
@@ -114,7 +114,7 @@ public class ComplexDoubleMatrix {
         public ComplexDoubleMatrix(DoubleMatrix m) {
             this(m.rows, m.columns);
             
-            Blas.dcopy(m.length, m.data, 0, 1, data, 0, 2);
+            NativeBlas.dcopy(m.length, m.data, 0, 1, data, 0, 2);
         }
 
         /** Construct a complex matrix from separate real and imaginary parts. Either 
@@ -125,9 +125,9 @@ public class ComplexDoubleMatrix {
             real.assertSameSize(imag);
             
             if (real != null)
-                Blas.dcopy(length, real.data, 0, 1, data, 0, 2);
+                NativeBlas.dcopy(length, real.data, 0, 1, data, 0, 2);
             if (imag != null)
-                Blas.dcopy(length, imag.data, 0, 1, data, 1, 2);
+                NativeBlas.dcopy(length, imag.data, 0, 1, data, 1, 2);
         }
         
         /**
@@ -240,7 +240,7 @@ public class ComplexDoubleMatrix {
 		
 		ComplexDoubleMatrix result = new ComplexDoubleMatrix(A.rows, A.columns + B.columns);
 		SimpleBlas.copy(A, result);
-		Blas.zcopy(B.length, B.data, 0, 1, result.data, A.length, 1);
+		NativeBlas.zcopy(B.length, B.data, 0, 1, result.data, A.length, 1);
 		return result;
 	}
 
@@ -251,8 +251,8 @@ public class ComplexDoubleMatrix {
 		ComplexDoubleMatrix result = new ComplexDoubleMatrix(A.rows + B.rows, A.columns);
 
 		for (int i = 0; i < A.columns; i++) {
-			Blas.zcopy(A.rows, A.data, A.index(0, i), 1, result.data, result.index(0, i), 1);
-			Blas.zcopy(B.rows, B.data, B.index(0, i), 1, result.data, result.index(A.rows, i), 1);
+			NativeBlas.zcopy(A.rows, A.data, A.index(0, i), 1, result.data, result.index(0, i), 1);
+			NativeBlas.zcopy(B.rows, B.data, B.index(0, i), 1, result.data, result.index(A.rows, i), 1);
 		}
 		
 		return result;
@@ -693,12 +693,12 @@ public class ComplexDoubleMatrix {
 	}
 	
 	public ComplexDoubleMatrix swapColumns(int i, int j) {
-		Blas.zswap(rows, data, index(0, i), 1, data, index(0, j), 1);
+		NativeBlas.zswap(rows, data, index(0, i), 1, data, index(0, j), 1);
 		return this;
 	}
 	
 	public ComplexDoubleMatrix swapRows(int i, int j) {
-		Blas.zswap(columns, data, index(i, 0), rows, data, index(j, 0), rows);
+		NativeBlas.zswap(columns, data, index(i, 0), rows, data, index(j, 0), rows);
 		return this;
 	}
 		
@@ -733,7 +733,7 @@ public class ComplexDoubleMatrix {
 	public DoubleMatrix getReal() {
 		DoubleMatrix result = new DoubleMatrix(rows, columns);
 		
-		Blas.dcopy(length, data, 0, 2, result.data, 0, 1);
+		NativeBlas.dcopy(length, data, 0, 2, result.data, 0, 1);
 		
 		return result;
 	}
@@ -823,21 +823,21 @@ public class ComplexDoubleMatrix {
         /** Get diagonal of the matrix. */
 	public ComplexDoubleMatrix diag() {
 		ComplexDoubleMatrix d = new ComplexDoubleMatrix(rows);
-		Blas.zcopy(rows, data, 0, rows + 1, d.data, 0, 1);
+		NativeBlas.zcopy(rows, data, 0, rows + 1, d.data, 0, 1);
 		return d;
 	}
         
         /** Get real part of the matrix. */
         public DoubleMatrix real() {
             DoubleMatrix result = new DoubleMatrix(rows, columns);
-            Blas.dcopy(length, data, 0, 2, result.data, 0, 1);
+            NativeBlas.dcopy(length, data, 0, 2, result.data, 0, 1);
             return result;
         }
         
         /** Get imaginary part of the matrix. */
         public DoubleMatrix imag() {
             DoubleMatrix result = new DoubleMatrix(rows, columns);
-            Blas.dcopy(length, data, 1, 2, result.data, 0, 1);
+            NativeBlas.dcopy(length, data, 1, 2, result.data, 0, 1);
             return result;            
         }
 
@@ -1310,22 +1310,22 @@ public class ComplexDoubleMatrix {
 
 	public ComplexDoubleMatrix getColumn(int c) {
 		ComplexDoubleMatrix result = new ComplexDoubleMatrix(rows, 1);
-		Blas.zcopy(rows, data, index(0, c), 1, result.data, 0, 1);
+		NativeBlas.zcopy(rows, data, index(0, c), 1, result.data, 0, 1);
 		return result;
 	}
 	
 	public void putColumn(int c, ComplexDoubleMatrix v) {
-		Blas.zcopy(rows, v.data, 0, 1, data, index(0, c), 1);
+		NativeBlas.zcopy(rows, v.data, 0, 1, data, index(0, c), 1);
 	}
 
 	public ComplexDoubleMatrix getRow(int r) {
 		ComplexDoubleMatrix result = new ComplexDoubleMatrix(1, columns);
-		Blas.zcopy(columns, data, index(r, 0), rows, result.data, 0, 1);
+		NativeBlas.zcopy(columns, data, index(r, 0), rows, result.data, 0, 1);
 		return result;
 	}
 	
 	public void putRow(int r, ComplexDoubleMatrix v) {
-		Blas.zcopy(columns, v.data, 0, 1, data, index(r, 0), rows);
+		NativeBlas.zcopy(columns, v.data, 0, 1, data, index(r, 0), rows);
 	}
 
 	/**************************************************************************
@@ -1335,28 +1335,28 @@ public class ComplexDoubleMatrix {
 	/** Add a row vector to all rows of the matrix */
 	public void addRowVector(ComplexDoubleMatrix x) {
 		for (int r = 0; r < rows; r++) {
-			Blas.zaxpy(columns, ComplexDouble.UNIT, x.data, 0, 1, data, index(r, 0), rows);
+			NativeBlas.zaxpy(columns, ComplexDouble.UNIT, x.data, 0, 1, data, index(r, 0), rows);
 		}
 	}
 
 	/** Add a vector to all columns of the matrix */
 	public void addColumnVector(ComplexDoubleMatrix x) {
 		for (int c = 0; c < columns; c++) {
-			Blas.zaxpy(rows, ComplexDouble.UNIT, x.data, 0, 1, data, index(0, c), 1);
+			NativeBlas.zaxpy(rows, ComplexDouble.UNIT, x.data, 0, 1, data, index(0, c), 1);
 		}
 	}
 
        	/** Add a row vector to all rows of the matrix */
 	public void subRowVector(ComplexDoubleMatrix x) {
 		for (int r = 0; r < rows; r++) {
-			Blas.zaxpy(columns, ComplexDouble.NEG_UNIT, x.data, 0, 1, data, index(r, 0), rows);
+			NativeBlas.zaxpy(columns, ComplexDouble.NEG_UNIT, x.data, 0, 1, data, index(r, 0), rows);
 		}
 	}
 
 	/** Add a vector to all columns of the matrix */
 	public void subColumnVector(ComplexDoubleMatrix x) {
 		for (int c = 0; c < columns; c++) {
-			Blas.zaxpy(rows, ComplexDouble.NEG_UNIT, x.data, 0, 1, data, index(0, c), 1);
+			NativeBlas.zaxpy(rows, ComplexDouble.NEG_UNIT, x.data, 0, 1, data, index(0, c), 1);
 		}
 	}
 

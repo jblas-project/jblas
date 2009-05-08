@@ -34,15 +34,12 @@
  */
 // --- END LICENSE BLOCK ---
 
-package org.jblas.la;
-
-import org.jblas.la.ComplexFloat;
-import org.jblas.la.ComplexDouble;
+package org.jblas;
 
 /**
  * Native BLAS and LAPACK functions.
  *
- * <p>The Blas class contains the native BLAS and LAPACK functions. Each
+ * <p>The NativeBlas class contains the native BLAS and LAPACK functions. Each
  * Fortran function is mapped to a static method of this class. For each array argument,
  * an additional parameter is introduced which gives the offset from the beginning of
  * the passed array. In C, you would be able to pass a different pointer, but
@@ -73,7 +70,7 @@ import org.jblas.la.ComplexDouble;
  *    int incx, double[] dy, int dyIdx, int incy);
  * </pre>
  */
-public class Blas {
+public class NativeBlas {
 
   static {
 	  try {

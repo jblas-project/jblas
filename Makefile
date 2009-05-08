@@ -44,7 +44,7 @@ LAPACK=$(LAPACK_HOME)/SRC
 BLAS=$(LAPACK_HOME)/BLAS/SRC
 endif
 
-PACKAGE=org.jblas.la
+PACKAGE=org.jblas
 
 # generate path from package name
 PACKAGE_PATH=$(subst .,/,$(PACKAGE))
@@ -72,10 +72,10 @@ all	: compile-native
 
 compile-native : $(LIB_PATH)/$(LIB)jblas.$(SO)
 
-generate-wrapper: src/$(PACKAGE_PATH)/Blas.java native/Blas.c
+generate-wrapper: src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c
 
 clean:
-	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) src/$(PACKAGE_PATH)/Blas.java
+	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) src/$(PACKAGE_PATH)/NativeBlas.java
 
 ifeq ($(LAPACK_HOME),)
 realclean:
@@ -87,8 +87,8 @@ realclean:
 endif
 
 # Generating the stubs. This target requires that the blas sources can be found in ~/src/blas/*.f
-src/$(PACKAGE_PATH)/Blas.java native/Blas.c: scripts/fortranwrapper.rb scripts/fortran/types.rb scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c
-	$(RUBY) scripts/fortranwrapper.rb $(PACKAGE) Blas \
+src/$(PACKAGE_PATH)/NativeBlas.java native/Blas.c: scripts/fortranwrapper.rb scripts/fortran/types.rb scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c
+	$(RUBY) scripts/fortranwrapper.rb $(PACKAGE) NativeBlas \
 	$(BLAS)/*.f \
 	$(LAPACK)/[sd]gesv.f \
 	$(LAPACK)/[sd]sysv.f \
@@ -97,7 +97,7 @@ src/$(PACKAGE_PATH)/Blas.java native/Blas.c: scripts/fortranwrapper.rb scripts/f
 	$(LAPACK)/[sd]posv.f \
 	$(LAPACK)/[sdcz]geev.f
 
-$(LIB_PATH)/$(LIB)jblas.$(SO) : native/Blas.$(SO)
+$(LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
 	mkdir -p $(LIB_PATH)
 	mv $< $@
 
