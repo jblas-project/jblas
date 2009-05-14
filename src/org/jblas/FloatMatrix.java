@@ -43,15 +43,16 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * A general matrix class for <tt>float</tt> typed values.
@@ -1285,6 +1286,88 @@ public class FloatMatrix {
         return result;
     }
 
+    /**
+     * A wrapper which allows to view a matrix as a List of Doubles (read-only!).
+     * Also implements the {@link ConvertsToFloatMatrix} interface.
+     */
+    public class ElementsAsListView extends AbstractList<Float> implements ConvertsToFloatMatrix {
+        private FloatMatrix me;
+
+        public ElementsAsListView(FloatMatrix me) {
+            this.me = me;
+        }
+
+        @Override
+        public Float get(int index) {
+            return me.get(index);
+        }
+
+        @Override
+        public int size() {
+            return me.length;
+        }
+
+        public FloatMatrix convertToFloatMatrix() {
+            return me;
+        }
+    }
+
+    public class RowsAsListView extends AbstractList<FloatMatrix> implements ConvertsToFloatMatrix {
+        private FloatMatrix me;
+
+        public RowsAsListView(FloatMatrix me) {
+            this.me = me;
+        }
+
+        @Override
+        public FloatMatrix get(int index) {
+            return getRow(index);
+        }
+
+        @Override
+        public int size() {
+            return rows;
+        }
+
+        public FloatMatrix convertToFloatMatrix() {
+            return me;
+        }
+    }
+
+    public class ColumnsAsListView extends AbstractList<FloatMatrix> implements ConvertsToFloatMatrix {
+        private FloatMatrix me;
+
+        public ColumnsAsListView(FloatMatrix me) {
+            this.me = me;
+        }
+
+        @Override
+        public FloatMatrix get(int index) {
+            return getColumn(index);
+        }
+
+        @Override
+        public int size() {
+            return columns;
+        }
+
+        public FloatMatrix convertToFloatMatrix() {
+            return me;
+        }
+    }
+
+    public List<Float> elementsAsList() {
+        return new ElementsAsListView(this);
+    }
+
+    public List<FloatMatrix> rowsAsList() {
+        return new RowsAsListView(this);
+    }
+
+    public List<FloatMatrix> columnsAsList() {
+        return new ColumnsAsListView(this);
+    }
+
     /**************************************************************************
      * Arithmetic Operations
      */
@@ -1829,27 +1912,57 @@ public class FloatMatrix {
         return SimpleBlas.dot(this, other);
     }
 
+    /** 
+     * Computes the projection coefficient of other on this.
+     *
+     * The returned scalar times <tt>this</tt> is the orthogonal projection
+     * of <tt>other</tt> on <tt>this</tt>.
+     */
+    public float project(FloatMatrix other) {
+        other.checkLength(length);
+        float norm = 0, dot = 0;
+        for (int i = 0; i < this.length; i++) {
+            float x = get(i);
+            norm += x*x;
+            dot += x*other.get(i);
+        }
+        return dot/norm;
+    }
+
     /**
      * The Euclidean norm of the matrix as vector, also the Frobenius
      * norm of the matrix.
      */
     public float norm2() {
-        return SimpleBlas.nrm2(this);
+        float norm = 0.0f;
+        for (int i = 0; i < length; i++) {
+            norm += get(i) * get(i);
+        }
+        return (float)Math.sqrt(norm);
     }
 
     /**
      * The maximum norm of the matrix (maximal absolute value of the elements).
      */
     public float normmax() {
-        int i = SimpleBlas.iamax(this);
-        return Math.abs(get(i));
+        float max = 0.0f;
+        for (int i = 0; i < length; i++) {
+            float a = Math.abs(get(i));
+            if (a > max)
+                max = a;
+        }
+        return max;
     }
 
     /**
      * The 1-norm of the matrix as vector (sum of absolute values of elements).
      */
     public float norm1() {
-        return SimpleBlas.asum(this);
+        float norm = 0.0f;
+        for (int i = 0; i < length; i++) {
+            norm += Math.abs(get(i));
+        }
+        return norm;
     }
 
     /**
@@ -2119,9 +2232,9 @@ public class FloatMatrix {
     /** Add a row vector to all rows of the matrix (in place). */
     public FloatMatrix addiRowVector(FloatMatrix x) {
         x.checkLength(columns);
-        for (int r = 0; r < rows; r++) {
-            JavaBlas.raxpy(columns, 1.0f, x.data, 0, 1, data, index(r, 0), rows);
-        }
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) + x.get(c));
         return this;
     }
 
@@ -2133,9 +2246,9 @@ public class FloatMatrix {
     /** Add a vector to all columns of the matrix (in-place). */
     public FloatMatrix addiColumnVector(FloatMatrix x) {
         x.checkLength(rows);
-        for (int c = 0; c < columns; c++) {
-            JavaBlas.raxpy(rows, 1.0f, x.data, 0, 1, data, index(0, c), 1);
-        }
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) + x.get(r));
         return this;
     }
 
@@ -2148,9 +2261,9 @@ public class FloatMatrix {
     public FloatMatrix subiRowVector(FloatMatrix x) {
         // This is a bit crazy, but a row vector must have as length as the columns of the matrix.
         x.checkLength(columns);
-        for (int r = 0; r < rows; r++) {
-            JavaBlas.raxpy(columns, -1.0f, x.data, 0, 1, data, index(r, 0), rows);
-        }
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) - x.get(c));
         return this;
     }
 
@@ -2162,9 +2275,9 @@ public class FloatMatrix {
     /** Subtract a column vector from all columns of the matrix (in-place). */
     public FloatMatrix subiColumnVector(FloatMatrix x) {
         x.checkLength(rows);
-        for (int c = 0; c < columns; c++) {
-            JavaBlas.raxpy(rows, -1.0f, x.data, 0, 1, data, index(0, c), 1);
-        }
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) - x.get(r));
         return this;
     }
 
