@@ -104,6 +104,10 @@ class String
   def indent(cnt)
     split("\n").map {|l| ' ' * cnt + l}.join("\n")
   end
+
+  def start_with?(head)
+    self.length > head.length && self[0...head.length] == head
+  end
 end
 
 begin
