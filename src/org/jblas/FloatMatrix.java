@@ -52,6 +52,8 @@ import java.io.StringWriter;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -2327,6 +2329,30 @@ public class FloatMatrix {
         return dup().muliRowVector(x);
     }
 
+    public FloatMatrix diviRowVector(FloatMatrix x) {
+        x.checkLength(columns);
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) / x.get(c));
+        return this;
+    }
+
+    public FloatMatrix divRowVector(FloatMatrix x) {
+        return dup().diviRowVector(x);
+    }
+
+    public FloatMatrix diviColumnVector(FloatMatrix x) {
+        x.checkLength(rows);
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) / x.get(r));
+        return this;
+    }
+
+    public FloatMatrix divColumnVector(FloatMatrix x) {
+        return dup().diviColumnVector(x);
+    }
+
     /**
      * Writes out this matrix to the given data stream.
      * @param dos the data output stream to write to.
@@ -2426,6 +2452,49 @@ public class FloatMatrix {
             for (int c = 0, cc = firstElement; c < columns; c++, cc++) {
                 result.put(r, c, Float.valueOf(elements[cc]));
             }
+            r++;
+        }
+        return result;
+    }
+
+    public static FloatMatrix loadCSVFile(String filename) throws IOException {
+        BufferedReader is = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
+
+        List<FloatMatrix> rows = new LinkedList<FloatMatrix>();
+        String line;
+        int columns = -1;
+        while ((line = is.readLine()) != null) {
+            String[] elements = line.split(",");
+            int numElements = elements.length;
+            if (elements[0].length() == 0) {
+                numElements--;
+            }
+            if (elements[elements.length - 1].length() == 0) {
+                numElements--;
+            }
+
+            if (columns == -1) {
+                columns = numElements;
+            } else {
+                if (columns != numElements) {
+                    throw new IOException("Number of elements changes in line " + line + ".");
+                }
+            }
+
+            FloatMatrix row = new FloatMatrix(columns);
+            for (int c = 0; c < columns; c++)
+                row.put(c, Float.valueOf(elements[c]));
+            rows.add(row);
+        }
+        is.close();
+
+        System.out.println("Done reading file");
+
+        FloatMatrix result = new FloatMatrix(rows.size(), columns);
+        int r = 0;
+        Iterator<FloatMatrix> ri = rows.iterator();
+        while (ri.hasNext()) {
+            result.putRow(r, ri.next());
             r++;
         }
         return result;
