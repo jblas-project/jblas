@@ -5,39 +5,53 @@
 
 package org.jblas.util;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Random;
 
 /**
  *
  */
 public class Permutations {
-    public static Integer[] randomPermutation(int size) {
-        Integer[] result = new Integer[size];
-        final int[] x = new int[size];
+    /**
+     * Create a random permutation of the numbers 0, ..., size - 1.
+     *
+     * see Algorithm P, D.E. Knuth: The Art of Computer Programming, Vol. 2, p. 145
+     */
+    public static int[] randomPermutation(int size) {
         Random r = new Random();
+        int[] result = new int[size];
 
-        for (int i = 0; i < size; i++) {
-            result[i] = new Integer(i);
-            x[i] = r.nextInt();
+        for (int j = 0; j < size; j++) {
+            result[j] = j;
+        }
+        
+        for (int j = size - 1; j > 0; j--) {
+            int k = r.nextInt(j);
+            result[j] = result[k];
+            result[k] = j;
         }
 
-        Arrays.sort(result, new Comparator<Integer>() {
+        return result;
+    }
 
-            public int compare(Integer o1, Integer o2) {
-                int i1 = o1.intValue();
-                int i2 = o2.intValue();
-                if (x[i1] < x[i2])
-                    return -1;
-                else if (x[i1] > x[i2])
-                    return 1;
-                else
-                    return 0;
+    /**
+     * Get a random sample of k out of n elements.
+     *
+     * See Algorithm S, D. E. Knuth, The Art of Computer Programming, Vol. 2, p.142.
+     */
+    public static int[] randomSubset(int k, int n) {
+        assert(0 < k && k <= n);
+        Random r = new Random();
+        int t = 0, m = 0;
+        int[] result = new int[k];
+
+        while (m < k) {
+            double u = r.nextDouble();
+            if ( (n - t) * u < k - m ) {
+                result[m] = t;
+                m++;
             }
-
-        });
-
+            t++;
+        }
         return result;
     }
 }

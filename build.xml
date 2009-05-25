@@ -180,21 +180,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- jar files -->
 
-    <target name="jar" depends="compile,compile-native" description="create jblas.jar (local system, dynamic)">
+    <target name="jar" depends="compile,compile-native" description="create jblas.jar (local system, as configured)">
         <delete dir="${bin}/lib" />
         <copy todir="${bin}/lib">
             <fileset dir="${native-libs}">
-                <include name="${os_name}/${os_arch}/*" />
+                <include name="${linkage}/${os_name}/${os_arch}/*" />
             </fileset>
         </copy>
-        <create-jar filename="jblas-${version}.jar" />
+        <create-jar filename="jblas-0.2.jar" />
+    </target>
+
+    <target name="dynamic-jar" depends="compile,compile-native" description="create jblas.jar (local system, dynamic)">
+        <delete dir="${bin}/lib" />
+        <copy todir="${bin}/lib">
+            <fileset dir="${native-libs}">
+                <include name="dynamic/${os_name}/${os_arch}/*" />
+            </fileset>
+        </copy>
         <create-jar filename="jblas-${version}-${os_name}-${os_arch}.jar" />
     </target>
     <target name="static-jar" description="create jblas-static.jar (local system, static)">
         <delete dir="${bin}/lib" />
         <copy todir="${bin}/lib">
             <fileset dir="${native-libs}">
-                <include name="${os_name}/${os_arch}/*" />
+                <include name="static/${os_name}/${os_arch}/*" />
             </fileset>
         </copy>
         <create-jar filename="jblas-${version}-${os_name}-${os_arch}-static.jar" />
@@ -202,7 +211,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <target name="fat-jar" description="create jblas-multiplatform.jar (local system, static, plus everything else in native-libs)">
         <delete dir="${bin}/lib" />
         <copy todir="${bin}/lib">
-            <fileset dir="${native-libs}" />
+            <fileset dir="${native-libs}">
+                <include name="static/**" />
+            </fileset>
         </copy>
         <create-jar filename="jblas-${version}-multiplatform.jar" />
     </target>

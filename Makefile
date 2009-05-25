@@ -49,7 +49,7 @@ PACKAGE=org.jblas
 # generate path from package name
 PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 
-LIB_PATH=native-libs/$(OS_NAME)/$(OS_ARCH)
+LIB_PATH=native-libs/$(LINKAGE)/$(OS_NAME)/$(OS_ARCH)
 
 #
 # Pattern rules
@@ -95,7 +95,8 @@ src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c: scripts/fortranwrapper.
 	$(LAPACK)/[sd]syev.f \
 	$(LAPACK)/[sd]syev[rdx].f \
 	$(LAPACK)/[sd]posv.f \
-	$(LAPACK)/[sdcz]geev.f
+	$(LAPACK)/[sdcz]geev.f \
+	$(LAPACK)/[sd]getrf.f
 
 $(LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
 	mkdir -p $(LIB_PATH)
