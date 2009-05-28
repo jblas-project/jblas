@@ -6,6 +6,7 @@
 package org.jblas.util;
 
 import java.util.Random;
+import org.jblas.DoubleMatrix;
 
 /**
  *
@@ -52,6 +53,33 @@ public class Permutations {
             }
             t++;
         }
+        return result;
+    }
+
+    /**
+     * Create a permutation matrix from a LAPACK-style 'ipiv' vector.
+     *
+     * @param ipiv row i was interchanged with row ipiv[i]
+     */
+    public static DoubleMatrix permutationMatrixFromPivotIndices(int size, int[] ipiv) {
+        int n = ipiv.length;
+        //System.out.printf("size = %d n = %d\n", size, n);
+        int indices[] = new int[size];
+        for (int i = 0; i < size; i++)
+            indices[i] = i;
+
+        //for (int i = 0; i < n; i++)
+        //    System.out.printf("ipiv[%d] = %d\n", i, ipiv[i]);
+
+        for (int i = 0; i < n; i++) {
+            int j = ipiv[i] - 1;
+            int t = indices[i];
+            indices[i] = indices[j];
+            indices[j] = t;
+        }
+        DoubleMatrix result = new DoubleMatrix(size, size);
+        for (int i = 0; i < size; i++)
+            result.put(indices[i], i, 1.0);
         return result;
     }
 }

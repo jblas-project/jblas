@@ -53,7 +53,7 @@ public class LibraryLoader {
      * I'm not quite sure if this doesn't open all kinds of security holes. Any ideas?
      *
      * @param libname basename of the library
-     * @throws UnsatisfiedLinkError if library cannot be found
+     * @throws UnsatisfiedLinkError if library cannot be founds
      */
     public void loadLibrary(String libname) {
         libname = System.mapLibraryName(libname);
