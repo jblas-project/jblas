@@ -435,5 +435,7 @@ public class NativeBlas {
 
   public static native int dgetrf(int m, int n, double[] a, int aIdx, int lda, int[] ipiv, int ipivIdx);
   public static native int sgetrf(int m, int n, float[] a, int aIdx, int lda, int[] ipiv, int ipivIdx);
+  public static native int dpotrf(char uplo, int n, double[] a, int aIdx, int lda);
+  public static native int spotrf(char uplo, int n, float[] a, int aIdx, int lda);
 
 }

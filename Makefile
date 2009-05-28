@@ -96,7 +96,8 @@ src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c: scripts/fortranwrapper.
 	$(LAPACK)/[sd]syev[rdx].f \
 	$(LAPACK)/[sd]posv.f \
 	$(LAPACK)/[sdcz]geev.f \
-	$(LAPACK)/[sd]getrf.f
+	$(LAPACK)/[sd]getrf.f \
+    $(LAPACK)/[sd]potrf.f 
 
 $(LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
 	mkdir -p $(LIB_PATH)
