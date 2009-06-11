@@ -4,7 +4,6 @@
  */
 package org.jblas;
 
-import java.util.AbstractList;
 import org.jblas.exceptions.LapackArgumentException;
 import org.jblas.exceptions.LapackPositivityException;
 import org.jblas.util.Permutations;
@@ -32,6 +31,8 @@ public class Decompose {
         int[] ipiv = new int[min(A.rows, A.columns)];
         DoubleMatrix result = A.dup();
         NativeBlas.dgetrf(A.rows, A.columns, result.data, 0, A.rows, ipiv, 0);
+
+        // collect result
         DoubleMatrix l = new DoubleMatrix(A.rows, min(A.rows, A.columns));
         DoubleMatrix u = new DoubleMatrix(min(A.columns, A.rows), A.columns);
         decomposeLowerUpper(result, l, u);

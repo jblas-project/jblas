@@ -27,13 +27,14 @@ public class Permutations {
         
         for (int j = size - 1; j > 0; j--) {
             int k = r.nextInt(j);
+            int temp = result[j];
             result[j] = result[k];
-            result[k] = j;
+            result[k] = temp;
         }
 
         return result;
     }
-
+    
     /**
      * Get a random sample of k out of n elements.
      *
