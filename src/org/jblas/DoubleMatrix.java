@@ -43,15 +43,18 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A general matrix class for <tt>double</tt> typed values.
@@ -1285,6 +1288,88 @@ public class DoubleMatrix {
         return result;
     }
 
+    /**
+     * A wrapper which allows to view a matrix as a List of Doubles (read-only!).
+     * Also implements the {@link ConvertsToDoubleMatrix} interface.
+     */
+    public class ElementsAsListView extends AbstractList<Double> implements ConvertsToDoubleMatrix {
+        private DoubleMatrix me;
+
+        public ElementsAsListView(DoubleMatrix me) {
+            this.me = me;
+        }
+
+        @Override
+        public Double get(int index) {
+            return me.get(index);
+        }
+
+        @Override
+        public int size() {
+            return me.length;
+        }
+
+        public DoubleMatrix convertToDoubleMatrix() {
+            return me;
+        }
+    }
+
+    public class RowsAsListView extends AbstractList<DoubleMatrix> implements ConvertsToDoubleMatrix {
+        private DoubleMatrix me;
+
+        public RowsAsListView(DoubleMatrix me) {
+            this.me = me;
+        }
+
+        @Override
+        public DoubleMatrix get(int index) {
+            return getRow(index);
+        }
+
+        @Override
+        public int size() {
+            return rows;
+        }
+
+        public DoubleMatrix convertToDoubleMatrix() {
+            return me;
+        }
+    }
+
+    public class ColumnsAsListView extends AbstractList<DoubleMatrix> implements ConvertsToDoubleMatrix {
+        private DoubleMatrix me;
+
+        public ColumnsAsListView(DoubleMatrix me) {
+            this.me = me;
+        }
+
+        @Override
+        public DoubleMatrix get(int index) {
+            return getColumn(index);
+        }
+
+        @Override
+        public int size() {
+            return columns;
+        }
+
+        public DoubleMatrix convertToDoubleMatrix() {
+            return me;
+        }
+    }
+
+    public List<Double> elementsAsList() {
+        return new ElementsAsListView(this);
+    }
+
+    public List<DoubleMatrix> rowsAsList() {
+        return new RowsAsListView(this);
+    }
+
+    public List<DoubleMatrix> columnsAsList() {
+        return new ColumnsAsListView(this);
+    }
+
     /**************************************************************************
      * Arithmetic Operations
      */
@@ -1829,27 +1914,57 @@ public class DoubleMatrix {
         return SimpleBlas.dot(this, other);
     }
 
+    /** 
+     * Computes the projection coefficient of other on this.
+     *
+     * The returned scalar times <tt>this</tt> is the orthogonal projection
+     * of <tt>other</tt> on <tt>this</tt>.
+     */
+    public double project(DoubleMatrix other) {
+        other.checkLength(length);
+        double norm = 0, dot = 0;
+        for (int i = 0; i < this.length; i++) {
+            double x = get(i);
+            norm += x*x;
+            dot += x*other.get(i);
+        }
+        return dot/norm;
+    }
+
     /**
      * The Euclidean norm of the matrix as vector, also the Frobenius
      * norm of the matrix.
      */
     public double norm2() {
-        return SimpleBlas.nrm2(this);
+        double norm = 0.0;
+        for (int i = 0; i < length; i++) {
+            norm += get(i) * get(i);
+        }
+        return (double)Math.sqrt(norm);
     }
 
     /**
      * The maximum norm of the matrix (maximal absolute value of the elements).
      */
     public double normmax() {
-        int i = SimpleBlas.iamax(this);
-        return Math.abs(get(i));
+        double max = 0.0;
+        for (int i = 0; i < length; i++) {
+            double a = Math.abs(get(i));
+            if (a > max)
+                max = a;
+        }
+        return max;
     }
 
     /**
      * The 1-norm of the matrix as vector (sum of absolute values of elements).
      */
     public double norm1() {
-        return SimpleBlas.asum(this);
+        double norm = 0.0;
+        for (int i = 0; i < length; i++) {
+            norm += Math.abs(get(i));
+        }
+        return norm;
     }
 
     /**
@@ -2119,9 +2234,9 @@ public class DoubleMatrix {
     /** Add a row vector to all rows of the matrix (in place). */
     public DoubleMatrix addiRowVector(DoubleMatrix x) {
         x.checkLength(columns);
-        for (int r = 0; r < rows; r++) {
-            JavaBlas.raxpy(columns, 1.0, x.data, 0, 1, data, index(r, 0), rows);
-        }
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) + x.get(c));
         return this;
     }
 
@@ -2133,9 +2248,9 @@ public class DoubleMatrix {
     /** Add a vector to all columns of the matrix (in-place). */
     public DoubleMatrix addiColumnVector(DoubleMatrix x) {
         x.checkLength(rows);
-        for (int c = 0; c < columns; c++) {
-            JavaBlas.raxpy(rows, 1.0, x.data, 0, 1, data, index(0, c), 1);
-        }
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) + x.get(r));
         return this;
     }
 
@@ -2148,9 +2263,9 @@ public class DoubleMatrix {
     public DoubleMatrix subiRowVector(DoubleMatrix x) {
         // This is a bit crazy, but a row vector must have as length as the columns of the matrix.
         x.checkLength(columns);
-        for (int r = 0; r < rows; r++) {
-            JavaBlas.raxpy(columns, -1.0, x.data, 0, 1, data, index(r, 0), rows);
-        }
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) - x.get(c));
         return this;
     }
 
@@ -2162,9 +2277,9 @@ public class DoubleMatrix {
     /** Subtract a column vector from all columns of the matrix (in-place). */
     public DoubleMatrix subiColumnVector(DoubleMatrix x) {
         x.checkLength(rows);
-        for (int c = 0; c < columns; c++) {
-            JavaBlas.raxpy(rows, -1.0, x.data, 0, 1, data, index(0, c), 1);
-        }
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) - x.get(r));
         return this;
     }
 
@@ -2212,6 +2327,30 @@ public class DoubleMatrix {
     /** Multiply all rows with a row vector. */
     public DoubleMatrix mulRowVector(DoubleMatrix x) {
         return dup().muliRowVector(x);
+    }
+
+    public DoubleMatrix diviRowVector(DoubleMatrix x) {
+        x.checkLength(columns);
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) / x.get(c));
+        return this;
+    }
+
+    public DoubleMatrix divRowVector(DoubleMatrix x) {
+        return dup().diviRowVector(x);
+    }
+
+    public DoubleMatrix diviColumnVector(DoubleMatrix x) {
+        x.checkLength(rows);
+        for (int c = 0; c < columns; c++)
+            for (int r = 0; r < rows; r++)
+                put(r, c, get(r, c) / x.get(r));
+        return this;
+    }
+
+    public DoubleMatrix divColumnVector(DoubleMatrix x) {
+        return dup().diviColumnVector(x);
     }
 
     /**
@@ -2313,6 +2452,49 @@ public class DoubleMatrix {
             for (int c = 0, cc = firstElement; c < columns; c++, cc++) {
                 result.put(r, c, Double.valueOf(elements[cc]));
             }
+            r++;
+        }
+        return result;
+    }
+
+    public static DoubleMatrix loadCSVFile(String filename) throws IOException {
+        BufferedReader is = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
+
+        List<DoubleMatrix> rows = new LinkedList<DoubleMatrix>();
+        String line;
+        int columns = -1;
+        while ((line = is.readLine()) != null) {
+            String[] elements = line.split(",");
+            int numElements = elements.length;
+            if (elements[0].length() == 0) {
+                numElements--;
+            }
+            if (elements[elements.length - 1].length() == 0) {
+                numElements--;
+            }
+
+            if (columns == -1) {
+                columns = numElements;
+            } else {
+                if (columns != numElements) {
+                    throw new IOException("Number of elements changes in line " + line + ".");
+                }
+            }
+
+            DoubleMatrix row = new DoubleMatrix(columns);
+            for (int c = 0; c < columns; c++)
+                row.put(c, Double.valueOf(elements[c]));
+            rows.add(row);
+        }
+        is.close();
+
+        System.out.println("Done reading file");
+
+        DoubleMatrix result = new DoubleMatrix(rows.size(), columns);
+        int r = 0;
+        Iterator<DoubleMatrix> ri = rows.iterator();
+        while (ri.hasNext()) {
+            result.putRow(r, ri.next());
             r++;
         }
         return result;

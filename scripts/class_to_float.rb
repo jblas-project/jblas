@@ -63,6 +63,8 @@ def translate(s)
   s.gsub! /DoubleFunction/, 'FloatFunction'
   s.gsub! /TestBlasDouble/, 'TestBlasFloat'
   s.gsub! /Double\./, 'Float.'
+  s.gsub! /(\s)Double(\s)/, '\1Float\1'
+  s.gsub! /<Double>/, '<Float>'
   s.gsub! /readDouble/, 'readFloat'
   s
 end

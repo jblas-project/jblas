@@ -49,7 +49,7 @@ PACKAGE=org.jblas
 # generate path from package name
 PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 
-LIB_PATH=native-libs/$(OS_NAME)/$(OS_ARCH)
+LIB_PATH=native-libs/$(LINKAGE)/$(OS_NAME)/$(OS_ARCH)
 
 #
 # Pattern rules
@@ -87,7 +87,7 @@ realclean:
 endif
 
 # Generating the stubs. This target requires that the blas sources can be found in ~/src/blas/*.f
-src/$(PACKAGE_PATH)/NativeBlas.java native/Blas.c: scripts/fortranwrapper.rb scripts/fortran/types.rb scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c
+src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c: scripts/fortranwrapper.rb scripts/fortran/types.rb scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c
 	$(RUBY) scripts/fortranwrapper.rb $(PACKAGE) NativeBlas \
 	$(BLAS)/*.f \
 	$(LAPACK)/[sd]gesv.f \
@@ -95,7 +95,9 @@ src/$(PACKAGE_PATH)/NativeBlas.java native/Blas.c: scripts/fortranwrapper.rb scr
 	$(LAPACK)/[sd]syev.f \
 	$(LAPACK)/[sd]syev[rdx].f \
 	$(LAPACK)/[sd]posv.f \
-	$(LAPACK)/[sdcz]geev.f
+	$(LAPACK)/[sdcz]geev.f \
+	$(LAPACK)/[sd]getrf.f \
+    $(LAPACK)/[sd]potrf.f 
 
 $(LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
 	mkdir -p $(LIB_PATH)

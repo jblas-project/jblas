@@ -104,6 +104,10 @@ class String
   def indent(cnt)
     split("\n").map {|l| ' ' * cnt + l}.join("\n")
   end
+
+  def start_with?(head)
+    self.length > head.length && self[0...head.length] == head
+  end
 end
 
 begin
@@ -158,9 +162,13 @@ begin
     f77 = where('f77')
     if g77
       config['LD'] = 'g77'
+      config['F77'] = 'g77'
     elsif gfortran
-      config['LD'] = 'gfortran'
+      #config['LD'] = 'gfortran'
+      config['F77'] = 'gfortran'
+      config['LD'] = 'gcc'
     elsif f77
+      config['F77'] = 'f77'
       config['LD'] = 'f77'
     else
       config.fail <<EOS.indent 2
@@ -379,7 +387,19 @@ EOS
       nil
     end
   end
-  
+
+  ######################################################################
+  #
+  # Set output directory depending on static or dynamic libraries
+  #
+  if $opts.defined? :static_libs
+    config.add_xml '<property name="linkage" value="static" />'
+    config['LINKAGE'] = 'static'
+  else
+    config.add_xml '<property name="linkage" value="dynamic" />'
+    config['LINKAGE'] = 'dynamic'
+  end
+
 
   ######################################################################
   # Some sanity checks, in particular that ATLAS's and LAPACK's lapack
@@ -411,7 +431,7 @@ EOS
   end
 
   # add fortran static library if we're using gfortran
-  if $opts.defined? :static_libs and config['LD'] == 'gfortran'
+  if $opts.defined? :static_libs and config['F77'] == 'gfortran'
     loadlibes += " -l:libgfortran.a"
   end
   config << loadlibes

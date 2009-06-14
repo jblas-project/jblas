@@ -43,4 +43,7 @@ public class Functions {
 		else
 			return Math.sin(Math.PI * x) / (Math.PI * x);
 	}
+
+    public static int min(int a, int b) { return a < b ? a : b; }
+    public static int max(int a, int b) { return a > b ? a : b; }
 }

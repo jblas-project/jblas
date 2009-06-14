@@ -1,13 +1,15 @@
 jblas is a matrix library for Java which uses existing high
 performance BLAS and LAPACK libraries like ATLAS.
 
-Version 0.2, May 7, 2009
+Version 0.2, May 8, 2009
 Version 0.1, March 28, 2009
+
+see also the file RELEASE_NOTES
 
 INSTALL
 
-In principle, all you need is the jblas.jar in your
-classpath. jblas.jar will then automagically extract your platform
+In principle, all you need is the jblas-0.2.jar in your
+classpath. jblas-0.2.jar will then automagically extract your platform
 dependent native library to a tempfile and load it from there. You can
 also put that file somewhere in your load path ($LD_LIBRARY_PATH for
 Linux, %PATH for Windows).
