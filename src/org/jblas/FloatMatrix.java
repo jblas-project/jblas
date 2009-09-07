@@ -1632,7 +1632,67 @@ public class FloatMatrix {
     public FloatMatrix truth() {
         return dup().truthi();
     }
-
+ 
+    /**
+    * Calculate matrix exponential of a square matrix.
+    * 
+    * A scaled Pade approximation algorithm is used.
+    * The algorithm has been directly translated from Golub & Van Loan "Matrix Computations",
+    * algorithm 11.3f.1. Special Horner techniques from 11.2f are also used to minimize the number
+    * of matrix multiplications. 
+    * 
+    * @param A square matrix
+    * @return matrix exponential of A
+    */
+    public static FloatMatrix expm(FloatMatrix A)
+    {
+		// constants for pade approximation
+		final float c0 = 1.0f;
+		final float c1 = 0.5f;
+		final float c2 = 0.12f;
+		final float c3 = 0.01833333333333333f;
+		final float c4 = 0.0019927536231884053f;
+		final float c5 = 1.630434782608695E-4f;
+		final float c6 = 1.0351966873706E-5f;
+		final float c7 = 5.175983436853E-7f;
+		final float c8 = 2.0431513566525E-8f;
+		final float c9 = 6.306022705717593E-10f;
+		final float c10 = 1.4837700484041396E-11f;
+		final float c11 = 2.5291534915979653E-13f;
+		final float c12 = 2.8101705462199615E-15f;
+		final float c13 = 1.5440497506703084E-17f;
+		
+		int j = Math.max(0, 1 + (int)Math.floor(Math.log(A.normmax())/Math.log(2)));
+		FloatMatrix As = A.div((float)Math.pow(2, j)); // scaled version of A
+		int n = A.getRows();
+		
+		// calculate D and N using special Horner techniques
+		FloatMatrix As_2 = As.mmul(As);
+		FloatMatrix As_4 = As_2.mmul(As_2);
+		FloatMatrix As_6 = As_4.mmul(As_2);
+		// U = c0*I + c2*A^2 + c4*A^4 + (c6*I + c8*A^2 + c10*A^4 + c12*A^6)*A^6
+		FloatMatrix U = FloatMatrix.eye(n).muli(c0).addi(As_2.mul(c2)).addi(As_4.mul(c4)).addi(
+				FloatMatrix.eye(n).muli(c6).addi(As_2.mul(c8)).addi(As_4.mul(c10)).addi(As_6.mul(c12)).mmuli(As_6));
+		// V = c1*I + c3*A^2 + c5*A^4 + (c7*I + c9*A^2 + c11*A^4 + c13*A^6)*A^6
+		FloatMatrix V = FloatMatrix.eye(n).muli(c1).addi(As_2.mul(c3)).addi(As_4.mul(c5)).addi(
+				FloatMatrix.eye(n).muli(c7).addi(As_2.mul(c9)).addi(As_4.mul(c11)).addi(As_6.mul(c13)).mmuli(As_6));
+		
+		FloatMatrix AV = As.mmuli(V);
+		FloatMatrix N = U.add(AV);
+		FloatMatrix D = U.subi(AV);
+		
+		// solve DF = N for F
+		FloatMatrix F = Solve.solve(D, N);
+		
+		// now square j times
+		for(int k = 0; k < j; k++)
+		{
+			F.mmuli(F);
+		}
+		
+		return F;
+    }
+    
     /****************************************************************
      * Rank one-updates
      */
@@ -1878,6 +1938,15 @@ public class FloatMatrix {
             s += get(i);
         }
         return s;
+    }
+    
+    /** Computes the product of all elements of the matrix */
+    public float prod() {
+        float p = 1.0f;
+        for (int i = 0; i < length; i++) {
+            p *= get(i);
+        }
+        return p;
     }
 
     /**
