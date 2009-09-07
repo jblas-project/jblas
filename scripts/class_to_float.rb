@@ -54,7 +54,7 @@ def translate(s)
   s.gsub! /DoubleBuffer/, 'FloatBuffer'
   s.gsub! /DoubleVector/, 'FloatVector'
   s.gsub! /ComplexDouble/, 'ComplexFloat'
-  s.gsub! /([0-9]+\.[0-9]+)/, '\1f'
+  s.gsub! /([0-9]+\.[0-9]+(?:[eE]-?[0-9]+)?)/, '\1f'
   s.gsub! /double/, 'float'
   s.gsub! /(\s)NativeBlas\.dz/, '\1NativeBlas.sc'
   s.gsub! /(\s)NativeBlas\.d/, '\1NativeBlas.s'
