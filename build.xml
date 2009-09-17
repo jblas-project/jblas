@@ -187,7 +187,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <include name="${linkage}/${os_name}/${os_arch}/*" />
             </fileset>
         </copy>
-        <create-jar filename="jblas-0.2.jar" />
+        <create-jar filename="jblas-${version}.jar" />
     </target>
 
     <target name="dynamic-jar" depends="compile,compile-native" description="create jblas.jar (local system, dynamic)">
