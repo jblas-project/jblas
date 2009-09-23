@@ -480,6 +480,25 @@ public class DoubleMatrix {
         return get(0);
     }
 
+    public static DoubleMatrix logspace(double lower, double upper, int size) {
+        DoubleMatrix result = new DoubleMatrix(size);
+        for (int i = 0; i < size; i++) {
+            double t = (double)i / (size - 1);
+            double e = lower*(1-t) + t*upper;
+            result.put(i, Math.pow(10.0, e));
+        }
+        return result;
+    }
+
+    public static DoubleMatrix linspace(int lower, int upper, int size) {
+        DoubleMatrix result = new DoubleMatrix(size);
+        for (int i = 0; i < size; i++) {
+            double t = (double)i / (size - 1);
+            result.put(lower*(1-t) + t*upper);
+        }
+        return result;
+    }
+
     /**
      * Concatenates two matrices horizontally. Matrices must have identical
      * numbers of rows.
@@ -2036,6 +2055,38 @@ public class DoubleMatrix {
         }
         return norm;
     }
+
+    /**
+     * Returns the squared (Euclidean) distance.
+     */
+   public double squaredDistance(DoubleMatrix other) {
+       other.checkLength(length);
+       double sd = 0.0;
+       for (int i = 0; i < length; i++) {
+           double d = get(i) - other.get(i);
+           sd += d*d;
+       }
+       return sd;
+   }
+
+   /**
+    * Returns the (euclidean) distance.
+    */
+   public double distance2(DoubleMatrix other) {
+       return Math.sqrt(squaredDistance(other));
+   }
+
+   /**
+    * Returns the (1-norm) distance.
+    */
+   public double distance1(DoubleMatrix other) {
+       other.checkLength(length);
+       double d = 0.0;
+       for (int i = 0; i < length; i++) {
+           d += Math.abs(get(i) - other.get(i));
+       }
+       return d;
+   }
 
     /**
      * Return a new matrix with all elements sorted.
