@@ -480,6 +480,25 @@ public class FloatMatrix {
         return get(0);
     }
 
+    public static FloatMatrix logspace(float lower, float upper, int size) {
+        FloatMatrix result = new FloatMatrix(size);
+        for (int i = 0; i < size; i++) {
+            float t = (float)i / (size - 1);
+            float e = lower*(1-t) + t*upper;
+            result.put(i, (float) Math.pow(10.0f, e));
+        }
+        return result;
+    }
+
+    public static FloatMatrix linspace(int lower, int upper, int size) {
+        FloatMatrix result = new FloatMatrix(size);
+        for (int i = 0; i < size; i++) {
+            float t = (float)i / (size - 1);
+            result.put(i, lower*(1-t) + t*upper);
+        }
+        return result;
+    }
+
     /**
      * Concatenates two matrices horizontally. Matrices must have identical
      * numbers of rows.
@@ -2036,6 +2055,38 @@ public class FloatMatrix {
         }
         return norm;
     }
+
+    /**
+     * Returns the squared (Euclidean) distance.
+     */
+   public float squaredDistance(FloatMatrix other) {
+       other.checkLength(length);
+       float sd = 0.0f;
+       for (int i = 0; i < length; i++) {
+           float d = get(i) - other.get(i);
+           sd += d*d;
+       }
+       return sd;
+   }
+
+   /**
+    * Returns the (euclidean) distance.
+    */
+   public float distance2(FloatMatrix other) {
+       return (float) Math.sqrt(squaredDistance(other));
+   }
+
+   /**
+    * Returns the (1-norm) distance.
+    */
+   public float distance1(FloatMatrix other) {
+       other.checkLength(length);
+       float d = 0.0f;
+       for (int i = 0; i < length; i++) {
+           d += Math.abs(get(i) - other.get(i));
+       }
+       return d;
+   }
 
     /**
      * Return a new matrix with all elements sorted.

@@ -485,7 +485,7 @@ public class DoubleMatrix {
         for (int i = 0; i < size; i++) {
             double t = (double)i / (size - 1);
             double e = lower*(1-t) + t*upper;
-            result.put(i, Math.pow(10.0, e));
+            result.put(i, (double) Math.pow(10.0, e));
         }
         return result;
     }
@@ -494,7 +494,7 @@ public class DoubleMatrix {
         DoubleMatrix result = new DoubleMatrix(size);
         for (int i = 0; i < size; i++) {
             double t = (double)i / (size - 1);
-            result.put(lower*(1-t) + t*upper);
+            result.put(i, lower*(1-t) + t*upper);
         }
         return result;
     }
@@ -2073,7 +2073,7 @@ public class DoubleMatrix {
     * Returns the (euclidean) distance.
     */
    public double distance2(DoubleMatrix other) {
-       return Math.sqrt(squaredDistance(other));
+       return (double) Math.sqrt(squaredDistance(other));
    }
 
    /**
