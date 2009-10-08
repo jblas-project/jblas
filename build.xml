@@ -250,8 +250,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <pathelement path="${bin}" />
             </classpath>
             <formatter type="plain" usefile="false" />
-            <test name="${pkgbase}.TestDoubleMatrix" />
-            <test name="${pkgbase}.TestEigen" />
+            <!-- <test name="${pkgbase}.TestDoubleMatrix" />
+            <test name="${pkgbase}.TestEigen" />-->
+            <test name="${pkgbase}.ranges.IntervalRangeTest" />
         </junit>
     </target>
     <target name="all" depends="jar, javadoc">
