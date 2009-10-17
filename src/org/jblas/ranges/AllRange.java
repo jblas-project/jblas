@@ -63,7 +63,7 @@ public class AllRange implements Range {
     }
     
     public int length() {
-        return upper - lower + 1;
+        return upper - lower;
     }
     
     public int value() {

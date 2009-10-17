@@ -2,6 +2,7 @@
 /* 
  * Copyright (c) 2009, Mikio L. Braun
  * Copyright (c) 2008, Johannes Schaback
+ * Copyright (c) 2009, Jan Saputra Müller
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +35,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 // --- END LICENSE BLOCK ---
-
 package org.jblas;
 
 import org.jblas.exceptions.SizeException;
@@ -305,7 +305,7 @@ public class DoubleMatrix {
         }
 
         data = newData;
-    //System.err.printf("%d * %d matrix created\n", rows, columns);
+        //System.err.printf("%d * %d matrix created\n", rows, columns);
     }
 
     /**
@@ -479,6 +479,25 @@ public class DoubleMatrix {
         return get(0);
     }
 
+    public static DoubleMatrix logspace(double lower, double upper, int size) {
+        DoubleMatrix result = new DoubleMatrix(size);
+        for (int i = 0; i < size; i++) {
+            double t = (double) i / (size - 1);
+            double e = lower * (1 - t) + t * upper;
+            result.put(i, (double) Math.pow(10.0, e));
+        }
+        return result;
+    }
+
+    public static DoubleMatrix linspace(int lower, int upper, int size) {
+        DoubleMatrix result = new DoubleMatrix(size);
+        for (int i = 0; i < size; i++) {
+            double t = (double) i / (size - 1);
+            result.put(i, lower * (1 - t) + t * upper);
+        }
+        return result;
+    }
+
     /**
      * Concatenates two matrices horizontally. Matrices must have identical
      * numbers of rows.
@@ -564,8 +583,8 @@ public class DoubleMatrix {
 
     /** Get elements from specified rows and columns. */
     public DoubleMatrix get(Range rs, Range cs) {
-        rs.init(0, rows - 1);
-        cs.init(0, columns - 1);
+        rs.init(0, rows);
+        cs.init(0, columns);
         DoubleMatrix result = new DoubleMatrix(rs.length(), cs.length());
 
         for (; !rs.hasMore(); rs.next()) {
@@ -667,6 +686,27 @@ public class DoubleMatrix {
     /** Get whole rows as specified by the non-zero entries of a matrix. */
     public DoubleMatrix getRows(DoubleMatrix rindices) {
         return getRows(rindices.findIndices());
+    }
+
+    public DoubleMatrix getRows(Range indices, DoubleMatrix result) {
+        indices.init(0, rows);
+        if (result.rows < indices.length())
+            throw new SizeException("Result matrix does not have enough rows (" + result.rows + " < " + indices.length() + ")");
+        result.checkColumns(columns);
+
+        for (int c = 0; c < columns; c++) {
+            indices.init(0, rows);
+            for (int r = 0; indices.hasMore(); indices.next(), r++) {
+                result.put(r, c, get(indices.index(), c));
+            }
+        }
+        return result;
+    }
+
+    public DoubleMatrix getRows(Range indices) {
+        indices.init(0, rows);
+        DoubleMatrix result = new DoubleMatrix(indices.length(), columns);
+        return getRows(indices, result);
     }
 
     /** Get whole columns from the passed indices. */
@@ -774,8 +814,8 @@ public class DoubleMatrix {
 
     /** Put a matrix into specified indices. */
     public DoubleMatrix put(Range rs, Range cs, DoubleMatrix x) {
-        rs.init(0, rows - 1);
-        cs.init(0, columns - 1);
+        rs.init(0, rows);
+        cs.init(0, columns);
 
         x.checkRows(rs.length());
         x.checkColumns(cs.length());
@@ -968,11 +1008,15 @@ public class DoubleMatrix {
     public DoubleMatrix repmat(int rowMult, int columnMult) {
         DoubleMatrix result = new DoubleMatrix(rows * rowMult, columns * columnMult);
 
-        for (int c = 0; c < columnMult; c++)
-            for (int r = 0; r < rowMult; r++)
-                for (int i = 0; i < rows; i++)
-                    for (int j = 0; j < columns; j++)
+        for (int c = 0; c < columnMult; c++) {
+            for (int r = 0; r < rowMult; r++) {
+                for (int i = 0; i < rows; i++) {
+                    for (int j = 0; j < columns; j++) {
                         result.put(r * rows + i, c * columns + j, get(i, j));
+                    }
+                }
+            }
+        }
         return result;
     }
 
@@ -1293,6 +1337,7 @@ public class DoubleMatrix {
      * Also implements the {@link ConvertsToDoubleMatrix} interface.
      */
     public class ElementsAsListView extends AbstractList<Double> implements ConvertsToDoubleMatrix {
+
         private DoubleMatrix me;
 
         public ElementsAsListView(DoubleMatrix me) {
@@ -1315,6 +1360,7 @@ public class DoubleMatrix {
     }
 
     public class RowsAsListView extends AbstractList<DoubleMatrix> implements ConvertsToDoubleMatrix {
+
         private DoubleMatrix me;
 
         public RowsAsListView(DoubleMatrix me) {
@@ -1337,6 +1383,7 @@ public class DoubleMatrix {
     }
 
     public class ColumnsAsListView extends AbstractList<DoubleMatrix> implements ConvertsToDoubleMatrix {
+
         private DoubleMatrix me;
 
         public ColumnsAsListView(DoubleMatrix me) {
@@ -1633,6 +1680,64 @@ public class DoubleMatrix {
         return dup().truthi();
     }
 
+    /**
+     * Calculate matrix exponential of a square matrix.
+     *
+     * A scaled Pade approximation algorithm is used.
+     * The algorithm has been directly translated from Golub & Van Loan "Matrix Computations",
+     * algorithm 11.3.1. Special Horner techniques from 11.2 are also used to minimize the number
+     * of matrix multiplications.
+     *
+     * @param A square matrix
+     * @return matrix exponential of A
+     */
+    public static DoubleMatrix expm(DoubleMatrix A) {
+        // constants for pade approximation
+        final double c0 = 1.0;
+        final double c1 = 0.5;
+        final double c2 = 0.12;
+        final double c3 = 0.01833333333333333;
+        final double c4 = 0.0019927536231884053;
+        final double c5 = 1.630434782608695E-4;
+        final double c6 = 1.0351966873706E-5;
+        final double c7 = 5.175983436853E-7;
+        final double c8 = 2.0431513566525E-8;
+        final double c9 = 6.306022705717593E-10;
+        final double c10 = 1.4837700484041396E-11;
+        final double c11 = 2.5291534915979653E-13;
+        final double c12 = 2.8101705462199615E-15;
+        final double c13 = 1.5440497506703084E-17;
+
+        int j = Math.max(0, 1 + (int) Math.floor(Math.log(A.normmax()) / Math.log(2)));
+        DoubleMatrix As = A.div((double) Math.pow(2, j)); // scaled version of A
+        int n = A.getRows();
+
+        // calculate D and N using special Horner techniques
+        DoubleMatrix As_2 = As.mmul(As);
+        DoubleMatrix As_4 = As_2.mmul(As_2);
+        DoubleMatrix As_6 = As_4.mmul(As_2);
+        // U = c0*I + c2*A^2 + c4*A^4 + (c6*I + c8*A^2 + c10*A^4 + c12*A^6)*A^6
+        DoubleMatrix U = DoubleMatrix.eye(n).muli(c0).addi(As_2.mul(c2)).addi(As_4.mul(c4)).addi(
+                DoubleMatrix.eye(n).muli(c6).addi(As_2.mul(c8)).addi(As_4.mul(c10)).addi(As_6.mul(c12)).mmuli(As_6));
+        // V = c1*I + c3*A^2 + c5*A^4 + (c7*I + c9*A^2 + c11*A^4 + c13*A^6)*A^6
+        DoubleMatrix V = DoubleMatrix.eye(n).muli(c1).addi(As_2.mul(c3)).addi(As_4.mul(c5)).addi(
+                DoubleMatrix.eye(n).muli(c7).addi(As_2.mul(c9)).addi(As_4.mul(c11)).addi(As_6.mul(c13)).mmuli(As_6));
+
+        DoubleMatrix AV = As.mmuli(V);
+        DoubleMatrix N = U.add(AV);
+        DoubleMatrix D = U.subi(AV);
+
+        // solve DF = N for F
+        DoubleMatrix F = Solve.solve(D, N);
+
+        // now square j times
+        for (int k = 0; k < j; k++) {
+            F.mmuli(F);
+        }
+
+        return F;
+    }
+
     /****************************************************************
      * Rank one-updates
      */
@@ -1880,6 +1985,15 @@ public class DoubleMatrix {
         return s;
     }
 
+    /** Computes the product of all elements of the matrix */
+    public double prod() {
+        double p = 1.0;
+        for (int i = 0; i < length; i++) {
+            p *= get(i);
+        }
+        return p;
+    }
+
     /**
      * Computes the mean value of all elements in the matrix,
      * that is, <code>x.sum() / x.length</code>.
@@ -1925,10 +2039,10 @@ public class DoubleMatrix {
         double norm = 0, dot = 0;
         for (int i = 0; i < this.length; i++) {
             double x = get(i);
-            norm += x*x;
-            dot += x*other.get(i);
+            norm += x * x;
+            dot += x * other.get(i);
         }
-        return dot/norm;
+        return dot / norm;
     }
 
     /**
@@ -1940,7 +2054,7 @@ public class DoubleMatrix {
         for (int i = 0; i < length; i++) {
             norm += get(i) * get(i);
         }
-        return (double)Math.sqrt(norm);
+        return (double) Math.sqrt(norm);
     }
 
     /**
@@ -1950,8 +2064,9 @@ public class DoubleMatrix {
         double max = 0.0;
         for (int i = 0; i < length; i++) {
             double a = Math.abs(get(i));
-            if (a > max)
+            if (a > max) {
                 max = a;
+            }
         }
         return max;
     }
@@ -1965,6 +2080,38 @@ public class DoubleMatrix {
             norm += Math.abs(get(i));
         }
         return norm;
+    }
+
+    /**
+     * Returns the squared (Euclidean) distance.
+     */
+    public double squaredDistance(DoubleMatrix other) {
+        other.checkLength(length);
+        double sd = 0.0;
+        for (int i = 0; i < length; i++) {
+            double d = get(i) - other.get(i);
+            sd += d * d;
+        }
+        return sd;
+    }
+
+    /**
+     * Returns the (euclidean) distance.
+     */
+    public double distance2(DoubleMatrix other) {
+        return (double) Math.sqrt(squaredDistance(other));
+    }
+
+    /**
+     * Returns the (1-norm) distance.
+     */
+    public double distance1(DoubleMatrix other) {
+        other.checkLength(length);
+        double d = 0.0;
+        for (int i = 0; i < length; i++) {
+            d += Math.abs(get(i) - other.get(i));
+        }
+        return d;
     }
 
     /**
@@ -2234,9 +2381,11 @@ public class DoubleMatrix {
     /** Add a row vector to all rows of the matrix (in place). */
     public DoubleMatrix addiRowVector(DoubleMatrix x) {
         x.checkLength(columns);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) + x.get(c));
+            }
+        }
         return this;
     }
 
@@ -2248,9 +2397,11 @@ public class DoubleMatrix {
     /** Add a vector to all columns of the matrix (in-place). */
     public DoubleMatrix addiColumnVector(DoubleMatrix x) {
         x.checkLength(rows);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) + x.get(r));
+            }
+        }
         return this;
     }
 
@@ -2263,9 +2414,11 @@ public class DoubleMatrix {
     public DoubleMatrix subiRowVector(DoubleMatrix x) {
         // This is a bit crazy, but a row vector must have as length as the columns of the matrix.
         x.checkLength(columns);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) - x.get(c));
+            }
+        }
         return this;
     }
 
@@ -2277,9 +2430,11 @@ public class DoubleMatrix {
     /** Subtract a column vector from all columns of the matrix (in-place). */
     public DoubleMatrix subiColumnVector(DoubleMatrix x) {
         x.checkLength(rows);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) - x.get(r));
+            }
+        }
         return this;
     }
 
@@ -2304,8 +2459,9 @@ public class DoubleMatrix {
     public DoubleMatrix muliColumnVector(DoubleMatrix x) {
         x.checkLength(rows);
         for (int c = 0; c < columns; c++) {
-            for (int r = 0; r < rows; r++)
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) * x.get(r));
+            }
         }
         return this;
     }
@@ -2318,9 +2474,11 @@ public class DoubleMatrix {
     /** Multiply all rows with a row vector (in-place). */
     public DoubleMatrix muliRowVector(DoubleMatrix x) {
         x.checkLength(columns);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) * x.get(c));
+            }
+        }
         return this;
     }
 
@@ -2331,9 +2489,11 @@ public class DoubleMatrix {
 
     public DoubleMatrix diviRowVector(DoubleMatrix x) {
         x.checkLength(columns);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) / x.get(c));
+            }
+        }
         return this;
     }
 
@@ -2343,9 +2503,11 @@ public class DoubleMatrix {
 
     public DoubleMatrix diviColumnVector(DoubleMatrix x) {
         x.checkLength(rows);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) / x.get(r));
+            }
+        }
         return this;
     }
 
@@ -2482,8 +2644,9 @@ public class DoubleMatrix {
             }
 
             DoubleMatrix row = new DoubleMatrix(columns);
-            for (int c = 0; c < columns; c++)
+            for (int c = 0; c < columns; c++) {
                 row.put(c, Double.valueOf(elements[c]));
+            }
             rows.add(row);
         }
         is.close();

@@ -106,7 +106,7 @@ $(LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
 #
 # For testing
 #
-VERSION=0.2
+VERSION=0.3
 
 make test-dist:
 	ant clean tar

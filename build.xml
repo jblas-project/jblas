@@ -54,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
     <property name="pkgbase" value="org.jblas" />
-    <property name="version" value="0.2" />
+    <property name="version" value="0.3" />
 
     <!-- Macros -->
 
@@ -187,7 +187,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <include name="${linkage}/${os_name}/${os_arch}/*" />
             </fileset>
         </copy>
-        <create-jar filename="jblas-0.2.jar" />
+        <create-jar filename="jblas-${version}.jar" />
     </target>
 
     <target name="dynamic-jar" depends="compile,compile-native" description="create jblas.jar (local system, dynamic)">
@@ -250,8 +250,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <pathelement path="${bin}" />
             </classpath>
             <formatter type="plain" usefile="false" />
-            <test name="${pkgbase}.TestDoubleMatrix" />
-            <test name="${pkgbase}.TestEigen" />
+            <!-- <test name="${pkgbase}.TestDoubleMatrix" />
+            <test name="${pkgbase}.TestEigen" />-->
+            <test name="${pkgbase}.ranges.IntervalRangeTest" />
         </junit>
     </target>
     <target name="all" depends="jar, javadoc">

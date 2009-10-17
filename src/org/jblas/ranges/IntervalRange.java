@@ -41,13 +41,14 @@
 package org.jblas.ranges;
 
 /**
- * Range which varies from a given interval. Endpoints are both inclusive!
+ * Range which varies from a given interval. Endpoint is exclusive!
+ *
+ * "new IntervalRange(0, 3)" enumerates 0, 1, 2.
  */
 public class IntervalRange implements Range {
     private int start;
     private int end;
     private int value;
-    private int counter;
 
     /** Construct new interval range. Endpoints are inclusive. */
     public IntervalRange(int a, int b) {
@@ -57,23 +58,21 @@ public class IntervalRange implements Range {
 
     public void init(int lower, int upper) {
         value = start;
-        counter = 0;
-        if (start < lower || end > upper) {
+        if (start < lower || end > upper + 1) {
             throw new IllegalArgumentException("Bounds " + lower + " to " + upper + " are beyond range interval " + start + " to " + end + ".");
         }
     }
 
     public int length() {
-        return end - start + 1;
+        return end - start;
     }
 
     public void next() {
-        counter++;
         value++;
     }
     
     public int index() {
-        return counter;
+        return value;
     }
     
     public int value() {
@@ -81,6 +80,6 @@ public class IntervalRange implements Range {
     }
 
     public boolean hasMore() {
-        return counter < end;
+        return value < end;
     }
 }

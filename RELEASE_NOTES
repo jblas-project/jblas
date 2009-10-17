@@ -1,3 +1,41 @@
+Release v0.3 - September 17, 2009
+
+Release v0.3 adds some features, in particular LU and Cholesky decomposition,
+matrix exponentials, and random permutations. 
+
+Still no Mac OS X support, though :(
+
+
+Changes from version v0.2:
+
+- jar file can now contain dynamic as well as static files
+
+- added LAPACK functions [sdcz]geev, [sd]getrf, [sd]potrf
+
+- Added interfaces ConvertsToDoubleMatrix and ConverstToFloatMatrix
+
+- Added class Decompose which provides LUDecomposition (based on getrf),
+  and Cholesky decomposition (based on potrf)
+
+- Matrix classes: 
+  - Added read-only AbstractList views for elements, rows, and 
+    columns for better interfacing with Java's collection API. 
+  - Added matrix exponentials based on Pade approximation provided 
+    by Jan Saptra Müller. These should be pretty fast!
+  - Added prod() which returns the product of all elements.
+  - Added project() which projects one vector on another.
+  - Added diviRowVector().
+  - Added loadCSVFile().
+
+- Added MatrixFunctions.min() and .max() for integers.
+
+- Added Permutations class for generating random permutations and
+  subsets based on the algorithms from Knuth's "The Art of Computer
+  Programming", Vol. 2.
+
+
+----------------------------------------------------------------------
+
 Release v0.2 - May 8, 2009
 
 Release v0.2 mostly adds features to the build process and renames some

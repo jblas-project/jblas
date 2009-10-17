@@ -2,6 +2,7 @@
 /* 
  * Copyright (c) 2009, Mikio L. Braun
  * Copyright (c) 2008, Johannes Schaback
+ * Copyright (c) 2009, Jan Saputra Müller
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +35,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 // --- END LICENSE BLOCK ---
-
 package org.jblas;
 
 import org.jblas.exceptions.SizeException;
@@ -305,7 +305,7 @@ public class FloatMatrix {
         }
 
         data = newData;
-    //System.err.printf("%d * %d matrix created\n", rows, columns);
+        //System.err.printf("%d * %d matrix created\n", rows, columns);
     }
 
     /**
@@ -479,6 +479,25 @@ public class FloatMatrix {
         return get(0);
     }
 
+    public static FloatMatrix logspace(float lower, float upper, int size) {
+        FloatMatrix result = new FloatMatrix(size);
+        for (int i = 0; i < size; i++) {
+            float t = (float) i / (size - 1);
+            float e = lower * (1 - t) + t * upper;
+            result.put(i, (float) Math.pow(10.0f, e));
+        }
+        return result;
+    }
+
+    public static FloatMatrix linspace(int lower, int upper, int size) {
+        FloatMatrix result = new FloatMatrix(size);
+        for (int i = 0; i < size; i++) {
+            float t = (float) i / (size - 1);
+            result.put(i, lower * (1 - t) + t * upper);
+        }
+        return result;
+    }
+
     /**
      * Concatenates two matrices horizontally. Matrices must have identical
      * numbers of rows.
@@ -564,8 +583,8 @@ public class FloatMatrix {
 
     /** Get elements from specified rows and columns. */
     public FloatMatrix get(Range rs, Range cs) {
-        rs.init(0, rows - 1);
-        cs.init(0, columns - 1);
+        rs.init(0, rows);
+        cs.init(0, columns);
         FloatMatrix result = new FloatMatrix(rs.length(), cs.length());
 
         for (; !rs.hasMore(); rs.next()) {
@@ -667,6 +686,27 @@ public class FloatMatrix {
     /** Get whole rows as specified by the non-zero entries of a matrix. */
     public FloatMatrix getRows(FloatMatrix rindices) {
         return getRows(rindices.findIndices());
+    }
+
+    public FloatMatrix getRows(Range indices, FloatMatrix result) {
+        indices.init(0, rows);
+        if (result.rows < indices.length())
+            throw new SizeException("Result matrix does not have enough rows (" + result.rows + " < " + indices.length() + ")");
+        result.checkColumns(columns);
+
+        for (int c = 0; c < columns; c++) {
+            indices.init(0, rows);
+            for (int r = 0; indices.hasMore(); indices.next(), r++) {
+                result.put(r, c, get(indices.index(), c));
+            }
+        }
+        return result;
+    }
+
+    public FloatMatrix getRows(Range indices) {
+        indices.init(0, rows);
+        FloatMatrix result = new FloatMatrix(indices.length(), columns);
+        return getRows(indices, result);
     }
 
     /** Get whole columns from the passed indices. */
@@ -774,8 +814,8 @@ public class FloatMatrix {
 
     /** Put a matrix into specified indices. */
     public FloatMatrix put(Range rs, Range cs, FloatMatrix x) {
-        rs.init(0, rows - 1);
-        cs.init(0, columns - 1);
+        rs.init(0, rows);
+        cs.init(0, columns);
 
         x.checkRows(rs.length());
         x.checkColumns(cs.length());
@@ -968,11 +1008,15 @@ public class FloatMatrix {
     public FloatMatrix repmat(int rowMult, int columnMult) {
         FloatMatrix result = new FloatMatrix(rows * rowMult, columns * columnMult);
 
-        for (int c = 0; c < columnMult; c++)
-            for (int r = 0; r < rowMult; r++)
-                for (int i = 0; i < rows; i++)
-                    for (int j = 0; j < columns; j++)
+        for (int c = 0; c < columnMult; c++) {
+            for (int r = 0; r < rowMult; r++) {
+                for (int i = 0; i < rows; i++) {
+                    for (int j = 0; j < columns; j++) {
                         result.put(r * rows + i, c * columns + j, get(i, j));
+                    }
+                }
+            }
+        }
         return result;
     }
 
@@ -1293,6 +1337,7 @@ public class FloatMatrix {
      * Also implements the {@link ConvertsToFloatMatrix} interface.
      */
     public class ElementsAsListView extends AbstractList<Float> implements ConvertsToFloatMatrix {
+
         private FloatMatrix me;
 
         public ElementsAsListView(FloatMatrix me) {
@@ -1315,6 +1360,7 @@ public class FloatMatrix {
     }
 
     public class RowsAsListView extends AbstractList<FloatMatrix> implements ConvertsToFloatMatrix {
+
         private FloatMatrix me;
 
         public RowsAsListView(FloatMatrix me) {
@@ -1337,6 +1383,7 @@ public class FloatMatrix {
     }
 
     public class ColumnsAsListView extends AbstractList<FloatMatrix> implements ConvertsToFloatMatrix {
+
         private FloatMatrix me;
 
         public ColumnsAsListView(FloatMatrix me) {
@@ -1633,6 +1680,64 @@ public class FloatMatrix {
         return dup().truthi();
     }
 
+    /**
+     * Calculate matrix exponential of a square matrix.
+     *
+     * A scaled Pade approximation algorithm is used.
+     * The algorithm has been directly translated from Golub & Van Loan "Matrix Computations",
+     * algorithm 11.3f.1. Special Horner techniques from 11.2f are also used to minimize the number
+     * of matrix multiplications.
+     *
+     * @param A square matrix
+     * @return matrix exponential of A
+     */
+    public static FloatMatrix expm(FloatMatrix A) {
+        // constants for pade approximation
+        final float c0 = 1.0f;
+        final float c1 = 0.5f;
+        final float c2 = 0.12f;
+        final float c3 = 0.01833333333333333f;
+        final float c4 = 0.0019927536231884053f;
+        final float c5 = 1.630434782608695E-4f;
+        final float c6 = 1.0351966873706E-5f;
+        final float c7 = 5.175983436853E-7f;
+        final float c8 = 2.0431513566525E-8f;
+        final float c9 = 6.306022705717593E-10f;
+        final float c10 = 1.4837700484041396E-11f;
+        final float c11 = 2.5291534915979653E-13f;
+        final float c12 = 2.8101705462199615E-15f;
+        final float c13 = 1.5440497506703084E-17f;
+
+        int j = Math.max(0, 1 + (int) Math.floor(Math.log(A.normmax()) / Math.log(2)));
+        FloatMatrix As = A.div((float) Math.pow(2, j)); // scaled version of A
+        int n = A.getRows();
+
+        // calculate D and N using special Horner techniques
+        FloatMatrix As_2 = As.mmul(As);
+        FloatMatrix As_4 = As_2.mmul(As_2);
+        FloatMatrix As_6 = As_4.mmul(As_2);
+        // U = c0*I + c2*A^2 + c4*A^4 + (c6*I + c8*A^2 + c10*A^4 + c12*A^6)*A^6
+        FloatMatrix U = FloatMatrix.eye(n).muli(c0).addi(As_2.mul(c2)).addi(As_4.mul(c4)).addi(
+                FloatMatrix.eye(n).muli(c6).addi(As_2.mul(c8)).addi(As_4.mul(c10)).addi(As_6.mul(c12)).mmuli(As_6));
+        // V = c1*I + c3*A^2 + c5*A^4 + (c7*I + c9*A^2 + c11*A^4 + c13*A^6)*A^6
+        FloatMatrix V = FloatMatrix.eye(n).muli(c1).addi(As_2.mul(c3)).addi(As_4.mul(c5)).addi(
+                FloatMatrix.eye(n).muli(c7).addi(As_2.mul(c9)).addi(As_4.mul(c11)).addi(As_6.mul(c13)).mmuli(As_6));
+
+        FloatMatrix AV = As.mmuli(V);
+        FloatMatrix N = U.add(AV);
+        FloatMatrix D = U.subi(AV);
+
+        // solve DF = N for F
+        FloatMatrix F = Solve.solve(D, N);
+
+        // now square j times
+        for (int k = 0; k < j; k++) {
+            F.mmuli(F);
+        }
+
+        return F;
+    }
+
     /****************************************************************
      * Rank one-updates
      */
@@ -1880,6 +1985,15 @@ public class FloatMatrix {
         return s;
     }
 
+    /** Computes the product of all elements of the matrix */
+    public float prod() {
+        float p = 1.0f;
+        for (int i = 0; i < length; i++) {
+            p *= get(i);
+        }
+        return p;
+    }
+
     /**
      * Computes the mean value of all elements in the matrix,
      * that is, <code>x.sum() / x.length</code>.
@@ -1925,10 +2039,10 @@ public class FloatMatrix {
         float norm = 0, dot = 0;
         for (int i = 0; i < this.length; i++) {
             float x = get(i);
-            norm += x*x;
-            dot += x*other.get(i);
+            norm += x * x;
+            dot += x * other.get(i);
         }
-        return dot/norm;
+        return dot / norm;
     }
 
     /**
@@ -1940,7 +2054,7 @@ public class FloatMatrix {
         for (int i = 0; i < length; i++) {
             norm += get(i) * get(i);
         }
-        return (float)Math.sqrt(norm);
+        return (float) Math.sqrt(norm);
     }
 
     /**
@@ -1950,8 +2064,9 @@ public class FloatMatrix {
         float max = 0.0f;
         for (int i = 0; i < length; i++) {
             float a = Math.abs(get(i));
-            if (a > max)
+            if (a > max) {
                 max = a;
+            }
         }
         return max;
     }
@@ -1965,6 +2080,38 @@ public class FloatMatrix {
             norm += Math.abs(get(i));
         }
         return norm;
+    }
+
+    /**
+     * Returns the squared (Euclidean) distance.
+     */
+    public float squaredDistance(FloatMatrix other) {
+        other.checkLength(length);
+        float sd = 0.0f;
+        for (int i = 0; i < length; i++) {
+            float d = get(i) - other.get(i);
+            sd += d * d;
+        }
+        return sd;
+    }
+
+    /**
+     * Returns the (euclidean) distance.
+     */
+    public float distance2(FloatMatrix other) {
+        return (float) Math.sqrt(squaredDistance(other));
+    }
+
+    /**
+     * Returns the (1-norm) distance.
+     */
+    public float distance1(FloatMatrix other) {
+        other.checkLength(length);
+        float d = 0.0f;
+        for (int i = 0; i < length; i++) {
+            d += Math.abs(get(i) - other.get(i));
+        }
+        return d;
     }
 
     /**
@@ -2234,9 +2381,11 @@ public class FloatMatrix {
     /** Add a row vector to all rows of the matrix (in place). */
     public FloatMatrix addiRowVector(FloatMatrix x) {
         x.checkLength(columns);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) + x.get(c));
+            }
+        }
         return this;
     }
 
@@ -2248,9 +2397,11 @@ public class FloatMatrix {
     /** Add a vector to all columns of the matrix (in-place). */
     public FloatMatrix addiColumnVector(FloatMatrix x) {
         x.checkLength(rows);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) + x.get(r));
+            }
+        }
         return this;
     }
 
@@ -2263,9 +2414,11 @@ public class FloatMatrix {
     public FloatMatrix subiRowVector(FloatMatrix x) {
         // This is a bit crazy, but a row vector must have as length as the columns of the matrix.
         x.checkLength(columns);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) - x.get(c));
+            }
+        }
         return this;
     }
 
@@ -2277,9 +2430,11 @@ public class FloatMatrix {
     /** Subtract a column vector from all columns of the matrix (in-place). */
     public FloatMatrix subiColumnVector(FloatMatrix x) {
         x.checkLength(rows);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) - x.get(r));
+            }
+        }
         return this;
     }
 
@@ -2304,8 +2459,9 @@ public class FloatMatrix {
     public FloatMatrix muliColumnVector(FloatMatrix x) {
         x.checkLength(rows);
         for (int c = 0; c < columns; c++) {
-            for (int r = 0; r < rows; r++)
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) * x.get(r));
+            }
         }
         return this;
     }
@@ -2318,9 +2474,11 @@ public class FloatMatrix {
     /** Multiply all rows with a row vector (in-place). */
     public FloatMatrix muliRowVector(FloatMatrix x) {
         x.checkLength(columns);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) * x.get(c));
+            }
+        }
         return this;
     }
 
@@ -2331,9 +2489,11 @@ public class FloatMatrix {
 
     public FloatMatrix diviRowVector(FloatMatrix x) {
         x.checkLength(columns);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) / x.get(c));
+            }
+        }
         return this;
     }
 
@@ -2343,9 +2503,11 @@ public class FloatMatrix {
 
     public FloatMatrix diviColumnVector(FloatMatrix x) {
         x.checkLength(rows);
-        for (int c = 0; c < columns; c++)
-            for (int r = 0; r < rows; r++)
+        for (int c = 0; c < columns; c++) {
+            for (int r = 0; r < rows; r++) {
                 put(r, c, get(r, c) / x.get(r));
+            }
+        }
         return this;
     }
 
@@ -2482,8 +2644,9 @@ public class FloatMatrix {
             }
 
             FloatMatrix row = new FloatMatrix(columns);
-            for (int c = 0; c < columns; c++)
+            for (int c = 0; c < columns; c++) {
                 row.put(c, Float.valueOf(elements[c]));
+            }
             rows.add(row);
         }
         is.close();
