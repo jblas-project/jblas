@@ -33,8 +33,8 @@ In all brevity, here is what you need to know to get started:
   reading or writing a whole column, row, or submatrix.
 
 * There exist only two-dimensional matrices. Vectors are matrices
-  whose columns or rows are 0. This has turned out to be much more
-  convenient thatn having separated classes.
+  whose number of columns or rows are 1. This has turned out to be
+  much more convenient thatn having separated classes.
 
 * Every math operator maps to a short mnemonic name. For example, +
   becomes @add@, - becomes @sub@, * becomes @mul@, / becomes @div@,
