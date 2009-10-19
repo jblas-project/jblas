@@ -14,6 +14,13 @@ import static org.jblas.util.Functions.min;
  */
 public class Decompose {
 
+    /**
+     * Class to hold an LU decomposition result.
+     *
+     * Contains a lower matrix L, and upper matrix U, and a permutation matrix
+     * P such that P*L*U is the original matrix.
+     * @param <T>
+     */
     public static class LUDecomposition<T> {
 
         public T l;
@@ -27,6 +34,16 @@ public class Decompose {
         }
     }
 
+    /**
+     * Compute LU Decomposition of a general matrix.
+     *
+     * Computes the LU decomposition using GETRF. Returns three matrices L, U, P,
+     * where L is lower diagonal, U is upper diagonal, and P is a permutation
+     * matrix such that A = P * L * U.
+     *
+     * @param A general matrix
+     * @return An LUDecomposition object.
+     */
     public static LUDecomposition<DoubleMatrix> lu(DoubleMatrix A) {
         int[] ipiv = new int[min(A.rows, A.columns)];
         DoubleMatrix result = A.dup();

@@ -374,6 +374,40 @@ public class DoubleMatrix {
         }
     }
 
+    /**
+     * Construct DoubleMatrix from ASCII representation.
+     *
+     * This is not very fast, but can be quiet useful when
+     * you want to "just" construct a matrix, for example
+     * when testing.
+     *
+     * The format is semicolon separated rows of space separated values,
+     * for example "1 2 3; 4 5 6; 7 8 9".
+     */
+    public static DoubleMatrix valueOf (String text) {
+        String[] rowValues = text.split(";");
+
+        // process first line
+        String[] columnValues = rowValues[0].trim().split("\\s+");
+
+        DoubleMatrix result = null;
+
+        // process rest
+        for (int r = 0; r < rowValues.length; r++) {
+            columnValues = rowValues[r].trim().split("\\s+");
+
+            if (r == 0) {
+                result = new DoubleMatrix(rowValues.length, columnValues.length);
+            }
+
+            for (int c = 0; c < columnValues.length; c++) {
+                result.put(r, c, Double.valueOf(columnValues[c]));
+            }
+        }
+
+        return result;
+    }
+
     /** Create matrix with random values uniformly in 0..1. */
     public static DoubleMatrix rand(int rows, int columns) {
         DoubleMatrix m = new DoubleMatrix(rows, columns);
@@ -690,8 +724,9 @@ public class DoubleMatrix {
 
     public DoubleMatrix getRows(Range indices, DoubleMatrix result) {
         indices.init(0, rows);
-        if (result.rows < indices.length())
+        if (result.rows < indices.length()) {
             throw new SizeException("Result matrix does not have enough rows (" + result.rows + " < " + indices.length() + ")");
+        }
         result.checkColumns(columns);
 
         for (int c = 0; c < columns; c++) {

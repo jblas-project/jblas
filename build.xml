@@ -246,13 +246,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <target name="test" depends="compile-test,jar">
         <junit printsummary="yes" haltonfailure="yes" showoutput="yes">
             <classpath>
-                <pathelement location="${external}/junit.jar" />
+                <!-- <pathelement location="${external}/junit.jar" /> -->
                 <pathelement path="${bin}" />
             </classpath>
             <formatter type="plain" usefile="false" />
             <!-- <test name="${pkgbase}.TestDoubleMatrix" />
-            <test name="${pkgbase}.TestEigen" />-->
-            <test name="${pkgbase}.ranges.IntervalRangeTest" />
+            <test name="${pkgbase}.TestEigen" />
+            <test name="${pkgbase}.ranges.IntervalRangeTest" /> -->
+            <test name="${pkgbase}.DecomposeTest" />
         </junit>
     </target>
     <target name="all" depends="jar, javadoc">
