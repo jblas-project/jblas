@@ -45,14 +45,18 @@ import java.util.logging.Logger;
  */
 public class LibraryLoader {
 
-    /** Find the library <tt>libname</tt> as a resource, copy it to a tempfile
+    /**
+     * <p>Find the library <tt>libname</tt> as a resource, copy it to a tempfile
      * and load it using System.load(). The name of the library has to be the
      * base name, it is mapped to the corresponding system name using
      * System.mapLibraryName(). For example, the library "foo" is called "libfoo.so"
      * under Linux and "foo.dll" under Windows, but you just have to pass "foo"
-     * the loadLibrary().
+     * the loadLibrary().</p>
      *
-     * I'm not quite sure if this doesn't open all kinds of security holes. Any ideas?
+     * <p>I'm not quite sure if this doesn't open all kinds of security holes. Any ideas?</p>
+     *
+     * <p>This function reports some more information to the "org.jblas" logger at
+     * the FINE level.</p>
      *
      * @param libname basename of the library
      * @throws UnsatisfiedLinkError if library cannot be founds
