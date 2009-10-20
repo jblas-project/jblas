@@ -47,7 +47,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.AbstractList;
 import java.util.Arrays;
@@ -274,7 +277,7 @@ import java.util.List;
  * 
  * @author Mikio Braun, Johannes Schaback
  */
-public class DoubleMatrix {
+public class DoubleMatrix implements Serializable {
 
     /** Number of rows. */
     public int rows;
@@ -285,6 +288,8 @@ public class DoubleMatrix {
     /** The actual data stored by rows (that is, row 0, row 1...). */
     public double[] data = null; // rows are contiguous
     public static final DoubleMatrix EMPTY = new DoubleMatrix();
+
+     static final long serialVersionUID = -1249281332731183060L;
 
     /**************************************************************************
      *
@@ -384,7 +389,7 @@ public class DoubleMatrix {
      * The format is semicolon separated rows of space separated values,
      * for example "1 2 3; 4 5 6; 7 8 9".
      */
-    public static DoubleMatrix valueOf (String text) {
+    public static DoubleMatrix valueOf(String text) {
         String[] rowValues = text.split(";");
 
         // process first line
@@ -406,6 +411,17 @@ public class DoubleMatrix {
         }
 
         return result;
+    }
+
+    /**
+     * Serialization
+     */
+    private void writeObject(ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
     }
 
     /** Create matrix with random values uniformly in 0..1. */
