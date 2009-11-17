@@ -1731,6 +1731,41 @@ public class FloatMatrix implements Serializable {
         return dup().truthi();
     }
 
+    public FloatMatrix isNaNi() {
+        for (int i = 0; i < length; i++) {
+            put(i, Float.isNaN(get(i)) ? 1.0f : 0.0f);
+        }
+        return this;
+    }
+
+    public FloatMatrix isNaN() {
+        return dup().isNaNi();
+    }
+
+    public FloatMatrix isInfinitei() {
+        for (int i = 0; i < length; i++) {
+            put(i, Float.isInfinite(get(i)) ? 1.0f : 0.0f);
+        }
+        return this;
+    }
+
+    public FloatMatrix isInfinite() {
+        return dup().isInfinitei();
+    }
+
+    public FloatMatrix selecti(FloatMatrix where) {
+        checkLength(where.length);
+        for (int i = 0; i < length; i++) {
+            if (where.get(i) == 0.0f) {
+                put(i, 0.0f);
+            }
+        }
+        return this;
+    }
+
+    public FloatMatrix select(FloatMatrix where) {
+        return dup().selecti(where);
+    }
     /**
      * Calculate matrix exponential of a square matrix.
      *

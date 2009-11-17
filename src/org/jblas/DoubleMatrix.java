@@ -1731,6 +1731,41 @@ public class DoubleMatrix implements Serializable {
         return dup().truthi();
     }
 
+    public DoubleMatrix isNaNi() {
+        for (int i = 0; i < length; i++) {
+            put(i, Double.isNaN(get(i)) ? 1.0 : 0.0);
+        }
+        return this;
+    }
+
+    public DoubleMatrix isNaN() {
+        return dup().isNaNi();
+    }
+
+    public DoubleMatrix isInfinitei() {
+        for (int i = 0; i < length; i++) {
+            put(i, Double.isInfinite(get(i)) ? 1.0 : 0.0);
+        }
+        return this;
+    }
+
+    public DoubleMatrix isInfinite() {
+        return dup().isInfinitei();
+    }
+
+    public DoubleMatrix selecti(DoubleMatrix where) {
+        checkLength(where.length);
+        for (int i = 0; i < length; i++) {
+            if (where.get(i) == 0.0) {
+                put(i, 0.0);
+            }
+        }
+        return this;
+    }
+
+    public DoubleMatrix select(DoubleMatrix where) {
+        return dup().selecti(where);
+    }
     /**
      * Calculate matrix exponential of a square matrix.
      *
