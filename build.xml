@@ -93,6 +93,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     <include name="org/**" />
                     <include name="lib/**/lib*.so"/>
                     <include name="lib/**/*.dll"/>
+		    <include name="lib/**/*.jnilib"/>
                 </fileset>
                 <manifest>
                     <attribute name="Built-By" value="IDA Group, TU Berlin" />
@@ -118,12 +119,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <mkdir dir="${include}" />
     </target>
     <target name="compile" depends="prepare,generate-float" description="compile java code">
-        <javac destdir="${bin}" encoding="utf-8" source="1.6" debug="on" compiler="javac1.6" fork="yes" nowarn="yes">
+        <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" fork="yes" nowarn="yes">
             <src path="${src}" />
         </javac>
     </target>
     <target name="compile-test" depends="compile" description="compile java test code">
-        <javac destdir="${bin}" encoding="utf-8" source="1.6" debug="on" compiler="javac1.6" fork="yes" nowarn="yes">
+        <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" fork="yes" nowarn="yes">
             <src path="${test}" />
             <classpath>
                 <pathelement location="${external}/junit.jar" />
@@ -131,7 +132,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </javac>
     </target>
     <target name="javah" depends="prepare" description="run javah">
-        <javac destdir="${bin}" encoding="utf-8" source="1.6" debug="on" compiler="javac1.6" fork="yes" nowarn="yes">
+        <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" fork="yes" nowarn="yes">
             <src path="${src}" />
             <include name="**/NativeBlas.java" />
         </javac>

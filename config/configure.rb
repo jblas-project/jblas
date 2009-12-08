@@ -89,6 +89,8 @@ def libname(name)
       'lib' + name + '.so'
     when 'Windows'
       'lib' + name + '.a'
+    when 'Mac OS X'
+      'lib' + name + '.dylib'
     end
   end
 end
@@ -134,7 +136,7 @@ begin
         config.check_cmd 'cygpath'
       end
     end
-    config['OS_NAME'] = $os_name
+    config['OS_NAME'] = $os_name.gsub(' ', '\ ')
     config.add_xml "<property name=\"os_name\" value=\"#{$os_name}\" />"
     $os_name
   end
@@ -149,7 +151,10 @@ begin
   ######################################################################
   config.msg('locating the Java Development Kit') do
     $java_home = dir(File.dirname(%x(java -cp config PrintProperty java.home)))
-    p $java_home
+    if $os_name == 'Mac OS X'
+      $java_home = File.join($java_home, 'Home')
+    end
+    #p $java_home
     config.check_files $java_home, ['include', 'jni.h'] do
       config['JAVA_HOME'] = $java_home
     end
@@ -157,32 +162,37 @@ begin
   
   ######################################################################
   config.msg('deciding whether to use g77 or gfortran') do
-    g77 = where('g77')
-    gfortran = where('gfortran')
-    f77 = where('f77')
-    if g77
-      config['LD'] = 'g77'
-      config['F77'] = 'g77'
-    elsif gfortran
-      #config['LD'] = 'gfortran'
-      config['F77'] = 'gfortran'
-      config['LD'] = 'gcc'
-    elsif f77
-      config['F77'] = 'f77'
-      config['LD'] = 'f77'
+    if $os_name == 'Mac OS X'
+      config['LD'] = 'gcc-mp-4.3'
+      config['F77'] = 'gfortran-mp-4.3'
     else
-      config.fail <<EOS.indent 2
+      g77 = where('g77')
+      gfortran = where('gfortran')
+      f77 = where('f77')
+      if g77
+        config['LD'] = 'g77'
+        config['F77'] = 'g77'
+      elsif gfortran
+        #config['LD'] = 'gfortran'
+        config['F77'] = 'gfortran'
+        config['LD'] = 'gcc'
+      elsif f77
+        config['F77'] = 'f77'
+        config['LD'] = 'f77'
+      else
+        config.fail <<EOS.indent 2
 Either g77 or gfortran have to be installed to compile against the
 fortran libraries.
 EOS
+      end
     end
   end
   
   ######################################################################
   config.msg('Setting up gcc and flags') do
-    config.check_cmd('gcc', 'make', 'ld')
     case $os_name
     when 'Linux'
+      config.check_cmd('gcc', 'make', 'ld')
       config << <<EOS
 CC = gcc
 CFLAGS = -fPIC
@@ -193,6 +203,7 @@ RUBY=ruby
 LDFLAGS += -shared
 EOS
     when 'SunOS'
+      config.check_cmd('gcc', 'make', 'ld')
       config << <<EOS
 CC = gcc
 CFLAGS = -fPIC
@@ -203,6 +214,7 @@ RUBY=ruby
 LDFLAGS += -G
 EOS
     when 'Windows'
+      config.check_cmd('gcc', 'make', 'ld')
       config.check_cmd('cygpath')
       config << <<EOS
 CC = gcc
@@ -212,6 +224,18 @@ LDFLAGS += -mno-cygwin -shared -Wl,--add-stdcall-alias
 SO = dll
 LIB = 
 RUBY = ruby
+EOS
+    when 'Mac OS X'
+      config.check_cmd('gcc-mp-4.3', 'make')
+      config << <<EOS
+CC = gcc-mp-4.3
+LD = gcc-mp-4.3
+CFLAGS = -fPIC
+INCDIRS += -Iinclude -I#{$java_home}/include
+SO = jnilib
+LIB = lib
+RUBY = ruby
+LDFLAGS += -shared
 EOS
     else
       config.fail "Sorry, the OS #{$os_name} is currently not supported"
@@ -290,7 +314,11 @@ EOS
   if $opts.defined? :libpath
     LIBPATH = $opts[:libpath].split(':')
   else
-    LIBPATH = %w(/usr/lib /lib /usr/lib/sse2)
+    if $os_name == 'Mac OS X'
+       LIBPATH = ['/opt/local/lib']
+    else
+       LIBPATH = %w(/usr/lib /lib /usr/lib/sse2)
+    end
   end
 
   $libpaths = []
@@ -404,7 +432,7 @@ EOS
   ######################################################################
   # Some sanity checks, in particular that ATLAS's and LAPACK's lapack
   # library doesn't have the same name... . 
-  if $lapack_name == $lapack_atlas_name
+  if $os_name != 'Mac OS X' and $lapack_name == $lapack_atlas_name
     config.fail <<EOS.indent 2
 The full lapack library and the one from ATLAS have the same name which
 makes it impossible to link in both. Either fiddle with --libpath=... or

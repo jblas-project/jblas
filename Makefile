@@ -116,7 +116,7 @@ src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c: scripts/fortranwrapper.
 
 $(LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
 	mkdir -p $(LIB_PATH)
-	mv $< $@
+	mv "$<" "$@"
 
 #
 # For testing
