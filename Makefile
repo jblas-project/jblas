@@ -32,7 +32,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## --- END LICENSE BLOCK ---
 
+######################################################################
+#
 # Load the output of the configuration files
+#
 ifneq ($(wildcard configure.out),)
 include configure.out
 else
@@ -51,7 +54,7 @@ PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 
 LIB_PATH=native-libs/$(LINKAGE)/$(OS_NAME)/$(OS_ARCH)
 
-#
+#######################################################################
 # Pattern rules
 #
 # The crazy thing is, with these rules, you ONLY need to specify which
@@ -67,16 +70,28 @@ LIB_PATH=native-libs/$(LINKAGE)/$(OS_NAME)/$(OS_ARCH)
 %.$(SO) : %.o
 	$(LD) $(LDFLAGS) -o $@ $^ $(LOADLIBES)
 
-# the default target
-all	: compile-native
+#
+#
+#
 
+# The default target
+all	: prepare generate-wrapper compile-native
+
+prepare :
+	test -d native || mkdir native
+
+# Generate the JNI dynamic link library
 compile-native : $(LIB_PATH)/$(LIB)jblas.$(SO)
 
+# Generate the code for the wrapper (both Java and C)
 generate-wrapper: src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c
+	ant javah
 
+# Clean all object files
 clean:
 	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) src/$(PACKAGE_PATH)/NativeBlas.java
 
+# Also remove the code extracted from the fortranwrappers.
 ifeq ($(LAPACK_HOME),)
 realclean:
 	@echo "Since you don't have LAPACK sources, I cannot rebuild stubs and deleting the cached information is not a good idea."
@@ -106,9 +121,9 @@ $(LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
 #
 # For testing
 #
-VERSION=0.3
+VERSION=0.3.1
 
-make test-dist:
+test-dist:
 	ant clean tar
 	rm -rf jblas-$(VERSION)
 	tar xzvf jblas-$(VERSION).tgz

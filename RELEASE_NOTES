@@ -1,3 +1,14 @@
+Release 0.3.1 - December 8, 2009
+
+Release 0.3.1 changes some minor stuff. I also never got around to do
+a "real 0.3" release, so consider this to be the "real 0.3" release.
+
+- expm moved from DoubleMatrix to MatrixFunctions
+- Build for Mac OS X
+
+
+----------------------------------------------------------------------
+
 Release v0.3 - September 17, 2009
 
 Release v0.3 adds some features, in particular LU and Cholesky decomposition,
