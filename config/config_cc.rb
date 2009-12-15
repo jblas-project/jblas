@@ -1,24 +1,24 @@
 ## --- BEGIN LICENSE BLOCK ---
 # Copyright (c) 2009, Mikio L. Braun
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
-# 
+#
 #     * Redistributions of source code must retain the above copyright
 #       notice, this list of conditions and the following disclaimer.
-# 
+#
 #     * Redistributions in binary form must reproduce the above
 #       copyright notice, this list of conditions and the following
 #       disclaimer in the documentation and/or other materials provided
 #       with the distribution.
-# 
+#
 #     * Neither the name of the Technische Universität Berlin nor the
 #       names of its contributors may be used to endorse or promote
 #       products derived from this software without specific prior
 #       written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -34,40 +34,71 @@
 
 require 'config/path'
 require 'config/config'
-require 'config/opts'
-
-require 'config/config_tools'
-require 'config/config_os_arch'
-require 'config/config_cc'
-require 'config/config_fortran'
-require 'config/config_make'
-require 'config/config_lapack_sources'
-require 'config/config_libs'
+require 'config/config_java'
 
 include Config
 include Path
 
-$opts = Opts.new(ARGV, {}, <<EOS)
-Usage: ./configure [options]
+# Set up flags for different environments.
+configure :cc => 'CC'
 
-options summary:
-  --lapack=DIR             lapack-lite directory
-  --lapack-build           build against fortran lapack instead of ATLAS
-  --libpath=DIR1:DIR2:...  comma separated list of directories to contain
-                           the ATLAS libraries
-  --download-lapack        try to download and compile lapack if not
-                           found
-  --static-libs            look for static libraries only. Results in a
-                           dynamically loaded jblas library which does
-                           not depend on lapack or atlas libraries. 
-                           (default for Windows!)
+desc 'Setting up gcc and flags'
+configure 'CC', 'CFLAGS' => ['OS_NAME', 'JAVA_HOME'] do
+  os_name = Config::CONFIG['OS_NAME']
+  java_home = Config::CONFIG['JAVA_HOME']
+  case os_name
+  when 'Linux'
+    Path.check_cmd('gcc', 'make', 'ld')
+    Config::CONFIG << <<EOS
+CC = gcc
+CFLAGS = -fPIC
+INCDIRS += -Iinclude -I#{java_home}/include -I#{java_home}/include/linux
+SO = so
+LIB = lib
+RUBY=ruby
+LDFLAGS += -shared
 EOS
+  when 'SunOS'
+    Path.check_cmd('gcc', 'make', 'ld')
+    Config::CONFIG << <<EOS
+CC = gcc
+CFLAGS = -fPIC
+INCDIRS += -Iinclude -I#{java_home}/include -I#{java_home}/include/solaris
+SO = so
+LIB = lib
+RUBY=ruby
+LDFLAGS += -G
+EOS
+  when 'Windows'
+    Path.check_cmd('gcc', 'make', 'ld')
+    Path.check_cmd('cygpath')
+    Config::CONFIG << <<EOS
+CC = gcc
+CFLAGS = -ggdb -D__int64='long long'
+INCDIRS += -I"#{dir java_home}/include" -I"#{dir java_home}/include/win32" -Iinclude
+LDFLAGS += -mno-cygwin -shared -Wl,--add-stdcall-alias
+SO = dll
+LIB =
+RUBY = ruby
+EOS
+  when 'Mac\ OS\ X'
+    Path.check_cmd('gcc-mp-4.3', 'make')
+    Config::CONFIG << <<EOS
+CC = gcc-mp-4.3
+LD = gcc-mp-4.3
+CFLAGS = -fPIC
+INCDIRS += -Iinclude -I#{java_home}/include
+SO = jnilib
+LIB = lib
+RUBY = ruby
+LDFLAGS += -shared
+EOS
+  else
+    Config.fail "Sorry, the OS #{os_name} is currently not supported"
+  end
+  ok(CONFIG['CC'])
+end
 
-configure :all => [:os_arch, :tools, :java, :cc, :fortran, :make, :lapack_sources, :libs]
-
-run :all
-
-puts
-puts 'Configuration succesfull, writing out results to configure.out'
-open('configure.out', 'w') {|f| CONFIG.dump f}
-open('configure.xml', 'w') {|f| CONFIG.dump_xml f}
+if __FILE__ == $0
+  ConfigureTask.run :cc
+end

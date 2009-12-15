@@ -54,7 +54,7 @@ PACKAGE=org.jblas
 # generate path from package name
 PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 
-LIB_PATH=native-libs/$(LINKAGE)/$(OS_NAME)/$(OS_ARCH)
+LIB_PATH=native-libs/$(LINKAGE_TYPE)/$(OS_NAME)/$(OS_ARCH)
 
 #######################################################################
 # Pattern rules
