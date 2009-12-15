@@ -66,7 +66,7 @@ configure 'F77', 'LD' => [:os_arch, :cc] do
       CONFIG['F77'] = 'f77'
       CONFIG['LD'] = 'f77'
     else
-      CONFIG.fail <<EOS.indent 2
+      CONFIG.fail <<EOS.indent(2)
 Either g77 or gfortran have to be installed to compile against the
 fortran libraries.
 EOS

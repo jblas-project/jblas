@@ -58,7 +58,7 @@ configure 'LAPACK_HOME' do
       check_lapack_home(lapack_home)
     else
       CONFIG['LAPACK_HOME'] = ''
-      Config.fail <<EOS
+      puts <<EOS.indent(2)
 Couldn\'t locate sources for LAPACK and BLAS. Supply the location
 of the lapack sources with the --lapack=... switch. Sources for lapack can be
 found at http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz or try

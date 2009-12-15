@@ -91,8 +91,8 @@ public class SanityChecks {
     public static void main(String[] args) {
         checkVectorAddition();
         checkMatrixMultiplication();
-        checkXerbla();
         checkEigenvalues();
+        checkXerbla();
         printSummary();
     }
 

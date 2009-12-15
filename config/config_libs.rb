@@ -67,7 +67,7 @@ ATLAS_REQUIRED_SYMBOLS = [
 
 LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_' ]
 
-ATLAS_LIBS = %w(atlas lapack blas f77blas cblas lapack_atlas)
+ATLAS_LIBS = %w(atlas lapack lapack_fortran lapack_atlas blas f77blas cblas blas_fortran)
 LAPACK_LIBS = %w(lapack_fortran lapack blas_fortran blas f77blas)
 
 configure :libs => 'LOADLIBES'
@@ -123,11 +123,14 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
     CONFIG['LDFLAGS'] += result.values.uniq.map {|s| '-L' + s}
     CONFIG['LOADLIBES'] += result.keys.map {|s| '-l' + s}
   when 'static'
-    CONFIG['LOADLIBES'] += ['-Wl,--allow-multiple-definition']
+    CONFIG['LOADLIBES'] += ['-Wl,--allow-multiple-definition'] unless CONFIG['OS_NAME'] = 'Mac\ OS\ X'
     CONFIG['LOADLIBES'] += result.keys.map {|s| File.join(result[s], LibHelpers.libname(s)) }
     if CONFIG['F77'] == 'gfortran'
       CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
     end
+    if CONFIG['OS_NAME'] = 'Mac\ OS\ X'
+      CONFIG['LOADLIBES'] += ['/opt/local/lib/gcc43/libgfortran.a']
+    end 
   end
   ok
 end

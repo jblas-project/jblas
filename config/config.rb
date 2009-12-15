@@ -85,7 +85,7 @@ module Config
     # Dump the xml configuration options to a file.
     def dump_xml(io)
       io.puts "<project name=\"imported-configuration-settings\">"
-      io.puts(@xmlstuff.join "\n")
+      io.puts(@xmlstuff.join("\n"))
       io.puts "</project>"
     end
 
