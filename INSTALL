@@ -196,3 +196,17 @@ A version more recent than 3.8.0 should work
    under load) 
 
 4. Only for Linux: Change directory to "build/lib" and run "make shared"
+
+
+Mac OS X:
+
+- get lapack-lite-3.1.1
+- compile lapack
+
+- compile ATLAS with the original lapack
+
+- compile jblas
+
+  ./configure --static-libs --libpath=../ATLAS3.8.3/build_macosx/lib/
+  make
+  ant jar
