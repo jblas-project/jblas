@@ -122,12 +122,12 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
     CONFIG['LDFLAGS'] += result.values.uniq.map {|s| '-L' + s}
     CONFIG['LOADLIBES'] += result.keys.map {|s| '-l' + s}
   when 'static'
-    CONFIG['LOADLIBES'] += ['-Wl,--allow-multiple-definition'] unless CONFIG['OS_NAME'] = 'Mac\ OS\ X'
+    CONFIG['LOADLIBES'] += ['-Wl,--allow-multiple-definition'] unless CONFIG['OS_NAME'] == 'Mac\ OS\ X'
     CONFIG['LOADLIBES'] += result.keys.map {|s| File.join(result[s], LibHelpers.libname(s)) }
     if CONFIG['F77'] == 'gfortran'
       CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
     end
-    if CONFIG['OS_NAME'] = 'Mac\ OS\ X'
+    if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
       CONFIG['LOADLIBES'] += ['/opt/local/lib/gcc43/libgfortran.a']
     end 
   end

@@ -97,6 +97,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 </fileset>
                 <manifest>
                     <attribute name="Built-By" value="IDA Group, TU Berlin" />
+                    <attribute name="Main-Class" value="org.jblas.util.SanityChecks" />
                 </manifest>
             </jar>
         </sequential>

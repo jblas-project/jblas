@@ -4,6 +4,7 @@
  */
 package org.jblas.util;
 
+import java.util.logging.*;
 import org.jblas.NativeBlas;
 import org.jblas.DoubleMatrix;
 
@@ -88,10 +89,34 @@ public class SanityChecks {
         check("checking existence of dsyev...", true);
     }
 
+    public static void timeMatrixMultiplication() {
+        System.out.print("Timing matrix multiplication...");
+        System.out.flush();
+
+        long now = System.nanoTime();
+        int n = 1000;
+        int iters = 0;
+        long numOps = 0;
+        DoubleMatrix A = DoubleMatrix.randn(n, n);
+        DoubleMatrix B = DoubleMatrix.randn(n, n);
+        DoubleMatrix C = DoubleMatrix.randn(n, n);
+        while (System.nanoTime() - now < 5e9) {
+            iters++;
+            numOps += 2L * n * n * n;
+            A.mmuli(B, C);
+        }
+
+        double mflops = numOps / ((System.nanoTime() - now) / 1e9) / 1e6;
+
+        System.out.printf("%f MLFOPS \n", mflops);
+    }
+
     public static void main(String[] args) {
+        Logger.getLogger().setLevel(Logger.CONFIG);
         checkVectorAddition();
         checkMatrixMultiplication();
         checkEigenvalues();
+        timeMatrixMultiplication();
         checkXerbla();
         printSummary();
     }
