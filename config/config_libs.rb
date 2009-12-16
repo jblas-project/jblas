@@ -58,11 +58,10 @@ include Config
 
 ATLAS_REQUIRED_SYMBOLS = [
   'dsyev_', # eigenvalue function not yet included in ATLAS/LAPACK
-  'ATL_dgetri', # an atlas-specific function
   'ATL_dgemm',
   'dgemm_', # matrix-matrix multiplication
   'daxpy_', # blas-related function
-  'xerbla_', # xerbla?
+  'cblas_daxpy', # atlas itself often uses cblas
 ]
 
 LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_' ]
