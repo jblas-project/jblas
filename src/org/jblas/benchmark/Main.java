@@ -4,8 +4,8 @@
  */
 package org.jblas.benchmark;
 
-import org.jblas.DoubleMatrix;
-import static org.jblas.DoubleMatrix.*;
+import org.jblas.FloatMatrix;
+import static org.jblas.FloatMatrix.*;
 
 /**
  *
@@ -19,9 +19,9 @@ public class Main {
         long ops = 0;
         
         int n = 1000;
-        DoubleMatrix A = randn(n, n);
-        DoubleMatrix B = randn(n, n);
-        DoubleMatrix C = randn(n, n);
+        FloatMatrix A = randn(n, n);
+        FloatMatrix B = randn(n, n);
+        FloatMatrix C = randn(n, n);
 
         Timer t = new Timer();
         t.start();
