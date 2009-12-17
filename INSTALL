@@ -200,13 +200,35 @@ A version more recent than 3.8.0 should work
 
 Mac OS X:
 
-- get lapack-lite-3.1.1
-- compile lapack
+- get lapack-lite-3.1.1 from 
+- compile lapack in $LAPACK_DIR
 
-- compile ATLAS with the original lapack
+  cd $LAPACK_DIR
+  set options in make.inc to
+
+FORTRAN  = gfortran-mp-4.3 
+OPTS     = -funroll-all-loops -O3 -fPIC -fPIC
+DRVOPTS  = $(OPTS)
+NOOPT    =
+LOADER   = gfortran-mp-4.3
+LOADOPTS =
+
+  make blaslib lapacklib
+  mv blas_LINUX.a libblas_fortran.a
+  mv lapack_LINUX.a liblapack_fortran.a
+
+- compile ATLAS with the original lapack in $ATLAS_DIR
+
+  CC=gcc-mp-4.3
+  F77=gfortran-mp-4.3
+  cd $ATLAS_DIR
+  mkdir build_macosx
+  cd build_macosx
+  ../configure -b 32 -C xc $CC -C gc $CC -C if $F77 -C ic $CC -C dm $CC -C sm $CC -C dk $CC -C sk $CC -Fa alg -fPIC --with-netlib-lapack=$LAPACK_DIR/liblapack_fortran.a
+  make
 
 - compile jblas
 
-  ./configure --static-libs --libpath=../ATLAS3.8.3/build_macosx/lib/
+  ./configure --static-libs --libpath=$ATLAS_DIR/ATLAS3.8.3/build_macosx/lib/
   make
   ant jar

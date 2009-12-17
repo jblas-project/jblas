@@ -62,12 +62,13 @@ ATLAS_REQUIRED_SYMBOLS = [
   'dgemm_', # matrix-matrix multiplication
   'daxpy_', # blas-related function
   'cblas_daxpy', # atlas itself often uses cblas
+  'ATL_caxpy'
 ]
 
 LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_' ]
 
-ATLAS_LIBS = %w(atlas lapack lapack_fortran lapack_atlas blas f77blas cblas blas_fortran)
-LAPACK_LIBS = %w(lapack_fortran lapack blas_fortran blas f77blas)
+ATLAS_LIBS = %w(atlas lapack lapack_fortran lapack_atlas f77blas cblas)
+LAPACK_LIBS = %w(lapack_fortran lapack blas_fortran blas)
 
 configure :libs => 'LOADLIBES'
 
