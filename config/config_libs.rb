@@ -67,7 +67,7 @@ ATLAS_REQUIRED_SYMBOLS = [
 
 LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_' ]
 
-ATLAS_LIBS = %w(atlas lapack lapack_fortran lapack_atlas f77blas cblas)
+ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas f77blas atlas cblas)
 LAPACK_LIBS = %w(lapack_fortran lapack blas_fortran blas)
 
 configure :libs => 'LOADLIBES'
