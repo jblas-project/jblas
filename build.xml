@@ -195,7 +195,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </copy>
         <create-jar filename="jblas-${version}-${os_name}-${os_arch}-static.jar" />
     </target>
-    <target name="fat-jar" description="create jblas-multiplatform.jar (local system, static, plus everything else in native-libs)">
+    <target name="multiplatform-jar" description="create jblas-multiplatform.jar (local system, static, plus everything else in native-libs/static)">
         <delete dir="${bin}/lib" />
         <copy todir="${bin}/lib">
             <fileset dir="${native-libs}">

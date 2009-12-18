@@ -51,6 +51,7 @@ configure 'LAPACK_HOME' do
   rescue ConfigError => e
     if $opts.defined? :download_lapack
       puts "trying to download lapack (about 5M)"
+      print "Looking for wget..."; check_cmd 'wget'; Config.ok
       lapack_tgz = File.join('.', 'lapack-lite-3.1.1.tgz')
       File.delete(lapack_tgz) if File.exist?(lapack_tgz)
       system("wget http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz")

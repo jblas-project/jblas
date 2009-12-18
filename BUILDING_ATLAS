@@ -9,6 +9,10 @@ I strongly suggest that you build ATLAS with the --with-netlib-lapack
 option. This includes higher-level routines not covered in ATLAS from
 the lapack libraries.
 
+From my experience, I also found that the Core2 architectural defaults
+work pretty well for both Intel and AMD chips. On 64bit, AMD64K10h is
+a bit better, but not much. On the other hand, the AMD settings
+perform too well on the Intel platform.
 
 OBTAINING THE SOFTWARE
 ----------------------
