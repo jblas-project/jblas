@@ -1,0 +1,6 @@
+<project name="imported-configuration-settings">
+<property name="os_name" value="Linux" />
+<property name="os_arch" value="i386" />
+<property name="make" value="make" />
+<property name="linkage" value="static" />
+</project>
