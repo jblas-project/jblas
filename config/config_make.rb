@@ -45,13 +45,11 @@ configure 'MAKE' do
   if Path.where('gmake')
     puts 'gmake'
     CONFIG['MAKE'] = 'gmake'
-    CONFIG.add_xml '<property name="make" value="gmake" />'
   else
     if Path.where_with_output('make -v', /GNU Make/).nil?
       Config.fail('I need GNU make to run...')
     end
     CONFIG['MAKE'] = 'make'
-    CONFIG.add_xml '<property name="make" value="make" />'
   end
   ok(CONFIG['MAKE'])
 end
