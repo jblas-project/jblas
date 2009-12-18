@@ -53,7 +53,7 @@ end
 configure :os_arch => ['OS_NAME', 'OS_ARCH']
 
 desc 'determining operating system'
-configure 'OS_NAME' do
+configure 'OS_NAME' => 'FOUND_JAVA' do
   os_name = detect_os
   CONFIG['OS_NAME'] = os_name.gsub(' ', '\ ')
   CONFIG.add_xml "<property name=\"os_name\" value=\"#{os_name}\" />"
