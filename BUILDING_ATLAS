@@ -158,6 +158,8 @@ NOOPT    = -fPIC
 LOADER   = gfortran-mp-4.3
 LOADOPTS =
 
+Run with "make -k"
+
 
 ATLAS
 -----
