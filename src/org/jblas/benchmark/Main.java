@@ -4,8 +4,7 @@
  */
 package org.jblas.benchmark;
 
-import org.jblas.FloatMatrix;
-import static org.jblas.FloatMatrix.*;
+import java.io.PrintStream;
 
 /**
  *
@@ -13,27 +12,32 @@ import static org.jblas.FloatMatrix.*;
  */
 public class Main {
 
-    public static void main(String[] args) {
-        int[] ns = {10, 100, 1000};
-        int counter = 0;
-        long ops = 0;
-        
-        int n = 1000;
-        FloatMatrix A = randn(n, n);
-        FloatMatrix B = randn(n, n);
-        FloatMatrix C = randn(n, n);
+    public static Benchmark[] multiplicationBenchmarks = {
+        new JavaDoubleMultiplicationBenchmark(),
+        new JavaFloatMultiplicationBenchmark(),
+        new ATLASDoubleMultiplicationBenchmark(),
+        new ATLASFloatMultiplicationBenchmark(),
+    };
 
-        Timer t = new Timer();
-        t.start();
-        while (!t.ranFor(10.0)) {
-            A.mmuli(B, C);
-            counter++;
-            ops += 2L * n * n * n;
+    public static void main(String[] args) {
+        int[] multiplicationSizes = {10, 100, 1000};
+        PrintStream out = System.out;
+
+        out.println("Simple benchmark for jblas");
+        out.println();
+        out.println("Each benchmark will take about 5 seconds...");
+
+        for (Benchmark b : multiplicationBenchmarks) {
+            out.println();
+            out.println("Running benchmark \"" + b.getName() + "\".");
+            for (int n : multiplicationSizes) {
+                out.printf("n = %-5d: ", n);
+                out.flush();
+
+                BenchmarkResult result = b.run(n, 5.0);
+
+                result.printResult();
+            }
         }
-        t.stop();
-        System.out.printf("counter = %d, mflops = %.3f, seconds = %.3f\n",
-                counter,
-                ops / t.elapsedSeconds() / 1e6,
-                t.elapsedSeconds());
     }
 }

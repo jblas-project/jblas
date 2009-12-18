@@ -129,7 +129,7 @@ module LibHelpers
       end
     end
 
-    p found_symbols
+    #p found_symbols
 
     not_found_symbols = symbols.reject {|s| found_symbols.include? s }
     unless not_found_symbols.empty?
