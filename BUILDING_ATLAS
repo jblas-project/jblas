@@ -5,6 +5,11 @@ In this file, I summarize the different configuration options for the
 platforms.  I keep this information mainly for my own reference, but
 of course, you can try it out yourself ;)
 
+I strongly suggest that you build ATLAS with the --with-netlib-lapack
+option. This includes higher-level routines not covered in ATLAS from
+the lapack libraries.
+
+
 OBTAINING THE SOFTWARE
 ----------------------
 
@@ -88,9 +93,9 @@ Copy make.inc.LINUX from INSTALL, update options like this:
 FORTRAN  = gfortran 
 OPTS     = -O2 -fPIC
 DRVOPTS  = $(OPTS)
-NOOPT    = -O0 -fPIC
+NOOPT    = -fPIC
 LOADER   = gfortran
-LOADOPTS =
+LOADOPTS = -fPIC
 
 compile with "make -k blaslib lapacklib". "-k" (continue on error) is
 needed because some files won't build otherwise.
@@ -103,7 +108,9 @@ For 32 bit:
 
 mkdir build
 cd build
-> ../configure -C if gfortran --with-netlib-lapack=$HOME/build/lapack-lite-3.1.1/liblapack_fortran.a -A 15 -Si cputhrchk 0 -b 32
+> ../configure -C if gfortran \
+  --with-netlib-lapack=$HOME/build/lapack-lite-3.1.1/liblapack_fortran.a \
+  -A 15 -Si cputhrchk 0 -b 32 
 make
 make time
 
@@ -115,7 +122,9 @@ For 64 bit:
 
 as above, but configure with
 
-> ../configure --with-netlib-lapack=/home/mikio/build/lapack-lite-3.1.1/lapack_LINUX.a -A 21 -b 64 -Si cputhrchk 0 
+> ../configure \
+  --with-netlib-lapack=/home/mikio/build/lapack-lite-3.1.1/lapack_LINUX.a \
+  -A 21 -b 64 -Si cputhrchk 0 -Fa alg -fPIC  
 
 
 jblas
@@ -139,9 +148,9 @@ cp INSTALL/make.inc.LINUX make.inc
 Update options to
 
 FORTRAN  = gfortran-mp-4.3 
-OPTS     = -funroll-all-loops -O3 -fPIC -fPIC
+OPTS     = -funroll-all-loops -O3 -fPIC
 DRVOPTS  = $(OPTS)
-NOOPT    =
+NOOPT    = -fPIC
 LOADER   = gfortran-mp-4.3
 LOADOPTS =
 
