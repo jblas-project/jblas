@@ -36,8 +36,6 @@
 
 package org.jblas;
 
-import org.jblas.util.Logger;
-
 /**
  * Native BLAS and LAPACK functions.
  *
@@ -79,9 +77,9 @@ public class NativeBlas {
 		  System.loadLibrary("jblas");
 	  }
 	  catch(UnsatisfiedLinkError e) {
-		  Logger.getLogger().config(
-				  "BLAS native library not found in path. Copying native library " +
-				  "from the archive. Consider installing the library somewhere " +
+		  System.err.println(
+				  "BLAS native library not found in path. Copying native library\n" +
+				  "from the archive. Consider installing the library somewhere\n" +
 				  "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
 		  new org.jblas.util.LibraryLoader().loadLibrary("jblas");
 	  }

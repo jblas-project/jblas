@@ -44,10 +44,10 @@ configure :fortran => ['F77', 'LD']
 
 desc 'deciding whether to use g77 or gfortran'
 configure 'F77', 'LD' => [:os_arch, :cc] do
-  unless ENV['CC'].nil?
-    CONFIG['CC'] = ENV['CC']
-    return
-  end
+  #unless ENV['CC'].nil?
+  #  CONFIG['CC'] = ENV['CC']
+  #  return
+  #end
 
   if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
     CONFIG['LD'] = CONFIG['CC']
