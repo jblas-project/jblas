@@ -129,6 +129,8 @@ module LibHelpers
       end
     end
 
+    Config.log "results found: #{found_symbols.inspect}"
+
     not_found_symbols = symbols.reject {|s| found_symbols.include? s }
     unless not_found_symbols.empty?
       Config.fail "Could not locate libraries for the following symbols: #{not_found_symbols.join ', '}."

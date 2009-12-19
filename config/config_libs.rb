@@ -118,6 +118,7 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
     result = LibHelpers.find_libs(CONFIG[:libpath], LAPACK_LIBS, LAPACK_REQUIRED_SYMBOLS)
   end
 
+
   case CONFIG['LINKAGE_TYPE']
   when 'dynamic'
     CONFIG['LDFLAGS'] += result.values.uniq.map {|s| '-L' + s}
