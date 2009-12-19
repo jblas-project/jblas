@@ -51,10 +51,10 @@ module LibHelpers
         'lib' + name + '.so'
       when 'Windows'
         'lib' + name + '.a'
-      when 'Mac OS X'
+      when 'Mac\ OS\ X'
         'lib' + name + '.dylib'
       else
-        Config.fail "Sorry, OS '#{Config::CONFIG['OS_NAME']} is not supported yet..."
+        Config.fail "Sorry, OS '#{Config::CONFIG['OS_NAME']}' is not supported yet..."
       end
     else
       raise "LINKAGE_TYPE should be either dynamic or static, but is #{Config::CONFIG['LINKAGE_TYPE']}"

@@ -96,10 +96,10 @@ module Path
 
   # translate dir (mainly necessary for cygwin)
   def dir(s)
-    case $os_name
+    case Config::CONFIG['OS_NAME']
     when 'Windows'
       s = s.gsub(/\\/, '\\\\\\\\')
-      %x(cygpath -u #{s}).chomp
+      %x(cygpath -u '#{s}').chomp
     else
       s # safe default...
     end

@@ -58,17 +58,17 @@ include Config
 
 ATLAS_REQUIRED_SYMBOLS = [
   'dsyev_', # eigenvalue function not yet included in ATLAS/LAPACK
-  'ATL_dgetri', # an atlas-specific function
   'ATL_dgemm',
   'dgemm_', # matrix-matrix multiplication
   'daxpy_', # blas-related function
-  'xerbla_', # xerbla?
+  'cblas_daxpy', # atlas itself often uses cblas
+  'ATL_caxpy'
 ]
 
 LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_' ]
 
-ATLAS_LIBS = %w(atlas lapack blas f77blas cblas lapack_atlas)
-LAPACK_LIBS = %w(lapack_fortran lapack blas_fortran blas f77blas)
+ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas f77blas atlas cblas)
+LAPACK_LIBS = %w(lapack_fortran lapack blas_fortran blas)
 
 configure :libs => 'LOADLIBES'
 
@@ -111,24 +111,38 @@ end
 
 desc 'looking for libraries...'
 configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
+
   case CONFIG['BUILD_TYPE']
   when 'atlas'
-    result = LibHelpers.find_libs(CONFIG[:libpath], ATLAS_LIBS, ATLAS_REQUIRED_SYMBOLS)
+    libs = ATLAS_LIBS
+    syms = ATLAS_REQUIRED_SYMBOLS
   when 'lapack'
-    result = LibHelpers.find_libs(CONFIG[:libpath], LAPACK_LIBS, LAPACK_REQUIRED_SYMBOLS)
+    libs = LAPACK_LIBS
+    syms = LAPACK_REQUIRED_SYMBOLS
   end
 
+  result = LibHelpers.find_libs(CONFIG[:libpath], libs, syms)
+  p result
 
   case CONFIG['LINKAGE_TYPE']
   when 'dynamic'
     CONFIG['LDFLAGS'] += result.values.uniq.map {|s| '-L' + s}
     CONFIG['LOADLIBES'] += result.keys.map {|s| '-l' + s}
   when 'static'
-    CONFIG['LOADLIBES'] += ['-Wl,--allow-multiple-definition']
-    CONFIG['LOADLIBES'] += result.keys.map {|s| File.join(result[s], LibHelpers.libname(s)) }
+    #CONFIG['LOADLIBES'] += ['-Wl,--allow-multiple-definition'] unless CONFIG['OS_NAME'] == 'Mac\ OS\ X'
+
+    # Add the libraries with their full path to the command line.
+    # We have to sort them in the order as they appear in +libs+, otherwise
+    # we'll have unresolved symbols, at least under Linux.
+    CONFIG['LOADLIBES'] += result.keys.
+      sort {|x, y| libs.index(x) <=> libs.index(y)}.
+      map {|s| File.join(result[s], LibHelpers.libname(s)) }
     if CONFIG['F77'] == 'gfortran'
       CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
     end
+    if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
+      CONFIG['LOADLIBES'] += ['/opt/local/lib/gcc43/libgfortran.a']
+    end 
   end
   ok
 end

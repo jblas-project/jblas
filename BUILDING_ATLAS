@@ -1,0 +1,183 @@
+BUILDING_ATLAS
+--------------
+
+In this file, I summarize the different configuration options for the
+platforms.  I keep this information mainly for my own reference, but
+of course, you can try it out yourself ;)
+
+I strongly suggest that you build ATLAS with the --with-netlib-lapack
+option. This includes higher-level routines not covered in ATLAS from
+the lapack libraries.
+
+
+OBTAINING THE SOFTWARE
+----------------------
+
+Getting lapack:
+
+wget http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz
+
+Getting ATLAS:
+
+wget http://sourceforge.net/projects/math-atlas/files/Stable/3.8.3/atlas3.8.3.tar.bz2/download
+
+Getting jblas:
+
+git clone git://github.com/mikiobraun/jblas.git
+
+ATLAS OPTIONS
+-------------
+
+This chart may come in handy when you want ATLAS to build with some
+predefined configurations.
+
+ATLAS Architecture Options: (-A)
+
+    0 = 'UNKNOWN'
+    1 = 'POWER3'
+    2 = 'POWER4'
+    3 = 'POWER5'
+    4 = 'PPCG4'
+    5 = 'PPCG5'
+    6 = 'P5'
+    7 = 'P5MMX'
+    8 = 'PPRO'
+    9 = 'PII'
+   10 = 'PIII'
+   11 = 'PM'
+   12 = 'CoreSolo'
+   13 = 'CoreDuo'
+   14 = 'Core2Solo'
+   15 = 'Core2' <-
+   16 = 'Corei7'
+   17 = 'P4'
+   18 = 'P4E'
+   19 = 'Efficeon'
+   20 = 'K7'
+   21 = 'HAMMER' <- for "normal AMD"
+   22 = 'AMD64K10h' <- for "64bit AMD"
+   23 = 'UNKNOWNx86'
+   24 = 'IA64Itan'
+   25 = 'IA64Itan2'
+   26 = 'USI'
+   27 = 'USII'
+   28 = 'USIII'
+   29 = 'USIV'
+   30 = 'UnknownUS'
+   31 = 'MIPSR1xK'
+   32 = 'MIPSICE9'
+
+ATLAS Operating System Options: (-O)
+
+    0 = 'UNKNOWN'
+    1 = 'Linux'
+    2 = 'SunOS'
+    3 = 'SunOS4'
+    4 = 'OSF1'
+    5 = 'IRIX'
+    6 = 'AIX'
+    7 = 'Win9x'
+    8 = 'WinNT'
+    9 = 'HPUX'
+   10 = 'FreeBSD'
+   11 = 'OSX'
+
+Linux
+=====
+
+LAPACK
+------
+
+Copy make.inc.LINUX from INSTALL, update options like this:
+
+FORTRAN  = gfortran 
+OPTS     = -O2 -fPIC
+DRVOPTS  = $(OPTS)
+NOOPT    = -fPIC
+LOADER   = gfortran
+LOADOPTS = -fPIC
+
+compile with "make -k blaslib lapacklib". "-k" (continue on error) is
+needed because some files won't build otherwise.
+
+
+ATLAS
+-----
+
+For 32 bit:
+
+mkdir build
+cd build
+> ../configure -C if gfortran \
+  --with-netlib-lapack=$HOME/build/lapack-lite-3.1.1/liblapack_fortran.a \
+  -A 15 -Si cputhrchk 0 -b 32 
+make
+make time
+
+This sets the fortran compiler to gfortran, architecture Core2, 32
+bit, and don't test for CPU throttling (not needed because we use
+predefined configuration)
+
+For 64 bit:
+
+as above, but configure with
+
+> ../configure \
+  --with-netlib-lapack=/home/mikio/build/lapack-lite-3.1.1/lapack_LINUX.a \
+  -A 21 -b 64 -Si cputhrchk 0 -Fa alg -fPIC  
+
+
+jblas
+-----
+
+> ./configure --static-libs --libpath=$HOME/build/ATLAS/build/lib/
+
+
+Mac OS X
+========
+
+If you install the gfortran with mac ports, you get gcc-mp-4.3 and
+gfortran-mp-4.3. This means you have to redefine all the
+compilers. Apart from that, it was pretty "smooth sailing ;)"
+
+LAPACK
+------
+
+cp INSTALL/make.inc.LINUX make.inc
+
+Update options to
+
+FORTRAN  = gfortran-mp-4.3 
+OPTS     = -funroll-all-loops -O3 -fPIC
+DRVOPTS  = $(OPTS)
+NOOPT    = -fPIC
+LOADER   = gfortran-mp-4.3
+LOADOPTS =
+
+
+ATLAS
+-----
+
+mkdir build_macosx
+cd build_macosx
+
+Execute the following script buil.sh:
+
+CC=gcc-mp-4.3
+F77=gfortran-mp-4.3
+LAPACK=$HOME/Documents/lapack-lite-3.1.1
+../configure -b 32 -C xc $CC -C gc $CC -C if $F77 -C ic $CC -C dm $CC -C sm $CC -C dk $CC -C sk $CC -Fa alg -fPIC --with-netlib-lapack=$LAPACK/liblapack_fortran.a
+
+It's important to set the 32bit flag. Otherwise, it seems to construct
+64 bit code.
+
+
+Windows XP (32bit)
+==================
+
+Most important for Windows XP is to set the OS and Architecture
+explicitly. Otherwise, you will end up with all the low-level timing
+issues... .
+
+
+
