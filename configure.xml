@@ -1,6 +1,0 @@
-<project name="imported-configuration-settings">
-<property name="os_name" value="Mac OS X" />
-<property name="os_arch" value="x86_64" />
-<property name="make" value="gmake" />
-<property name="linkage" value="static" />
-</project>
