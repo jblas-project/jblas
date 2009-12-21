@@ -95,6 +95,22 @@ public class LibraryLoader {
             is = cl.getResourceAsStream(libpath);
         }
 
+        // And then we do it again for the "Non-Unified" path name.
+        // The reason is that changes in the build process might lead to actually
+        // having "Windows Vista" or something in the path... .
+        if (is == null) {
+            logger.debug("Trying to copy from " + fatJarLibraryPathNonUnified(libname, "static") + ".");
+            libpath = fatJarLibraryPath(libname, "static");
+            is = cl.getResourceAsStream(libpath);
+        }
+
+        // Finally, let's see if we can get the dynamic version.
+        if (is == null) {
+            logger.debug("Trying to copy from " + fatJarLibraryPathNonUnified(libname, "dynamic") + ".");
+            libpath = fatJarLibraryPath(libname, "dynamic");
+            is = cl.getResourceAsStream(libpath);
+        }
+
         // Oh man, have to get out of here!
         if (is == null) {
             throw new UnsatisfiedLinkError("Couldn't find the resource " + libname + ".");
@@ -142,6 +158,13 @@ public class LibraryLoader {
     static public String fatJarLibraryPath(String libname, String linkage) {
         String sep = "/"; //System.getProperty("file.separator");
         String os_name = unifyOSName(System.getProperty("os.name"));
+        String os_arch = System.getProperty("os.arch");
+        return sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep + libname;
+    }
+
+    static public String fatJarLibraryPathNonUnified(String libname, String linkage) {
+        String sep = "/"; //System.getProperty("file.separator");
+        String os_name = System.getProperty("os.name");
         String os_arch = System.getProperty("os.arch");
         return sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep + libname;
     }

@@ -1,11 +1,12 @@
 INSTALL Guide 
 
-Version 0.3.1, December 18, 2009
+Version 1.0, December 22, 2009
+Version 0.3, September 17, 2009
 Version 0.2, May 8, 2009
 Version 0.1, March 28, 2009
 
 If you just want to get started, I recommend that you download the
-"multiplatform" jar file which already includes the required native
+multiplatform" jar file which already includes the required native
 BLAS and LAPACK code based on lapack-lite
 (http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz) and ATLAS
 (http://math-atlas.sourceforge.net/) for a number of operating
@@ -36,13 +37,27 @@ Prerequisites:
 
 Running "ant clean jar" should do the job ;)
 
-"ant jar" only puts the JNI library for the current platform in the
-jar file. "ant multiplatform-jar" collects all static JNI libraries.
+"ant jar" collects all static JNI libraries. Other build targets are:
+
+- ant dynamic-lean-jar
+  
+  Build a jar file with the JNI libraries, but without the ATLAS libraries
+  built in for only the current platform.
+
+- ant static-lean-jar
+
+  Build a jar file with the JNI and ATLAS libraries only for the current
+  platform.
+
+- ant minimal-jar
+
+  Build a jar file without the JNI and ATLAS libraries. Both must be
+  installed in the usual library locations.
 
 
 INSTALLING JBLAS
 
-1. Add "jblas-0.3.1.jar" to your CLASSPATH
+1. Add "jblas-1.0.jar" to your CLASSPATH
 
 2. By default, the dynamic libraries are extracted from the jar file
    to the default temporary directory and loaded from there. If you

@@ -1,11 +1,18 @@
-Release 0.3.1 - December 18, 2009
+Release 1.0 - December 22, 2009
 
-Release 0.3.1 changes some minor stuff. I also never got around to do
-a "real 0.3" release, so consider this to be the "real 0.3" release.
+Leo (@thinkberg) conviced me to bump my version number to 1.0 because
+the software itself is stable, and I now cover all platforms I
+originally targeted.
+
+Changes from 0.3:
 
 - expm moved from DoubleMatrix to MatrixFunctions
+
 - Build for Mac OS X
+
 - configure script has been overhauled.
+
+- Matrix classes are now serializable.
 
 ----------------------------------------------------------------------
 

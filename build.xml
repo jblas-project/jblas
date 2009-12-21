@@ -54,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
     <property name="pkgbase" value="org.jblas" />
-    <property name="version" value="0.3.1" />
+    <property name="version" value="1.0" />
 
     <!-- Macros -->
 
@@ -167,49 +167,39 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- jar files -->
 
-    <target name="jar" depends="compile" description="create jblas.jar (local system, as configured)">
+    <target name="dynamic-lean-jar" depends="compile" description="create jblas.jar (local system, dynamic)">
         <delete dir="${bin}/lib" />
         <copy todir="${bin}/lib">
             <fileset dir="${native-libs}">
-                <include name="${linkage}/${os_name}/${os_arch}/*" />
+                <include name="dynamic/${os.name}/${os.arch}/*" />
             </fileset>
         </copy>
-        <create-jar filename="jblas-${version}.jar" />
+        <create-jar filename="jblas-lean-${os.name}-${os.arch}-${version}.jar" />
     </target>
 
-    <target name="dynamic-jar" depends="compile" description="create jblas.jar (local system, dynamic)">
+    <target name="static-lean-jar" depends="compile" description="create jblas.jar (local system, dynamic)">
         <delete dir="${bin}/lib" />
         <copy todir="${bin}/lib">
             <fileset dir="${native-libs}">
-                <include name="dynamic/${os_name}/${os_arch}/*" />
+                <include name="static/${os.name}/${os.arch}/*" />
             </fileset>
         </copy>
-        <create-jar filename="jblas-${version}-${os_name}-${os_arch}.jar" />
+        <create-jar filename="jblas-lean-${os.name}-${os.arch}-${version}.jar" />
     </target>
 
-    <target name="static-jar" description="create jblas-static.jar (local system, static)">
-        <delete dir="${bin}/lib" />
-        <copy todir="${bin}/lib">
-            <fileset dir="${native-libs}">
-                <include name="static/${os_name}/${os_arch}/*" />
-            </fileset>
-        </copy>
-        <create-jar filename="jblas-${version}-${os_name}-${os_arch}-static.jar" />
-    </target>
-    
-    <target name="multiplatform-jar" depends="compile" description="create jblas-multiplatform.jar (local system, static, plus everything else in native-libs/static)">
+    <target name="jar" depends="compile" description="create multiplatform.jar (everything in native-libs/static)">
         <delete dir="${bin}/lib" />
         <copy todir="${bin}/lib">
             <fileset dir="${native-libs}">
                 <include name="static/**" />
             </fileset>
         </copy>
-        <create-jar filename="jblas-${version}-multiplatform.jar" />
+        <create-jar filename="jblas-${version}.jar" />
     </target>
     
-    <target name="lean-jar" description="create jblas-lean.jar (local system, dynamic, without shared libs)" >
+    <target name="minimal-jar" depends="compile" description="create jblas-lean.jar (local system, dynamic, without shared libs)" >
         <delete dir="${bin}/lib" />
-        <create-jar filename="jblas-${version}-lean.jar" />
+        <create-jar filename="jblas-minimal-${version}.jar" />
     </target>
 
     <!-- javadoc -->
