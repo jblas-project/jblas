@@ -63,7 +63,7 @@ public class Logger {
 
     public void log(int messageLevel, String msg) {
         if (level <= messageLevel) {
-            System.err.println("-- org.jblas " + levelNames[level + 1] + " "+ msg);
+            System.err.println("-- org.jblas " + levelNames[level - 1] + " "+ msg);
         }
     }
 

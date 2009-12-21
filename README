@@ -44,7 +44,7 @@ HOW TO GET STARTED
 Have a look at javadoc/index.html and javadoc/org/jblas/DoubleMatrix.html
 
 If you want to validate your installation and get some performance numbers,
-try "java -jar jblas-1.0.jar"
+try "java -server -jar jblas-1.0.jar"
 
 
 LICENSE
