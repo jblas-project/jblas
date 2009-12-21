@@ -33,7 +33,6 @@ Prerequisites:
   - java JDK
   - ant
   - ruby
-  - Windows XP: cygwin with gcc, nm, ruby, make, etc.
 
 Running "ant clean jar" should do the job ;)
 
