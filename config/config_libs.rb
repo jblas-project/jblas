@@ -126,8 +126,8 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
 
   case CONFIG['LINKAGE_TYPE']
   when 'dynamic'
-    CONFIG['LDFLAGS'] += result.values.uniq.map {|s| '-L' + s}
-    CONFIG['LOADLIBES'] += result.keys.map {|s| '-l' + s}
+    CONFIG['LDFLAGS'] += result.values.uniq.map {|s| '-L' + s.escape}
+    CONFIG['LOADLIBES'] += result.keys.map {|s| '-l' + s.escape}
   when 'static'
     #CONFIG['LOADLIBES'] += ['-Wl,--allow-multiple-definition'] unless CONFIG['OS_NAME'] == 'Mac\ OS\ X'
 
@@ -136,7 +136,7 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
     # we'll have unresolved symbols, at least under Linux.
     CONFIG['LOADLIBES'] += result.keys.
       sort {|x, y| libs.index(x) <=> libs.index(y)}.
-      map {|s| File.join(result[s], LibHelpers.libname(s)) }
+      map {|s| File.join(result[s], LibHelpers.libname(s)).escape }
     if CONFIG['F77'] == 'gfortran'
       CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
     end

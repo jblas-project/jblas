@@ -47,7 +47,26 @@ require 'config/config_libs'
 include Config
 include Path
 
-$opts = Opts.new(ARGV, {}, <<EOS)
+args = []
+paste = false
+ARGV.each do |arg|
+  if arg[-1] == ?\\
+    paste_next = true
+    arg = arg[0...-1] + ' '
+  else
+    paste_next = false
+  end
+
+  if paste
+    args[-1] += arg
+  else
+    args << arg
+  end
+
+  paste = paste_next
+end
+
+$opts = Opts.new(args, {}, <<EOS)
 Usage: ./configure [options]
 
 options summary:

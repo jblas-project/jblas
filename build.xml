@@ -41,6 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- Define directories -->
 
+    <property name="version" value="1.0.1" />
     <property name="src" value="${basedir}/src" />
     <property name="test" value="${basedir}/test" />
     <property name="bin" value="${basedir}/bin" />
@@ -52,7 +53,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
     <property name="pkgbase" value="org.jblas" />
-    <property name="version" value="1.0" />
 
     <!-- Macros -->
 

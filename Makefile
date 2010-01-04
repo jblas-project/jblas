@@ -32,7 +32,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## --- END LICENSE BLOCK ---
 
-VERSION=1.0
+VERSION=1.0.1
 
 ######################################################################
 #
