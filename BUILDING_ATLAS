@@ -181,9 +181,18 @@ It's important to set the 32bit flag. Otherwise, it seems to construct
 Windows XP (32bit)
 ==================
 
-Most important for Windows XP is to set the OS and Architecture
-explicitly. Otherwise, you will end up with all the low-level timing
-issues... .
+I'm describing here using cygwin. For some reason, the gcc4 version in cygwin
+does not support compiling to mingw, but using the cygwin version leads
+to some address spaces clashes with Java (at least, the last time I checked),
+leading to a crash as soon as the cygwin compiled code is loaded.
+
+What all of this means is that you should use the old gcc3 "legacy" compilers.
+
+Back in ATLAS 3.6, one needed to set architectures explicitly. With 3.8.3, there is no
+need to do so, but you have to set the fortran compiler explicitly to "g77" (and
+the bit numbers to 32):
+
+../configure --with-netlib-lapack=$HOME/mikio/build/lapack-lite-3.1.1/liblapack_fortran.a -A 15 -C if g77 -b 32
 
 
 
