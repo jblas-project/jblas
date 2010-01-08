@@ -74,7 +74,8 @@ configure 'ARCH_FLAVOR' => 'OS_ARCH' do
     arch_flavor = $opts[:arch_flavor]
   elsif %w(i386 amd64 x86 x86_64).include? CONFIG['OS_ARCH']
     Path.check_cmd('gcc')
-    %x(gcc -oconfig/arch_flavor config/arch_flavor.c)
+    out = %x(gcc -oconfig/arch_flavor config/arch_flavor.c)
+    fail('couldn\'t compile the config script') unless out.empty?
     arch_flavor = %x(config/arch_flavor).chomp
   else
     arch_flavor = ''
