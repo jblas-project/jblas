@@ -81,7 +81,7 @@ public class <%= classname %> {
                     "BLAS native library not found in path. Copying native library "
                     + "from the archive. Consider installing the library somewhere "
                     + "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
-            new org.jblas.util.LibraryLoader().loadLibrary("jblas");
+            new org.jblas.util.LibraryLoader().loadLibrary("jblas", true);
         }
     }
     private static int[] intDummy = new int[1];
