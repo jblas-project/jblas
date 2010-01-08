@@ -33,10 +33,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 // --- END LICENSE BLOCK ---
-
 package org.jblas.benchmark;
 
 import java.io.PrintStream;
+import org.jblas.util.Logger;
 
 /**
  * A simple command-line style benchmarking program.
@@ -52,12 +52,54 @@ public class Main {
         new JavaDoubleMultiplicationBenchmark(),
         new JavaFloatMultiplicationBenchmark(),
         new ATLASDoubleMultiplicationBenchmark(),
-        new ATLASFloatMultiplicationBenchmark(),
-    };
+        new ATLASFloatMultiplicationBenchmark(),};
+
+    public static void printHelp() {
+        System.out.printf("Usage: benchmark [opts]%n" +
+                "%n" +
+                "with options:%n" +
+                "%n" +
+                "  --arch-flavor=value     overriding arch flavor (e.g. --arch-flavor=sse2)%n" +
+                "  --skip-java             don't run java benchmarks%n" +
+                "  --help                  show this help%n");
+    }
 
     public static void main(String[] args) {
         int[] multiplicationSizes = {10, 100, 1000};
         PrintStream out = System.out;
+
+        boolean skipJava = false;
+        boolean unrecognizedOptions = false;
+
+        for (String arg : args) {
+            if (arg.startsWith("--")) {
+                int i = arg.indexOf('=');
+                String value = null;
+                if (i != -1) {
+                    value = arg.substring(i + 1);
+                    arg = arg.substring(0, i);
+                }
+
+                if (arg.equals("--arch-flavor")) {
+                    Logger.getLogger().info("Setting arch flavor to " + value);
+                    org.jblas.util.ArchFlavor.overrideArchFlavor(value);
+                }
+                else if (arg.equals("--skip-java")) {
+                    skipJava = true;
+                }
+                else if (arg.equals("--help")) {
+                    printHelp();
+                    return;
+                }
+                else {
+                    Logger.getLogger().warning("Unrecognized option \"" + arg + "\"");
+                    unrecognizedOptions = true;
+                }
+            }
+        }
+
+        if (unrecognizedOptions)
+            return;
 
         out.println("Simple benchmark for jblas");
         out.println();
@@ -70,6 +112,12 @@ public class Main {
         out.println("Each benchmark will take about 5 seconds...");
 
         for (Benchmark b : multiplicationBenchmarks) {
+            if (skipJava) {
+                if (b.getName().contains("Java")) {
+                    continue;
+                }
+            }
+            
             out.println();
             out.println("Running benchmark \"" + b.getName() + "\".");
             for (int n : multiplicationSizes) {

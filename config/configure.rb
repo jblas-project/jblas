@@ -80,6 +80,7 @@ options summary:
                            dynamically loaded jblas library which does
                            not depend on lapack or atlas libraries. 
                            (default for Windows!)
+  --arch-flavor=...        Set architectural flavor (e.g. --arch-flavor=sse2)
 EOS
 
 configure :all => [:os_arch, :tools, :java, :cc, :fortran, :make, :lapack_sources, :libs]

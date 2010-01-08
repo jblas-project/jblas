@@ -125,6 +125,11 @@ public class SanityChecks {
 
     public static void main(String[] args) {
         Logger.getLogger().setLevel(Logger.CONFIG);
+        for (String arg: args) {
+            if (arg.equals("--debug")) {
+                Logger.getLogger().setLevel(Logger.DEBUG);
+            }
+        }
         checkVectorAddition();
         checkMatrixMultiplication();
         checkEigenvalues();

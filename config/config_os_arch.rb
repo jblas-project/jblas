@@ -70,7 +70,9 @@ end
 
 desc 'determining architecture flavor'
 configure 'ARCH_FLAVOR' => 'OS_ARCH' do
-  if %w(i386 amd64 x86 x86_64).include? CONFIG['OS_ARCH']
+  if $opts.defined? :arch_flavor
+    arch_flavor = $opts[:arch_flavor]
+  elsif %w(i386 amd64 x86 x86_64).include? CONFIG['OS_ARCH']
     Path.check_cmd('gcc')
     %x(gcc -oconfig/arch_flavor config/arch_flavor.c)
     arch_flavor = %x(config/arch_flavor).chomp
