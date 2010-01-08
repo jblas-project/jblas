@@ -55,13 +55,13 @@ public class Main {
         new ATLASFloatMultiplicationBenchmark(),};
 
     public static void printHelp() {
-        System.out.printf("Usage: benchmark [opts]%n" +
-                "%n" +
-                "with options:%n" +
-                "%n" +
-                "  --arch-flavor=value     overriding arch flavor (e.g. --arch-flavor=sse2)%n" +
-                "  --skip-java             don't run java benchmarks%n" +
-                "  --help                  show this help%n");
+        System.out.printf("Usage: benchmark [opts]%n"
+                + "%n"
+                + "with options:%n"
+                + "%n"
+                + "  --arch-flavor=value     overriding arch flavor (e.g. --arch-flavor=sse2)%n"
+                + "  --skip-java             don't run java benchmarks%n"
+                + "  --help                  show this help%n");
     }
 
     public static void main(String[] args) {
@@ -83,33 +83,41 @@ public class Main {
                 if (arg.equals("--arch-flavor")) {
                     Logger.getLogger().info("Setting arch flavor to " + value);
                     org.jblas.util.ArchFlavor.overrideArchFlavor(value);
-                }
-                else if (arg.equals("--skip-java")) {
+                } else if (arg.equals("--skip-java")) {
                     skipJava = true;
-                }
-                else if (arg.equals("--help")) {
+                } else if (arg.equals("--help")) {
                     printHelp();
                     return;
-                }
-                else {
+                } else if (arg.equals("--debug")) {
+                    Logger.getLogger().setLevel(Logger.DEBUG);
+                } else {
                     Logger.getLogger().warning("Unrecognized option \"" + arg + "\"");
                     unrecognizedOptions = true;
                 }
             }
         }
-
-        if (unrecognizedOptions)
+        if (unrecognizedOptions) {
             return;
+        }
 
-        out.println("Simple benchmark for jblas");
+        out.println(
+                "Simple benchmark for jblas");
         out.println();
 
-        out.println("Running sanity benchmarks.");
+        out.println(
+                "Running sanity benchmarks.");
         out.println();
         org.jblas.util.SanityChecks.main(args);
         out.println();
 
-        out.println("Each benchmark will take about 5 seconds...");
+        out.println(
+                "Each benchmark will take about 5 seconds...");
+
+
+
+
+
+
 
         for (Benchmark b : multiplicationBenchmarks) {
             if (skipJava) {
@@ -117,7 +125,7 @@ public class Main {
                     continue;
                 }
             }
-            
+
             out.println();
             out.println("Running benchmark \"" + b.getName() + "\".");
             for (int n : multiplicationSizes) {
