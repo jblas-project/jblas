@@ -59,7 +59,7 @@ public class LibraryLoader {
      * @param libname basename of the library
      * @throws UnsatisfiedLinkError if library cannot be founds
      */
-    public void loadLibrary(String libname) {
+    public void loadLibrary(String libname, boolean withFlavor) {
         String libpath;
         Logger logger = Logger.getLogger();
 
@@ -101,6 +101,7 @@ public class LibraryLoader {
         if (is == null) {
             logger.debug("Trying to copy from " + fatJarLibraryPathNonUnified(libname, "static") + ".");
             libpath = fatJarLibraryPath(libname, "static");
+            if (withFlavor) libpath = addFlavor(libpath);
             is = cl.getResourceAsStream(libpath);
         }
 
@@ -108,6 +109,7 @@ public class LibraryLoader {
         if (is == null) {
             logger.debug("Trying to copy from " + fatJarLibraryPathNonUnified(libname, "dynamic") + ".");
             libpath = fatJarLibraryPath(libname, "dynamic");
+            if (withFlavor) libpath = addFlavor(libpath);
             is = cl.getResourceAsStream(libpath);
         }
 
@@ -159,13 +161,23 @@ public class LibraryLoader {
         String sep = "/"; //System.getProperty("file.separator");
         String os_name = unifyOSName(System.getProperty("os.name"));
         String os_arch = System.getProperty("os.arch");
-        return sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep + libname;
+        String path = sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep + libname;
+        return path;
     }
 
     static public String fatJarLibraryPathNonUnified(String libname, String linkage) {
         String sep = "/"; //System.getProperty("file.separator");
         String os_name = System.getProperty("os.name");
         String os_arch = System.getProperty("os.arch");
-        return sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep + libname;
+        String path = sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep + libname;
+        return path;
+    }
+
+    static private String addFlavor(String path) {
+        String sep = "/";
+        String arch_flavor = ArchFlavor.archFlavor();
+        if (arch_flavor != null)
+            path += sep + arch_flavor;
+        return path;
     }
 }

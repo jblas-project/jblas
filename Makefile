@@ -55,6 +55,7 @@ PACKAGE=org.jblas
 PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 
 LIB_PATH=native-libs/$(LINKAGE_TYPE)/$(OS_NAME)/$(OS_ARCH)
+FULL_LIB_PATH=native-libs/$(LINKAGE_TYPE)/$(OS_NAME)/$(OS_ARCH_WITH_FLAVOR)
 
 #######################################################################
 # Pattern rules
@@ -85,15 +86,15 @@ prepare :
 	test -d native || mkdir native
 
 # Generate the JNI dynamic link library
-compile-native : $(LIB_PATH)/$(LIB)jblas.$(SO)
+compile-native : $(FULL_LIB_PATH)/$(LIB)jblas.$(SO) $(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO)
 
 # Generate the code for the wrapper (both Java and C)
-generate-wrapper: src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c
+generate-wrapper: src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c src/org/jblas/util/ArchFlavor.java
 	ant javah
 
 # Clean all object files
 clean:
-	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) src/$(PACKAGE_PATH)/NativeBlas.java
+	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) $(FULL_LIB_PATH)/*.$(SO) src/$(PACKAGE_PATH)/NativeBlas.java
 
 # Full clean, including information extracted from the fortranwrappers.
 # You will need the original fortran sources in order to rebuild
@@ -124,7 +125,11 @@ src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c: \
 	$(LAPACK)/[sd]potrf.f 
 
 # Move the compile library to the machine specific directory.
-$(LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
+$(FULL_LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
+	mkdir -p $(FULL_LIB_PATH)
+	mv "$<" "$@"
+
+$(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO): native/jblas_arch_flavor.$(SO)
 	mkdir -p $(LIB_PATH)
 	mv "$<" "$@"
 

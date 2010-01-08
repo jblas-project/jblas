@@ -33,8 +33,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 // --- END LICENSE BLOCK ---
-
 package <%= package %>;
+
+import org.jblas.util.Logger;
 
 /**
  * Native BLAS and LAPACK functions.
@@ -75,20 +76,19 @@ public class <%= classname %> {
   static {
 	  try {
 		  System.loadLibrary("jblas");
-	  }
-	  catch(UnsatisfiedLinkError e) {
-		  System.err.println(
-				  "BLAS native library not found in path. Copying native library\n" +
-				  "from the archive. Consider installing the library somewhere\n" +
-				  "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
-		  new org.jblas.util.LibraryLoader().loadLibrary("jblas");
-	  }
-  } 
+        } catch (UnsatisfiedLinkError e) {
+            Logger.getLogger().config(
+                    "BLAS native library not found in path. Copying native library "
+                    + "from the archive. Consider installing the library somewhere "
+                    + "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
+            new org.jblas.util.LibraryLoader().loadLibrary("jblas");
+        }
+    }
+    private static int[] intDummy = new int[1];
+    private static double[] doubleDummy = new double[1];
+    private static float[] floatDummy = new float[1];
 
-  private static int[] intDummy = new int[1];
-  private static double[] doubleDummy = new double[1];
-  private static float[] floatDummy = new float[1];
-
+     
 <% for r in routines -%>
 <%= generate_native_declaration r %>
 <% end %>

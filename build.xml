@@ -134,9 +134,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" target="1.5" fork="yes" nowarn="yes">
             <src path="${src}" />
             <include name="**/NativeBlas.java" />
+            <include name="**/ArchFlavor.java" />
         </javac>
         <javah destdir="${include}" force="yes">
             <class name="${pkgbase}.NativeBlas" />
+            <classpath>
+                <pathelement path="${bin}" />
+            </classpath>
+        </javah>
+        <javah destdir="${include}" force="yes">
+            <class name="org.jblas.util.ArchFlavor" />
             <classpath>
                 <pathelement path="${bin}" />
             </classpath>
