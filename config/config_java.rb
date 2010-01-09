@@ -52,12 +52,16 @@ end
 
 desc 'locating the Java Development Kit'
 configure 'JAVA_HOME' => ['FOUND_JAVA', 'OS_NAME'] do
-  java_home = dir(File.dirname(%x(java -cp config PrintProperty java.home)))
+  if ENV.include? 'JAVA_HOME'
+    java_home = ENV['JAVA_HOME']
+  else
+    java_home = dir(File.dirname(%x(java -cp config PrintProperty java.home)))
+  end
   if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
     java_home = File.join(java_home, 'Home')
   end
   check_files java_home, ['include', 'jni.h'] do
-    CONFIG['JAVA_HOME'] = java_home
+    CONFIG['JAVA_HOME'] = java_home #.escape
   end
   ok(java_home)
 end

@@ -43,9 +43,9 @@ include Path
 configure :cc => 'CC'
 
 desc 'Setting up gcc and flags'
-configure 'CC', 'CFLAGS' => ['OS_NAME', 'JAVA_HOME'] do
+configure 'CC', 'CFLAGS' => ['OS_NAME', 'OS_ARCH', 'JAVA_HOME'] do
   os_name = Config::CONFIG['OS_NAME']
-  java_home = Config::CONFIG['JAVA_HOME']
+  java_home = Config::CONFIG['JAVA_HOME'].escape
   case os_name
   when 'Linux'
     Path.check_cmd('gcc', 'make', 'ld')
@@ -96,6 +96,11 @@ EOS
   else
     Config.fail "Sorry, the OS #{os_name} is currently not supported"
   end
+
+  if %w(i386 x86 x86_64 amd64).include? Config::CONFIG['OS_ARCH']
+    Config::CONFIG['CFLAGS'] << ' -DHAS_CPUID'
+  end
+
   ok(CONFIG['CC'])
 end
 

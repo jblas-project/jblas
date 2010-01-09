@@ -41,4 +41,8 @@ class String # :nodoc:
   def start_with?(head)
     self.length > head.length && self[0...head.length] == head
   end
+
+  def escape
+    gsub /\s/, '\ '
+  end
 end

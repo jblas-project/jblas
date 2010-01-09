@@ -59,7 +59,7 @@ public class LibraryLoader {
      * @param libname basename of the library
      * @throws UnsatisfiedLinkError if library cannot be founds
      */
-    public void loadLibrary(String libname) {
+    public void loadLibrary(String libname, boolean withFlavor) {
         String libpath;
         Logger logger = Logger.getLogger();
 
@@ -83,32 +83,35 @@ public class LibraryLoader {
         // Trying to extract static version from the jar file. Why the static version?
         // Because it is more likely to run.
         if (is == null) {
-            logger.debug("Trying to copy from " + fatJarLibraryPath(libname, "static") + ".");
-            libpath = fatJarLibraryPath(libname, "static");
-            is = cl.getResourceAsStream(libpath);
+            libpath = fatJarLibraryPath("static");
+            logger.debug("Trying to copy from " + libpath + ".");
+            is = cl.getResourceAsStream(libpath + libname);
         }
 
         // Finally, let's see if we can get the dynamic version.
         if (is == null) {
-            logger.debug("Trying to copy from " + fatJarLibraryPath(libname, "dynamic") + ".");
-            libpath = fatJarLibraryPath(libname, "dynamic");
-            is = cl.getResourceAsStream(libpath);
+            libpath = fatJarLibraryPath("dynamic");
+            logger.debug("Trying to copy from " + libpath + ".");
+            is = cl.getResourceAsStream(libpath + libname);
         }
 
         // And then we do it again for the "Non-Unified" path name.
         // The reason is that changes in the build process might lead to actually
         // having "Windows Vista" or something in the path... .
         if (is == null) {
-            logger.debug("Trying to copy from " + fatJarLibraryPathNonUnified(libname, "static") + ".");
-            libpath = fatJarLibraryPath(libname, "static");
-            is = cl.getResourceAsStream(libpath);
+            libpath = fatJarLibraryPathNonUnified("static");
+            if (withFlavor) libpath = addFlavor(libpath);
+            logger.debug("Trying to copy from " + libpath + ".");
+            is = cl.getResourceAsStream(libpath + libname);
         }
 
-        // Finally, let's see if we can get the dynamic version.
+        // Finally, let's see if we can the static version with the unified
+        // path name.
         if (is == null) {
-            logger.debug("Trying to copy from " + fatJarLibraryPathNonUnified(libname, "dynamic") + ".");
-            libpath = fatJarLibraryPath(libname, "dynamic");
-            is = cl.getResourceAsStream(libpath);
+            libpath = fatJarLibraryPath("static");
+            if (withFlavor) libpath = addFlavor(libpath);
+            logger.debug("Trying to copy from " + libpath + ".");
+            is = cl.getResourceAsStream(libpath + libname);
         }
 
         // Oh man, have to get out of here!
@@ -155,17 +158,27 @@ public class LibraryLoader {
 
     /** Compute the path to the library. The path is basically
     "/" + os.name + "/" + os.arch + "/" + libname. */
-    static public String fatJarLibraryPath(String libname, String linkage) {
+    static public String fatJarLibraryPath(String linkage) {
         String sep = "/"; //System.getProperty("file.separator");
         String os_name = unifyOSName(System.getProperty("os.name"));
         String os_arch = System.getProperty("os.arch");
-        return sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep + libname;
+        String path = sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep;
+        return path;
     }
 
-    static public String fatJarLibraryPathNonUnified(String libname, String linkage) {
+    static public String fatJarLibraryPathNonUnified(String linkage) {
         String sep = "/"; //System.getProperty("file.separator");
         String os_name = System.getProperty("os.name");
         String os_arch = System.getProperty("os.arch");
-        return sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep + libname;
+        String path = sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep;
+        return path;
+    }
+
+    static private String addFlavor(String path) {
+        String sep = "/";
+        String arch_flavor = ArchFlavor.archFlavor();
+        if (arch_flavor != null)
+            path += arch_flavor + sep;
+        return path;
     }
 }

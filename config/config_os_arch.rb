@@ -50,7 +50,7 @@ def detect_os
   return os_name
 end
 
-configure :os_arch => ['OS_NAME', 'OS_ARCH']
+configure :os_arch => ['OS_NAME', 'OS_ARCH', 'ARCH_FLAVOR']
 
 desc 'determining operating system'
 configure 'OS_NAME' => 'FOUND_JAVA' do
@@ -66,6 +66,28 @@ configure 'OS_ARCH' => 'FOUND_JAVA' do
   CONFIG['OS_ARCH'] = os_arch
   CONFIG.add_xml "<property name=\"os_arch\" value=\"#{os_arch}\" />"
   ok(os_arch)
+end
+
+desc 'determining architecture flavor'
+configure 'ARCH_FLAVOR' => 'OS_ARCH' do
+  if $opts.defined? :arch_flavor
+    arch_flavor = $opts[:arch_flavor]
+  elsif %w(i386 amd64 x86 x86_64).include? CONFIG['OS_ARCH']
+    Path.check_cmd('gcc')
+    out = %x(gcc -o config/arch_flavor config/arch_flavor.c)
+    fail('couldn\'t compile the config script') unless out.empty?
+    arch_flavor = %x(config/arch_flavor).chomp
+  else
+    arch_flavor = ''
+  end
+
+  if arch_flavor.empty?
+    CONFIG['OS_ARCH_WITH_FLAVOR'] = CONFIG['OS_ARCH']
+  else
+    CONFIG['OS_ARCH_WITH_FLAVOR'] = CONFIG['OS_ARCH'] + File::SEPARATOR + arch_flavor
+  end
+
+  ok(arch_flavor)
 end
 
 if __FILE__ == $0

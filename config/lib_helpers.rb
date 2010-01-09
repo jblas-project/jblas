@@ -64,7 +64,7 @@ module LibHelpers
   # returns an array of the symbols defined in the library +fn+.
   def libsyms(fn)
     nmopt = File.extname(fn) == '.so' ? '-D' : ''
-    %x(nm -p #{nmopt} #{fn}).grep(/ T _?([a-zA-Z0-9_]+)/) {|m| $1}
+    %x(nm -p #{nmopt} #{fn.escape}).grep(/ T _?([a-zA-Z0-9_]+)/) {|m| $1}
   end
 
   def locate_lib(libpath, name, symbol=nil)
