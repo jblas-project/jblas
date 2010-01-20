@@ -1,42 +1,63 @@
 INSTALL Guide 
 
+Version 1.0, December 22, 2009
+Version 0.3, September 17, 2009
 Version 0.2, May 8, 2009
 Version 0.1, March 28, 2009
 
-jblas depends on a BLAS and LAPACK library for most of its
-computational intensive parts. I recommend getting a high-quality
-implementation like ATLAS http://math-atlas.sourceforge.net/, but
-taking the default implementation should also suffice. 
+If you just want to get started, I recommend that you download the
+multiplatform" jar file which already includes the required native
+BLAS and LAPACK code based on lapack-lite
+(http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz) and ATLAS
+(http://math-atlas.sourceforge.net/) for a number of operating
+systems. Currently supported are:
 
-Since the LAPACK libraries which come with ATLAS are incomplete (for
-example, no eigenvalue computations), you also need the Fortran LAPACK
-and BLAS libraries. These will be linked in a way such that the
-optimized ATLAS versions are used when available.
+- Windows
+- Linux
+- Mac OS X
+
+both in 32 bit and 64 bit versions.
+
+If you are only adding code on the Java side, then you can work with
+the supplied build.xml ant script. Simply type "ant jar" to compile
+the new jar file.
+
+If you want to access further functions from LAPACK, you need to
+recompile the native part. This procedure is a bit more involved, see
+below.
 
 
-STANDARD PROCEDURE
-==================
-
-COMPILING JBLAS
-
-Assuming that you already have LAPACK and ATLAS libraries
-somewhere. This has been tested on Linux (debian lenny) and Windows
-XP/Cygwin.
+COMPILING JBLAS (JAVA PART)
+===========================
 
 Prerequisites: 
   - java JDK
   - ant
   - ruby
-  - Windows XP: cygwin with gcc, nm, ruby, make, etc.
 
-1. Run "./configure".
+Running "ant clean jar" should do the job ;)
 
-2. Running "ant clean jar" should do the job ;)
+"ant jar" collects all static JNI libraries. Other build targets are:
+
+- ant dynamic-lean-jar
+  
+  Build a jar file with the JNI libraries, but without the ATLAS libraries
+  built in for only the current platform.
+
+- ant static-lean-jar
+
+  Build a jar file with the JNI and ATLAS libraries only for the current
+  platform.
+
+- ant minimal-jar
+
+  Build a jar file without the JNI and ATLAS libraries. Both must be
+  installed in the usual library locations.
 
 
 INSTALLING JBLAS
 
-1. Add "jblas-0.2.jar" to your CLASSPATH
+1. Add "jblas-1.0.jar" to your CLASSPATH
 
 2. By default, the dynamic libraries are extracted from the jar file
    to the default temporary directory and loaded from there. If you
@@ -46,7 +67,49 @@ INSTALLING JBLAS
    For Linux, use LD_LIBRARY_PATH, for Windows, PATH
    
 
-CONFIGURE FLAGS
+COMPILING THE NATIVE PART
+=========================
+
+I assume that you already have a built of lapack-lite or ATLAS based
+on the lapack-lite libraries. That build process is quite
+involved. You can find some information about it in
+BUILDING_ATLAS. You can also use the atlas libraries which come with
+your distribution.
+
+The build goes like this:
+
+- run ./configure with options (see below)
+- run "make" to build the JNI library
+- run "ant jar" to package the library into the jar file
+
+
+BUILD OPTIONS
+-------------
+
+Dynamic vs. Static
+
+Basically, you can build with "dynamic" binding or "static" binding,
+which means that either the JNI library is dynamically loading the
+lapack libraries, or they are already linked into it. The latter case
+("static") is better for standalone cases, but the resulting jar file
+is bigger.
+
+The default is dynamic binding, otherwise pass the option
+"--static-libs" to the configure script.
+
+This option also affects what libraries "ant jar" packs into the jar file.
+
+
+LAPACK build vs. ATLAS build
+
+You can either build against LAPACK only, or against the ATLAS
+libraries. LAPACK is somewhat slower, but probably easier to
+compile. To compile against LAPACK, pass the "--lapack-build"
+option. I also recommend to use the "--libpath" option to specify
+exactly where the libraries are.
+
+
+CONFIGURE FLAGS SUMMARY
 
 The configure script understands the following options:
 
@@ -68,131 +131,8 @@ The configure script understands the following options:
    shared LAPACK/BLAS/ATLAS libraries. Default for Windows XP.
 
 --help
-   print this help
+   print help
 
 
-JAR BUILDING OPTIONS
-
-You can generate different kinds of jar-files. By default, you get a
-jar file which contains the JNI wrapper code for your platform which
-is named jblas-VERSION.jar
-
-"make all-jars" generates a number of other options, including
-
-jblas-VERSION-OS_NAME-OS_ARCH.jar 
-    - default build for your platform, links BLAS / LAPACK / ATLAS
-      libraries dynamically if available
-
-jblas-VERSION-OS_NAME-OS_ARCH-static.jar 
-    - with static libraries, for standalone deployment
-
-jblas-VERSION-multiplatform.jar
-    - with libraries for all available platforms, for OS independent
-      standalone deployment.
-      
-The available platforms are those which are found in the native-libs
-directory. In order to build these, merge the contents of the
-native-libs directory from different platforms.
-
-In other words, for each OS, you do
-
-  > ./configure --static-libs ... further options ...
-  > ant compile-native
-
-And then collect the files in native-libs. For example, your
-native-libs directory can then look like this:
-
-  > find native-libs
-  native-libs/
-  native-libs/Linux
-  native-libs/Linux/i386
-  native-libs/Linux/i386/libjblas.so
-  native-libs/Windows
-  native-libs/Windows/x86
-  native-libs/Windows/x86/jblas.dll
-
-If you now run "make all-jars", you get a jar file which can be used
-on the Linux and Windows platform.
 
 
-FURTHER BUILD OPTIONS
-=====================
-
-ADDING OTHER FUNCTIONS FROM LAPACK
-
-Currently, I've only added stubs for LAPACK routines I have needed so
-far.  If you want to add further stubs, you need the LAPACK
-sources. Currently, the build is set up to work with the directory
-structure of lapack-lite
-http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz If you want to play
-around with other LAPACK routines, it is best to download the archive
-and unpack it in the jblas directory. You can also type in
-"./configure --download-lapack" to let the configure script handle
-this (requires "wget" and "tar" to be installed)
-
-Then, you have to do a "ant realclean jar" to delete the cached
-information about the Fortran routines and reparse the definitions.
-
-
-ANT TARGETS
-
-javadoc
-  generate javadoc pages
-
-compile-test
-  compiles tests (need junit3)
-
-test
-  run some tests (not that good coverage so far)
-
-compile
-  recompile classes
-
-
-COMPILING LAPACK/BLAS AND ATLAS
-===============================
-
-Here are some hints when you want to compile LAPACK/BLAS and LAPACK
-from scratch. Note that the installation processes for both these
-packages are quite non-standard... .
-
-
-COMPILING LAPACK/BLAS
-
-1. Copy a matching make.inc.* from the INSTALL directory to the base
-   directory, where * stands for your operating system (for example, *
-   = LINUX for Linux and Windows/Cygwin, * = gfortran if you have the
-   (newer) gfortran instead of g77)
-
-2. In make.inc, add the option "-fPIC" to OPTS and NOOPTS
-
-2. Run "make blaslib lapacklib"
-
-4. Rename "blas_*.a" to "libblas_fortran.a" and 
-   "lapack_*.a" to "liblapack_fortran.a"
-
-If you want to make a LAPACK build, make sure to specify --static-libs
-when configuring jblas as well.
-
-
-COMPILING ATLAS 
-
-A version more recent than 3.8.0 should work
-
-1. Create a build directory with "mkdir build" and cd into it with "cd
-   build".
-
-2. For Linux, run "../configure -Fa alg -fPIC". (Note: for 3.8.3 on my
-   system, I had to add the "-b 32" flag to set the pointer
-   width. Also make sure to turn of any CPU throttling with
-   'cpufreq-set'.)
-
-   For Windows/Cygwin, run "../configure -O 1", maybe also add "-b 32"
-   for 32bit systems. This basically configures ATLAS as if you
-   compiled on a Linux system, because the Windows/Cygwin option
-   seems to be broken (at least when you're using Cygwin).
-
-3. Run "make" (takes a lot of time, your machine should also not be
-   under load) 
-
-4. Only for Linux: Change directory to "build/lib" and run "make shared"

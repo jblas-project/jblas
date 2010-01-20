@@ -36,8 +36,6 @@
 package org.jblas.util;
 
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Class which allows to load a dynamic file as resource (for example, from a 
@@ -61,34 +59,59 @@ public class LibraryLoader {
      * @param libname basename of the library
      * @throws UnsatisfiedLinkError if library cannot be founds
      */
-    public void loadLibrary(String libname) {
-        Logger logger = Logger.getLogger("org.jblas");
+    public void loadLibrary(String libname, boolean withFlavor) {
+        String libpath;
+        Logger logger = Logger.getLogger();
+
         libname = System.mapLibraryName(libname);
 
         // We're in a static initializer and need a class. What shall we do?
         Class cl = getClass();
 
         // Trying to copy from here.
-        logger.log(Level.FINE, "Trying to copy from /" + libname + ".");
+        logger.debug("Trying to copy from /" + libname + ".");
+        libpath = "/" + libname;
         InputStream is = cl.getResourceAsStream("/" + libname);
 
         // Trying to copy from "bin"
         if (is == null) {
-            logger.log(Level.FINE, "Trying to copy from /bin/" + libname + ".");
-            is = cl.getResourceAsStream("/bin/" + libname);
+            logger.debug("Trying to copy from /bin/" + libname + ".");
+            libpath = "/bin/" + libname;
+            is = cl.getResourceAsStream(libpath);
         }
 
         // Trying to extract static version from the jar file. Why the static version?
         // Because it is more likely to run.
         if (is == null) {
-            logger.log(Level.FINE, "Trying to copy from " + fatJarLibraryPath(libname, "static") + ".");
-            is = cl.getResourceAsStream(fatJarLibraryPath(libname, "static"));
+            libpath = fatJarLibraryPath("static");
+            logger.debug("Trying to copy from " + libpath + ".");
+            is = cl.getResourceAsStream(libpath + libname);
         }
 
         // Finally, let's see if we can get the dynamic version.
         if (is == null) {
-            is = cl.getResourceAsStream(fatJarLibraryPath(libname, "dynamic"));
-            logger.log(Level.FINE, "Trying to copy from " + fatJarLibraryPath(libname, "dynamic") + ".");
+            libpath = fatJarLibraryPath("dynamic");
+            logger.debug("Trying to copy from " + libpath + ".");
+            is = cl.getResourceAsStream(libpath + libname);
+        }
+
+        // And then we do it again for the "Non-Unified" path name.
+        // The reason is that changes in the build process might lead to actually
+        // having "Windows Vista" or something in the path... .
+        if (is == null) {
+            libpath = fatJarLibraryPathNonUnified("static");
+            if (withFlavor) libpath = addFlavor(libpath);
+            logger.debug("Trying to copy from " + libpath + ".");
+            is = cl.getResourceAsStream(libpath + libname);
+        }
+
+        // Finally, let's see if we can the static version with the unified
+        // path name.
+        if (is == null) {
+            libpath = fatJarLibraryPath("static");
+            if (withFlavor) libpath = addFlavor(libpath);
+            logger.debug("Trying to copy from " + libpath + ".");
+            is = cl.getResourceAsStream(libpath + libname);
         }
 
         // Oh man, have to get out of here!
@@ -96,12 +119,14 @@ public class LibraryLoader {
             throw new UnsatisfiedLinkError("Couldn't find the resource " + libname + ".");
         }
 
+        logger.config("Loading " + libname + " from " + libpath + ".");
+
         try {
             File tempfile = File.createTempFile("jblas", libname);
             tempfile.deleteOnExit();
             OutputStream os = new FileOutputStream(tempfile);
 
-            logger.log(Level.FINE, "tempfile.getPath() = " + tempfile.getPath());
+            logger.debug("tempfile.getPath() = " + tempfile.getPath());
 
             long savedTime = System.currentTimeMillis();
 
@@ -112,15 +137,15 @@ public class LibraryLoader {
             }
 
             double seconds = (double) (System.currentTimeMillis() - savedTime) / 1e3;
-            logger.log(Level.FINE, "Copying took " + seconds + " seconds.");
+            logger.debug("Copying took " + seconds + " seconds.");
 
             os.close();
 
             System.load(tempfile.getPath());
         } catch (IOException io) {
-            logger.log(Level.SEVERE, "Could not create the temp file: " + io.toString() + ".\n");
+            logger.error("Could not create the temp file: " + io.toString() + ".\n");
         } catch (UnsatisfiedLinkError ule) {
-            logger.log(Level.SEVERE, "Couldn't load copied link file: " + ule.toString() + ".\n");
+            logger.error("Couldn't load copied link file: " + ule.toString() + ".\n");
         }
     }
 
@@ -133,10 +158,27 @@ public class LibraryLoader {
 
     /** Compute the path to the library. The path is basically
     "/" + os.name + "/" + os.arch + "/" + libname. */
-    static public String fatJarLibraryPath(String libname, String linkage) {
+    static public String fatJarLibraryPath(String linkage) {
         String sep = "/"; //System.getProperty("file.separator");
         String os_name = unifyOSName(System.getProperty("os.name"));
         String os_arch = System.getProperty("os.arch");
-        return sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep + libname;
+        String path = sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep;
+        return path;
+    }
+
+    static public String fatJarLibraryPathNonUnified(String linkage) {
+        String sep = "/"; //System.getProperty("file.separator");
+        String os_name = System.getProperty("os.name");
+        String os_arch = System.getProperty("os.arch");
+        String path = sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep;
+        return path;
+    }
+
+    static private String addFlavor(String path) {
+        String sep = "/";
+        String arch_flavor = ArchFlavor.archFlavor();
+        if (arch_flavor != null)
+            path += arch_flavor + sep;
+        return path;
     }
 }

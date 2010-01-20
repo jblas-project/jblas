@@ -33,38 +33,75 @@
 ## --- END LICENSE BLOCK ---
 
 require 'set'
+require 'config/config'
 
-PATH = ENV['PATH'].split(':')
+module Path
+  PATH = ENV['PATH'].split(':')
 
-def where(file, path=PATH)
-  path.each do |p|
-    fn = File.join(p, file)
-    #print "  Checking #{fn}"
-    if File.exist? fn
-      #puts "  found"
-      if block_given? 
-        return p if yield fn
+  module_function
+
+  def where(file, path=PATH)
+    path.each do |p|
+      fn = File.join(p, file)
+      #print "  Checking #{fn}"
+      if File.exist? fn
+        #puts "  found"
+        if block_given?
+          return p if yield fn
+        else
+          return p
+        end
       else
-        return p
+        #puts
       end
+    end
+    return
+  end
+
+  # returns the path to the command as specified by
+  # line or nil if the command does not exist, or
+  # it did not produce the right result
+  def where_with_output(line, output)
+    cmd = line.split[0]
+    p = where(cmd)
+    return unless p
+    out = %x(#{File.join(p,line)})
+    if out =~ output
+      return p
     else
-      #puts
+      return
     end
   end
-  return
-end
 
-# returns the path to the command as specified by
-# line or nil if the command does not exist, or
-# it did not produce the right result
-def where_with_output(line, output)
-   cmd = line.split[0]
-   p = where(cmd)
-   return unless p
-   out = %x(#{File.join(p,line)})
-   if out =~ output
-     return p
-   else
-     return
-   end
+  # Check whether a cmd could be found.
+  def check_cmd(*cmds)
+    cmds.each do |cmd|
+      Config.log "Searching for command #{cmd}"
+      Config.fail("coulnd't find command #{cmd}") unless Path.where cmd
+    end
+    yield self if block_given?
+    return
+  end
+
+  # Check whether files could be found in the given path.
+  def check_files(path, *files)
+    files.each do |file|
+      file = File.join(path, *file)
+      Config.log "Searching for file #{file}"
+      Config.fail("couldn't find #{file}") unless File.exist? file
+    end
+    yield if block_given?
+    return
+  end
+
+  # translate dir (mainly necessary for cygwin)
+  def dir(s)
+    case Config::CONFIG['OS_NAME']
+    when 'Windows'
+      s = s.gsub(/\\/, '\\\\\\\\')
+      %x(cygpath -u '#{s}').chomp
+    else
+      s # safe default...
+    end
+  end
 end

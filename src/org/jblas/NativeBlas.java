@@ -33,8 +33,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 // --- END LICENSE BLOCK ---
-
 package org.jblas;
+
+import org.jblas.util.Logger;
 
 /**
  * Native BLAS and LAPACK functions.
@@ -75,20 +76,19 @@ public class NativeBlas {
   static {
 	  try {
 		  System.loadLibrary("jblas");
-	  }
-	  catch(UnsatisfiedLinkError e) {
-		  System.err.println(
-				  "BLAS native library not found in path. Copying native library\n" +
-				  "from the archive. Consider installing the library somewhere\n" +
-				  "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
-		  new org.jblas.util.LibraryLoader().loadLibrary("jblas");
-	  }
-  } 
+        } catch (UnsatisfiedLinkError e) {
+            Logger.getLogger().config(
+                    "BLAS native library not found in path. Copying native library "
+                    + "from the archive. Consider installing the library somewhere "
+                    + "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
+            new org.jblas.util.LibraryLoader().loadLibrary("jblas", true);
+        }
+    }
+    private static int[] intDummy = new int[1];
+    private static double[] doubleDummy = new double[1];
+    private static float[] floatDummy = new float[1];
 
-  private static int[] intDummy = new int[1];
-  private static double[] doubleDummy = new double[1];
-  private static float[] floatDummy = new float[1];
-
+     
   public static native void caxpy(int n, ComplexFloat ca, float[] cx, int cxIdx, int incx, float[] cy, int cyIdx, int incy);
   public static native void ccopy(int n, float[] cx, int cxIdx, int incx, float[] cy, int cyIdx, int incy);
   public static native ComplexFloat cdotc(int n, float[] cx, int cxIdx, int incx, float[] cy, int cyIdx, int incy);

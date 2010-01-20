@@ -1,0 +1,9 @@
+Roadmap to jblas-0.3.1
+
+- collect static builds for Windows(32), Linux(32/64), MacOSX(32/64).
+
+- create multiplatform jar (for all).
+
+- little benchmarking and testing tool.
+
+- update README, INSTALL, RELEASE_NOTES

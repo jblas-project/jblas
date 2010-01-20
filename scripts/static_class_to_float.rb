@@ -69,7 +69,7 @@ def translate(cl, s)
   copybody.gsub! /DoubleBuffer/, 'FloatBuffer'
   copybody.gsub! /DoubleVector/, 'FloatVector'
   copybody.gsub! /ComplexDouble/, 'ComplexFloat'
-  copybody.gsub! /([0-9]+\.[0-9]+)/, '\1f'
+  copybody.gsub! /([0-9]+\.[0-9]+(?:[eE]-?[0-9]+)?)/, '\1f'
   copybody.gsub! /double/, 'float'
   copybody.gsub! /NativeBlas\.dz/, 'NativeBlas.sc'
   copybody.gsub! /NativeBlas\.d/, 'NativeBlas.s'

@@ -1,0 +1,8 @@
+Known Bugs:
+
+- XERBLA handling under Mac OS X
+
+  Under Mac OS X, xerbla isn't properly handled, leading to an error message
+and the exit of the program. The linker does not take our own version
+of xerbla, but instead uses the one supplied by the BLAS library. I
+still need to figure out what the right options are.

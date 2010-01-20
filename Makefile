@@ -32,7 +32,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## --- END LICENSE BLOCK ---
 
+VERSION=1.0.1
+
+######################################################################
+#
 # Load the output of the configuration files
+#
 ifneq ($(wildcard configure.out),)
 include configure.out
 else
@@ -49,9 +54,10 @@ PACKAGE=org.jblas
 # generate path from package name
 PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 
-LIB_PATH=native-libs/$(LINKAGE)/$(OS_NAME)/$(OS_ARCH)
+LIB_PATH=native-libs/$(LINKAGE_TYPE)/$(OS_NAME)/$(OS_ARCH)
+FULL_LIB_PATH=native-libs/$(LINKAGE_TYPE)/$(OS_NAME)/$(OS_ARCH_WITH_FLAVOR)
 
-#
+#######################################################################
 # Pattern rules
 #
 # The crazy thing is, with these rules, you ONLY need to specify which
@@ -67,16 +73,32 @@ LIB_PATH=native-libs/$(LINKAGE)/$(OS_NAME)/$(OS_ARCH)
 %.$(SO) : %.o
 	$(LD) $(LDFLAGS) -o $@ $^ $(LOADLIBES)
 
-# the default target
-all	: compile-native
+######################################################################
+#
+# Main section
+#
 
-compile-native : $(LIB_PATH)/$(LIB)jblas.$(SO)
+# The default target
+all	: prepare generate-wrapper compile-native
 
-generate-wrapper: src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c
+# create native directory if it doesn't exist
+prepare :
+	test -d native || mkdir native
 
+# Generate the JNI dynamic link library
+compile-native : $(FULL_LIB_PATH)/$(LIB)jblas.$(SO) $(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO)
+
+# Generate the code for the wrapper (both Java and C)
+generate-wrapper: src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c src/org/jblas/util/ArchFlavor.java
+	ant javah
+
+# Clean all object files
 clean:
-	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) src/$(PACKAGE_PATH)/NativeBlas.java
+	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) $(FULL_LIB_PATH)/*.$(SO) src/$(PACKAGE_PATH)/NativeBlas.java
 
+# Full clean, including information extracted from the fortranwrappers.
+# You will need the original fortran sources in order to rebuild
+# the wrappers.
 ifeq ($(LAPACK_HOME),)
 realclean:
 	@echo "Since you don't have LAPACK sources, I cannot rebuild stubs and deleting the cached information is not a good idea."
@@ -86,8 +108,11 @@ realclean:
 	rm -f fortranwrapper.dump
 endif
 
-# Generating the stubs. This target requires that the blas sources can be found in ~/src/blas/*.f
-src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c: scripts/fortranwrapper.rb scripts/fortran/types.rb scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c
+# Generating the stubs. This target requires that the blas sources can
+# be found in the $(BLAS) and $(LAPACK) directories.
+src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c: \
+  scripts/fortranwrapper.rb scripts/fortran/types.rb \
+  scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c
 	$(RUBY) scripts/fortranwrapper.rb $(PACKAGE) NativeBlas \
 	$(BLAS)/*.f \
 	$(LAPACK)/[sd]gesv.f \
@@ -97,18 +122,28 @@ src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c: scripts/fortranwrapper.
 	$(LAPACK)/[sd]posv.f \
 	$(LAPACK)/[sdcz]geev.f \
 	$(LAPACK)/[sd]getrf.f \
-    $(LAPACK)/[sd]potrf.f 
+	$(LAPACK)/[sd]potrf.f 
 
-$(LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
+# Move the compile library to the machine specific directory.
+$(FULL_LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
+	mkdir -p $(FULL_LIB_PATH)
+	mv "$<" "$@"
+
+$(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO): native/jblas_arch_flavor.$(SO)
 	mkdir -p $(LIB_PATH)
-	mv $< $@
+	mv "$<" "$@"
 
+######################################################################
 #
-# For testing
+# Testing etc.
 #
-VERSION=0.3
 
-make test-dist:
+# run org.jblas.util.SanityChecks
+sanity-checks:
+	java -cp jblas-$(VERSION).jar org.jblas.util.SanityChecks
+
+# Create a tar, extract in a directory, and rebuild from scratch.
+test-dist:
 	ant clean tar
 	rm -rf jblas-$(VERSION)
 	tar xzvf jblas-$(VERSION).tgz
@@ -118,20 +153,33 @@ make test-dist:
 	java -cp jblas-$(VERSION).jar org.jblas.util.SanityChecks
 	cd ..
 
+######################################################################
 #
-# Building different kinds of jar files
+# Packaging
 #
+
+
+# Build different kind of jars:
+#
+# * with dynamic libraries
+# * with static libraries
+# * a "fat" jar with everything
+#
+# FIXME: I think this build target assumes that the current configuration
+# is "dynamic"
 all-jars:
 	ant clean-jars
 	./configure --keep-options $$(cat configure.options)
 	ant jar 
 	ant lean-jar
 	./configure --keep-options --static-libs $$(cat configure.options)
-	ant compile-native static-jar fat-jar
+	make
+	ant static-jar fat-jar
 
+# Build static jars
 all-static-jars:
 	./configure --keep-options --static-libs $$(cat configure.options)
-	ant compile-native
+	make
 	for os_name in native-libs/*; do \
 	  for os_arch in $$os_name/* ; do \
 	    ant static-jar -Dos_name=$$(basename $$os_name) \

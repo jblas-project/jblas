@@ -33,16 +33,15 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<project name="java-blas" basedir="." default="jar">
+<project name="java-blas" basedir="." default="multiplatform-jar">
     <description>
 		This is the build script to compile and deploy the java-blas project.
 		It also generates JavaDoc from source in ../doc.
     </description>
 
-    <import file="configure.xml" />
-
     <!-- Define directories -->
 
+    <property name="version" value="1.0.1" />
     <property name="src" value="${basedir}/src" />
     <property name="test" value="${basedir}/test" />
     <property name="bin" value="${basedir}/bin" />
@@ -54,7 +53,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
     <property name="pkgbase" value="org.jblas" />
-    <property name="version" value="0.3" />
 
     <!-- Macros -->
 
@@ -88,16 +86,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <macrodef name="create-jar" description="create jar file">
         <attribute name="filename" />
         <sequential>
-        <jar destfile="@{filename}">
-            <fileset dir="${bin}">
-                <include name="org/**" />
-                <include name="lib/**/lib*.so"/>
-                <include name="lib/**/*.dll"/>
-            </fileset>
-            <manifest>
-                <attribute name="Built-By" value="IDA Group, TU Berlin" />
-            </manifest>
-        </jar>
+            <jar destfile="@{filename}">
+                <fileset dir="${bin}">
+                    <include name="org/**" />
+                    <include name="lib/**/lib*.so"/>
+                    <include name="lib/**/*.dll"/>
+		    <include name="lib/**/*.jnilib"/>
+                </fileset>
+                <manifest>
+                    <attribute name="Built-By" value="IDA Group, TU Berlin" />
+                    <attribute name="Main-Class" value="org.jblas.benchmark.Main" />
+                </manifest>
+            </jar>
         </sequential>
     </macrodef>
 
@@ -107,55 +107,47 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <delete dir="${doc}" />
         <delete dir="${bin}" />
         <delete dir="${include}" />
-        <exec executable="${make}">
-            <arg line="clean" />
-        </exec>
     </target>
     <target name="clean-jars" description="delete all jar files">
         <delete>
             <fileset dir="." includes="*.jar" />
         </delete>
     </target>
-    <target name="realclean" depends="clean" description="delete also dumped information on fortran functions">
-        <exec executable="${make}">
-            <arg line="realclean" />
-        </exec>
-    </target>
     <target name="prepare" description="create directories needed for compilation">
         <mkdir dir="${bin}" />
-        <mkdir dir="${native}" />
         <mkdir dir="${include}" />
     </target>
-    <target name="compile" depends="prepare,wrapper,generate-float" description="compile java code">
-        <javac destdir="${bin}" encoding="utf-8" source="1.6" debug="on" compiler="javac1.6" fork="yes" nowarn="yes">
+    <target name="compile" depends="prepare,generate-float" description="compile java code">
+        <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" target="1.5" fork="yes" nowarn="yes">
             <src path="${src}" />
         </javac>
     </target>
     <target name="compile-test" depends="compile" description="compile java test code">
-        <javac destdir="${bin}" encoding="utf-8" source="1.6" debug="on" compiler="javac1.6" fork="yes" nowarn="yes">
+        <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" target="1.5" fork="yes" nowarn="yes">
             <src path="${test}" />
             <classpath>
                 <pathelement location="${external}/junit.jar" />
             </classpath>
         </javac>
     </target>
-    <target name="javah" depends="prepare,wrapper,compile" description="run javah">
+    <target name="javah" depends="prepare" description="run javah">
+        <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" target="1.5" fork="yes" nowarn="yes">
+            <src path="${src}" />
+            <include name="**/NativeBlas.java" />
+            <include name="**/ArchFlavor.java" />
+        </javac>
         <javah destdir="${include}" force="yes">
             <class name="${pkgbase}.NativeBlas" />
             <classpath>
                 <pathelement path="${bin}" />
             </classpath>
         </javah>
-    </target>
-    <target name="compile-native" depends="prepare,javah" description="compile native JNI stubs">
-        <exec executable="${make}">
-            <arg line="compile-native" />
-        </exec>
-    </target>
-    <target name="wrapper" depends="prepare" description="generate the JNI stub code">
-        <exec executable="${make}">
-            <arg line="generate-wrapper" />
-        </exec>
+        <javah destdir="${include}" force="yes">
+            <class name="org.jblas.util.ArchFlavor" />
+            <classpath>
+                <pathelement path="${bin}" />
+            </classpath>
+        </javah>
     </target>
     <target name="generate-float" depends="preprocess" description="generate float versions of classes">
         <class-to-float class="${pkgbase}.DoubleMatrix"/>
@@ -180,51 +172,44 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- jar files -->
 
-    <target name="jar" depends="compile,compile-native" description="create jblas.jar (local system, as configured)">
+    <target name="dynamic-lean-jar" depends="compile" description="create jblas.jar (local system, dynamic)">
         <delete dir="${bin}/lib" />
         <copy todir="${bin}/lib">
             <fileset dir="${native-libs}">
-                <include name="${linkage}/${os_name}/${os_arch}/*" />
+                <include name="dynamic/${os.name}/${os.arch}/*" />
             </fileset>
         </copy>
-        <create-jar filename="jblas-${version}.jar" />
+        <create-jar filename="jblas-lean-${os.name}-${os.arch}-${version}.jar" />
     </target>
 
-    <target name="dynamic-jar" depends="compile,compile-native" description="create jblas.jar (local system, dynamic)">
+    <target name="static-lean-jar" depends="compile" description="create jblas.jar (local system, dynamic)">
         <delete dir="${bin}/lib" />
         <copy todir="${bin}/lib">
             <fileset dir="${native-libs}">
-                <include name="dynamic/${os_name}/${os_arch}/*" />
+                <include name="static/${os.name}/${os.arch}/*" />
             </fileset>
         </copy>
-        <create-jar filename="jblas-${version}-${os_name}-${os_arch}.jar" />
+        <create-jar filename="jblas-lean-${os.name}-${os.arch}-${version}.jar" />
     </target>
-    <target name="static-jar" description="create jblas-static.jar (local system, static)">
-        <delete dir="${bin}/lib" />
-        <copy todir="${bin}/lib">
-            <fileset dir="${native-libs}">
-                <include name="static/${os_name}/${os_arch}/*" />
-            </fileset>
-        </copy>
-        <create-jar filename="jblas-${version}-${os_name}-${os_arch}-static.jar" />
-    </target>
-    <target name="fat-jar" description="create jblas-multiplatform.jar (local system, static, plus everything else in native-libs)">
+
+    <target name="jar" depends="compile" description="create multiplatform.jar (everything in native-libs/static)">
         <delete dir="${bin}/lib" />
         <copy todir="${bin}/lib">
             <fileset dir="${native-libs}">
                 <include name="static/**" />
             </fileset>
         </copy>
-        <create-jar filename="jblas-${version}-multiplatform.jar" />
+        <create-jar filename="jblas-${version}.jar" />
     </target>
-    <target name="lean-jar" description="create jblas-lean.jar (local system, dynamic, without shared libs)" >
+    
+    <target name="minimal-jar" depends="compile" description="create jblas-lean.jar (local system, dynamic, without shared libs)" >
         <delete dir="${bin}/lib" />
-        <create-jar filename="jblas-${version}-lean.jar" />
+        <create-jar filename="jblas-minimal-${version}.jar" />
     </target>
 
     <!-- javadoc -->
 
-    <target name="javadoc" depends="generate-float,wrapper">
+    <target name="javadoc" depends="generate-float">
         <mkdir dir="${doc}" />
         <javadoc packagenames="org.jblas.*"
 		sourcepath="${src}" defaultexcludes="yes"
@@ -258,6 +243,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </target>
     <target name="all" depends="jar, javadoc">
     </target>
+
+    <!-- taring everything up for distribution -->
+    
     <target name="tar" depends="javadoc">
         <tar destfile="jblas-${version}.tgz" compression="gzip">
             <tarfileset dir="${basedir}" prefix="jblas-${version}">
