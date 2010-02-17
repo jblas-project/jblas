@@ -379,6 +379,15 @@ public class DoubleMatrix implements Serializable {
         }
     }
 
+    public DoubleMatrix(List<Double> data) {
+        this(data.size());
+
+        int c = 0;
+        for (java.lang.Double d : data) {
+            put(c++, d);
+        }
+    }
+
     /**
      * Construct DoubleMatrix from ASCII representation.
      *
