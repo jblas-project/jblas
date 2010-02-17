@@ -379,6 +379,15 @@ public class FloatMatrix implements Serializable {
         }
     }
 
+    public FloatMatrix(List<Float> data) {
+        this(data.size());
+
+        int c = 0;
+        for (java.lang.Float d : data) {
+            put(c++, d);
+        }
+    }
+
     /**
      * Construct FloatMatrix from ASCII representation.
      *
