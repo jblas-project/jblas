@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- Define directories -->
 
-    <property name="version" value="1.0.1" />
+    <property name="version" value="1.0.2" />
     <property name="src" value="${basedir}/src" />
     <property name="test" value="${basedir}/test" />
     <property name="bin" value="${basedir}/bin" />
@@ -211,18 +211,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <target name="javadoc" depends="generate-float">
         <mkdir dir="${doc}" />
-        <javadoc packagenames="org.jblas.*"
+        <javadoc packagenames="org.jblas.*" encoding="utf-8"
 		sourcepath="${src}" defaultexcludes="yes"
 		destdir="${doc}" author="true" version="true"
 		use="true" windowtitle="jblas" linksource="yes"
 			stylesheetfile="javadoc.css" overview="${src}/overview.html">
             <doctitle>
-	<![CDATA[ <h1>jblas - Linear Algebra for Java</h1> ]]>
+	<![CDATA[ <h1>jblas - Linear Algebra for Java (version ${version})</h1> ]]>
             </doctitle>
             <bottom>
-	<![CDATA[ written by Mikio L. Braun and Johannes Schaback ]]>
+	<![CDATA[ &copy; 2008-2010 by Mikio L. Braun and contributors ]]>
             </bottom>
-            <tag name="dedication" scope="all" description="Dedication:" />
         </javadoc>
     </target>
 
@@ -258,6 +257,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <include name="build.xml" />
                 <include name="Makefile" />
                 <include name="config/*.rb" />
+                <include name="config/*.c" />
                 <include name="config/*.java" />
                 <include name="fortranwrapper.dump" />
                 <include name="README" />
@@ -267,6 +267,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <include name="javadoc.css" />
                 <include name="javadoc/**" />
                 <include name="nbproject/**" />
+                <include name="native/jblas_arch_flavor.c" />
             </tarfileset>
             <tarfileset dir="${basedir}" prefix="jblas-${version}" mode="755"
 		    includes="configure" />
