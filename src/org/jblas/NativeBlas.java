@@ -437,5 +437,57 @@ public class NativeBlas {
   public static native int sgetrf(int m, int n, float[] a, int aIdx, int lda, int[] ipiv, int ipivIdx);
   public static native int dpotrf(char uplo, int n, double[] a, int aIdx, int lda);
   public static native int spotrf(char uplo, int n, float[] a, int aIdx, int lda);
+  public static native int cgesvd(char jobu, char jobvt, int m, int n, float[] a, int aIdx, int lda, float[] s, int sIdx, float[] u, int uIdx, int ldu, float[] vt, int vtIdx, int ldvt, float[] work, int workIdx, int lwork, float[] rwork, int rworkIdx);
+  public static int cgesvd(char jobu, char jobvt, int m, int n, float[] a, int aIdx, int lda, float[] s, int sIdx, float[] u, int uIdx, int ldu, float[] vt, int vtIdx, int ldvt, float[] rwork, int rworkIdx) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    info = cgesvd(jobu, jobvt, m, n, floatDummy, 0, lda, floatDummy, 0, floatDummy, 0, ldu, floatDummy, 0, ldvt, work, 0, -1, floatDummy, 0);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    info = cgesvd(jobu, jobvt, m, n, a, aIdx, lda, s, sIdx, u, uIdx, ldu, vt, vtIdx, ldvt, work, 0, lwork, rwork, rworkIdx);
+    return info;
+  }
+
+  public static native int dgesvd(char jobu, char jobvt, int m, int n, double[] a, int aIdx, int lda, double[] s, int sIdx, double[] u, int uIdx, int ldu, double[] vt, int vtIdx, int ldvt, double[] work, int workIdx, int lwork);
+  public static int dgesvd(char jobu, char jobvt, int m, int n, double[] a, int aIdx, int lda, double[] s, int sIdx, double[] u, int uIdx, int ldu, double[] vt, int vtIdx, int ldvt) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    info = dgesvd(jobu, jobvt, m, n, doubleDummy, 0, lda, doubleDummy, 0, doubleDummy, 0, ldu, doubleDummy, 0, ldvt, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    info = dgesvd(jobu, jobvt, m, n, a, aIdx, lda, s, sIdx, u, uIdx, ldu, vt, vtIdx, ldvt, work, 0, lwork);
+    return info;
+  }
+
+  public static native int sgesvd(char jobu, char jobvt, int m, int n, float[] a, int aIdx, int lda, float[] s, int sIdx, float[] u, int uIdx, int ldu, float[] vt, int vtIdx, int ldvt, float[] work, int workIdx, int lwork);
+  public static int sgesvd(char jobu, char jobvt, int m, int n, float[] a, int aIdx, int lda, float[] s, int sIdx, float[] u, int uIdx, int ldu, float[] vt, int vtIdx, int ldvt) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    info = sgesvd(jobu, jobvt, m, n, floatDummy, 0, lda, floatDummy, 0, floatDummy, 0, ldu, floatDummy, 0, ldvt, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    info = sgesvd(jobu, jobvt, m, n, a, aIdx, lda, s, sIdx, u, uIdx, ldu, vt, vtIdx, ldvt, work, 0, lwork);
+    return info;
+  }
+
+  public static native int zgesvd(char jobu, char jobvt, int m, int n, double[] a, int aIdx, int lda, double[] s, int sIdx, double[] u, int uIdx, int ldu, double[] vt, int vtIdx, int ldvt, double[] work, int workIdx, int lwork, double[] rwork, int rworkIdx);
+  public static int zgesvd(char jobu, char jobvt, int m, int n, double[] a, int aIdx, int lda, double[] s, int sIdx, double[] u, int uIdx, int ldu, double[] vt, int vtIdx, int ldvt, double[] rwork, int rworkIdx) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    info = zgesvd(jobu, jobvt, m, n, doubleDummy, 0, lda, doubleDummy, 0, doubleDummy, 0, ldu, doubleDummy, 0, ldvt, work, 0, -1, doubleDummy, 0);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    info = zgesvd(jobu, jobvt, m, n, a, aIdx, lda, s, sIdx, u, uIdx, ldu, vt, vtIdx, ldvt, work, 0, lwork, rwork, rworkIdx);
+    return info;
+  }
+
 
 }

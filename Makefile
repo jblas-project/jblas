@@ -91,7 +91,7 @@ generate-wrapper: $(GENERATED_SOURCES) $(GENERATED_HEADERS)
 
 # Clean all object files
 clean:
-	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) $(FULL_LIB_PATH)/*.$(SO) src/$(PACKAGE_PATH)/NativeBlas.java
+	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) $(FULL_LIB_PATH)/*.$(SO) src/$(PACKAGE_PATH)/NativeBlas.java generated-sources
 
 # Full clean, including information extracted from the fortranwrappers.
 # You will need the original fortran sources in order to rebuild
@@ -110,7 +110,7 @@ endif
 generated-sources: \
   scripts/fortranwrapper.rb scripts/fortran/types.rb \
   scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c \
-  src/org/jblas/util/ArchFlavor.java src/org/jblas/NativeBlas.java 
+  src/org/jblas/util/ArchFlavor.java #src/org/jblas/NativeBlas.java 
 	$(RUBY) scripts/fortranwrapper.rb $(PACKAGE) NativeBlas \
 	$(BLAS)/*.f \
 	$(LAPACK)/[sd]gesv.f \
@@ -120,7 +120,8 @@ generated-sources: \
 	$(LAPACK)/[sd]posv.f \
 	$(LAPACK)/[sdcz]geev.f \
 	$(LAPACK)/[sd]getrf.f \
-	$(LAPACK)/[sd]potrf.f 
+	$(LAPACK)/[sd]potrf.f \
+	$(LAPACK)/[sdcz]gesvd.f
 	ant javah
 	touch $@
 

@@ -162,6 +162,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <static-class-to-float class="${pkgbase}.Geometry"/>
         <static-class-to-float class="${pkgbase}.MatrixFunctions"/>
         <static-class-to-float class="${pkgbase}.JavaBlas"/>
+        <static-class-to-float class="${pkgbase}.Singular"/>
     </target>
     <target name="preprocess" description="run the ruby preprocessor on necessary files">
         <rjpp file="src/org/jblas/DoubleMatrix.java"/>

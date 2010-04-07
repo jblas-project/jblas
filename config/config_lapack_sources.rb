@@ -40,14 +40,17 @@ require 'config/string_ext'
 include Config
 
 configure :lapack_sources => 'LAPACK_HOME'
+def check_lapack_home(lapack_home)
+  Path.check_files(lapack_home,
+        ['BLAS', 'SRC', 'dgemm.f'],
+        ['SRC', 'dsyev.f'])
+end
 
 desc 'search for lapack sources (configure by --lapack=dir)'
 configure 'LAPACK_HOME' do
   lapack_home = $opts.get :lapack, './lapack-lite-3.1.1'
   begin
-    Path.check_files(lapack_home,
-      ['BLAS', 'SRC', 'dgemm.f'],
-      ['SRC', 'dsyev.f'])
+    check_lapack_home(lapack_home)
   rescue ConfigError => e
     if $opts.defined? :download_lapack
       puts "trying to download lapack (about 5M)"
