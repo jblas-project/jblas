@@ -52,6 +52,7 @@ configure 'F77', 'LD' => [:os_arch, :cc] do
   if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
     CONFIG['LD'] = CONFIG['CC']
     CONFIG['F77'] = 'gfortran-mp-4.3'
+    CONFIG['CCC'] = 'c99'
   else
     g77 = Path.where('g77')
     gfortran = Path.where('gfortran')
@@ -59,12 +60,15 @@ configure 'F77', 'LD' => [:os_arch, :cc] do
     if g77
       CONFIG['LD'] = 'g77'
       CONFIG['F77'] = 'g77'
+      CONFIG['CCC'] = 'f2c'
     elsif gfortran
       CONFIG['F77'] = 'gfortran'
       CONFIG['LD'] = CONFIG['CC']
+      CONFIG['CCC'] = 'c99'
     elsif f77
       CONFIG['F77'] = 'f77'
       CONFIG['LD'] = 'f77'
+      CONFIG['CCC'] = 'f2c'
     else
       CONFIG.fail <<EOS.indent(2)
 Either g77 or gfortran have to be installed to compile against the

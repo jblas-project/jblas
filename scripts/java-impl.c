@@ -40,8 +40,6 @@
  * For convenience, we define some typedefs here which have the
  * same name as certain Java types, but their implementation differs (of course)
  */
-typedef struct { float real, imag; } ComplexFloat;
-typedef struct { double real, imag; } ComplexDouble;
 typedef char *String;
 
 typedef char ByteBuffer;
@@ -63,6 +61,10 @@ static jobject createObject(JNIEnv *env, const char *className, const char *sign
   newObject = (*env)->NewObjectV(env, klass, init, args);
   va_end(args);
 }
+
+<% if $complexcc == 'f2c' %>
+typedef struct { float real, imag; } ComplexFloat;
+typedef struct { double real, imag; } ComplexDouble;
 
 static jobject createComplexFloat(JNIEnv *env, ComplexFloat *fc)
 {
@@ -93,6 +95,38 @@ static void getComplexDouble(JNIEnv *env, jobject dc, ComplexDouble *result)
   result->real = (*env)->GetDoubleField(env, dc, reField);
   result->imag = (*env)->GetDoubleField(env, dc, imField);
 }
+<% else %>
+#include <complex.h>
+typedef float complex ComplexFloat;
+typedef double complex ComplexDouble;
+
+static jobject createComplexFloat(JNIEnv *env, ComplexFloat fc) {
+  return createObject(env, CORE_PACKAGE "ComplexFloat", "(FF)V", crealf(fc), cimagf(fc));
+}
+
+static jobject createComplexDouble(JNIEnv *env, ComplexDouble dc)
+{
+  return createObject(env, CORE_PACKAGE "ComplexDouble", "(DD)V", creal(dc), cimag(dc));
+}
+
+static ComplexFloat getComplexFloat(JNIEnv *env, jobject fc)
+{
+  jclass klass = (*env)->FindClass(env, CORE_PACKAGE "ComplexFloat");
+  jfieldID reField = (*env)->GetFieldID(env, klass, "r", "F");
+  jfieldID imField = (*env)->GetFieldID(env, klass, "i", "F");
+
+  return (*env)->GetFloatField(env, fc, reField) + I*(*env)->GetFloatField(env, fc, imField);
+}
+
+static ComplexDouble getComplexDouble(JNIEnv *env, jobject dc)
+{
+  jclass klass = (*env)->FindClass(env, CORE_PACKAGE "ComplexDouble");
+  jfieldID reField = (*env)->GetFieldID(env, klass, "r", "D");
+  jfieldID imField = (*env)->GetFieldID(env, klass, "i", "D");
+
+  return (*env)->GetDoubleField(env, dc, reField) + I*(*env)->GetDoubleField(env, dc, imField);
+}
+<% end %>
 
 static void throwIllegalArgumentException(JNIEnv *env, const char *message)
 {

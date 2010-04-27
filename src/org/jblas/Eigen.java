@@ -112,6 +112,7 @@ public class Eigen {
             }
             return new ComplexDoubleMatrix[] { V, ComplexDoubleMatrix.diag(E) };
         }
+
 //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
@@ -184,5 +185,6 @@ public class Eigen {
             }
             return new ComplexFloatMatrix[] { V, ComplexFloatMatrix.diag(E) };
         }
+
 //END
 }

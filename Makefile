@@ -97,11 +97,11 @@ clean:
 # You will need the original fortran sources in order to rebuild
 # the wrappers.
 ifeq ($(LAPACK_HOME),)
-realclean:
+realclean: clean
 	@echo "Since you don't have LAPACK sources, I cannot rebuild stubs and deleting the cached information is not a good idea."
 	@echo "(nothing deleted)"
 else
-realclean:
+realclean: clean
 	rm -f fortranwrapper.dump
 endif
 
@@ -111,8 +111,19 @@ generated-sources: \
   scripts/fortranwrapper.rb scripts/fortran/types.rb \
   scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c \
   src/org/jblas/util/ArchFlavor.java #src/org/jblas/NativeBlas.java 
-	$(RUBY) scripts/fortranwrapper.rb $(PACKAGE) NativeBlas \
-	$(BLAS)/*.f \
+	$(RUBY) scripts/fortranwrapper.rb --complexcc $(CCC) $(PACKAGE) NativeBlas \
+	$(BLAS)/[sdcz]copy.f \
+	$(BLAS)/[sdcz]swap.f \
+	$(BLAS)/[sdcz]axpy.f \
+	$(BLAS)/[sdcz]scal.f \
+  $(BLAS)/[cz][sd]scal.f \
+	$(BLAS)/[sdcz]dot*.f \
+	$(BLAS)/[sd]*nrm2.f \
+	$(BLAS)/[sd]*asum.f \
+	$(BLAS)/i[sdcz]amax.f \
+	$(BLAS)/[sdcz]gemv.f \
+	$(BLAS)/[sdcz]ger*.f \
+	$(BLAS)/[sdcz]gemm.f \
 	$(LAPACK)/[sd]gesv.f \
 	$(LAPACK)/[sd]sysv.f \
 	$(LAPACK)/[sd]syev.f \
@@ -125,7 +136,9 @@ generated-sources: \
 	ant javah
 	touch $@
 
-native/NativeBlas.o: generated-sources
+native/NativeBlas.c: generated-sources
+
+native/NativeBlas.o: native/NativeBlas.c
 	$(CC) $(CFLAGS) $(INCDIRS) -c native/NativeBlas.c -o $@
 
 native/jblas_arch_flavor.o: generated-sources

@@ -33,31 +33,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 // --- END LICENSE BLOCK ---
-
 package org.jblas;
 
 import junit.framework.TestCase;
 
-import org.jblas.ComplexDouble;
-
 public class TestBlasDoubleComplex extends TestCase {
 
-	public void testDotc() {
-		double[] a = new double[] { 1.0, 1.0, 2.0, 0.0, 3.0, 0.0 };
-		
-		ComplexDouble c = NativeBlas.zdotu(3, a, 0, 1, a, 0, 1);
-		System.out.println(c);
-	}
+    public void testZCOPY() {
+        double[] a = { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 };
+        double[] b = new double[6];
+        NativeBlas.zcopy(3, a, 0, 1, b, 0, 1);
 
-	public void testAxpy() {
-		double[] x = new double[] { 0.0, -1.0 };
-		double[] y = new double[] { 0.0, 1.0 };
-		ComplexDouble a = new ComplexDouble(0.0, 1.0);
-		
-		NativeBlas.zdscal(1, 2.0, x, 0, 1);
-		assertEquals(new ComplexDouble(0.0, -2.0), new ComplexDouble(x[0], x[1]));
-		
-		NativeBlas.zaxpy(1, a, x, 0, 1, y, 0, 1);
-		assertEquals(new ComplexDouble(2.0, 1.0), new ComplexDouble(y[0], y[1]));
-	}
+        for (int i = 0; i < 6; i++) {
+            assertEquals((double)(i+1), b[i]);
+        }
+    }
+
+    public void testZDOTU() {
+        double[] a = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+
+        ComplexDouble c = NativeBlas.zdotu(3, a, 0, 1, a, 0, 1);
+        assertEquals(new ComplexDouble(-21.0, 88.0), c);
+    }
+
+    public void testAxpy() {
+        double[] x = {0.0, -1.0};
+        double[] y = {0.0, 1.0};
+        ComplexDouble a = new ComplexDouble(0.0, 1.0);
+
+        // compute x = 2 * x
+        NativeBlas.zdscal(1, 2.0, x, 0, 1);
+        assertEquals(new ComplexDouble(0.0, -2.0), new ComplexDouble(x[0], x[1]));
+
+        // compute -I * x + y
+        NativeBlas.zaxpy(1, a, x, 0, 1, y, 0, 1);
+        assertEquals(new ComplexDouble(2.0, 1.0), new ComplexDouble(y[0], y[1]));
+    }
 }

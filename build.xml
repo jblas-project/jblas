@@ -35,8 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <project name="java-blas" basedir="." default="jar">
     <description>
-		This is the build script to compile and deploy the java-blas project.
-		It also generates JavaDoc from source in ../doc.
+        This is the build script to compile and deploy the java-blas project.
+        It also generates JavaDoc from source in ../doc.
     </description>
 
     <!-- Define directories -->
@@ -91,7 +91,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     <include name="org/**" />
                     <include name="lib/**/lib*.so"/>
                     <include name="lib/**/*.dll"/>
-		    <include name="lib/**/*.jnilib"/>
+                    <include name="lib/**/*.jnilib"/>
                 </fileset>
                 <manifest>
                     <attribute name="Built-By" value="IDA Group, TU Berlin" />
@@ -126,7 +126,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" target="1.5" fork="yes" nowarn="yes">
             <src path="${test}" />
             <classpath>
-                <pathelement location="${external}/junit.jar" />
+                <pathelement location="${external}/junit-4.8.2.jar" />
             </classpath>
         </javac>
     </target>
@@ -163,6 +163,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <static-class-to-float class="${pkgbase}.MatrixFunctions"/>
         <static-class-to-float class="${pkgbase}.JavaBlas"/>
         <static-class-to-float class="${pkgbase}.Singular"/>
+        <!--<static-class-to-float class="${pkgbase}.Decompose"/>-->
     </target>
     <target name="preprocess" description="run the ruby preprocessor on necessary files">
         <rjpp file="src/org/jblas/DoubleMatrix.java"/>
@@ -202,7 +203,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </copy>
         <create-jar filename="jblas-${version}.jar" />
     </target>
-    
+
     <target name="minimal-jar" depends="compile" description="create jblas-lean.jar (local system, dynamic, without shared libs)" >
         <delete dir="${bin}/lib" />
         <create-jar filename="jblas-minimal-${version}.jar" />
@@ -212,16 +213,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <target name="javadoc" depends="generate-float">
         <mkdir dir="${doc}" />
-        <javadoc packagenames="org.jblas.*" encoding="utf-8"
-		sourcepath="${src}" defaultexcludes="yes"
-		destdir="${doc}" author="true" version="true"
-		use="true" windowtitle="jblas" linksource="yes"
-			stylesheetfile="javadoc.css" overview="${src}/overview.html">
+        <javadoc packagenames="org.jblas*.*" encoding="utf-8"
+                 sourcepath="${src}" defaultexcludes="yes"
+                 destdir="${doc}" author="true" version="true"
+                 use="true" windowtitle="jblas" linksource="yes"
+                 stylesheetfile="javadoc.css" overview="${src}/overview.html">
             <doctitle>
-	<![CDATA[ <h1>jblas - Linear Algebra for Java (version ${version})</h1> ]]>
+                <![CDATA[ <h1>jblas - Linear Algebra for Java (version ${version})</h1> ]]>
             </doctitle>
             <bottom>
-	<![CDATA[ &copy; 2008-2010 by Mikio L. Braun and contributors ]]>
+                <![CDATA[ &copy; 2008-2010 by Mikio L. Braun and contributors ]]>
             </bottom>
         </javadoc>
     </target>
@@ -229,23 +230,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <!-- testing -->
 
     <target name="test" depends="compile-test,jar">
-        <junit printsummary="yes" haltonfailure="yes" showoutput="yes">
+        <junit printsummary="yes" haltonfailure="yes" showoutput="yes" fork="yes">
             <classpath>
-                <!-- <pathelement location="${external}/junit.jar" /> -->
+                <pathelement location="${external}/junit-4.8.2.jar" />
                 <pathelement path="${bin}" />
             </classpath>
             <formatter type="plain" usefile="false" />
             <!-- <test name="${pkgbase}.TestDoubleMatrix" />
             <test name="${pkgbase}.TestEigen" />
-            <test name="${pkgbase}.ranges.IntervalRangeTest" /> -->
-            <test name="${pkgbase}.DecomposeTest" />
+            <test name="${pkgbase}.ranges.IntervalRangeTest" />
+            <test name="${pkgbase}.DecomposeTest" /> -->
+            <batchtest fork="yes" todir="${reports.tests}">
+                <fileset dir="${test}">
+                    <include name="**/*Test*.java"/>
+                </fileset>
+            </batchtest>
+            <!--<test name="${pkgbase}.TestBlasDoubleComplex" />-->
         </junit>
     </target>
     <target name="all" depends="jar, javadoc">
     </target>
 
     <!-- taring everything up for distribution -->
-    
+
     <target name="tar" depends="javadoc">
         <tar destfile="jblas-${version}.tgz" compression="gzip">
             <tarfileset dir="${basedir}" prefix="jblas-${version}">
@@ -271,7 +278,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <include name="native/jblas_arch_flavor.c" />
             </tarfileset>
             <tarfileset dir="${basedir}" prefix="jblas-${version}" mode="755"
-		    includes="configure" />
+                        includes="configure" />
         </tar>
     </target>
 </project>
