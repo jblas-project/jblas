@@ -59,17 +59,21 @@ FORTRANWRAPPER_DUMP = 'fortranwrapper.dump'
 
 $here = false
 $force = false
+$complexcc = 'c99'
 OptionParser.new do |opts|
   opts.banner = Banner
   
   opts.on("-h", "--here", "output files here") {|v| $here = true}
   opts.on("-f", "--force", "force parsing of fortran file") {|v| $force = true}
+  opts.on("-c", "--complexcc [TYPE]", "set complex calling convention (either c99 or f2c)") {|v| $complexcc = v}
 end.parse!
 
 if ARGV.size < 3
   puts Banner
   exit
 end
+
+puts "complex calling convention = #{$complexcc}"
 
 package = ARGV[0]
 klass = ARGV[1]

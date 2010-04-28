@@ -42,7 +42,12 @@ public class TestSolve extends TestCase {
 	public void testFaultySolveSymmetric() {
 		DoubleMatrix A = new DoubleMatrix(3, 3, 2d, 1d, 0d, 2d, 1d, 2d, 0d, 1d, 2d);
 		DoubleMatrix x = new DoubleMatrix(1, 3, 1d, 2d, 3d);
-		
-		Solve.solveSymmetric(A, x);
+
+                try {
+                    Solve.solveSymmetric(A, x);
+                    assertTrue(false);
+                } catch(IllegalArgumentException ex) {
+                    assertEquals("XERBLA: Error on argument 8 (LDB) in DSYSV", ex.getMessage());
+                }
 	}
 }

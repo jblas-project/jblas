@@ -288,8 +288,7 @@ public class DoubleMatrix implements Serializable {
     /** The actual data stored by rows (that is, row 0, row 1...). */
     public double[] data = null; // rows are contiguous
     public static final DoubleMatrix EMPTY = new DoubleMatrix();
-
-     static final long serialVersionUID = -1249281332731183060L;
+    static final long serialVersionUID = -1249281332731183060L;
 
     /**************************************************************************
      *
@@ -1377,19 +1376,6 @@ public class DoubleMatrix implements Serializable {
         }
 
         return array;
-    }
-
-    /** Convert matrix to FloatMatrix. */
-    public FloatMatrix toFloatMatrix() {
-        FloatMatrix result = new FloatMatrix(rows, columns);
-
-        for (int c = 0; c < columns; c++) {
-            for (int r = 0; r < rows; r++) {
-                result.put(r, c, (float) get(r, c));
-            }
-        }
-
-        return result;
     }
 
     /**

@@ -46,9 +46,12 @@ int main(int argc, char **argv) {
   switch (sse_level()) {
   case 1:
     printf("sse\n");
+    break;
   case 2:
     printf("sse2\n");
+    break;
   case 3:
     printf("sse3\n");
+    break;
   }
 }

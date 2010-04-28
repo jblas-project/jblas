@@ -1,3 +1,16 @@
+Release 1.0.2 - February 26, 2010
+
+Mostly a bug-fix release for the build-process
+
+- fixed utf-8 unicode issues with javadoc
+- fixed issues with parallel make ("make -j3")
+- fixed issues with SSE2/SSE3 config code
+
+No changes to the libraries, you can keep on using the jar file for
+1.0.1.
+
+----------------------------------------------------------------------
+
 Release 1.0.1 - January 14, 2010
 
 Minor fixes, mostly to do with handling spaces in the configure

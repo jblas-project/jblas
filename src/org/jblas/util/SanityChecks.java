@@ -33,9 +33,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 // --- END LICENSE BLOCK ---
-
 package org.jblas.util;
 
+import org.jblas.ComplexDoubleMatrix;
 import org.jblas.NativeBlas;
 import org.jblas.DoubleMatrix;
 
@@ -123,9 +123,33 @@ public class SanityChecks {
         check("checking existence of dsyev...", true);
     }
 
+    public static void checkSVD() {
+        double[][] data = new double[][]{
+            {1.0, 2.0, 3.0},
+            {4.0, 5.0, 6.0},
+            {7.0, 8.0, 9.0},
+            {-1.0, -2.0, -3.0}
+        };
+
+        DoubleMatrix A = new DoubleMatrix(data);
+
+        DoubleMatrix[] USV = org.jblas.Singular.sparseSVD(A);
+        System.out.println(USV[0].toString());
+        System.out.println(USV[1].toString());
+        System.out.println(USV[2].toString());
+
+        System.out.println(org.jblas.Singular.SVDValues(A));
+
+        /*ComplexDoubleMatrix[] AZB = org.jblas.Singular.sparseSVD(new ComplexDoubleMatrix(data));
+        System.out.println(AZB[0].toString());
+        System.out.println(AZB[1].toString());
+        System.out.println(AZB[2].toString());*/
+        check("checking existence of dgesvd...", true);
+    }
+
     public static void main(String[] args) {
         Logger.getLogger().setLevel(Logger.CONFIG);
-        for (String arg: args) {
+        for (String arg : args) {
             if (arg.equals("--debug")) {
                 Logger.getLogger().setLevel(Logger.DEBUG);
             }
@@ -133,6 +157,7 @@ public class SanityChecks {
         checkVectorAddition();
         checkMatrixMultiplication();
         checkEigenvalues();
+        checkSVD();
         checkXerbla();
         printSummary();
     }

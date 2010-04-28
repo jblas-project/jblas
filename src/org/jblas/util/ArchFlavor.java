@@ -41,7 +41,7 @@ package org.jblas.util;
 public class ArchFlavor {
 
     static {
-        try {
+        try { 
             System.loadLibrary("jblas_arch_flavor");
         } catch (UnsatisfiedLinkError e) {
             Logger.getLogger().config("ArchFlavor native library not found in path. Copying native library "
