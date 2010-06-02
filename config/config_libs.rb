@@ -68,6 +68,7 @@ ATLAS_REQUIRED_SYMBOLS = [
 LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_' ]
 
 ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas f77blas cblas atlas)
+PT_ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas ptf77blas ptcblas atlas)
 LAPACK_LIBS = %w(lapack_fortran lapack blas_fortran blas)
 
 configure :libs => 'LOADLIBES'
@@ -114,7 +115,11 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
 
   case CONFIG['BUILD_TYPE']
   when 'atlas'
-    libs = ATLAS_LIBS
+    if $opts.defined? :ptatlas
+      libs = PT_ATLAS_LIBS
+    else
+      libs = ATLAS_LIBS
+    end
     syms = ATLAS_REQUIRED_SYMBOLS
   when 'lapack'
     libs = LAPACK_LIBS
