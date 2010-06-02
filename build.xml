@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- Define directories -->
 
-    <property name="version" value="1.0.2" />
+    <property name="version" value="1.0.3" />
     <property name="src" value="${basedir}/src" />
     <property name="test" value="${basedir}/test" />
     <property name="bin" value="${basedir}/bin" />
@@ -179,19 +179,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <copy todir="${bin}/lib">
             <fileset dir="${native-libs}">
                 <include name="dynamic/${os.name}/${os.arch}/*" />
+                <include name="dynamic/${os.name}/${os.arch}/**/*" />
             </fileset>
         </copy>
-        <create-jar filename="jblas-lean-${os.name}-${os.arch}-${version}.jar" />
+        <create-jar filename="jblas-dynamic-${os.name}-${os.arch}-${version}.jar" />
     </target>
 
-    <target name="static-lean-jar" depends="compile" description="create jblas.jar (local system, dynamic)">
+    <target name="static-lean-jar" depends="compile" description="create jblas.jar (local system, static)">
         <delete dir="${bin}/lib" />
         <copy todir="${bin}/lib">
             <fileset dir="${native-libs}">
                 <include name="static/${os.name}/${os.arch}/*" />
+                <include name="static/${os.name}/${os.arch}/**/*" />
             </fileset>
         </copy>
-        <create-jar filename="jblas-lean-${os.name}-${os.arch}-${version}.jar" />
+        <create-jar filename="jblas-static-${os.name}-${os.arch}-${version}.jar" />
     </target>
 
     <target name="jar" depends="compile" description="create multiplatform.jar (everything in native-libs/static)">

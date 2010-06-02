@@ -61,7 +61,8 @@ public class Main {
                 + "%n"
                 + "  --arch-flavor=value     overriding arch flavor (e.g. --arch-flavor=sse2)%n"
                 + "  --skip-java             don't run java benchmarks%n"
-                + "  --help                  show this help%n");
+                + "  --help                  show this help%n"
+                + "  --debug                 set config levels to debug%n");
     }
 
     public static void main(String[] args) {
@@ -100,24 +101,15 @@ public class Main {
             return;
         }
 
-        out.println(
-                "Simple benchmark for jblas");
+        out.println("Simple benchmark for jblas");
         out.println();
 
-        out.println(
-                "Running sanity benchmarks.");
+        out.println("Running sanity benchmarks.");
         out.println();
         org.jblas.util.SanityChecks.main(args);
         out.println();
 
-        out.println(
-                "Each benchmark will take about 5 seconds...");
-
-
-
-
-
-
+        out.println("Each benchmark will take about 5 seconds...");
 
         for (Benchmark b : multiplicationBenchmarks) {
             if (skipJava) {

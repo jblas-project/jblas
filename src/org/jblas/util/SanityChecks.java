@@ -97,6 +97,7 @@ public class SanityChecks {
      */
     public static void checkXerbla() {
         double[] x = new double[9];
+        System.out.println("Check whether we're catching XERBLA errors. If you see something like \"** On entry to DGEMM  parameter number  4 had an illegal value\", it didn't work!");
         try {
             NativeBlas.dgemm('N', 'N', 3, -1, 3, 1.0, x, 0, 3, x, 0, 3, 0.0, x, 0, 3);
         } catch (IllegalArgumentException e) {
