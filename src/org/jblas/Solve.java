@@ -40,7 +40,7 @@ package org.jblas;
  * Solving linear equations.
  */
 public class Solve {
-	/* Solves the linear equation A*X = B. */
+	/** Solves the linear equation A*X = B. */
 	public static DoubleMatrix solve(DoubleMatrix A, DoubleMatrix B) {
 		A.assertSquare();
 		DoubleMatrix X = B.dup();
@@ -49,7 +49,7 @@ public class Solve {
 		return X;
 	}
 
-	/* Solves the linear equation A*X = B for symmetric A. */
+	/** Solves the linear equation A*X = B for symmetric A. */
 	public static DoubleMatrix solveSymmetric(DoubleMatrix A, DoubleMatrix B) {
 		A.assertSquare();
 		DoubleMatrix X = B.dup();
@@ -59,7 +59,7 @@ public class Solve {
 	}
 
 	
-	/* Solves the linear equation A*X = B for symmetric and positive definite A. */
+	/** Solves the linear equation A*X = B for symmetric and positive definite A. */
 	public static DoubleMatrix solvePositive(DoubleMatrix A, DoubleMatrix B) {
 		A.assertSquare();
 		DoubleMatrix X = B.dup();
@@ -70,7 +70,7 @@ public class Solve {
 //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
-	/* Solves the linear equation A*X = B. */
+	/** Solves the linear equation A*X = B. */
 	public static FloatMatrix solve(FloatMatrix A, FloatMatrix B) {
 		A.assertSquare();
 		FloatMatrix X = B.dup();
@@ -79,7 +79,7 @@ public class Solve {
 		return X;
 	}
 
-	/* Solves the linear equation A*X = B for symmetric A. */
+	/** Solves the linear equation A*X = B for symmetric A. */
 	public static FloatMatrix solveSymmetric(FloatMatrix A, FloatMatrix B) {
 		A.assertSquare();
 		FloatMatrix X = B.dup();
@@ -89,7 +89,7 @@ public class Solve {
 	}
 
 	
-	/* Solves the linear equation A*X = B for symmetric and positive definite A. */
+	/** Solves the linear equation A*X = B for symmetric and positive definite A. */
 	public static FloatMatrix solvePositive(FloatMatrix A, FloatMatrix B) {
 		A.assertSquare();
 		FloatMatrix X = B.dup();

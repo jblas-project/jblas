@@ -67,7 +67,8 @@ ATLAS_REQUIRED_SYMBOLS = [
 
 LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_' ]
 
-ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas f77blas atlas cblas)
+ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas f77blas cblas atlas)
+PT_ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas ptf77blas ptcblas atlas)
 LAPACK_LIBS = %w(lapack_fortran lapack blas_fortran blas)
 
 configure :libs => 'LOADLIBES'
@@ -114,7 +115,11 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
 
   case CONFIG['BUILD_TYPE']
   when 'atlas'
-    libs = ATLAS_LIBS
+    if $opts.defined? :ptatlas
+      libs = PT_ATLAS_LIBS
+    else
+      libs = ATLAS_LIBS
+    end
     syms = ATLAS_REQUIRED_SYMBOLS
   when 'lapack'
     libs = LAPACK_LIBS
@@ -129,7 +134,7 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
     CONFIG['LDFLAGS'] += result.values.uniq.map {|s| '-L' + s.escape}
     CONFIG['LOADLIBES'] += result.keys.map {|s| '-l' + s.escape}
   when 'static'
-    #CONFIG['LOADLIBES'] += ['-Wl,--allow-multiple-definition'] unless CONFIG['OS_NAME'] == 'Mac\ OS\ X'
+    CONFIG['LOADLIBES'] += ['-Wl,-z,muldefs'] unless CONFIG['OS_NAME'] == 'Mac\ OS\ X'
 
     # Add the libraries with their full path to the command line.
     # We have to sort them in the order as they appear in +libs+, otherwise
