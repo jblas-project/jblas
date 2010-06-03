@@ -240,12 +240,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <test name="${pkgbase}.TestEigen" />
             <test name="${pkgbase}.ranges.IntervalRangeTest" />
             <test name="${pkgbase}.DecomposeTest" /> -->
-            <batchtest fork="yes" todir="${reports.tests}">
+            <!-- <batchtest fork="yes" todir="${reports.tests}">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
                 </fileset>
-            </batchtest>
-            <!--<test name="${pkgbase}.TestBlasDoubleComplex" />-->
+            </batchtest>-->
+            <test name="${pkgbase}.TestBlasDoubleComplex" />
         </junit>
     </target>
     <target name="all" depends="jar, javadoc">
