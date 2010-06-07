@@ -81,7 +81,24 @@ public class Singular {
         return S;
     }
 
-//BEGIN
+    /**
+     * Compute the singular values of a complex matrix.
+     *
+     * @param A ComplexDoubleMatrix of dimension m * n
+     * @return A real-valued (!) min(m, n) vector of singular values.
+     */
+    public static DoubleMatrix SVDValues(ComplexDoubleMatrix A) {
+        int m = A.rows;
+        int n = A.columns;
+        DoubleMatrix S = new DoubleMatrix(min(m, n));
+        double[] rwork = new double[5*min(m,n)];
+
+        NativeBlas.zgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, min(m,n), rwork, 0);
+
+        return S;
+    }
+
+    //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
 
@@ -155,5 +172,22 @@ public class Singular {
         return S;
     }
 
-//END
+    /**
+     * Compute the singular values of a matrix.
+     *
+     * @param A ComplexFloatMatrix of dimension m * n
+     * @return A real-valued (!) min(m, n) vector of singular values.
+     */
+    public static FloatMatrix SVDValues(ComplexFloatMatrix A) {
+        int m = A.rows;
+        int n = A.columns;
+        FloatMatrix S = new FloatMatrix(min(m, n));
+        float[] rwork = new float[5*min(m,n)];
+
+        NativeBlas.cgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, min(m,n), rwork, 0);
+
+        return S;
+    }
+
+    //END
 }
