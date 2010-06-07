@@ -388,11 +388,19 @@ EOS
       # Stuff for workspaces below
       #
 
+      def workspace_size_factor(t)
+        if t.basetype =~ /COMPLEX/
+          '*2'
+        else
+          ''
+        end
+      end
+
       # Declarations for workspace arrays
       def declare_workspace_arrays
         r.gen_each_arg do |n, t|
           if r.workspace_argument? n
-            "    #{t.to_java} #{n.downcase} = new #{t.to_java[0..-3]}[1];"
+            "    #{t.to_java} #{n.downcase} = new #{t.to_java[0..-3]}[1#{workspace_size_factor(t)}];"
           elsif r.workspace_size_argument? n
             "    #{t.to_java} #{n.downcase};"
           end
@@ -427,7 +435,8 @@ EOS
         r.gen_each_arg do |n, t|
           if r.workspace_argument? n
             n = n.downcase
-            "    l#{n} = (int) #{n}[0]; #{n} = new #{t.to_java[0..-3]}[l#{n}];"
+            factor = workspace_size_factor(t)
+            "    l#{n} = (int) #{n}[0]; #{n} = new #{t.to_java[0..-3]}[l#{n}#{factor}];"
           end
         end
       end
