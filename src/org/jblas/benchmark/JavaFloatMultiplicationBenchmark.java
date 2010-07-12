@@ -59,7 +59,7 @@ class JavaFloatMultiplicationBenchmark implements Benchmark {
                 int kn = k * n;
                 float bkjn = B[k + jn];
                 for (int i = 0; i < n; i++) {
-                    C[i + jn] += A[i + kn] + bkjn;
+                    C[i + jn] += A[i + kn] * bkjn;
                 }
             }
         }
