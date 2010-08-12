@@ -51,19 +51,18 @@ public class Singular {
     }
 
     public static ComplexDoubleMatrix[] sparseSVD(ComplexDoubleMatrix A) {
-        // STILL BUGGY!
         int m = A.rows;
         int n = A.columns;
 
         ComplexDoubleMatrix U = new ComplexDoubleMatrix(m, min(m, n));
-        ComplexDoubleMatrix S = new ComplexDoubleMatrix(min(m, n));
+        DoubleMatrix S = new DoubleMatrix(min(m, n));
         ComplexDoubleMatrix V = new ComplexDoubleMatrix(min(m, n), n);
 
         double[] rwork = new double[5*min(m,n)];
 
         NativeBlas.zgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n), rwork, 0);
 
-        return new ComplexDoubleMatrix[]{U, S, V.transpose()};
+        return new ComplexDoubleMatrix[]{U, new ComplexDoubleMatrix(S), V.transpose()};
     }
 
     /**
@@ -82,7 +81,24 @@ public class Singular {
         return S;
     }
 
-//BEGIN
+    /**
+     * Compute the singular values of a complex matrix.
+     *
+     * @param A ComplexDoubleMatrix of dimension m * n
+     * @return A real-valued (!) min(m, n) vector of singular values.
+     */
+    public static DoubleMatrix SVDValues(ComplexDoubleMatrix A) {
+        int m = A.rows;
+        int n = A.columns;
+        DoubleMatrix S = new DoubleMatrix(min(m, n));
+        double[] rwork = new double[5*min(m,n)];
+
+        NativeBlas.zgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, min(m,n), rwork, 0);
+
+        return S;
+    }
+
+    //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
 
@@ -126,19 +142,18 @@ public class Singular {
     }
 
     public static ComplexFloatMatrix[] sparseSVD(ComplexFloatMatrix A) {
-        // STILL BUGGY!
         int m = A.rows;
         int n = A.columns;
 
         ComplexFloatMatrix U = new ComplexFloatMatrix(m, min(m, n));
-        ComplexFloatMatrix S = new ComplexFloatMatrix(min(m, n));
+        FloatMatrix S = new FloatMatrix(min(m, n));
         ComplexFloatMatrix V = new ComplexFloatMatrix(min(m, n), n);
 
         float[] rwork = new float[5*min(m,n)];
 
         NativeBlas.cgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n), rwork, 0);
 
-        return new ComplexFloatMatrix[]{U, S, V.transpose()};
+        return new ComplexFloatMatrix[]{U, new ComplexFloatMatrix(S), V.transpose()};
     }
 
     /**
@@ -157,5 +172,22 @@ public class Singular {
         return S;
     }
 
-//END
+    /**
+     * Compute the singular values of a complex matrix.
+     *
+     * @param A ComplexFloatMatrix of dimension m * n
+     * @return A real-valued (!) min(m, n) vector of singular values.
+     */
+    public static FloatMatrix SVDValues(ComplexFloatMatrix A) {
+        int m = A.rows;
+        int n = A.columns;
+        FloatMatrix S = new FloatMatrix(min(m, n));
+        float[] rwork = new float[5*min(m,n)];
+
+        NativeBlas.cgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, min(m,n), rwork, 0);
+
+        return S;
+    }
+
+    //END
 }

@@ -144,8 +144,13 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARC
       map {|s| File.join(result[s], LibHelpers.libname(s)).escape }
     if CONFIG['F77'] == 'gfortran'
       puts CONFIG['OS_ARCH']
-      if %w(amd64 x86_64).include? CONFIG['OS_ARCH']
+      if CONFIG['OS_NAME'] == 'Linux' and CONFIG['OS_ARCH'] == 'amd64'
 	CONFIG['LOADLIBES'] += ['-lgfortran']
+        puts <<EOS
+WARNING: on 64bit Linux, I cannot link the gfortran library into the shared library
+because it's usually not compiled with -fPIC. This means that you need to
+have libgfortran.so installed on your target system. Sorry for the inconvenience!
+EOS
       else
         CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
       end

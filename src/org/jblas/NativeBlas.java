@@ -288,12 +288,12 @@ public class NativeBlas {
   public static native int cgeev(char jobvl, char jobvr, int n, float[] a, int aIdx, int lda, float[] w, int wIdx, float[] vl, int vlIdx, int ldvl, float[] vr, int vrIdx, int ldvr, float[] work, int workIdx, int lwork, float[] rwork, int rworkIdx);
   public static int cgeev(char jobvl, char jobvr, int n, float[] a, int aIdx, int lda, float[] w, int wIdx, float[] vl, int vlIdx, int ldvl, float[] vr, int vrIdx, int ldvr, float[] rwork, int rworkIdx) {
     int info;
-    float[] work = new float[1];
+    float[] work = new float[1*2];
     int lwork;
     info = cgeev(jobvl, jobvr, n, floatDummy, 0, lda, floatDummy, 0, floatDummy, 0, ldvl, floatDummy, 0, ldvr, work, 0, -1, floatDummy, 0);
     if (info != 0)
       return info;
-    lwork = (int) work[0]; work = new float[lwork];
+    lwork = (int) work[0]; work = new float[lwork*2];
     info = cgeev(jobvl, jobvr, n, a, aIdx, lda, w, wIdx, vl, vlIdx, ldvl, vr, vrIdx, ldvr, work, 0, lwork, rwork, rworkIdx);
     return info;
   }
@@ -327,12 +327,12 @@ public class NativeBlas {
   public static native int zgeev(char jobvl, char jobvr, int n, double[] a, int aIdx, int lda, double[] w, int wIdx, double[] vl, int vlIdx, int ldvl, double[] vr, int vrIdx, int ldvr, double[] work, int workIdx, int lwork, double[] rwork, int rworkIdx);
   public static int zgeev(char jobvl, char jobvr, int n, double[] a, int aIdx, int lda, double[] w, int wIdx, double[] vl, int vlIdx, int ldvl, double[] vr, int vrIdx, int ldvr, double[] rwork, int rworkIdx) {
     int info;
-    double[] work = new double[1];
+    double[] work = new double[1*2];
     int lwork;
     info = zgeev(jobvl, jobvr, n, doubleDummy, 0, lda, doubleDummy, 0, doubleDummy, 0, ldvl, doubleDummy, 0, ldvr, work, 0, -1, doubleDummy, 0);
     if (info != 0)
       return info;
-    lwork = (int) work[0]; work = new double[lwork];
+    lwork = (int) work[0]; work = new double[lwork*2];
     info = zgeev(jobvl, jobvr, n, a, aIdx, lda, w, wIdx, vl, vlIdx, ldvl, vr, vrIdx, ldvr, work, 0, lwork, rwork, rworkIdx);
     return info;
   }
@@ -344,12 +344,12 @@ public class NativeBlas {
   public static native int cgesvd(char jobu, char jobvt, int m, int n, float[] a, int aIdx, int lda, float[] s, int sIdx, float[] u, int uIdx, int ldu, float[] vt, int vtIdx, int ldvt, float[] work, int workIdx, int lwork, float[] rwork, int rworkIdx);
   public static int cgesvd(char jobu, char jobvt, int m, int n, float[] a, int aIdx, int lda, float[] s, int sIdx, float[] u, int uIdx, int ldu, float[] vt, int vtIdx, int ldvt, float[] rwork, int rworkIdx) {
     int info;
-    float[] work = new float[1];
+    float[] work = new float[1*2];
     int lwork;
     info = cgesvd(jobu, jobvt, m, n, floatDummy, 0, lda, floatDummy, 0, floatDummy, 0, ldu, floatDummy, 0, ldvt, work, 0, -1, floatDummy, 0);
     if (info != 0)
       return info;
-    lwork = (int) work[0]; work = new float[lwork];
+    lwork = (int) work[0]; work = new float[lwork*2];
     info = cgesvd(jobu, jobvt, m, n, a, aIdx, lda, s, sIdx, u, uIdx, ldu, vt, vtIdx, ldvt, work, 0, lwork, rwork, rworkIdx);
     return info;
   }
@@ -383,12 +383,12 @@ public class NativeBlas {
   public static native int zgesvd(char jobu, char jobvt, int m, int n, double[] a, int aIdx, int lda, double[] s, int sIdx, double[] u, int uIdx, int ldu, double[] vt, int vtIdx, int ldvt, double[] work, int workIdx, int lwork, double[] rwork, int rworkIdx);
   public static int zgesvd(char jobu, char jobvt, int m, int n, double[] a, int aIdx, int lda, double[] s, int sIdx, double[] u, int uIdx, int ldu, double[] vt, int vtIdx, int ldvt, double[] rwork, int rworkIdx) {
     int info;
-    double[] work = new double[1];
+    double[] work = new double[1*2];
     int lwork;
     info = zgesvd(jobu, jobvt, m, n, doubleDummy, 0, lda, doubleDummy, 0, doubleDummy, 0, ldu, doubleDummy, 0, ldvt, work, 0, -1, doubleDummy, 0);
     if (info != 0)
       return info;
-    lwork = (int) work[0]; work = new double[lwork];
+    lwork = (int) work[0]; work = new double[lwork*2];
     info = zgesvd(jobu, jobvt, m, n, a, aIdx, lda, s, sIdx, u, uIdx, ldu, vt, vtIdx, ldvt, work, 0, lwork, rwork, rworkIdx);
     return info;
   }

@@ -1,3 +1,17 @@
+Release 1.1 - August 12, 2010
+
+Added Singular Value Decomposition, some bugfixes
+
+- fixed bug with complex return values and gfortran vs. g77
+- added --ptatlas flag for compiling against multithreaded ATLAS
+- dropped support for 32bit Mac OS X
+
+The main reason for dropping support for 32bit Mac OS X was that
+the latest versions installs as 64bit by default, and the install
+for the 32bit macports gcc seem to be broken -> no way to compile it.
+
+----------------------------------------------------------------------
+
 Release 1.0.2 - February 26, 2010
 
 Mostly a bug-fix release for the build-process
