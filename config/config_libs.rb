@@ -111,7 +111,7 @@ configure 'BUILD_TYPE' do
 end
 
 desc 'looking for libraries...'
-configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
+configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARCH'] do
 
   case CONFIG['BUILD_TYPE']
   when 'atlas'
@@ -143,7 +143,12 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
       sort {|x, y| libs.index(x) <=> libs.index(y)}.
       map {|s| File.join(result[s], LibHelpers.libname(s)).escape }
     if CONFIG['F77'] == 'gfortran'
-      CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
+      puts CONFIG['OS_ARCH']
+      if %w(amd64 x86_64).include? CONFIG['OS_ARCH']
+	CONFIG['LOADLIBES'] += ['-lgfortran']
+      else
+        CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
+      end
     end
     if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
       CONFIG['LOADLIBES'] += ['/opt/local/lib/gcc43/libgfortran.a']
