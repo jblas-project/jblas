@@ -173,7 +173,7 @@ public class Singular {
     }
 
     /**
-     * Compute the singular values of a matrix.
+     * Compute the singular values of a complex matrix.
      *
      * @param A ComplexFloatMatrix of dimension m * n
      * @return A real-valued (!) min(m, n) vector of singular values.

@@ -6,8 +6,9 @@
 package org.jblas;
 
 /**
- *
- * @author mikio
+ * EXPERIMENTAL, not yet used for anything usefull... .
+ * 
+ * @author Mikio L. Braun
  */
 public interface ConvertsToDoubleMatrix {
     public DoubleMatrix convertToDoubleMatrix();
