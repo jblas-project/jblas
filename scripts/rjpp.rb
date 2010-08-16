@@ -38,7 +38,7 @@
 #
 # Contrary to the "usual" cpp, commands will be expanded "in-place" in
 # an idempotent fashion (meaning that you can run rjpp on the same
-# file more than once.
+# file more than once.)
 #
 # Directives are either given as
 #
@@ -68,8 +68,10 @@ def doc(s)
   "/** " + s + " */"
 end
 
+filename = ARGV[0]
+
 #open file
-file = open(ARGV[0], 'r').read
+file = open(filename, 'r').read
 saved_file = file
 
 # remove existing expansions
