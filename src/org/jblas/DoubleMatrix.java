@@ -288,8 +288,7 @@ public class DoubleMatrix implements Serializable {
     /** The actual data stored by rows (that is, row 0, row 1...). */
     public double[] data = null; // rows are contiguous
     public static final DoubleMatrix EMPTY = new DoubleMatrix();
-
-     static final long serialVersionUID = -1249281332731183060L;
+    static final long serialVersionUID = -1249281332731183060L;
 
     /**************************************************************************
      *
@@ -376,6 +375,15 @@ public class DoubleMatrix implements Serializable {
             for (int c = 0; c < columns; c++) {
                 put(r, c, data[r][c]);
             }
+        }
+    }
+
+    public DoubleMatrix(List<Double> data) {
+        this(data.size());
+
+        int c = 0;
+        for (java.lang.Double d : data) {
+            put(c++, d);
         }
     }
 
@@ -1018,6 +1026,7 @@ public class DoubleMatrix implements Serializable {
      * DoubleMatrix which has the same size and the maximal absolute
      * difference in matrix elements is smaller thatn 1e-6.
      */
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof DoubleMatrix)) {
             return false;
@@ -1034,6 +1043,15 @@ public class DoubleMatrix implements Serializable {
         return diff.max() / (rows * columns) < 1e-6;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + this.rows;
+        hash = 83 * hash + this.columns;
+        hash = 83 * hash + Arrays.hashCode(this.data);
+        return hash;
+    }
+    
     /** Resize the matrix. All elements will be set to zero. */
     public void resize(int newRows, int newColumns) {
         rows = newRows;
@@ -1370,17 +1388,12 @@ public class DoubleMatrix implements Serializable {
         return array;
     }
 
-    /** Convert matrix to FloatMatrix. */
-    public FloatMatrix toFloatMatrix() {
-        FloatMatrix result = new FloatMatrix(rows, columns);
-
-        for (int c = 0; c < columns; c++) {
-            for (int r = 0; r < rows; r++) {
-                result.put(r, c, (float) get(r, c));
-            }
-        }
-
-        return result;
+    public FloatMatrix toFloat() {
+         FloatMatrix result = new FloatMatrix(rows, columns);
+         for (int i = 0; i < length; i++) {
+            result.put(i, (float) get(i));
+         }
+         return result;
     }
 
     /**
@@ -2297,6 +2310,10 @@ public class DoubleMatrix implements Serializable {
     public DoubleMatrix rowMeans() {
         return rowSums().divi(columns);
     }
+
+    /************************************************************************
+     * Column and rows access.
+     */
 
     /** Get a copy of a column. */
     public DoubleMatrix getColumn(int c) {

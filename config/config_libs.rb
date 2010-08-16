@@ -67,7 +67,8 @@ ATLAS_REQUIRED_SYMBOLS = [
 
 LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_' ]
 
-ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas f77blas atlas cblas)
+ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas f77blas cblas atlas)
+PT_ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas ptf77blas ptcblas atlas)
 LAPACK_LIBS = %w(lapack_fortran lapack blas_fortran blas)
 
 configure :libs => 'LOADLIBES'
@@ -110,11 +111,15 @@ configure 'BUILD_TYPE' do
 end
 
 desc 'looking for libraries...'
-configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
+configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARCH'] do
 
   case CONFIG['BUILD_TYPE']
   when 'atlas'
-    libs = ATLAS_LIBS
+    if $opts.defined? :ptatlas
+      libs = PT_ATLAS_LIBS
+    else
+      libs = ATLAS_LIBS
+    end
     syms = ATLAS_REQUIRED_SYMBOLS
   when 'lapack'
     libs = LAPACK_LIBS
@@ -129,7 +134,7 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
     CONFIG['LDFLAGS'] += result.values.uniq.map {|s| '-L' + s.escape}
     CONFIG['LOADLIBES'] += result.keys.map {|s| '-l' + s.escape}
   when 'static'
-    #CONFIG['LOADLIBES'] += ['-Wl,--allow-multiple-definition'] unless CONFIG['OS_NAME'] == 'Mac\ OS\ X'
+    CONFIG['LOADLIBES'] += ['-Wl,-z,muldefs'] unless CONFIG['OS_NAME'] == 'Mac\ OS\ X' or CONFIG['OS_NAME'] == 'Windows'
 
     # Add the libraries with their full path to the command line.
     # We have to sort them in the order as they appear in +libs+, otherwise
@@ -138,7 +143,17 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE'] do
       sort {|x, y| libs.index(x) <=> libs.index(y)}.
       map {|s| File.join(result[s], LibHelpers.libname(s)).escape }
     if CONFIG['F77'] == 'gfortran'
-      CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
+      puts CONFIG['OS_ARCH']
+      if CONFIG['OS_NAME'] == 'Linux' and CONFIG['OS_ARCH'] == 'amd64'
+	CONFIG['LOADLIBES'] += ['-lgfortran']
+        puts <<EOS
+WARNING: on 64bit Linux, I cannot link the gfortran library into the shared library
+because it's usually not compiled with -fPIC. This means that you need to
+have libgfortran.so installed on your target system. Sorry for the inconvenience!
+EOS
+      else
+        CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
+      end
     end
     if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
       CONFIG['LOADLIBES'] += ['/opt/local/lib/gcc43/libgfortran.a']

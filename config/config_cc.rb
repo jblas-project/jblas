@@ -45,7 +45,7 @@ configure :cc => 'CC'
 desc 'Setting up gcc and flags'
 configure 'CC', 'CFLAGS' => ['OS_NAME', 'OS_ARCH', 'JAVA_HOME'] do
   os_name = Config::CONFIG['OS_NAME']
-  java_home = Config::CONFIG['JAVA_HOME'].escape
+  java_home = Config::CONFIG['JAVA_HOME']
   case os_name
   when 'Linux'
     Path.check_cmd('gcc', 'make', 'ld')

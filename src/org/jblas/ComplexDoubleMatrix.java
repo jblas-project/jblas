@@ -687,7 +687,7 @@ public class ComplexDoubleMatrix {
 	public ComplexDoubleMatrix dup() {
 		ComplexDoubleMatrix out = new ComplexDoubleMatrix(rows, columns);
 
-                System.arraycopy(out.data, 0, data, 0, 2 * length);
+                JavaBlas.rcopy(2*length, data, 0, 1, out.data, 0, 1);
 		
 		return out;
 	}
@@ -708,7 +708,13 @@ public class ComplexDoubleMatrix {
 		return this;
 	}
 
-	public ComplexDoubleMatrix put(int rowIndex, int columnIndex, ComplexDouble value) {
+	public ComplexDoubleMatrix put(int rowIndex, int columnIndex, double realValue, double complexValue) {
+		data[2*index(rowIndex, columnIndex)] =  realValue;
+		data[2*index(rowIndex, columnIndex)+1] =  complexValue;
+		return this;
+	}
+
+        public ComplexDoubleMatrix put(int rowIndex, int columnIndex, ComplexDouble value) {
 		int i = 2*index(rowIndex, columnIndex);
 		data[i] = value.real(); data[i+1] = value.imag();
 		return this;
@@ -764,6 +770,12 @@ public class ComplexDoubleMatrix {
 		data[2*i] = v;
 		return this;
 	}
+
+        public ComplexDoubleMatrix put(int i, double r, double c) {
+            data[2*i] = r;
+            data[2*i+1] = c;
+            return this;
+        }
 	
 	public ComplexDoubleMatrix put(int i, ComplexDouble v) {
 		data[2*i] = v.real();
