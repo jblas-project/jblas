@@ -1,5 +1,5 @@
 BUILDING_ATLAS
---------------
+==============
 
 In this file, I summarize the different configuration options for the
 platforms.  I keep this information mainly for my own reference, but
@@ -14,8 +14,16 @@ work pretty well for both Intel and AMD chips. On 64bit, AMD64K10h is
 a bit better, but not much. On the other hand, the AMD settings
 perform too well on the Intel platform.
 
-OBTAINING THE SOFTWARE
-----------------------
+TABLE OF CONTENTS:
+
+1. OBTAINING THE SOFTWARE
+2. GENERAL REMARKS
+3. LINUX
+4. MAC OS X
+5. WINDOWS
+
+1. OBTAINING THE SOFTWARE
+=========================
 
 Getting lapack:
 
@@ -28,6 +36,35 @@ wget http://sourceforge.net/projects/math-atlas/files/Stable/3.8.3/atlas3.8.3.ta
 Getting jblas:
 
 git clone git://github.com/mikiobraun/jblas.git
+
+2. GENERAL REMARKS
+==================
+
+The general steps are as follows:
+
+* Compile lapack. Lapack uses blas for its low-level computations. ATLAS also
+  implements a subset of Lapack, but not all routines. But you can build ATLAS
+  to include the Lapack routines it does not implement, and this is what we're
+  going to do.
+
+* Compile ATLAS.
+
+* Compile the native part of jblas with "make".
+
+* Compile the java part of jblas with "ant".
+
+The ATLAS build process is a bit, well, unusual, coming with compiled (not scripted)
+configuration scripts. ATLAS has prebuilt configurations which result in much
+faster compilation times. If it doesn't find such a profile for your computer,
+it will perform a large number of timing experiments to find the best combination
+(hence the name "Automatically Tuned...").
+
+Finally, some older processors don't support the SSE3 command set. Some tweaking
+is necessary to compile ATLAS for SSE2, namely configuring as for SSE3, and
+then going into the file "Make.inc", and replacing SSE2 by SSE3 or removing -DATL_SSE3
+from the compiler directives.
+
+For reference, here is a list of the main ATLAS options.
 
 ATLAS OPTIONS
 -------------
@@ -52,14 +89,14 @@ ATLAS Architecture Options: (-A)
    12 = 'CoreSolo'
    13 = 'CoreDuo'
    14 = 'Core2Solo'
-   15 = 'Core2' <-
+   15 = 'Core2' <- used for 32 bit builds
    16 = 'Corei7'
    17 = 'P4'
    18 = 'P4E'
    19 = 'Efficeon'
    20 = 'K7'
-   21 = 'HAMMER' <- for "normal AMD"
-   22 = 'AMD64K10h' <- for "64bit AMD"
+   21 = 'HAMMER'
+   22 = 'AMD64K10h' <- used for 64 bit builds
    23 = 'UNKNOWNx86'
    24 = 'IA64Itan'
    25 = 'IA64Itan2'
@@ -86,13 +123,13 @@ ATLAS Operating System Options: (-O)
    10 = 'FreeBSD'
    11 = 'OSX'
 
-Linux
-=====
+3. Linux
+========
 
 LAPACK
 ------
 
-Copy make.inc.LINUX from INSTALL, update options like this:
+Copy make.inc.LINUX from INSTALL directory, update options in the file like this:
 
 FORTRAN  = gfortran 
 OPTS     = -O2 -fPIC
@@ -127,7 +164,7 @@ For 64 bit:
 as above, but configure with
 
 > ../configure \
-  --with-netlib-lapack=/home/mikio/build/lapack-lite-3.1.1/lapack_LINUX.a \
+  --with-netlib-lapack=$HOME/build/lapack-lite-3.1.1/lapack_LINUX.a \
   -A 21 -b 64 -Si cputhrchk 0 -Fa alg -fPIC  
 
 
@@ -137,8 +174,8 @@ jblas
 > ./configure --static-libs --libpath=$HOME/build/ATLAS/build/lib/
 
 
-Mac OS X
-========
+4. Mac OS X
+===========
 
 If you install the gfortran with mac ports, you get gcc-mp-4.3 and
 gfortran-mp-4.3. This means you have to redefine all the
@@ -178,8 +215,8 @@ It's important to set the 32bit flag. Otherwise, it seems to construct
 64 bit code.
 
 
-Windows XP (32bit)
-==================
+5. Windows XP (32bit)
+=====================
 
 I'm describing here using cygwin. For some reason, the gcc4 version in cygwin
 does not support compiling to mingw, but using the cygwin version leads
@@ -188,11 +225,28 @@ leading to a crash as soon as the cygwin compiled code is loaded.
 
 What all of this means is that you should use the old gcc3 "legacy" compilers.
 
-Back in ATLAS 3.6, one needed to set architectures explicitly. With 3.8.3, there is no
-need to do so, but you have to set the fortran compiler explicitly to "g77" (and
-the bit numbers to 32):
+Also watch out for directory names with spaces in them, ATLAS does not like
+them.
 
-../configure --with-netlib-lapack=$HOME/mikio/build/lapack-lite-3.1.1/liblapack_fortran.a -A 15 -C if g77 -b 32
+LAPACK
+------
 
+Compiling LAPACK just works as in Linux, but replace "gfortran" by "g77".
 
+ATLAS
+-----
 
+Back in ATLAS 3.6, one needed to set architectures explicitly. With
+3.8.3, there is no need to do so, but you have to set the fortran
+compiler explicitly to "g77" (and the bit numbers to 32):
+
+../configure --with-netlib-lapack=$HOME//build/lapack-lite-3.1.1/liblapack_fortran.a -A 15 -C if g77 -b 32
+
+64-bit
+------
+
+Unfortunately, there is no support for 64bit under Windows right now,
+mainly because there is no 64bit mingw compiler in cygwin. There
+exists the mingw-w64 bit project
+(http://sourceforge.net/projects/mingw-w64/), but I didn't managed to
+compile ATLAS using those.

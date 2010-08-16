@@ -35,6 +35,7 @@
 // --- END LICENSE BLOCK ---
 package org.jblas.util;
 
+import org.jblas.ComplexDouble;
 import org.jblas.ComplexDoubleMatrix;
 import org.jblas.NativeBlas;
 import org.jblas.DoubleMatrix;
@@ -148,6 +149,19 @@ public class SanityChecks {
         check("checking existence of dgesvd...", true);
     }
 
+    public static void checkComplexReturnValues() {
+        double[] data = new double[] {
+            1.0, 2.0, 3.0, 4.0, 5.0, 6.0
+        };
+
+        ComplexDoubleMatrix A = new ComplexDoubleMatrix(data);
+
+        ComplexDouble z = A.dotu(A);
+
+        System.out.print("Checking complex return values... ");
+        System.out.println("(z = " + z.toString() + ")");
+    }
+
     public static void main(String[] args) {
         Logger.getLogger().setLevel(Logger.CONFIG);
         for (String arg : args) {
@@ -159,6 +173,7 @@ public class SanityChecks {
         checkMatrixMultiplication();
         checkEigenvalues();
         checkSVD();
+        checkComplexReturnValues();
         checkXerbla();
         printSummary();
     }
