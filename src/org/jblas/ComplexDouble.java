@@ -36,8 +36,6 @@
 
 package org.jblas;
 
-import static java.lang.Math.sqrt;
-
 import java.nio.DoubleBuffer;
 
 /**
@@ -255,7 +253,12 @@ public class ComplexDouble {
 
     /** Return the absolute value */
     public double abs() {
-        return (double) sqrt(r * r + i * i);
+        return (double) Math.sqrt(r * r + i * i);
+    }
+
+    /** Returns the argument of a complex number. */
+    public double arg() {
+        return (double) Math.acos(r/abs());
     }
 
     public ComplexDouble invi() {
@@ -286,6 +289,14 @@ public class ComplexDouble {
     
     public ComplexDouble conj() {
         return dup().conji();
+    }
+
+    public ComplexDouble sqrt() {
+        double a = abs();
+        double s2 = (double)Math.sqrt(2);
+        double p = (double)Math.sqrt(a + r)/s2;
+        double q = (double)Math.sqrt(a - r)/s2 * Math.signum(i);
+        return new ComplexDouble(p, q);
     }
     
     /**
