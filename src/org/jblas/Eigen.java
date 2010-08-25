@@ -99,7 +99,7 @@ public class Eigen {
             // transferring the result
             ComplexDoubleMatrix E = new ComplexDoubleMatrix(WR, WI);
             ComplexDoubleMatrix V = new ComplexDoubleMatrix(A.rows, A.rows);
-            System.err.printf("VR = %s\n", VR.toString());
+            //System.err.printf("VR = %s\n", VR.toString());
             for (int i = 0; i < A.rows; i++) {
                 if (E.get(i).isReal()) {
                     V.putColumn(i, new ComplexDoubleMatrix(VR.getColumn(i)));
@@ -172,7 +172,7 @@ public class Eigen {
             // transferring the result
             ComplexFloatMatrix E = new ComplexFloatMatrix(WR, WI);
             ComplexFloatMatrix V = new ComplexFloatMatrix(A.rows, A.rows);
-            System.err.printf("VR = %s\n", VR.toString());
+            //System.err.printf("VR = %s\n", VR.toString());
             for (int i = 0; i < A.rows; i++) {
                 if (E.get(i).isReal()) {
                     V.putColumn(i, new ComplexFloatMatrix(VR.getColumn(i)));
