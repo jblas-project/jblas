@@ -645,13 +645,36 @@ public class DoubleMatrix implements Serializable {
         cs.init(0, columns);
         DoubleMatrix result = new DoubleMatrix(rs.length(), cs.length());
 
-        for (; !rs.hasMore(); rs.next()) {
-            for (; !cs.hasMore(); cs.next()) {
+        for (; rs.hasMore(); rs.next()) {
+            for (; cs.hasMore(); cs.next()) {
                 result.put(rs.index(), cs.index(), get(rs.value(), cs.value()));
             }
         }
 
         return result;
+    }
+
+    public DoubleMatrix get(Range rs, int c) {
+        rs.init(0, rows);
+        DoubleMatrix result = new DoubleMatrix(rs.length(), 1);
+
+        for (; rs.hasMore(); rs.next()) {
+            result.put(rs.index(), 0, get(rs.value(), c));
+        }
+
+        return result;
+    }
+
+    public DoubleMatrix get(int r, Range cs) {
+        cs.init(0, columns);
+        DoubleMatrix result = new DoubleMatrix(1, cs.length());
+
+        for (; cs.hasMore(); cs.next()) {
+            result.put(0, cs.index(), get(r, cs.value()));
+        }
+
+        return result;
+
     }
 
     /** Get elements specified by the non-zero entries of the passed matrix. */

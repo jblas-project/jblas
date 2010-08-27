@@ -1,3 +1,15 @@
+Release 1.1.1
+
+Mostly bug fixes
+
+- remove spurious System.out.print in complex eigenvector routine.
+- fixed get with ranges
+- added some more variants of get with ranges
+- added more functions to complex data types (in particular sqrt())
+- added hermitian() to Complex matrices to compute conjugate transposes.
+
+----------------------------------------------------------------------
+
 Release 1.1 - August 16, 2010
 
 Added Singular Value Decomposition, some bugfixes
