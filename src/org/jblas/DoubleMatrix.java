@@ -91,8 +91,8 @@ import java.util.List;
  * <tr><th>Method<th>Description
  * <tr><td>DoubleMatrix(m)<td>Constructs a column vector.
  * <tr><td>DoubleMatrix(new double[] {value1, value2, ...})<td>Constructs a column vector.
- * <tr><td>DoubleMatrix.zeros(m) <td>Initial values set to 1.0.
- * <tr><td>DoubleMatrix.ones(m) <td>Initial values set to 0.0.
+ * <tr><td>DoubleMatrix.zeros(m) <td>Initial values set to 0.0.
+ * <tr><td>DoubleMatrix.ones(m) <td>Initial values set to 1.0.
  * <tr><td>DoubleMatrix.rand(m) <td>Values drawn at random between 0.0 and 1.0.
  * <tr><td>DoubleMatrix.randn(m) <td>Values drawn from normal distribution.
  * </table>
@@ -834,6 +834,7 @@ public class DoubleMatrix implements Serializable {
             throw new SizeException("Matrix does not have the necessary number of columns (" + columns + " != " + c + ").");
         }
     }
+
 
     /** Set elements in linear ordering in the specified indices. */
     public DoubleMatrix put(int[] indices, DoubleMatrix x) {

@@ -91,8 +91,8 @@ import java.util.List;
  * <tr><th>Method<th>Description
  * <tr><td>FloatMatrix(m)<td>Constructs a column vector.
  * <tr><td>FloatMatrix(new float[] {value1, value2, ...})<td>Constructs a column vector.
- * <tr><td>FloatMatrix.zeros(m) <td>Initial values set to 1.0f.
- * <tr><td>FloatMatrix.ones(m) <td>Initial values set to 0.0f.
+ * <tr><td>FloatMatrix.zeros(m) <td>Initial values set to 0.0f.
+ * <tr><td>FloatMatrix.ones(m) <td>Initial values set to 1.0f.
  * <tr><td>FloatMatrix.rand(m) <td>Values drawn at random between 0.0f and 1.0f.
  * <tr><td>FloatMatrix.randn(m) <td>Values drawn from normal distribution.
  * </table>
@@ -834,6 +834,7 @@ public class FloatMatrix implements Serializable {
             throw new SizeException("Matrix does not have the necessary number of columns (" + columns + " != " + c + ").");
         }
     }
+
 
     /** Set elements in linear ordering in the specified indices. */
     public FloatMatrix put(int[] indices, FloatMatrix x) {
