@@ -768,7 +768,7 @@ public class ComplexDoubleMatrix {
 
         /** Get matrix element, passing the variable to store the result. */
         public ComplexDouble get(int rowIndex, int columnIndex, ComplexDouble result) {
-            return get(index(rowIndex, columnIndex));
+            return get(index(rowIndex, columnIndex), result);
         }
 	
 	public DoubleMatrix getReal() {

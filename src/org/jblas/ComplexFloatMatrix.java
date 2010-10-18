@@ -768,7 +768,7 @@ public class ComplexFloatMatrix {
 
         /** Get matrix element, passing the variable to store the result. */
         public ComplexFloat get(int rowIndex, int columnIndex, ComplexFloat result) {
-            return get(index(rowIndex, columnIndex));
+            return get(index(rowIndex, columnIndex), result);
         }
 	
 	public FloatMatrix getReal() {
