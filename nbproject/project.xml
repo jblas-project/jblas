@@ -57,6 +57,13 @@
                     <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
                     <encoding>UTF-8</encoding>
                 </source-folder>
+                <source-folder>
+                    <label>templates</label>
+                    <type>java</type>
+                    <location>templates</location>
+                    <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
+                    <encoding>UTF-8</encoding>
+                </source-folder>
             </folders>
             <ide-actions>
                 <action name="build">
@@ -152,6 +159,11 @@
                         <location>config</location>
                         <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
                     </source-folder>
+                    <source-folder style="packages">
+                        <label>templates</label>
+                        <location>templates</location>
+                        <excludes>**/doc/,**/*.rjpp,**/*.cache</excludes>
+                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -192,6 +204,10 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>config</package-root>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+            <compilation-unit>
+                <package-root>templates</package-root>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>

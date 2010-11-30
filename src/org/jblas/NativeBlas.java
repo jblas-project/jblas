@@ -393,5 +393,37 @@ public class NativeBlas {
     return info;
   }
 
+  public static native int dsygvd(int itype, char jobz, char uplo, int n, double[] a, int aIdx, int lda, double[] b, int bIdx, int ldb, double[] w, int wIdx, double[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int liwork);
+  public static int dsygvd(int itype, char jobz, char uplo, int n, double[] a, int aIdx, int lda, double[] b, int bIdx, int ldb, double[] w, int wIdx) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    int[] iwork = new int[1];
+    int liwork;
+    info = dsygvd(itype, jobz, uplo, n, doubleDummy, 0, lda, doubleDummy, 0, ldb, doubleDummy, 0, work, 0, -1, iwork, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    liwork = (int) iwork[0]; iwork = new int[liwork];
+    info = dsygvd(itype, jobz, uplo, n, a, aIdx, lda, b, bIdx, ldb, w, wIdx, work, 0, lwork, iwork, 0, liwork);
+    return info;
+  }
+
+  public static native int ssygvd(int itype, char jobz, char uplo, int n, float[] a, int aIdx, int lda, float[] b, int bIdx, int ldb, float[] w, int wIdx, float[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int liwork);
+  public static int ssygvd(int itype, char jobz, char uplo, int n, float[] a, int aIdx, int lda, float[] b, int bIdx, int ldb, float[] w, int wIdx) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    int[] iwork = new int[1];
+    int liwork;
+    info = ssygvd(itype, jobz, uplo, n, floatDummy, 0, lda, floatDummy, 0, ldb, floatDummy, 0, work, 0, -1, iwork, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    liwork = (int) iwork[0]; iwork = new int[liwork];
+    info = ssygvd(itype, jobz, uplo, n, a, aIdx, lda, b, bIdx, ldb, w, wIdx, work, 0, lwork, iwork, 0, liwork);
+    return info;
+  }
+
 
 }
