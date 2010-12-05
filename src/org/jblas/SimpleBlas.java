@@ -353,6 +353,38 @@ public class SimpleBlas {
             return info;
         }
 
+        public static int dsygvd (int itype, char jobz, char uplo, DoubleMatrix A, DoubleMatrix B, double [] w)
+    {
+        int info = NativeBlas.dsygvd(itype, jobz, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, w, 0);
+        if (info == 0)
+            return 0;
+        else {
+        if (info < 0)
+                throw new LapackArgumentException("DSYGVD", -info);
+        if (info <= A.rows && jobz == 'N')
+                throw new LapackConvergenceException("DSYGVD", info + " off-diagonal elements did not converge to 0.");
+       if (info <=  A.rows && jobz == 'V')
+                throw new LapackException("DSYGVD", "Failed to compute an eigenvalue while working on a sub-matrix  "+ info + ".");
+       throw new LapackException("DSYGVD", "The leading minor of order " + (info - A.rows) + " of B is not positive definite.");
+        }
+        }
+    public static int ssygvd (int itype, char jobz, char uplo, FloatMatrix A, FloatMatrix B, float [] w)
+    {
+        int info = NativeBlas.ssygvd(itype, jobz, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, w, 0);
+        if (info == 0)
+            return 0;
+        else {
+        if (info < 0)
+                throw new LapackArgumentException("SSYGVD", -info);
+        if (info <= A.rows && jobz == 'N')
+                throw new LapackConvergenceException("SSYGVD", info + " off-diagonal elements did not converge to 0.");
+       if (info <=  A.rows && jobz == 'V')
+                throw new LapackException("SSYGVD", "Failed to compute an eigenvalue while working on a sub-matrix  "+ info + ".");
+       throw new LapackException("SSYGVD", "The leading minor of order " + (info - A.rows) + " of B is not positive definite.");
+        }
+        }
+
+
 //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
@@ -648,6 +680,23 @@ public class SimpleBlas {
                 throw new LapackConvergenceException("DGEEV", "First " + info + " eigenvalues have not converged.");
             return info;
         }
+
+        public static int dsygvd (int itype, char jobz, char uplo, FloatMatrix A, FloatMatrix B, float [] w)
+    {
+        int info = NativeBlas.ssygvd(itype, jobz, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, w, 0);
+        if (info == 0)
+            return 0;
+        else {
+        if (info < 0)
+                throw new LapackArgumentException("DSYGVD", -info);
+        if (info <= A.rows && jobz == 'N')
+                throw new LapackConvergenceException("DSYGVD", info + " off-diagonal elements did not converge to 0.");
+       if (info <=  A.rows && jobz == 'V')
+                throw new LapackException("DSYGVD", "Failed to compute an eigenvalue while working on a sub-matrix  "+ info + ".");
+       throw new LapackException("DSYGVD", "The leading minor of order " + (info - A.rows) + " of B is not positive definite.");
+        }
+        }
+
 
 //END
 }

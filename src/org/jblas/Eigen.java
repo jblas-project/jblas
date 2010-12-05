@@ -113,6 +113,39 @@ public class Eigen {
             return new ComplexDoubleMatrix[] { V, ComplexDoubleMatrix.diag(E) };
         }
 
+
+     public static DoubleMatrix [] symmetricGeneralizedEigenvectors (DoubleMatrix a, DoubleMatrix b)
+     // Solve a general pronlem A x = \lambda B x.
+     // @return an array of matrices.
+     // - the first one is an array of the eigen vectors
+     //   - the second one is a vector containing the correspondong eigen values.
+     {
+       DoubleMatrix[] result = new DoubleMatrix[2];
+       DoubleMatrix A = a.dup();
+       DoubleMatrix B = b.dup();
+       DoubleMatrix W = new DoubleMatrix (A.rows);
+       SimpleBlas.dsygvd(1, 'V', 'U', A, B, W.data);
+       result[0] = A;
+       result[1] = W;
+       return result;
+     }
+   public static FloatMatrix [] symmetricGeneralizedEigenvectors (FloatMatrix a, FloatMatrix b)
+     // Solve a general pronlem A x = \lambda B x.
+     // @return an array of matrices.
+     // - the first one is an array of the eigen vectors
+     //   - the second one is a vector containing the correspondong eigen values.
+     {
+       FloatMatrix[] result = new FloatMatrix[2];
+       FloatMatrix A = a.dup();
+       FloatMatrix B = b.dup();
+       FloatMatrix W = new FloatMatrix (A.rows);
+       SimpleBlas.ssygvd(1, 'V', 'U', A, B, W.data);
+       result[0] = A;
+       result[1] = W;
+       return result;
+     }
+
+
 //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
@@ -185,6 +218,24 @@ public class Eigen {
             }
             return new ComplexFloatMatrix[] { V, ComplexFloatMatrix.diag(E) };
         }
+
+
+     public static FloatMatrix [] symmetricGeneralizedEigenvectors (FloatMatrix a, FloatMatrix b)
+     // Solve a general pronlem A x = \lambda B x.
+     // @return an array of matrices.
+     // - the first one is an array of the eigen vectors
+     //   - the second one is a vector containing the correspondong eigen values.
+     {
+       FloatMatrix[] result = new FloatMatrix[2];
+       FloatMatrix A = a.dup();
+       FloatMatrix B = b.dup();
+       FloatMatrix W = new FloatMatrix (A.rows);
+       SimpleBlas.dsygvd(1, 'V', 'U', A, B, W.data);
+       result[0] = A;
+       result[1] = W;
+       return result;
+     }
+
 
 //END
 }
