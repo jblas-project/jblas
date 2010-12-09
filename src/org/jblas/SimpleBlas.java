@@ -598,6 +598,7 @@ public class SimpleBlas {
 	/***************************************************************************
      * LAPACK
      */
+
     public static FloatMatrix gesv(FloatMatrix a, int[] ipiv,
                                     FloatMatrix b) {
         int info = NativeBlas.sgesv(a.rows, b.columns, a.data, 0, a.rows, ipiv, 0,
