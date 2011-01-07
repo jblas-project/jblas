@@ -1,6 +1,6 @@
 // --- BEGIN LICENSE BLOCK ---
 /*
- * Copyright (c) 2009, Mikio L. Braun
+ * Copyright (c) 2009-2011, Mikio L. Braun
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -155,7 +155,7 @@ public class SanityChecks {
 
         DoubleMatrix[] LA = org.jblas.Eigen.symmetricGeneralizedEigenvectors(A, B);
 
-        check("checkign existence of gsygvd...", true);
+        check("checkign existence of gsyevd (generalized eigenvalues)...", true);
     }
 
     public static void checkComplexReturnValues() {

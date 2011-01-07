@@ -1,6 +1,7 @@
 // --- BEGIN LICENSE BLOCK ---
 /* 
- * Copyright (c) 2009, Mikio L. Braun
+ * Copyright (c) 2009-2011, Mikio L. Braun
+ *               2011, Nicolas Oury
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without

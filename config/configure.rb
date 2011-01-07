@@ -80,6 +80,7 @@ options summary:
                            dynamically loaded jblas library which does
                            not depend on lapack or atlas libraries. 
                            (default for Windows!)
+  --ptatlas                Link against multithreaded versions of ATLAS libraries
   --arch-flavor=...        Set architectural flavor (e.g. --arch-flavor=sse2)
 EOS
 

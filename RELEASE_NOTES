@@ -1,3 +1,29 @@
+Release 1.2.0 - January 7, 2011
+
+- Added Generalized Eigenvalues for symmetric matrices (which you
+  need, for example, for Canoncial Correlation Analysis). See
+  org.jblas.Eigen.
+
+- Added pure-LAPACK build to Windows 64. Not as nearly as fast as
+  ATLAS, but still 50% over pure Java implementation (for example, for
+  DGEMM).
+
+- Changed build system to maven. Actually, the build.xml from the ant
+  file still exists and can also be used, but now you also have a
+  pom.xml.
+
+- As a side effect of the change to maven, test suites are now
+  actually run during the build ;)
+
+Some bugs:
+
+- Fortran functions returning floats (e.g. SDOT) returned 0.0. Fixed
+  now.
+
+- Bug in some complex numbers routines.
+
+---------------------------------------------------------------------
+
 Release 1.1.1
 
 Mostly bug fixes

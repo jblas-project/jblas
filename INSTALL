@@ -1,5 +1,6 @@
 INSTALL Guide 
 
+Version 1.2.0, January 7, 2011
 Version 1.0, December 22, 2009
 Version 0.3, September 17, 2009
 Version 0.2, May 8, 2009
@@ -22,6 +23,9 @@ If you are only adding code on the Java side, then you can work with
 the supplied build.xml ant script. Simply type "ant jar" to compile
 the new jar file.
 
+Starting with version 1.2.0, you can also use maven to compile the project.
+Both alternatives exist in parallel.
+
 If you want to access further functions from LAPACK, you need to
 recompile the native part. This procedure is a bit more involved, see
 below.
@@ -33,7 +37,11 @@ COMPILING JBLAS (JAVA PART)
 Prerequisites: 
   - java JDK
   - ant
+  - maven
   - ruby
+
+ANT BUILD
+---------
 
 Running "ant clean jar" should do the job ;)
 
@@ -54,14 +62,20 @@ Running "ant clean jar" should do the job ;)
   Build a jar file without the JNI and ATLAS libraries. Both must be
   installed in the usual library locations.
 
+MAVEN BUILD
+-----------
+
+Just the usual "mvn clean install" builds everything and installs the jar
+file in your local repository.
 
 INSTALLING JBLAS
+----------------
 
-1. Add "jblas-1.0.jar" to your CLASSPATH
+1. Add "jblas-1.2.0.jar" to your CLASSPATH
 
 2. By default, the dynamic libraries are extracted from the jar file
    to the default temporary directory and loaded from there. If you
-   don't want to do this, extract the dynamic library from jblas-0.2.jar
+   don't want to do this, extract the dynamic library from jblas-1.2.0.jar
    and copy it somewhere where it can be found.
 
    For Linux, use LD_LIBRARY_PATH, for Windows, PATH
@@ -129,6 +143,12 @@ The configure script understands the following options:
 --static-libs
    Searches for static libraries only. Resulting jblas will not depend on
    shared LAPACK/BLAS/ATLAS libraries. Default for Windows XP.
+
+--ptatlas
+   Uses multithreaded versions of the ATLAS libraries. AFAIK, these should
+   be compiled on the target computer to have the right number of threads.
+   This means you have to recompile ATLAS, but it is certainly worth
+   the effort, performance improvements are really huge!
 
 --help
    print help
