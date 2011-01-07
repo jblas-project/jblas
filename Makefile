@@ -146,7 +146,10 @@ generated-sources: \
 
 $(SRC_C)/NativeBlas.c: generated-sources
 
-$(TARGET_C)/NativeBlas.o: $(SRC_C)/NativeBlas.c
+$(TARGET_C):
+	mkdir $(TARGET_C)
+
+$(TARGET_C)/NativeBlas.o: $(SRC_C)/NativeBlas.c $(TARGET_C)
 	$(CC) $(CFLAGS) $(INCDIRS) -c $(SRC_C)/NativeBlas.c -o $@
 
 $(TARGET_C)/jblas_arch_flavor.o: generated-sources

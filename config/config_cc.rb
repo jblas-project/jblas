@@ -70,9 +70,22 @@ RUBY=ruby
 LDFLAGS += -G
 EOS
   when 'Windows'
-    Path.check_cmd('gcc', 'make', 'ld')
-    Path.check_cmd('cygpath')
-    Config::CONFIG << <<EOS
+    if w64build?
+      Path.check_cmd(W64_PREFIX + 'gcc', 'make', W64_PREFIX + 'ld')
+      Path.check_cmd('cygpath')
+      Config::CONFIG << <<EOS
+CC = #{W64_PREFIX}gcc
+CFLAGS = -ggdb -D__int64='long long'
+INCDIRS += -I"#{dir java_home}/include" -I"#{dir java_home}/include/win32" -Iinclude
+LDFLAGS += -shared -Wl,--add-stdcall-alias
+SO = dll
+LIB =
+RUBY = ruby
+EOS
+    else
+      Path.check_cmd('gcc', 'make', 'ld')
+      Path.check_cmd('cygpath')
+      Config::CONFIG << <<EOS
 CC = gcc
 CFLAGS = -ggdb -D__int64='long long'
 INCDIRS += -I"#{dir java_home}/include" -I"#{dir java_home}/include/win32" -Iinclude
@@ -81,6 +94,7 @@ SO = dll
 LIB =
 RUBY = ruby
 EOS
+    end
   when 'Mac\ OS\ X'
     Path.check_cmd('gcc-mp-4.3', 'make')
     Config::CONFIG << <<EOS

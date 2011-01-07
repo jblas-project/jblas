@@ -250,3 +250,21 @@ mainly because there is no 64bit mingw compiler in cygwin. There
 exists the mingw-w64 bit project
 (http://sourceforge.net/projects/mingw-w64/), but I didn't managed to
 compile ATLAS using those.
+
+Pure LAPACK-build on Windows 64 bit
+-----------------------------------
+
+Install the x86_64-w64-mingw32 compilers (just about everything except for ada
+and objective C) ;)
+
+In order to run fortran files, you might need to put
+
+x86_64-w64-mingw32/sys-root/mingw/bin/
+
+into your PATH.
+
+Then, go into lapack-lite, and edit make.inc such that gfortran is replaced
+by x86_64-w64-mingw32-gfortran everywhere.
+
+Compile using "make -k blaslib lapacklib" as usual.
+

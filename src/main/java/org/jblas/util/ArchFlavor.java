@@ -64,8 +64,12 @@ public class ArchFlavor {
             return fixedFlavor;
 
         String arch = System.getProperty("os.arch");
+        String name = System.getProperty("os.name");
 
-        if (arch.equals("i386") || arch.equals("x86") || arch.equals("x86_64") || arch.equals("amd64")) {
+        if (name.startsWith("Windows") && arch.equals("amd64")) {
+            return null;
+        }
+        else if(arch.equals("i386") || arch.equals("x86") || arch.equals("x86_64") || arch.equals("amd64")) {
             switch (SSELevel()) {
                 case SSE:
                     return "sse";
