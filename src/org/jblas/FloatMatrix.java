@@ -47,7 +47,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.AbstractList;
 import java.util.Arrays;
@@ -274,7 +277,7 @@ import java.util.List;
  * 
  * @author Mikio Braun, Johannes Schaback
  */
-public class FloatMatrix {
+public class FloatMatrix implements Serializable {
 
     /** Number of rows. */
     public int rows;
@@ -285,6 +288,7 @@ public class FloatMatrix {
     /** The actual data stored by rows (that is, row 0, row 1...). */
     public float[] data = null; // rows are contiguous
     public static final FloatMatrix EMPTY = new FloatMatrix();
+    static final long serialVersionUID = -1249281332731183060L;
 
     /**************************************************************************
      *
@@ -374,6 +378,15 @@ public class FloatMatrix {
         }
     }
 
+    public FloatMatrix(List<Float> data) {
+        this(data.size());
+
+        int c = 0;
+        for (java.lang.Float d : data) {
+            put(c++, d);
+        }
+    }
+
     /**
      * Construct FloatMatrix from ASCII representation.
      *
@@ -384,7 +397,7 @@ public class FloatMatrix {
      * The format is semicolon separated rows of space separated values,
      * for example "1 2 3; 4 5 6; 7 8 9".
      */
-    public static FloatMatrix valueOf (String text) {
+    public static FloatMatrix valueOf(String text) {
         String[] rowValues = text.split(";");
 
         // process first line
@@ -406,6 +419,17 @@ public class FloatMatrix {
         }
 
         return result;
+    }
+
+    /**
+     * Serialization
+     */
+    private void writeObject(ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
     }
 
     /** Create matrix with random values uniformly in 0..1. */
@@ -1002,6 +1026,7 @@ public class FloatMatrix {
      * FloatMatrix which has the same size and the maximal absolute
      * difference in matrix elements is smaller thatn 1e-6.
      */
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof FloatMatrix)) {
             return false;
@@ -1018,6 +1043,15 @@ public class FloatMatrix {
         return diff.max() / (rows * columns) < 1e-6;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + this.rows;
+        hash = 83 * hash + this.columns;
+        hash = 83 * hash + Arrays.hashCode(this.data);
+        return hash;
+    }
+    
     /** Resize the matrix. All elements will be set to zero. */
     public void resize(int newRows, int newColumns) {
         rows = newRows;
@@ -1354,17 +1388,12 @@ public class FloatMatrix {
         return array;
     }
 
-    /** Convert matrix to FloatMatrix. */
-    public FloatMatrix toFloatMatrix() {
-        FloatMatrix result = new FloatMatrix(rows, columns);
-
-        for (int c = 0; c < columns; c++) {
-            for (int r = 0; r < rows; r++) {
-                result.put(r, c, (float) get(r, c));
-            }
-        }
-
-        return result;
+    public FloatMatrix toFloat() {
+         FloatMatrix result = new FloatMatrix(rows, columns);
+         for (int i = 0; i < length; i++) {
+            result.put(i, (float) get(i));
+         }
+         return result;
     }
 
     /**
@@ -1715,62 +1744,40 @@ public class FloatMatrix {
         return dup().truthi();
     }
 
-    /**
-     * Calculate matrix exponential of a square matrix.
-     *
-     * A scaled Pade approximation algorithm is used.
-     * The algorithm has been directly translated from Golub & Van Loan "Matrix Computations",
-     * algorithm 11.3f.1. Special Horner techniques from 11.2f are also used to minimize the number
-     * of matrix multiplications.
-     *
-     * @param A square matrix
-     * @return matrix exponential of A
-     */
-    public static FloatMatrix expm(FloatMatrix A) {
-        // constants for pade approximation
-        final float c0 = 1.0f;
-        final float c1 = 0.5f;
-        final float c2 = 0.12f;
-        final float c3 = 0.01833333333333333f;
-        final float c4 = 0.0019927536231884053f;
-        final float c5 = 1.630434782608695E-4f;
-        final float c6 = 1.0351966873706E-5f;
-        final float c7 = 5.175983436853E-7f;
-        final float c8 = 2.0431513566525E-8f;
-        final float c9 = 6.306022705717593E-10f;
-        final float c10 = 1.4837700484041396E-11f;
-        final float c11 = 2.5291534915979653E-13f;
-        final float c12 = 2.8101705462199615E-15f;
-        final float c13 = 1.5440497506703084E-17f;
-
-        int j = Math.max(0, 1 + (int) Math.floor(Math.log(A.normmax()) / Math.log(2)));
-        FloatMatrix As = A.div((float) Math.pow(2, j)); // scaled version of A
-        int n = A.getRows();
-
-        // calculate D and N using special Horner techniques
-        FloatMatrix As_2 = As.mmul(As);
-        FloatMatrix As_4 = As_2.mmul(As_2);
-        FloatMatrix As_6 = As_4.mmul(As_2);
-        // U = c0*I + c2*A^2 + c4*A^4 + (c6*I + c8*A^2 + c10*A^4 + c12*A^6)*A^6
-        FloatMatrix U = FloatMatrix.eye(n).muli(c0).addi(As_2.mul(c2)).addi(As_4.mul(c4)).addi(
-                FloatMatrix.eye(n).muli(c6).addi(As_2.mul(c8)).addi(As_4.mul(c10)).addi(As_6.mul(c12)).mmuli(As_6));
-        // V = c1*I + c3*A^2 + c5*A^4 + (c7*I + c9*A^2 + c11*A^4 + c13*A^6)*A^6
-        FloatMatrix V = FloatMatrix.eye(n).muli(c1).addi(As_2.mul(c3)).addi(As_4.mul(c5)).addi(
-                FloatMatrix.eye(n).muli(c7).addi(As_2.mul(c9)).addi(As_4.mul(c11)).addi(As_6.mul(c13)).mmuli(As_6));
-
-        FloatMatrix AV = As.mmuli(V);
-        FloatMatrix N = U.add(AV);
-        FloatMatrix D = U.subi(AV);
-
-        // solve DF = N for F
-        FloatMatrix F = Solve.solve(D, N);
-
-        // now square j times
-        for (int k = 0; k < j; k++) {
-            F.mmuli(F);
+    public FloatMatrix isNaNi() {
+        for (int i = 0; i < length; i++) {
+            put(i, Float.isNaN(get(i)) ? 1.0f : 0.0f);
         }
+        return this;
+    }
 
-        return F;
+    public FloatMatrix isNaN() {
+        return dup().isNaNi();
+    }
+
+    public FloatMatrix isInfinitei() {
+        for (int i = 0; i < length; i++) {
+            put(i, Float.isInfinite(get(i)) ? 1.0f : 0.0f);
+        }
+        return this;
+    }
+
+    public FloatMatrix isInfinite() {
+        return dup().isInfinitei();
+    }
+
+    public FloatMatrix selecti(FloatMatrix where) {
+        checkLength(where.length);
+        for (int i = 0; i < length; i++) {
+            if (where.get(i) == 0.0f) {
+                put(i, 0.0f);
+            }
+        }
+        return this;
+    }
+
+    public FloatMatrix select(FloatMatrix where) {
+        return dup().selecti(where);
     }
 
     /****************************************************************
@@ -2303,6 +2310,10 @@ public class FloatMatrix {
     public FloatMatrix rowMeans() {
         return rowSums().divi(columns);
     }
+
+    /************************************************************************
+     * Column and rows access.
+     */
 
     /** Get a copy of a column. */
     public FloatMatrix getColumn(int c) {

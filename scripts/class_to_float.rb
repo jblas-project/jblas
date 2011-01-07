@@ -66,6 +66,7 @@ def translate(s)
   s.gsub! /(\s)Double(\s)/, '\1Float\1'
   s.gsub! /<Double>/, '<Float>'
   s.gsub! /readDouble/, 'readFloat'
+  s.gsub! /java.lang.Double/, 'java.lang.Float'
   s
 end
 

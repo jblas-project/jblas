@@ -96,10 +96,10 @@ module Fortran
       end
       
       result = if array or comment =~ /output/
-                 ArrayTypeMap[basetype]
-               else
-                 StdTypeMap[basetype]
-               end
+        ArrayTypeMap[basetype]
+      else
+        StdTypeMap[basetype]
+      end
 
       if not result
         raise ArgumentError, "Don't know how to convert '#{to_s}'"
@@ -107,7 +107,7 @@ module Fortran
       
       return result
     end
-    
+
     def to_c
       javatype = to_java
       if javatype =~ /\[\]$/
@@ -195,7 +195,7 @@ module Fortran
         @arrays = [] # already seen arrays
       end
       
-  public
+      public
       # Generate the JNI-wrapper code for the fortran routine.
       # This is a bit more complex and calls other routines for the different
       # parts.
@@ -302,16 +302,16 @@ EOS
 
       def r; @routine; end
 
-  private ############################################################
+      private ############################################################
 
       # convenience accessor
 
       def java_return_type
-          if r.return_type.basetype == 'VOID' and r.args.last == 'INFO'
-            'int'
-          else
-            r.return_type.to_java
-          end        
+        if r.return_type.basetype == 'VOID' and r.args.last == 'INFO'
+          'int'
+        else
+          r.return_type.to_java
+        end
       end
 
       def make_fortran_fct_name name
@@ -370,7 +370,11 @@ EOS
         elsif javatype =~ /\[\]/
           Java::BufferArgument.new(self)
         elsif javatype =~ /Complex/
-          Java::ComplexArgument.new(self)
+          if $complexcc == 'f2c'
+            Java::ComplexF2CArgument.new(self)
+          else
+            Java::ComplexC99Argument.new(self)
+          end 
         elsif javatype == 'char'
           Java::CharArgument.new(self)
         else
@@ -384,11 +388,19 @@ EOS
       # Stuff for workspaces below
       #
 
+      def workspace_size_factor(t)
+        if t.basetype =~ /COMPLEX/
+          '*2'
+        else
+          ''
+        end
+      end
+
       # Declarations for workspace arrays
       def declare_workspace_arrays
         r.gen_each_arg do |n, t|
           if r.workspace_argument? n
-            "    #{t.to_java} #{n.downcase} = new #{t.to_java[0..-3]}[1];"
+            "    #{t.to_java} #{n.downcase} = new #{t.to_java[0..-3]}[1#{workspace_size_factor(t)}];"
           elsif r.workspace_size_argument? n
             "    #{t.to_java} #{n.downcase};"
           end
@@ -399,23 +411,23 @@ EOS
       def workspace_query
         return "#{r.name.downcase}(" +
           r.gen_each_arg(', ') do |n,t|
-            if r.workspace_size_argument? n
-              '-1'
-            elsif n != 'INFO'
-              if t.to_java =~ /\[\]\Z/
-                if r.workspace_argument? n
-                  "#{n.downcase}, 0"
-                else
-                  # replace array arguments by their type
-                  dummy_name = t.to_java.gsub /\[\]/, 'Dummy'
-                  #"#{t.to_java} #{n.downcase}, #{n.downcase}Idx"
-                  "#{dummy_name}, 0"
-                end
+          if r.workspace_size_argument? n
+            '-1'
+          elsif n != 'INFO'
+            if t.to_java =~ /\[\]\Z/
+              if r.workspace_argument? n
+                "#{n.downcase}, 0"
               else
-                n.downcase
+                # replace array arguments by their type
+                dummy_name = t.to_java.gsub /\[\]/, 'Dummy'
+                #"#{t.to_java} #{n.downcase}, #{n.downcase}Idx"
+                "#{dummy_name}, 0"
               end
+            else
+              n.downcase
             end
-          end + ")"
+          end
+        end + ")"
       end
 
       # allocate the actual workspaces
@@ -423,7 +435,8 @@ EOS
         r.gen_each_arg do |n, t|
           if r.workspace_argument? n
             n = n.downcase
-            "    l#{n} = (int) #{n}[0]; #{n} = new #{t.to_java[0..-3]}[l#{n}];"
+            factor = workspace_size_factor(t)
+            "    l#{n} = (int) #{n}[0]; #{n} = new #{t.to_java[0..-3]}[l#{n}#{factor}];"
           end
         end
       end
@@ -432,18 +445,18 @@ EOS
       def call_with_workspaces
         return "#{r.name.downcase}(" +
           r.gen_each_arg(', ') do |n,t|
-            if n != 'INFO'
-              if t.to_java =~ /\[\]\Z/
-                if r.workspace_argument? n
-                  "#{n.downcase}, 0"
-                else
-                  "#{n.downcase}, #{n.downcase}Idx"
-                end
+          if n != 'INFO'
+            if t.to_java =~ /\[\]\Z/
+              if r.workspace_argument? n
+                "#{n.downcase}, 0"
               else
-                n.downcase
+                "#{n.downcase}, #{n.downcase}Idx"
               end
+            else
+              n.downcase
             end
-          end + ")"
+          end
+        end + ")"
       end
     end
 
@@ -539,116 +552,161 @@ EOS
   if (#{name}) {
 EOS
         unless code.arrays.empty?
-          code.arrays.each do |a, t|
-            if t == basectype
-              code.conversions << "if((*env)->IsSameObject(env, #{name}, #{a}) == JNI_TRUE)\n      #{name}PtrBase = #{a}PtrBase;\n    else\n      "
-            end
+        code.arrays.each do |a, t|
+          if t == basectype
+            code.conversions << "if((*env)->IsSameObject(env, #{name}, #{a}) == JNI_TRUE)\n      #{name}PtrBase = #{a}PtrBase;\n    else\n      "
           end
         end
-        code.conversions << <<EOS
+      end
+      code.conversions << <<EOS
 #{name}PtrBase = (*env)->Get#{basectype[1..-1].capitalize}ArrayElements(env, #{name}, NULL);
     #{name}Ptr = #{name}PtrBase + #{'2*' if type.basetype =~ /COMPLEX/}#{name}Idx;
   }
 EOS
         
-        # and releasing the stuff again...
-        release = []
-        release << "  if(#{name}PtrBase) {"
-        release << "    (*env)->Release#{basectype[1..-1].capitalize}ArrayElements(env, #{name}, #{name}PtrBase, #{@type.output? ? '0' : 'JNI_ABORT'});"
-        code.arrays.each do |a, t|
-          if t == basectype
-            release << "    if (#{name}PtrBase == #{a}PtrBase)"
-            release << "      #{a}PtrBase = 0;"
-          end
+      # and releasing the stuff again...
+      release = []
+      release << "  if(#{name}PtrBase) {"
+      release << "    (*env)->Release#{basectype[1..-1].capitalize}ArrayElements(env, #{name}, #{name}PtrBase, #{@type.output? ? '0' : 'JNI_ABORT'});"
+      code.arrays.each do |a, t|
+        if t == basectype
+          release << "    if (#{name}PtrBase == #{a}PtrBase)"
+          release << "      #{a}PtrBase = 0;"
         end
-        release << "    #{name}PtrBase = 0;"
-        release << "  }\n"
+      end
+      release << "    #{name}PtrBase = 0;"
+      release << "  }\n"
 
-        code.release_arrays = release.join("\n") + code.release_arrays
+      code.release_arrays = release.join("\n") + code.release_arrays
                    
-        # store information about the arrays we have already handled
-        code.arrays << [name, basectype]
-      end
-
-      def make_call_arg
-        code.call_args << "#{name}Ptr"
-      end
+      # store information about the arrays we have already handled
+      code.arrays << [name, basectype]
     end
 
-    #----------------------------------------------------------------------
-    # For complex values (scalars only!): fortran returns the value in the
-    # first argument, therefore declare the return value, modify the 
-    # fortran argument list, and generate the *Complex object.
-    #
-    # for arguments, extract the values from the Java object
-    class ComplexArgument < GenericArgument
-      def make_fortran_return_type
-        code.fortran_args << javatype + " *"
-        code.fortran_return_type << "void"
-      end
-
-      def make_fortran_arg
-        code.fortran_args << javatype + " *"
-      end
-
-      def make_convert_return_type
-        code.conversions << "  #{javatype} retval;\n"
-      end
-
-      def make_call_return
-        code.call_post << "\n  return create#{javatype}(env, &retval);"
-        code.call_args << "&retval"
-      end
-
-      def make_convert_arg
-        code.conversions << "  #{javatype} #{name}Cplx;\n"
-        code.conversions << "  get#{javatype}(env, #{name}, &#{name}Cplx);\n"
-      end
-
-      def make_call_arg
-        code.call_args << "&#{name}Cplx"
-      end
+    def make_call_arg
+      code.call_args << "#{name}Ptr"
     end
+  end
+
+  #----------------------------------------------------------------------
+  # For complex values (scalars only!): fortran returns the value in the
+  # first argument, therefore declare the return value, modify the
+  # fortran argument list, and generate the *Complex object.
+  #
+  # for arguments, extract the values from the Java object
+  class ComplexF2CArgument < GenericArgument
+    def make_fortran_return_type
+      code.fortran_args << javatype + " *"
+      code.fortran_return_type << "void"
+    end
+
+    def make_fortran_arg
+      code.fortran_args << javatype + " *"
+    end
+
+    def make_convert_return_type
+      code.conversions << "  #{javatype} retval;\n"
+    end
+
+    def make_call_return
+      code.call_post << "\n  return create#{javatype}(env, &retval);"
+      code.call_args << "&retval"
+    end
+
+    def make_convert_arg
+      code.conversions << "  #{javatype} #{name}Cplx;\n"
+      code.conversions << "  get#{javatype}(env, #{name}, &#{name}Cplx);\n"
+    end
+
+    def make_call_arg
+      code.call_args << "&#{name}Cplx"
+    end
+  end
     
-    #----------------------------------------------------------------------
-    # For characters: This handles only the first byte. Now idea if it
-    # is really worth dealing with UTF-8 and all the rest...
-    class CharArgument < GenericArgument
-      def make_convert_arg
-        code.conversions << "  char #{name}Chr = (char) #{name};\n"
-      end
-
-      def make_call_arg
-        code.call_args << "&#{name}Chr"
-      end
-
-      def make_fortran_arg
-        code.fortran_args << javatype + " *"
+  #----------------------------------------------------------------------
+  # For complex values (scalars only!): fortran returns the value in the
+  # first argument, therefore declare the return value, modify the
+  # fortran argument list, and generate the *Complex object.
+  #
+  # for arguments, extract the values from the Java object
+  class ComplexC99Argument < GenericArgument
+    def c99type
+      case javatype
+      when 'ComplexFloat'
+        'float complex'
+      when 'ComplexDouble'
+        'double complex'
       end
     end
+
+    def make_fortran_return_type
+      # code.fortran_args << javatype + " *"
+      code.fortran_return_type << c99type
+    end
+
+    def make_fortran_arg
+      code.fortran_args << c99type + " *"
+    end
+
+    def make_call_return
+      code.call_pre << c99type + " retval = "
+      code.call_post << "\n  return create#{javatype}(env, retval);"
+      #code.call_args << "&retval"
+    end
+
+    def make_convert_arg
+      code.conversions << "  #{c99type} #{name}Cplx;\n"
+      code.conversions << "  #{name}Cplx = get#{javatype}(env, #{name});\n"
+    end
+
+    def make_call_arg
+      code.call_args << "&#{name}Cplx"
+    end
+
+    def make_return_type
+      code.return_type = 'jobject'
+    end
+  end
+
+  #----------------------------------------------------------------------
+  # For characters: This handles only the first byte. Now idea if it
+  # is really worth dealing with UTF-8 and all the rest...
+  class CharArgument < GenericArgument
+    def make_convert_arg
+      code.conversions << "  char #{name}Chr = (char) #{name};\n"
+    end
+
+    def make_call_arg
+      code.call_args << "&#{name}Chr"
+    end
+
+    def make_fortran_arg
+      code.fortran_args << javatype + " *"
+    end
+  end
     
-    #----------------------------------------------------------------------
-    # For nil arguments (only return value): don't add a return value
-    class NilArgument < GenericArgument
-      def make_call_return
-      end
+  #----------------------------------------------------------------------
+  # For nil arguments (only return value): don't add a return value
+  class NilArgument < GenericArgument
+    def make_call_return
+    end
+  end
+
+  #----------------------------------------------------------------------
+  # For info arguments
+  class InfoArgument < GenericArgument
+    def make_decl_arg
+      code.return_type = 'jint'
     end
 
-    #----------------------------------------------------------------------
-    # For info arguments
-    class InfoArgument < GenericArgument
-      def make_decl_arg
-        code.return_type = 'jint'
-      end
-
-      def make_convert_arg
-        code.conversions << "  int info;\n"
-        code.call_post << "\n  return info;"
-      end
-
-      def make_fortran_arg
-        code.fortran_args << ctype[1...-5] + " *"
-      end
+    def make_convert_arg
+      code.conversions << "  int info;\n"
+      code.call_post << "\n  return info;"
     end
-  end # module Java
+
+    def make_fortran_arg
+      code.fortran_args << ctype[1...-5] + " *"
+    end
+  end
+end # module Java
 end # module Fortran

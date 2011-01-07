@@ -47,7 +47,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.AbstractList;
 import java.util.Arrays;
@@ -274,7 +277,7 @@ import java.util.List;
  * 
  * @author Mikio Braun, Johannes Schaback
  */
-public class DoubleMatrix {
+public class DoubleMatrix implements Serializable {
 
     /** Number of rows. */
     public int rows;
@@ -285,6 +288,7 @@ public class DoubleMatrix {
     /** The actual data stored by rows (that is, row 0, row 1...). */
     public double[] data = null; // rows are contiguous
     public static final DoubleMatrix EMPTY = new DoubleMatrix();
+    static final long serialVersionUID = -1249281332731183060L;
 
     /**************************************************************************
      *
@@ -374,6 +378,15 @@ public class DoubleMatrix {
         }
     }
 
+    public DoubleMatrix(List<Double> data) {
+        this(data.size());
+
+        int c = 0;
+        for (java.lang.Double d : data) {
+            put(c++, d);
+        }
+    }
+
     /**
      * Construct DoubleMatrix from ASCII representation.
      *
@@ -384,7 +397,7 @@ public class DoubleMatrix {
      * The format is semicolon separated rows of space separated values,
      * for example "1 2 3; 4 5 6; 7 8 9".
      */
-    public static DoubleMatrix valueOf (String text) {
+    public static DoubleMatrix valueOf(String text) {
         String[] rowValues = text.split(";");
 
         // process first line
@@ -406,6 +419,17 @@ public class DoubleMatrix {
         }
 
         return result;
+    }
+
+    /**
+     * Serialization
+     */
+    private void writeObject(ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
     }
 
     /** Create matrix with random values uniformly in 0..1. */
@@ -1002,6 +1026,7 @@ public class DoubleMatrix {
      * DoubleMatrix which has the same size and the maximal absolute
      * difference in matrix elements is smaller thatn 1e-6.
      */
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof DoubleMatrix)) {
             return false;
@@ -1018,6 +1043,15 @@ public class DoubleMatrix {
         return diff.max() / (rows * columns) < 1e-6;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + this.rows;
+        hash = 83 * hash + this.columns;
+        hash = 83 * hash + Arrays.hashCode(this.data);
+        return hash;
+    }
+    
     /** Resize the matrix. All elements will be set to zero. */
     public void resize(int newRows, int newColumns) {
         rows = newRows;
@@ -1354,17 +1388,12 @@ public class DoubleMatrix {
         return array;
     }
 
-    /** Convert matrix to FloatMatrix. */
-    public FloatMatrix toFloatMatrix() {
-        FloatMatrix result = new FloatMatrix(rows, columns);
-
-        for (int c = 0; c < columns; c++) {
-            for (int r = 0; r < rows; r++) {
-                result.put(r, c, (float) get(r, c));
-            }
-        }
-
-        return result;
+    public FloatMatrix toFloat() {
+         FloatMatrix result = new FloatMatrix(rows, columns);
+         for (int i = 0; i < length; i++) {
+            result.put(i, (float) get(i));
+         }
+         return result;
     }
 
     /**
@@ -1715,62 +1744,40 @@ public class DoubleMatrix {
         return dup().truthi();
     }
 
-    /**
-     * Calculate matrix exponential of a square matrix.
-     *
-     * A scaled Pade approximation algorithm is used.
-     * The algorithm has been directly translated from Golub & Van Loan "Matrix Computations",
-     * algorithm 11.3.1. Special Horner techniques from 11.2 are also used to minimize the number
-     * of matrix multiplications.
-     *
-     * @param A square matrix
-     * @return matrix exponential of A
-     */
-    public static DoubleMatrix expm(DoubleMatrix A) {
-        // constants for pade approximation
-        final double c0 = 1.0;
-        final double c1 = 0.5;
-        final double c2 = 0.12;
-        final double c3 = 0.01833333333333333;
-        final double c4 = 0.0019927536231884053;
-        final double c5 = 1.630434782608695E-4;
-        final double c6 = 1.0351966873706E-5;
-        final double c7 = 5.175983436853E-7;
-        final double c8 = 2.0431513566525E-8;
-        final double c9 = 6.306022705717593E-10;
-        final double c10 = 1.4837700484041396E-11;
-        final double c11 = 2.5291534915979653E-13;
-        final double c12 = 2.8101705462199615E-15;
-        final double c13 = 1.5440497506703084E-17;
-
-        int j = Math.max(0, 1 + (int) Math.floor(Math.log(A.normmax()) / Math.log(2)));
-        DoubleMatrix As = A.div((double) Math.pow(2, j)); // scaled version of A
-        int n = A.getRows();
-
-        // calculate D and N using special Horner techniques
-        DoubleMatrix As_2 = As.mmul(As);
-        DoubleMatrix As_4 = As_2.mmul(As_2);
-        DoubleMatrix As_6 = As_4.mmul(As_2);
-        // U = c0*I + c2*A^2 + c4*A^4 + (c6*I + c8*A^2 + c10*A^4 + c12*A^6)*A^6
-        DoubleMatrix U = DoubleMatrix.eye(n).muli(c0).addi(As_2.mul(c2)).addi(As_4.mul(c4)).addi(
-                DoubleMatrix.eye(n).muli(c6).addi(As_2.mul(c8)).addi(As_4.mul(c10)).addi(As_6.mul(c12)).mmuli(As_6));
-        // V = c1*I + c3*A^2 + c5*A^4 + (c7*I + c9*A^2 + c11*A^4 + c13*A^6)*A^6
-        DoubleMatrix V = DoubleMatrix.eye(n).muli(c1).addi(As_2.mul(c3)).addi(As_4.mul(c5)).addi(
-                DoubleMatrix.eye(n).muli(c7).addi(As_2.mul(c9)).addi(As_4.mul(c11)).addi(As_6.mul(c13)).mmuli(As_6));
-
-        DoubleMatrix AV = As.mmuli(V);
-        DoubleMatrix N = U.add(AV);
-        DoubleMatrix D = U.subi(AV);
-
-        // solve DF = N for F
-        DoubleMatrix F = Solve.solve(D, N);
-
-        // now square j times
-        for (int k = 0; k < j; k++) {
-            F.mmuli(F);
+    public DoubleMatrix isNaNi() {
+        for (int i = 0; i < length; i++) {
+            put(i, Double.isNaN(get(i)) ? 1.0 : 0.0);
         }
+        return this;
+    }
 
-        return F;
+    public DoubleMatrix isNaN() {
+        return dup().isNaNi();
+    }
+
+    public DoubleMatrix isInfinitei() {
+        for (int i = 0; i < length; i++) {
+            put(i, Double.isInfinite(get(i)) ? 1.0 : 0.0);
+        }
+        return this;
+    }
+
+    public DoubleMatrix isInfinite() {
+        return dup().isInfinitei();
+    }
+
+    public DoubleMatrix selecti(DoubleMatrix where) {
+        checkLength(where.length);
+        for (int i = 0; i < length; i++) {
+            if (where.get(i) == 0.0) {
+                put(i, 0.0);
+            }
+        }
+        return this;
+    }
+
+    public DoubleMatrix select(DoubleMatrix where) {
+        return dup().selecti(where);
     }
 
     /****************************************************************
@@ -2303,6 +2310,10 @@ public class DoubleMatrix {
     public DoubleMatrix rowMeans() {
         return rowSums().divi(columns);
     }
+
+    /************************************************************************
+     * Column and rows access.
+     */
 
     /** Get a copy of a column. */
     public DoubleMatrix getColumn(int c) {

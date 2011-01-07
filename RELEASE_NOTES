@@ -1,3 +1,68 @@
+Release 1.1 - August 16, 2010
+
+Added Singular Value Decomposition, some bugfixes
+
+- fixed bug with complex return values and gfortran vs. g77
+- added --ptatlas flag for compiling against multithreaded ATLAS
+- dropped support for 32bit Mac OS X
+
+The main reason for dropping support for 32bit Mac OS X was that
+the latest versions installs as 64bit by default, and the install
+for the 32bit macports gcc seem to be broken -> no way to compile it.
+
+----------------------------------------------------------------------
+
+Release 1.0.2 - February 26, 2010
+
+Mostly a bug-fix release for the build-process
+
+- fixed utf-8 unicode issues with javadoc
+- fixed issues with parallel make ("make -j3")
+- fixed issues with SSE2/SSE3 config code
+
+No changes to the libraries, you can keep on using the jar file for
+1.0.1.
+
+----------------------------------------------------------------------
+
+Release 1.0.1 - January 14, 2010
+
+Minor fixes, mostly to do with handling spaces in the configure
+scripts under windows, and running also on older processor which do
+not support SSE2 (older Athlon64 processors, for example).
+
+Changes from 1.0:
+
+- jar contains prebuilt ATLAS libraries for SSE2 and SSE3 and selects
+  based on what is supported.
+
+Still no support for 64bit for Windows, mostly because cygwin/mingw
+support for 64bit is quite experimental, and ATLAS doesn't support
+64bit builds under Windows. If you have managed to compile the thing,
+let me know ;)
+
+You can still use the 32bit version on a 64bit Windows, of course.
+
+----------------------------------------------------------------------
+
+Release 1.0 - December 22, 2009
+
+Leo (@thinkberg) conviced me to bump my version number to 1.0 because
+the software itself is stable, and I now cover all platforms I
+originally targeted.
+
+Changes from 0.3:
+
+- expm moved from DoubleMatrix to MatrixFunctions
+
+- Build for Mac OS X
+
+- configure script has been overhauled.
+
+- Matrix classes are now serializable.
+
+----------------------------------------------------------------------
+
 Release v0.3 - September 17, 2009
 
 Release v0.3 adds some features, in particular LU and Cholesky decomposition,

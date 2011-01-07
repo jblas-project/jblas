@@ -14,6 +14,7 @@ import static org.jblas.util.Functions.min;
  */
 public class Decompose {
 
+//STOP
     /**
      * Class to hold an LU decomposition result.
      *
@@ -33,6 +34,7 @@ public class Decompose {
             this.p = p;
         }
     }
+//START
 
     /**
      * Compute LU Decomposition of a general matrix.

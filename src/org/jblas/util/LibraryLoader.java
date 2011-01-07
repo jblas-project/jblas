@@ -36,8 +36,6 @@
 package org.jblas.util;
 
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Class which allows to load a dynamic file as resource (for example, from a 
@@ -45,59 +43,120 @@ import java.util.logging.Logger;
  */
 public class LibraryLoader {
 
-    /** Find the library <tt>libname</tt> as a resource, copy it to a tempfile
+    private Logger logger;
+    private String libpath;
+    
+    public LibraryLoader() {
+        logger = Logger.getLogger();
+        libpath = null;
+    }
+
+    /**
+     * <p>Find the library <tt>libname</tt> as a resource, copy it to a tempfile
      * and load it using System.load(). The name of the library has to be the
      * base name, it is mapped to the corresponding system name using
      * System.mapLibraryName(). For example, the library "foo" is called "libfoo.so"
      * under Linux and "foo.dll" under Windows, but you just have to pass "foo"
-     * the loadLibrary().
+     * the loadLibrary().</p>
      *
-     * I'm not quite sure if this doesn't open all kinds of security holes. Any ideas?
+     * <p>I'm not quite sure if this doesn't open all kinds of security holes. Any ideas?</p>
+     *
+     * <p>This function reports some more information to the "org.jblas" logger at
+     * the FINE level.</p>
      *
      * @param libname basename of the library
      * @throws UnsatisfiedLinkError if library cannot be founds
      */
-    public void loadLibrary(String libname) {
-        Logger logger = Logger.getLogger("org.jblas");
+    public void loadLibrary(String libname, boolean withFlavor) {
+        // preload flavor libraries
+        String flavor = null;
+        if (withFlavor) {
+            logger.debug("Preloading ArchFlavor library.");
+            flavor = ArchFlavor.archFlavor();
+        }
+
         libname = System.mapLibraryName(libname);
+        logger.debug("Attempting to load \"" + libname + "\".");
 
-        // We're in a static initializer and need a class. What shall we do?
-        Class cl = getClass();
+        String[] paths = {
+            "/",
+            "/bin/",
+            fatJarLibraryPath("static", flavor),
+            fatJarLibraryPathNonUnified("static", flavor),
+            fatJarLibraryPath("dynamic", flavor),
+            fatJarLibraryPathNonUnified("dynamic", flavor),
+        };
 
-        // Trying to copy from here.
-        logger.log(Level.FINE, "Trying to copy from /" + libname + ".");
-        InputStream is = cl.getResourceAsStream("/" + libname);
-
-        // Trying to copy from "bin"
-        if (is == null) {
-            logger.log(Level.FINE, "Trying to copy from /bin/" + libname + ".");
-            is = cl.getResourceAsStream("/bin/" + libname);
-        }
-
-        // Trying to extract static version from the jar file. Why the static version?
-        // Because it is more likely to run.
-        if (is == null) {
-            logger.log(Level.FINE, "Trying to copy from " + fatJarLibraryPath(libname, "static") + ".");
-            is = cl.getResourceAsStream(fatJarLibraryPath(libname, "static"));
-        }
-
-        // Finally, let's see if we can get the dynamic version.
-        if (is == null) {
-            is = cl.getResourceAsStream(fatJarLibraryPath(libname, "dynamic"));
-            logger.log(Level.FINE, "Trying to copy from " + fatJarLibraryPath(libname, "dynamic") + ".");
-        }
+        InputStream is = findLibrary(paths, libname);
 
         // Oh man, have to get out of here!
         if (is == null) {
             throw new UnsatisfiedLinkError("Couldn't find the resource " + libname + ".");
         }
 
+        logger.config("Loading " + libname + " from " + libpath + ".");
+        loadLibraryFromStream(libname, is);
+    }
+
+    private InputStream findLibrary(String[] paths, String libname) {
+        InputStream is = null;
+        for (String path: paths) {
+            is = tryPath(path + libname);
+            if (is != null) {
+                libpath = path;
+                break;
+            }
+        }
+        return is;
+    }
+
+    /** Translate all those Windows to "Windows". ("Windows XP", "Windows Vista", "Windows 7", etc.) */
+    private String unifyOSName(String osname) {
+        if (osname.startsWith("Windows")) {
+            return "Windows";
+        }
+        return osname;
+    }
+
+    /** Compute the path to the library. The path is basically
+    "/" + os.name + "/" + os.arch + "/" + libname. */
+    private String fatJarLibraryPath(String linkage, String flavor) {
+        String sep = "/"; //System.getProperty("file.separator");
+        String os_name = unifyOSName(System.getProperty("os.name"));
+        String os_arch = System.getProperty("os.arch");
+        String path = sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep;
+        if (null != flavor)
+            path += flavor + sep;
+        return path;
+    }
+
+    /** Full path without the OS name non-unified. */
+    private String fatJarLibraryPathNonUnified(String linkage, String flavor) {
+        String sep = "/"; //System.getProperty("file.separator");
+        String os_name = System.getProperty("os.name");
+        String os_arch = System.getProperty("os.arch");
+        String path = sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep;
+        if (null != flavor)
+            path += flavor + sep;
+        return path;
+    }
+
+    /** Try to open a file at the given position. */
+    private InputStream tryPath(String path) {
+        Logger.getLogger().debug("Trying path \"" + path + "\".");
+        return getClass().getResourceAsStream(path);
+    }
+
+    /** Load a system library from a stream. Copies the library to a temp file
+     * and loads from there.
+     */
+    private void loadLibraryFromStream(String libname, InputStream is) {
         try {
             File tempfile = File.createTempFile("jblas", libname);
             tempfile.deleteOnExit();
             OutputStream os = new FileOutputStream(tempfile);
 
-            logger.log(Level.FINE, "tempfile.getPath() = " + tempfile.getPath());
+            logger.debug("tempfile.getPath() = " + tempfile.getPath());
 
             long savedTime = System.currentTimeMillis();
 
@@ -108,31 +167,15 @@ public class LibraryLoader {
             }
 
             double seconds = (double) (System.currentTimeMillis() - savedTime) / 1e3;
-            logger.log(Level.FINE, "Copying took " + seconds + " seconds.");
+            logger.debug("Copying took " + seconds + " seconds.");
 
             os.close();
 
             System.load(tempfile.getPath());
         } catch (IOException io) {
-            logger.log(Level.SEVERE, "Could not create the temp file: " + io.toString() + ".\n");
+            logger.error("Could not create the temp file: " + io.toString() + ".\n");
         } catch (UnsatisfiedLinkError ule) {
-            logger.log(Level.SEVERE, "Couldn't load copied link file: " + ule.toString() + ".\n");
+            logger.error("Couldn't load copied link file: " + ule.toString() + ".\n");
         }
-    }
-
-    static public String unifyOSName(String osname) {
-        if (osname.startsWith("Windows")) {
-            return "Windows";
-        }
-        return osname;
-    }
-
-    /** Compute the path to the library. The path is basically
-    "/" + os.name + "/" + os.arch + "/" + libname. */
-    static public String fatJarLibraryPath(String libname, String linkage) {
-        String sep = "/"; //System.getProperty("file.separator");
-        String os_name = unifyOSName(System.getProperty("os.name"));
-        String os_arch = System.getProperty("os.arch");
-        return sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep + libname;
     }
 }

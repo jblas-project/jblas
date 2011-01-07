@@ -1,16 +1,22 @@
 jblas is a matrix library for Java which uses existing high
 performance BLAS and LAPACK libraries like ATLAS.
 
+Version 1.1, August 16, 2010
+Version 1.0.2, February 26, 2010
+Version 1.0.1, January 14, 2010
+Version 1.0, December 22, 2009
 Version 0.3, September 17, 2009
 Version 0.2, May 8, 2009
 Version 0.1, March 28, 2009
 
 see also the file RELEASE_NOTES
 
+Homepage: http://jblas.org
+
 INSTALL
 
-In principle, all you need is the jblas-0.2.jar in your
-classpath. jblas-0.2.jar will then automagically extract your platform
+In principle, all you need is the jblas-1.1,jar in your
+classpath. jblas-1.1.jar will then automagically extract your platform
 dependent native library to a tempfile and load it from there. You can
 also put that file somewhere in your load path ($LD_LIBRARY_PATH for
 Linux, %PATH for Windows).
@@ -18,16 +24,19 @@ Linux, %PATH for Windows).
 
 BUILDING
 
-If you want to build jBLAS from the sources, you need to set up quite
-a few things:
+If you only work on the java part, an ant build.xml is provided to
+recompile the sources. In addition to that you need an installation of
+ruby for some scripts which automaticall generate code. Then, you just
+type "ant" on the command line.
 
-You will need some implementation of blas and lapack, for example, as
-provided by ATLAS (http://math-atlas.sourceforge.net/). You also need
-the Fortran sources for BLAS and LAPACK, available, for example from
+If you want to build jblas from the sources including the native part,
+you need to set up quite a few things:
+
+You will need some implementation of blas and lapack. jblas is tested
+with either plain lapack, or ATLAS
+(http://math-atlas.sourceforge.net/). You also need the Fortran
+sources for BLAS and LAPACK, available, for example from
 http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz.
-
-Besides that, you need an installation of ruby, for some code
-generation scripts.
 
 If you still want to build the source your own, see INSTALL for further
 details.
@@ -36,6 +45,10 @@ details.
 HOW TO GET STARTED
 
 Have a look at javadoc/index.html and javadoc/org/jblas/DoubleMatrix.html
+
+If you want to validate your installation and get some performance
+numbers, try "java -server -jar jblas-1.1.jar", or drop the server
+in case, you only have the "client" JVM installed.
 
 
 LICENSE
