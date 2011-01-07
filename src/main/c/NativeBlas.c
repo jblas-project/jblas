@@ -854,7 +854,7 @@ JNIEXPORT jdouble JNICALL Java_org_jblas_NativeBlas_ddot(JNIEnv *env, jclass thi
 
 JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_sdot(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx, jfloatArray sy, jint syIdx, jint incy)
 {
-  extern jdouble sdot_(jint *, jfloat *, jint *, jfloat *, jint *);
+  extern jfloat sdot_(jint *, jfloat *, jint *, jfloat *, jint *);
   
   jfloat *sxPtrBase = 0, *sxPtr = 0;
   if (sx) {
@@ -996,7 +996,7 @@ JNIEXPORT jdouble JNICALL Java_org_jblas_NativeBlas_dznrm2(JNIEnv *env, jclass t
 
 JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_scnrm2(JNIEnv *env, jclass this, jint n, jfloatArray x, jint xIdx, jint incx)
 {
-  extern jdouble scnrm2_(jint *, jfloat *, jint *);
+  extern jfloat scnrm2_(jint *, jfloat *, jint *);
   
   jfloat *xPtrBase = 0, *xPtr = 0;
   if (x) {
@@ -1016,7 +1016,7 @@ JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_scnrm2(JNIEnv *env, jclass th
 
 JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_snrm2(JNIEnv *env, jclass this, jint n, jfloatArray x, jint xIdx, jint incx)
 {
-  extern jdouble snrm2_(jint *, jfloat *, jint *);
+  extern jfloat snrm2_(jint *, jfloat *, jint *);
   
   jfloat *xPtrBase = 0, *xPtr = 0;
   if (x) {
@@ -1076,7 +1076,7 @@ JNIEXPORT jdouble JNICALL Java_org_jblas_NativeBlas_dzasum(JNIEnv *env, jclass t
 
 JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_sasum(JNIEnv *env, jclass this, jint n, jfloatArray sx, jint sxIdx, jint incx)
 {
-  extern jdouble sasum_(jint *, jfloat *, jint *);
+  extern jfloat sasum_(jint *, jfloat *, jint *);
   
   jfloat *sxPtrBase = 0, *sxPtr = 0;
   if (sx) {
@@ -1096,7 +1096,7 @@ JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_sasum(JNIEnv *env, jclass thi
 
 JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_scasum(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx)
 {
-  extern jdouble scasum_(jint *, jfloat *, jint *);
+  extern jfloat scasum_(jint *, jfloat *, jint *);
   
   jfloat *cxPtrBase = 0, *cxPtr = 0;
   if (cx) {
