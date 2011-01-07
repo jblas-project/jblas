@@ -149,6 +149,15 @@ public class SanityChecks {
         check("checking existence of dgesvd...", true);
     }
 
+    public static void checkGeneralizedEigenvalues() {
+        DoubleMatrix A = new DoubleMatrix(3, 3, 2.0, 1.0, 0.0, 1.0, 2.0, 1.0, 0.0, 1.0, 2.0);
+        DoubleMatrix B = new DoubleMatrix(3, 3, 4.0, 2.0, 1.0, 2.0, 4.0, 2.0, 1.0, 2.0, 4.0);
+
+        DoubleMatrix[] LA = org.jblas.Eigen.symmetricGeneralizedEigenvectors(A, B);
+
+        check("checkign existence of gsygvd...", true);
+    }
+
     public static void checkComplexReturnValues() {
         double[] data = new double[] {
             1.0, 2.0, 3.0, 4.0, 5.0, 6.0
