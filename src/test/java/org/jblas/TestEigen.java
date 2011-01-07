@@ -44,6 +44,8 @@ import junit.framework.TestCase;
 import org.jblas.util.Logger;
 
 /**
+ * Test Class for org.jblas.Eigen
+ * 
  * @author mikio
  */
 public class TestEigen extends TestCase {
@@ -88,5 +90,9 @@ public class TestEigen extends TestCase {
         DoubleMatrix RHS = B.mmul(V).mmul(DoubleMatrix.diag(L));
 
         assertEquals(0.0, LHS.sub(RHS).normmax(), 1e-3);
+
+        DoubleMatrix eigenvalues = Eigen.symmetricGeneralizedEigenvalues(A, B);
+
+        assertEquals(0.0, eigenvalues.sub(L).normmax(), 1e-3);
     }
 }

@@ -39,15 +39,15 @@ package org.jblas;
 import junit.framework.TestCase;
 
 public class TestSolve extends TestCase {
-	public void testFaultySolveSymmetric() {
-		DoubleMatrix A = new DoubleMatrix(3, 3, 2d, 1d, 0d, 2d, 1d, 2d, 0d, 1d, 2d);
-		DoubleMatrix x = new DoubleMatrix(1, 3, 1d, 2d, 3d);
+    public void testFaultySolveSymmetric() {
+        DoubleMatrix A = new DoubleMatrix(3, 3, 2d, 1d, 0d, 2d, 1d, 2d, 0d, 1d, 2d);
+        DoubleMatrix x = new DoubleMatrix(1, 3, 1d, 2d, 3d);
 
-                try {
-                    Solve.solveSymmetric(A, x);
-                    assertTrue(false);
-                } catch(IllegalArgumentException ex) {
-                    assertEquals("XERBLA: Error on argument 8 (LDB) in DSYSV", ex.getMessage());
-                }
-	}
+        try {
+            Solve.solveSymmetric(A, x);
+            assertTrue(false);
+        } catch (IllegalArgumentException ex) {
+            assertEquals("XERBLA: Error on argument 8 (LDB) in DSYSV", ex.getMessage());
+        }
+    }
 }

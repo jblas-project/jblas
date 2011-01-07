@@ -376,8 +376,8 @@ public class SimpleBlas {
         return info;
     }
 
-    public static int sygvd(int itype, char jobz, char uplo, DoubleMatrix A, DoubleMatrix B, double[] w) {
-        int info = NativeBlas.dsygvd(itype, jobz, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, w, 0);
+    public static int sygvd(int itype, char jobz, char uplo, DoubleMatrix A, DoubleMatrix B, DoubleMatrix W) {
+        int info = NativeBlas.dsygvd(itype, jobz, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, W.data, 0);
         if (info == 0)
             return 0;
         else {
@@ -711,8 +711,8 @@ public class SimpleBlas {
         return info;
     }
 
-    public static int sygvd(int itype, char jobz, char uplo, FloatMatrix A, FloatMatrix B, float[] w) {
-        int info = NativeBlas.ssygvd(itype, jobz, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, w, 0);
+    public static int sygvd(int itype, char jobz, char uplo, FloatMatrix A, FloatMatrix B, FloatMatrix W) {
+        int info = NativeBlas.ssygvd(itype, jobz, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, W.data, 0);
         if (info == 0)
             return 0;
         else {

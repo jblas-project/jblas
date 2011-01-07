@@ -117,24 +117,38 @@ public class Eigen {
         return new ComplexDoubleMatrix[]{V, ComplexDoubleMatrix.diag(E)};
     }
 
+    /**
+     * Compute generalized eigenvalues of the problem A x = L B x.
+     *
+     * @param A symmetric Matrix A. Only the upper triangle will be considered.
+     * @param B symmetric Matrix B. Only the upper triangle will be considered.
+     * @return a vector of eigenvalues L.
+     */
+    public static DoubleMatrix symmetricGeneralizedEigenvalues(DoubleMatrix A, DoubleMatrix B) {
+        A.assertSquare();
+        B.assertSquare();
+        DoubleMatrix W = new DoubleMatrix(A.rows);
+        SimpleBlas.sygvd(1, 'N', 'U', A.dup(), B.dup(), W);
+        return W;
+    }
 
     /**
      * Solve a general problem A x = L B x.
      *
-     * @param a symmetric matrix A
-     * @param b symmetric matrix B
+     * @param A symmetric matrix A
+     * @param B symmetric matrix B
      * @return an array of matrices of length two. The first one is an array of the eigenvectors X
-     *         The second one is a vector containing the corresponding eigenvalues L.
+     *         The second one is A vector containing the corresponding eigenvalues L.
      */
-    public static DoubleMatrix[] symmetricGeneralizedEigenvectors(DoubleMatrix a, DoubleMatrix b) {
-        a.assertSquare();
-        b.assertSquare();
+    public static DoubleMatrix[] symmetricGeneralizedEigenvectors(DoubleMatrix A, DoubleMatrix B) {
+        A.assertSquare();
+        B.assertSquare();
         DoubleMatrix[] result = new DoubleMatrix[2];
-        DoubleMatrix A = a.dup();
-        DoubleMatrix B = b.dup();
-        DoubleMatrix W = new DoubleMatrix(A.rows);
-        SimpleBlas.sygvd(1, 'V', 'U', A, B, W.data);
-        result[0] = A;
+        DoubleMatrix dA = A.dup();
+        DoubleMatrix dB = B.dup();
+        DoubleMatrix W = new DoubleMatrix(dA.rows);
+        SimpleBlas.sygvd(1, 'V', 'U', dA, dB, W);
+        result[0] = dA;
         result[1] = W;
         return result;
     }
@@ -216,24 +230,38 @@ public class Eigen {
         return new ComplexFloatMatrix[]{V, ComplexFloatMatrix.diag(E)};
     }
 
+    /**
+     * Compute generalized eigenvalues of the problem A x = L B x.
+     *
+     * @param A symmetric Matrix A. Only the upper triangle will be considered.
+     * @param B symmetric Matrix B. Only the upper triangle will be considered.
+     * @return a vector of eigenvalues L.
+     */
+    public static FloatMatrix symmetricGeneralizedEigenvalues(FloatMatrix A, FloatMatrix B) {
+        A.assertSquare();
+        B.assertSquare();
+        FloatMatrix W = new FloatMatrix(A.rows);
+        SimpleBlas.sygvd(1, 'N', 'U', A.dup(), B.dup(), W);
+        return W;
+    }
 
     /**
      * Solve a general problem A x = L B x.
      *
-     * @param a symmetric matrix A
-     * @param b symmetric matrix B
+     * @param A symmetric matrix A
+     * @param B symmetric matrix B
      * @return an array of matrices of length two. The first one is an array of the eigenvectors X
-     *         The second one is a vector containing the corresponding eigenvalues L.
+     *         The second one is A vector containing the corresponding eigenvalues L.
      */
-    public static FloatMatrix[] symmetricGeneralizedEigenvectors(FloatMatrix a, FloatMatrix b) {
-        a.assertSquare();
-        b.assertSquare();
+    public static FloatMatrix[] symmetricGeneralizedEigenvectors(FloatMatrix A, FloatMatrix B) {
+        A.assertSquare();
+        B.assertSquare();
         FloatMatrix[] result = new FloatMatrix[2];
-        FloatMatrix A = a.dup();
-        FloatMatrix B = b.dup();
-        FloatMatrix W = new FloatMatrix(A.rows);
-        SimpleBlas.sygvd(1, 'V', 'U', A, B, W.data);
-        result[0] = A;
+        FloatMatrix dA = A.dup();
+        FloatMatrix dB = B.dup();
+        FloatMatrix W = new FloatMatrix(dA.rows);
+        SimpleBlas.sygvd(1, 'V', 'U', dA, dB, W);
+        result[0] = dA;
         result[1] = W;
         return result;
     }
