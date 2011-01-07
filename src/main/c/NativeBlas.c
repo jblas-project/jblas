@@ -63,37 +63,35 @@ static jobject createObject(JNIEnv *env, const char *className, const char *sign
 }
 
 
-typedef struct { float real, imag; } ComplexFloat;
-typedef struct { double real, imag; } ComplexDouble;
+#include <complex.h>
+typedef float complex ComplexFloat;
+typedef double complex ComplexDouble;
 
-static jobject createComplexFloat(JNIEnv *env, ComplexFloat *fc)
-{
-  return createObject(env, CORE_PACKAGE "ComplexFloat", "(FF)V", fc->real, fc->imag);
+static jobject createComplexFloat(JNIEnv *env, ComplexFloat fc) {
+  return createObject(env, CORE_PACKAGE "ComplexFloat", "(FF)V", crealf(fc), cimagf(fc));
 }
 
-static jobject createComplexDouble(JNIEnv *env, ComplexDouble *dc)
+static jobject createComplexDouble(JNIEnv *env, ComplexDouble dc)
 {
-  return createObject(env, CORE_PACKAGE "ComplexDouble", "(DD)V", dc->real, dc->imag);
+  return createObject(env, CORE_PACKAGE "ComplexDouble", "(DD)V", creal(dc), cimag(dc));
 }
 
-static void getComplexFloat(JNIEnv *env, jobject fc, ComplexFloat *result)
+static ComplexFloat getComplexFloat(JNIEnv *env, jobject fc)
 {
   jclass klass = (*env)->FindClass(env, CORE_PACKAGE "ComplexFloat");
   jfieldID reField = (*env)->GetFieldID(env, klass, "r", "F");
   jfieldID imField = (*env)->GetFieldID(env, klass, "i", "F");
 
-  result->real = (*env)->GetFloatField(env, fc, reField);
-  result->imag = (*env)->GetFloatField(env, fc, imField);
+  return (*env)->GetFloatField(env, fc, reField) + I*(*env)->GetFloatField(env, fc, imField);
 }
 
-static void getComplexDouble(JNIEnv *env, jobject dc, ComplexDouble *result)
+static ComplexDouble getComplexDouble(JNIEnv *env, jobject dc)
 {
   jclass klass = (*env)->FindClass(env, CORE_PACKAGE "ComplexDouble");
   jfieldID reField = (*env)->GetFieldID(env, klass, "r", "D");
   jfieldID imField = (*env)->GetFieldID(env, klass, "i", "D");
 
-  result->real = (*env)->GetDoubleField(env, dc, reField);
-  result->imag = (*env)->GetDoubleField(env, dc, imField);
+  return (*env)->GetDoubleField(env, dc, reField) + I*(*env)->GetDoubleField(env, dc, imField);
 }
 
 
@@ -500,10 +498,10 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zswap(JNIEnv *env, jclass this,
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_caxpy(JNIEnv *env, jclass this, jint n, jobject ca, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
 {
-  extern void caxpy_(jint *, ComplexFloat *, jfloat *, jint *, jfloat *, jint *);
+  extern void caxpy_(jint *, float complex *, jfloat *, jint *, jfloat *, jint *);
   
-  ComplexFloat caCplx;
-  getComplexFloat(env, ca, &caCplx);
+  float complex caCplx;
+  caCplx = getComplexFloat(env, ca);
   jfloat *cxPtrBase = 0, *cxPtr = 0;
   if (cx) {
     cxPtrBase = (*env)->GetFloatArrayElements(env, cx, NULL);
@@ -601,10 +599,10 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_saxpy(JNIEnv *env, jclass this,
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zaxpy(JNIEnv *env, jclass this, jint n, jobject za, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
 {
-  extern void zaxpy_(jint *, ComplexDouble *, jdouble *, jint *, jdouble *, jint *);
+  extern void zaxpy_(jint *, double complex *, jdouble *, jint *, jdouble *, jint *);
   
-  ComplexDouble zaCplx;
-  getComplexDouble(env, za, &zaCplx);
+  double complex zaCplx;
+  zaCplx = getComplexDouble(env, za);
   jdouble *zxPtrBase = 0, *zxPtr = 0;
   if (zx) {
     zxPtrBase = (*env)->GetDoubleArrayElements(env, zx, NULL);
@@ -636,10 +634,10 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zaxpy(JNIEnv *env, jclass this,
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cscal(JNIEnv *env, jclass this, jint n, jobject ca, jfloatArray cx, jint cxIdx, jint incx)
 {
-  extern void cscal_(jint *, ComplexFloat *, jfloat *, jint *);
+  extern void cscal_(jint *, float complex *, jfloat *, jint *);
   
-  ComplexFloat caCplx;
-  getComplexFloat(env, ca, &caCplx);
+  float complex caCplx;
+  caCplx = getComplexFloat(env, ca);
   jfloat *cxPtrBase = 0, *cxPtr = 0;
   if (cx) {
     cxPtrBase = (*env)->GetFloatArrayElements(env, cx, NULL);
@@ -695,10 +693,10 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_sscal(JNIEnv *env, jclass this,
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zscal(JNIEnv *env, jclass this, jint n, jobject za, jdoubleArray zx, jint zxIdx, jint incx)
 {
-  extern void zscal_(jint *, ComplexDouble *, jdouble *, jint *);
+  extern void zscal_(jint *, double complex *, jdouble *, jint *);
   
-  ComplexDouble zaCplx;
-  getComplexDouble(env, za, &zaCplx);
+  double complex zaCplx;
+  zaCplx = getComplexDouble(env, za);
   jdouble *zxPtrBase = 0, *zxPtr = 0;
   if (zx) {
     zxPtrBase = (*env)->GetDoubleArrayElements(env, zx, NULL);
@@ -754,9 +752,8 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zdscal(JNIEnv *env, jclass this
 
 JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_cdotc(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
 {
-  extern void cdotc_(ComplexFloat *, jint *, jfloat *, jint *, jfloat *, jint *);
+  extern float complex cdotc_(jint *, jfloat *, jint *, jfloat *, jint *);
   
-  ComplexFloat retval;
   jfloat *cxPtrBase = 0, *cxPtr = 0;
   if (cx) {
     cxPtrBase = (*env)->GetFloatArrayElements(env, cx, NULL);
@@ -772,7 +769,7 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_cdotc(JNIEnv *env, jclass th
   }
 
   savedEnv = env;
-  cdotc_(&retval, &n, cxPtr, &incx, cyPtr, &incy);
+  float complex retval = cdotc_(&n, cxPtr, &incx, cyPtr, &incy);
   if(cyPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, cy, cyPtrBase, 0);
     if (cyPtrBase == cxPtrBase)
@@ -784,14 +781,13 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_cdotc(JNIEnv *env, jclass th
     cxPtrBase = 0;
   }
 
-  return createComplexFloat(env, &retval);
+  return createComplexFloat(env, retval);
 }
 
 JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_cdotu(JNIEnv *env, jclass this, jint n, jfloatArray cx, jint cxIdx, jint incx, jfloatArray cy, jint cyIdx, jint incy)
 {
-  extern void cdotu_(ComplexFloat *, jint *, jfloat *, jint *, jfloat *, jint *);
+  extern float complex cdotu_(jint *, jfloat *, jint *, jfloat *, jint *);
   
-  ComplexFloat retval;
   jfloat *cxPtrBase = 0, *cxPtr = 0;
   if (cx) {
     cxPtrBase = (*env)->GetFloatArrayElements(env, cx, NULL);
@@ -807,7 +803,7 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_cdotu(JNIEnv *env, jclass th
   }
 
   savedEnv = env;
-  cdotu_(&retval, &n, cxPtr, &incx, cyPtr, &incy);
+  float complex retval = cdotu_(&n, cxPtr, &incx, cyPtr, &incy);
   if(cyPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, cy, cyPtrBase, 0);
     if (cyPtrBase == cxPtrBase)
@@ -819,7 +815,7 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_cdotu(JNIEnv *env, jclass th
     cxPtrBase = 0;
   }
 
-  return createComplexFloat(env, &retval);
+  return createComplexFloat(env, retval);
 }
 
 JNIEXPORT jdouble JNICALL Java_org_jblas_NativeBlas_ddot(JNIEnv *env, jclass this, jint n, jdoubleArray dx, jint dxIdx, jint incx, jdoubleArray dy, jint dyIdx, jint incy)
@@ -892,9 +888,8 @@ JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_sdot(JNIEnv *env, jclass this
 
 JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_zdotc(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
 {
-  extern void zdotc_(ComplexDouble *, jint *, jdouble *, jint *, jdouble *, jint *);
+  extern double complex zdotc_(jint *, jdouble *, jint *, jdouble *, jint *);
   
-  ComplexDouble retval;
   jdouble *zxPtrBase = 0, *zxPtr = 0;
   if (zx) {
     zxPtrBase = (*env)->GetDoubleArrayElements(env, zx, NULL);
@@ -910,7 +905,7 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_zdotc(JNIEnv *env, jclass th
   }
 
   savedEnv = env;
-  zdotc_(&retval, &n, zxPtr, &incx, zyPtr, &incy);
+  double complex retval = zdotc_(&n, zxPtr, &incx, zyPtr, &incy);
   if(zyPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, zy, zyPtrBase, 0);
     if (zyPtrBase == zxPtrBase)
@@ -922,14 +917,13 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_zdotc(JNIEnv *env, jclass th
     zxPtrBase = 0;
   }
 
-  return createComplexDouble(env, &retval);
+  return createComplexDouble(env, retval);
 }
 
 JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_zdotu(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx, jdoubleArray zy, jint zyIdx, jint incy)
 {
-  extern void zdotu_(ComplexDouble *, jint *, jdouble *, jint *, jdouble *, jint *);
+  extern double complex zdotu_(jint *, jdouble *, jint *, jdouble *, jint *);
   
-  ComplexDouble retval;
   jdouble *zxPtrBase = 0, *zxPtr = 0;
   if (zx) {
     zxPtrBase = (*env)->GetDoubleArrayElements(env, zx, NULL);
@@ -945,7 +939,7 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_zdotu(JNIEnv *env, jclass th
   }
 
   savedEnv = env;
-  zdotu_(&retval, &n, zxPtr, &incx, zyPtr, &incy);
+  double complex retval = zdotu_(&n, zxPtr, &incx, zyPtr, &incy);
   if(zyPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, zy, zyPtrBase, 0);
     if (zyPtrBase == zxPtrBase)
@@ -957,7 +951,7 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_zdotu(JNIEnv *env, jclass th
     zxPtrBase = 0;
   }
 
-  return createComplexDouble(env, &retval);
+  return createComplexDouble(env, retval);
 }
 
 JNIEXPORT jdouble JNICALL Java_org_jblas_NativeBlas_dnrm2(JNIEnv *env, jclass this, jint n, jdoubleArray x, jint xIdx, jint incx)
@@ -1202,11 +1196,11 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_izamax(JNIEnv *env, jclass this
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cgemv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray x, jint xIdx, jint incx, jobject beta, jfloatArray y, jint yIdx, jint incy)
 {
-  extern void cgemv_(char *, jint *, jint *, ComplexFloat *, jfloat *, jint *, jfloat *, jint *, ComplexFloat *, jfloat *, jint *);
+  extern void cgemv_(char *, jint *, jint *, float complex *, jfloat *, jint *, jfloat *, jint *, float complex *, jfloat *, jint *);
   
   char transChr = (char) trans;
-  ComplexFloat alphaCplx;
-  getComplexFloat(env, alpha, &alphaCplx);
+  float complex alphaCplx;
+  alphaCplx = getComplexFloat(env, alpha);
   jfloat *aPtrBase = 0, *aPtr = 0;
   if (a) {
     aPtrBase = (*env)->GetFloatArrayElements(env, a, NULL);
@@ -1220,8 +1214,8 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cgemv(JNIEnv *env, jclass this,
       xPtrBase = (*env)->GetFloatArrayElements(env, x, NULL);
     xPtr = xPtrBase + 2*xIdx;
   }
-  ComplexFloat betaCplx;
-  getComplexFloat(env, beta, &betaCplx);
+  float complex betaCplx;
+  betaCplx = getComplexFloat(env, beta);
   jfloat *yPtrBase = 0, *yPtr = 0;
   if (y) {
     if((*env)->IsSameObject(env, y, a) == JNI_TRUE)
@@ -1365,11 +1359,11 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_sgemv(JNIEnv *env, jclass this,
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgemv(JNIEnv *env, jclass this, jchar trans, jint m, jint n, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray x, jint xIdx, jint incx, jobject beta, jdoubleArray y, jint yIdx, jint incy)
 {
-  extern void zgemv_(char *, jint *, jint *, ComplexDouble *, jdouble *, jint *, jdouble *, jint *, ComplexDouble *, jdouble *, jint *);
+  extern void zgemv_(char *, jint *, jint *, double complex *, jdouble *, jint *, jdouble *, jint *, double complex *, jdouble *, jint *);
   
   char transChr = (char) trans;
-  ComplexDouble alphaCplx;
-  getComplexDouble(env, alpha, &alphaCplx);
+  double complex alphaCplx;
+  alphaCplx = getComplexDouble(env, alpha);
   jdouble *aPtrBase = 0, *aPtr = 0;
   if (a) {
     aPtrBase = (*env)->GetDoubleArrayElements(env, a, NULL);
@@ -1383,8 +1377,8 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgemv(JNIEnv *env, jclass this,
       xPtrBase = (*env)->GetDoubleArrayElements(env, x, NULL);
     xPtr = xPtrBase + 2*xIdx;
   }
-  ComplexDouble betaCplx;
-  getComplexDouble(env, beta, &betaCplx);
+  double complex betaCplx;
+  betaCplx = getComplexDouble(env, beta);
   jdouble *yPtrBase = 0, *yPtr = 0;
   if (y) {
     if((*env)->IsSameObject(env, y, a) == JNI_TRUE)
@@ -1422,10 +1416,10 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgemv(JNIEnv *env, jclass this,
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cgerc(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
 {
-  extern void cgerc_(jint *, jint *, ComplexFloat *, jfloat *, jint *, jfloat *, jint *, jfloat *, jint *);
+  extern void cgerc_(jint *, jint *, float complex *, jfloat *, jint *, jfloat *, jint *, jfloat *, jint *);
   
-  ComplexFloat alphaCplx;
-  getComplexFloat(env, alpha, &alphaCplx);
+  float complex alphaCplx;
+  alphaCplx = getComplexFloat(env, alpha);
   jfloat *xPtrBase = 0, *xPtr = 0;
   if (x) {
     xPtrBase = (*env)->GetFloatArrayElements(env, x, NULL);
@@ -1476,10 +1470,10 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cgerc(JNIEnv *env, jclass this,
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cgeru(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jfloatArray x, jint xIdx, jint incx, jfloatArray y, jint yIdx, jint incy, jfloatArray a, jint aIdx, jint lda)
 {
-  extern void cgeru_(jint *, jint *, ComplexFloat *, jfloat *, jint *, jfloat *, jint *, jfloat *, jint *);
+  extern void cgeru_(jint *, jint *, float complex *, jfloat *, jint *, jfloat *, jint *, jfloat *, jint *);
   
-  ComplexFloat alphaCplx;
-  getComplexFloat(env, alpha, &alphaCplx);
+  float complex alphaCplx;
+  alphaCplx = getComplexFloat(env, alpha);
   jfloat *xPtrBase = 0, *xPtr = 0;
   if (x) {
     xPtrBase = (*env)->GetFloatArrayElements(env, x, NULL);
@@ -1634,10 +1628,10 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_sger(JNIEnv *env, jclass this, 
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgerc(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
 {
-  extern void zgerc_(jint *, jint *, ComplexDouble *, jdouble *, jint *, jdouble *, jint *, jdouble *, jint *);
+  extern void zgerc_(jint *, jint *, double complex *, jdouble *, jint *, jdouble *, jint *, jdouble *, jint *);
   
-  ComplexDouble alphaCplx;
-  getComplexDouble(env, alpha, &alphaCplx);
+  double complex alphaCplx;
+  alphaCplx = getComplexDouble(env, alpha);
   jdouble *xPtrBase = 0, *xPtr = 0;
   if (x) {
     xPtrBase = (*env)->GetDoubleArrayElements(env, x, NULL);
@@ -1688,10 +1682,10 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgerc(JNIEnv *env, jclass this,
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgeru(JNIEnv *env, jclass this, jint m, jint n, jobject alpha, jdoubleArray x, jint xIdx, jint incx, jdoubleArray y, jint yIdx, jint incy, jdoubleArray a, jint aIdx, jint lda)
 {
-  extern void zgeru_(jint *, jint *, ComplexDouble *, jdouble *, jint *, jdouble *, jint *, jdouble *, jint *);
+  extern void zgeru_(jint *, jint *, double complex *, jdouble *, jint *, jdouble *, jint *, jdouble *, jint *);
   
-  ComplexDouble alphaCplx;
-  getComplexDouble(env, alpha, &alphaCplx);
+  double complex alphaCplx;
+  alphaCplx = getComplexDouble(env, alpha);
   jdouble *xPtrBase = 0, *xPtr = 0;
   if (x) {
     xPtrBase = (*env)->GetDoubleArrayElements(env, x, NULL);
@@ -1742,12 +1736,12 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgeru(JNIEnv *env, jclass this,
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cgemm(JNIEnv *env, jclass this, jchar transa, jchar transb, jint m, jint n, jint k, jobject alpha, jfloatArray a, jint aIdx, jint lda, jfloatArray b, jint bIdx, jint ldb, jobject beta, jfloatArray c, jint cIdx, jint ldc)
 {
-  extern void cgemm_(char *, char *, jint *, jint *, jint *, ComplexFloat *, jfloat *, jint *, jfloat *, jint *, ComplexFloat *, jfloat *, jint *);
+  extern void cgemm_(char *, char *, jint *, jint *, jint *, float complex *, jfloat *, jint *, jfloat *, jint *, float complex *, jfloat *, jint *);
   
   char transaChr = (char) transa;
   char transbChr = (char) transb;
-  ComplexFloat alphaCplx;
-  getComplexFloat(env, alpha, &alphaCplx);
+  float complex alphaCplx;
+  alphaCplx = getComplexFloat(env, alpha);
   jfloat *aPtrBase = 0, *aPtr = 0;
   if (a) {
     aPtrBase = (*env)->GetFloatArrayElements(env, a, NULL);
@@ -1761,8 +1755,8 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cgemm(JNIEnv *env, jclass this,
       bPtrBase = (*env)->GetFloatArrayElements(env, b, NULL);
     bPtr = bPtrBase + 2*bIdx;
   }
-  ComplexFloat betaCplx;
-  getComplexFloat(env, beta, &betaCplx);
+  float complex betaCplx;
+  betaCplx = getComplexFloat(env, beta);
   jfloat *cPtrBase = 0, *cPtr = 0;
   if (c) {
     if((*env)->IsSameObject(env, c, a) == JNI_TRUE)
@@ -1908,12 +1902,12 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_sgemm(JNIEnv *env, jclass this,
 
 JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgemm(JNIEnv *env, jclass this, jchar transa, jchar transb, jint m, jint n, jint k, jobject alpha, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jobject beta, jdoubleArray c, jint cIdx, jint ldc)
 {
-  extern void zgemm_(char *, char *, jint *, jint *, jint *, ComplexDouble *, jdouble *, jint *, jdouble *, jint *, ComplexDouble *, jdouble *, jint *);
+  extern void zgemm_(char *, char *, jint *, jint *, jint *, double complex *, jdouble *, jint *, jdouble *, jint *, double complex *, jdouble *, jint *);
   
   char transaChr = (char) transa;
   char transbChr = (char) transb;
-  ComplexDouble alphaCplx;
-  getComplexDouble(env, alpha, &alphaCplx);
+  double complex alphaCplx;
+  alphaCplx = getComplexDouble(env, alpha);
   jdouble *aPtrBase = 0, *aPtr = 0;
   if (a) {
     aPtrBase = (*env)->GetDoubleArrayElements(env, a, NULL);
@@ -1927,8 +1921,8 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgemm(JNIEnv *env, jclass this,
       bPtrBase = (*env)->GetDoubleArrayElements(env, b, NULL);
     bPtr = bPtrBase + 2*bIdx;
   }
-  ComplexDouble betaCplx;
-  getComplexDouble(env, beta, &betaCplx);
+  double complex betaCplx;
+  betaCplx = getComplexDouble(env, beta);
   jdouble *cPtrBase = 0, *cPtr = 0;
   if (c) {
     if((*env)->IsSameObject(env, c, a) == JNI_TRUE)
