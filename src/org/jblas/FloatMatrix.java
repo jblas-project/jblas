@@ -91,8 +91,8 @@ import java.util.List;
  * <tr><th>Method<th>Description
  * <tr><td>FloatMatrix(m)<td>Constructs a column vector.
  * <tr><td>FloatMatrix(new float[] {value1, value2, ...})<td>Constructs a column vector.
- * <tr><td>FloatMatrix.zeros(m) <td>Initial values set to 1.0f.
- * <tr><td>FloatMatrix.ones(m) <td>Initial values set to 0.0f.
+ * <tr><td>FloatMatrix.zeros(m) <td>Initial values set to 0.0f.
+ * <tr><td>FloatMatrix.ones(m) <td>Initial values set to 1.0f.
  * <tr><td>FloatMatrix.rand(m) <td>Values drawn at random between 0.0f and 1.0f.
  * <tr><td>FloatMatrix.randn(m) <td>Values drawn from normal distribution.
  * </table>
@@ -645,13 +645,36 @@ public class FloatMatrix implements Serializable {
         cs.init(0, columns);
         FloatMatrix result = new FloatMatrix(rs.length(), cs.length());
 
-        for (; !rs.hasMore(); rs.next()) {
-            for (; !cs.hasMore(); cs.next()) {
+        for (; rs.hasMore(); rs.next()) {
+            for (; cs.hasMore(); cs.next()) {
                 result.put(rs.index(), cs.index(), get(rs.value(), cs.value()));
             }
         }
 
         return result;
+    }
+
+    public FloatMatrix get(Range rs, int c) {
+        rs.init(0, rows);
+        FloatMatrix result = new FloatMatrix(rs.length(), 1);
+
+        for (; rs.hasMore(); rs.next()) {
+            result.put(rs.index(), 0, get(rs.value(), c));
+        }
+
+        return result;
+    }
+
+    public FloatMatrix get(int r, Range cs) {
+        cs.init(0, columns);
+        FloatMatrix result = new FloatMatrix(1, cs.length());
+
+        for (; cs.hasMore(); cs.next()) {
+            result.put(0, cs.index(), get(r, cs.value()));
+        }
+
+        return result;
+
     }
 
     /** Get elements specified by the non-zero entries of the passed matrix. */
@@ -811,6 +834,7 @@ public class FloatMatrix implements Serializable {
             throw new SizeException("Matrix does not have the necessary number of columns (" + columns + " != " + c + ").");
         }
     }
+
 
     /** Set elements in linear ordering in the specified indices. */
     public FloatMatrix put(int[] indices, FloatMatrix x) {

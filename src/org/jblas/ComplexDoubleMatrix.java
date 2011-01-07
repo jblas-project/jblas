@@ -583,14 +583,44 @@ public class ComplexDoubleMatrix {
 	/** Return transposed copy of this matrix */
 	public ComplexDoubleMatrix transpose() {
 		ComplexDoubleMatrix result = new ComplexDoubleMatrix(columns, rows);
-		
+
+                ComplexDouble c = new ComplexDouble(0);
+
 		for (int i = 0; i < rows; i++)
 			for (int j = 0; j < columns; j++)
-				result.put(j, i, get(i, j));
+				result.put(j, i, get(i, j, c));
 		
 		return result;
 	}
-	
+
+        public ComplexDoubleMatrix hermitian() {
+            ComplexDoubleMatrix result = new ComplexDoubleMatrix(columns, rows);
+
+            ComplexDouble c = new ComplexDouble(0);
+
+            for (int i = 0; i < rows; i++)
+                for (int j = 0; j < columns; j++)
+                    result.put(j, i, get(i, j, c).conji());
+            return result;
+        }
+
+        /**
+         * Compute complex conjugate (in-place).
+         */
+        public ComplexDoubleMatrix conji() {
+            ComplexDouble c = new ComplexDouble(0.0);
+            for (int i = 0; i < length; i++)
+                put(i, get(i, c).conji());
+            return this;
+        }
+
+        /**
+         * Compute complex conjugate.
+         */
+        public ComplexDoubleMatrix conj() {
+            return dup().conji();
+        }
+
 		
 	/** Compare two matrices.
 	 * @param o Object to compare to
@@ -735,6 +765,11 @@ public class ComplexDoubleMatrix {
             int i = 2*index(rowIndex, columnIndex);
             return new ComplexDouble(data[i], data[i+1]);
 	}
+
+        /** Get matrix element, passing the variable to store the result. */
+        public ComplexDouble get(int rowIndex, int columnIndex, ComplexDouble result) {
+            return get(index(rowIndex, columnIndex), result);
+        }
 	
 	public DoubleMatrix getReal() {
 		DoubleMatrix result = new DoubleMatrix(rows, columns);
@@ -1206,13 +1241,6 @@ public class ComplexDoubleMatrix {
 	public ComplexDoubleMatrix truth() {
 		return dup().truthi();
 	}
-        
-        public ComplexDoubleMatrix conji() {
-            ComplexDouble c = new ComplexDouble(0.0);
-            for (int i = 0; i < length; i++)
-                put(i, get(i, c).conji());
-            return this;
-        }
 
 	/****************************************************************
 	 * Rank one-updates
@@ -1269,12 +1297,12 @@ public class ComplexDoubleMatrix {
 		return sum().div((double)length);
 	}
 	
-	/* computes this^T * other */
+	/** Computes this^T * other */
 	public ComplexDouble dotc(ComplexDoubleMatrix other) {
 		return SimpleBlas.dotc(this, other);
 	}
 	
-	/* computs this^H * other */
+	/** Computes this^H * other */
 	public ComplexDouble dotu(ComplexDoubleMatrix other) {
 		return SimpleBlas.dotu(this, other);
 	}

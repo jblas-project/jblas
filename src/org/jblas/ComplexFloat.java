@@ -36,8 +36,6 @@
 
 package org.jblas;
 
-import static java.lang.Math.sqrt;
-
 import java.nio.FloatBuffer;
 
 /**
@@ -255,7 +253,12 @@ public class ComplexFloat {
 
     /** Return the absolute value */
     public float abs() {
-        return (float) sqrt(r * r + i * i);
+        return (float) Math.sqrt(r * r + i * i);
+    }
+
+    /** Returns the argument of a complex number. */
+    public float arg() {
+        return (float) Math.acos(r/abs());
     }
 
     public ComplexFloat invi() {
@@ -286,6 +289,14 @@ public class ComplexFloat {
     
     public ComplexFloat conj() {
         return dup().conji();
+    }
+
+    public ComplexFloat sqrt() {
+        float a = abs();
+        float s2 = (float)Math.sqrt(2);
+        float p = (float)Math.sqrt(a + r)/s2;
+        float q = (float)Math.sqrt(a - r)/s2 * Math.signum(i);
+        return new ComplexFloat(p, q);
     }
     
     /**

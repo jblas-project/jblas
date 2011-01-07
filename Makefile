@@ -32,7 +32,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## --- END LICENSE BLOCK ---
 
-VERSION=1.1
+VERSION=1.1.1
 
 ######################################################################
 #
@@ -132,7 +132,8 @@ generated-sources: \
 	$(LAPACK)/[sdcz]geev.f \
 	$(LAPACK)/[sd]getrf.f \
 	$(LAPACK)/[sd]potrf.f \
-	$(LAPACK)/[sdcz]gesvd.f
+	$(LAPACK)/[sdcz]gesvd.f \
+	$(LAPACK)/[sd]sygvd.f 
 	ant javah
 	touch $@
 

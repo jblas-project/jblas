@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- Define directories -->
 
-    <property name="version" value="1.1" />
+    <property name="version" value="1.1.2" />
     <property name="src" value="${basedir}/src" />
     <property name="test" value="${basedir}/test" />
     <property name="bin" value="${basedir}/bin" />
@@ -98,6 +98,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                     <attribute name="Main-Class" value="org.jblas.benchmark.Main" />
                 </manifest>
             </jar>
+        </sequential>
+    </macrodef>
+    <macrodef name="rb-macro" description="Run the ruby macro precessor.">
+        <attribute name="definitions" />
+        <attribute name="file" />
+        <sequential>
+            <exec executable="ruby">
+                <arg line="-I templates scripts/macro.rb templates/@{definitions}.rb templates/@{file} src/@{file}" />
+            </exec>
         </sequential>
     </macrodef>
 
@@ -171,6 +180,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <rjpp file="src/org/jblas/MatrixFunctions.java"/>
         <rjpp file="src/org/jblas/ComplexDoubleMatrix.java"/>
     </target>
+    <target name="templates" description="Generate code from templates">
+        <rb-macro definitions="general" file="org/jblas/Matrix.java" />
+    </target>
+
 
     <!-- jar files -->
 

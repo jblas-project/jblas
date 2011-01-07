@@ -41,27 +41,52 @@
 package org.jblas;
 
 import junit.framework.TestCase;
+import org.jblas.util.Logger;
 
 /**
- *
  * @author mikio
  */
 public class TestEigen extends TestCase {
 
     public TestEigen(String testName) {
         super(testName);
+        Logger.getLogger().setLevel(Logger.DEBUG);
     }
 
     public void testEigenvalues() {
         DoubleMatrix A = new DoubleMatrix(2, 2, 3.0, -3.0, 1.0, 1.0);
 
         ComplexDoubleMatrix E = Eigen.eigenvalues(A);
-        
+
         //System.out.printf("E = %s\n", E.toString());
-        
+
         ComplexDoubleMatrix[] EV = Eigen.eigenvectors(A);
-        
+
         //System.out.printf("values = %s\n", EV[1].toString());
         //System.out.printf("vectors = %s\n", EV[0].toString());
+    }
+
+    public void testSymmetricEigenvalues() {
+        DoubleMatrix A = new DoubleMatrix(new double[][]{
+                {3.0, 1.0, 0.5},
+                {1.0, 3.0, 1.0},
+                {0.5, 1.0, 3.0}
+        });
+
+        DoubleMatrix B = new DoubleMatrix(new double[][]{
+                {2.0, 0.1, 0.0},
+                {0.1, 2.0, 0.1},
+                {0.0, 0.1, 2.0}
+        });
+
+        DoubleMatrix[] results = Eigen.symmetricGeneralizedEigenvectors(A, B);
+
+        DoubleMatrix V = results[0];
+        DoubleMatrix L = results[1];
+
+        DoubleMatrix LHS = A.mmul(V);
+        DoubleMatrix RHS = B.mmul(V).mmul(DoubleMatrix.diag(L));
+
+        assertEquals(0.0, LHS.sub(RHS).normmax(), 1e-3);
     }
 }
