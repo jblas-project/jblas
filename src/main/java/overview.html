@@ -1,0 +1,90 @@
+<html><body><h1>jblas &#8211; Linear Algebra for Java</h1>
+<p><em>If you are really impatient, I&#8217;d suggest you read the Classes
+Overview below and otherwise stick to the <span class="caps">API</span> Documentation for the
+classes like <a href="org/jblas/DoubleMatrix.html">DoubleMatrix</a>.</em></p>
+<p>The main goals of jblas were to provide very high performance, close
+to what you get from state-of-the-art <span class="caps">BLAS</span> and <span class="caps">LAPACK</span> libraries, and
+easy of use, which means that in the ideal case, you can just
+mechanically translate a matrix expression from formulas to Java
+code.</p>
+<p>In all brevity, here is what you need to know to get started:</p>
+<ul>
+	<li>There exist four classes: <a href="org/jblas/ComplexFloatMatrix.html">FloatMatrix</a>, <a href="org/jblas/DoubleMatrix.html">DoubleMatrix</a>,
+  <a href="org/jblas/ComplexFloatMatrix.html">ComplexFloatMatrix</a> and <a href="org/jblas/ComplexDoubleMatrix.html">ComplexDoubleMatrix</a> in the package
+  <code>org.jblas</code> which represent real and complex matrices in single and
+  double precision.</li>
+</ul>
+<ul>
+	<li>Higher-level routines for solving equations, or computing
+  eigenvalues are grouped in classes like <a href="org/jblas/Eigen.html">Eigen</a>, <a href="org/jblas/Solve.html">Solve</a>, or <a href="org/jblas/Geometry.html">Geometry</a>.</li>
+</ul>
+<ul>
+	<li>To construct a new matrix, you can either use the constructor, or
+  one of the factory methods <code>ones</code> (constructs a matrix of all ones),
+  <code>zeros</code>, <code>rand</code> (entries uniformly distributed between 0 and 1),
+  <code>randn</code> (entries normally distributed), <code>eye</code> (unit matrix), <code>diag</code>
+  (matrix with given diagonal). Dimensions are specified in the order
+  &#8220;row&#8221;, &#8220;column&#8221;. The number of columns defaults to 1 if omitted
+  (meaning that you construct a row vector, if you supply just one
+  dimension).</li>
+</ul>
+<ul>
+	<li>To access elements, you use <code>put</code> and <code>get</code>. Methods also exist for
+  reading or writing a whole column, row, or submatrix.</li>
+</ul>
+<ul>
+	<li>There exist only two-dimensional matrices. Vectors are matrices
+  whose columns or rows are 0. This has turned out to be much more
+  convenient thatn having separated classes.</li>
+</ul>
+<ul>
+	<li>Every math operator maps to a short mnemonic name. For example, +
+  becomes <code>add</code>, &#8211; becomes <code>sub</code>, * becomes <code>mul</code>, / becomes <code>div</code>,
+  and so on.</li>
+</ul>
+<ul>
+	<li>Often, you can pass a double or float value, or a matric with only
+  one element as the argument to a method, for example, to add the
+  same value to all elements of the matrix.</li>
+</ul>
+<ul>
+	<li><code>mul</code> is element-wise multiplication. Matrix-matrix multiplication
+  is called <code>mmul</code>.</li>
+</ul>
+<ul>
+	<li>Often, you can add an &#8220;i&#8221; to a method to have it work &#8220;in-place&#8221;. For
+  example, <code>addi</code> is like <code>+=</code>.</li>
+</ul>
+<p>What is missing right now:</p>
+<ul>
+	<li>Right now, the four classes more or less exist next to each other,
+  with no abstract superclass. This makes the classes pretty
+  straightforward, but the downside is that you cannot have a function
+  which works with any kind of matrices.</li>
+</ul>
+<ul>
+	<li>No support for sparse matrices.</li>
+</ul>
+<ul>
+	<li>Not all of <span class="caps">LAPACK</span> is covered, only things I&#8217;m using myself. In
+  principle, there is little overhead in adding further functions as
+  the generation of wrappers is automatic, but I&#8217;d rather include a
+  function from <span class="caps">LAPACK</span> only after I&#8217;m sure it does what it&#8217;s supposed
+  to do. In other words, I&#8217;ll happily add anything somebody needs as
+  long as he can check whether the method works as it should.</li>
+</ul>
+<ul>
+	<li>Build only works for Windows (XP) with Cygwin and Linux. Mac OS X
+  would be most welcome, but I don&#8217;t have access to such a machine.</li>
+</ul>
+<ul>
+	<li>jblas uses double and float arrays to store the matrix. Whenever you
+  call a native function, the array is first copied. This means that
+  it doesn&#8217;t make much sense to call a native routine if its
+  computation is linear in the size of the data, but this includes
+  most of <span class="caps">BLAS</span> Level 1 and Level 2. jblas therefore uses Java
+  implementation for things like vector addition, or even
+  matrix-vector multiplication and is therefore not as fast as native
+  <span class="caps">BLAS</span>. Currently, I&#8217;m contemplating some caching schemes to improve
+  performance here.</li>
+</ul></body></html>

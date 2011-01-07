@@ -487,8 +487,12 @@ EOS
       end
 
       def make_fortran_return_type
-        if ctype == 'jfloat'
-          code.fortran_return_type << 'jdouble'
+        if false
+          if ctype == 'jfloat'
+            code.fortran_return_type << 'jdouble'
+          else
+            code.fortran_return_type << ctype
+          end
         else
           code.fortran_return_type << ctype
         end

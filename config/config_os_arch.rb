@@ -81,7 +81,7 @@ configure 'ARCH_FLAVOR' => 'OS_ARCH' do
     arch_flavor = ''
   end
 
-  if arch_flavor.empty?
+  if arch_flavor.empty? or arch_flavor == 'none'
     CONFIG['OS_ARCH_WITH_FLAVOR'] = CONFIG['OS_ARCH']
   else
     CONFIG['OS_ARCH_WITH_FLAVOR'] = CONFIG['OS_ARCH'] + File::SEPARATOR + arch_flavor

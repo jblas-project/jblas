@@ -41,15 +41,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- Define directories -->
 
-    <property name="version" value="1.1.2" />
-    <property name="src" value="${basedir}/src" />
-    <property name="test" value="${basedir}/test" />
-    <property name="bin" value="${basedir}/bin" />
-    <property name="native-libs" value="${basedir}/native-libs" />
+    <property name="version" value="1.2.0" />
+    <property name="src" value="${basedir}/src/main/java" />
+    <property name="test" value="${basedir}/src/test/java" />
+    <property name="bin" value="${basedir}/target/classes" />
+    <property name="native-libs" value="${basedir}/src/main/resources/lib" />
     <property name="doc" value="${basedir}/javadoc" />
-    <property name="jar" value="${basedir}/jblas.jar" />
-    <property name="include" value="${basedir}/include" />
-    <property name="native" value="${basedir}/native" />
+    <property name="jar" value="${basedir}/target/jblas-${version}.jar" />
+    <property name="include" value="${basedir}/src/main/c" />
+    <property name="native" value="${basedir}/src/main/c" />
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
     <property name="pkgbase" value="org.jblas" />
@@ -58,7 +58,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <macrodef name="class-to-float" description="generate a float version of a class">
         <attribute name="class"/>
-        <attribute name="path" default="src"/>
+        <attribute name="path" default="${src}"/>
         <sequential>
             <echo message="Generating float version of @{class}"/>
             <exec executable="ruby">
@@ -71,7 +71,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <sequential>
             <echo message="Add float versions to class @{class}"/>
             <exec executable="ruby">
-                <arg line="scripts/static_class_to_float.rb src @{class}"/>
+                <arg line="scripts/static_class_to_float.rb ${src} @{class}"/>
             </exec>
         </sequential>
     </macrodef>
@@ -115,7 +115,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <target name="clean" description="clean generated files">
         <delete dir="${doc}" />
         <delete dir="${bin}" />
-        <delete dir="${include}" />
     </target>
     <target name="clean-jars" description="delete all jar files">
         <delete>
@@ -124,7 +123,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </target>
     <target name="prepare" description="create directories needed for compilation">
         <mkdir dir="${bin}" />
-        <mkdir dir="${include}" />
     </target>
     <target name="compile" depends="prepare,generate-float" description="compile java code">
         <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" target="1.5" fork="yes" nowarn="yes">
@@ -162,8 +160,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <class-to-float class="${pkgbase}.DoubleMatrix"/>
         <class-to-float class="${pkgbase}.DoubleFunction"/>
         <class-to-float class="${pkgbase}.ComplexDouble"/>
-        <class-to-float path="test" class="${pkgbase}.TestDoubleMatrix"/>
-        <class-to-float path="test" class="${pkgbase}.TestBlasDouble"/>
+        <class-to-float path="${test}" class="${pkgbase}.TestDoubleMatrix"/>
+        <class-to-float path="${test}" class="${pkgbase}.TestBlasDouble"/>
         <class-to-float class="${pkgbase}.ComplexDoubleMatrix"/>
         <static-class-to-float class="${pkgbase}.SimpleBlas"/>
         <static-class-to-float class="${pkgbase}.Solve"/>
@@ -175,10 +173,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <!--<static-class-to-float class="${pkgbase}.Decompose"/>-->
     </target>
     <target name="preprocess" description="run the ruby preprocessor on necessary files">
-        <rjpp file="src/org/jblas/DoubleMatrix.java"/>
-        <rjpp file="test/org/jblas/TestDoubleMatrix.java"/>
-        <rjpp file="src/org/jblas/MatrixFunctions.java"/>
-        <rjpp file="src/org/jblas/ComplexDoubleMatrix.java"/>
+        <rjpp file="${src}/org/jblas/DoubleMatrix.java"/>
+        <rjpp file="${test}/org/jblas/TestDoubleMatrix.java"/>
+        <rjpp file="${src}/org/jblas/MatrixFunctions.java"/>
+        <rjpp file="${src}/org/jblas/ComplexDoubleMatrix.java"/>
     </target>
     <target name="templates" description="Generate code from templates">
         <rb-macro definitions="general" file="org/jblas/Matrix.java" />

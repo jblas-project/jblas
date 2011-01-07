@@ -35,6 +35,7 @@
 require 'config/config'
 require 'config/path'
 require 'config/config_os_arch'
+require 'config/windows'
 
 include Config
 include Path
@@ -42,8 +43,15 @@ include Path
 configure :tools => ['FOUND_NM', 'FOUND_CYGPATH']
 
 desc 'looking for nm'
-configure 'FOUND_NM' do
-  check_cmd 'nm'
+configure 'FOUND_NM' => ['OS_NAME', 'OS_ARCH'] do
+  if CONFIG['OS_NAME'] == "Windows" and CONFIG['OS_ARCH'] == 'amd64'
+    puts "Looking for 64bit toolchain"
+    check_cmd(W64_PREFIX + 'nm')
+    CONFIG['NM'] = W64_PREFIX + 'nm'
+  else
+    check_cmd 'nm'
+    CONFIG['NM'] = 'nm'
+  end
   CONFIG['FOUND_NM'] = true
   ok
 end

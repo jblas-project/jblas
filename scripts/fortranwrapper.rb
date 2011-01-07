@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ## --- BEGIN LICENSE BLOCK ---
 # Copyright (c) 2009, Mikio L. Braun
 # All rights reserved.
@@ -134,8 +135,8 @@ if $here
   java_filename = klass + '.java'
   wrapper_filename = klass + '.c'
 else
-  java_filename = full_file_path('src', package, klass) + '.java'
-  wrapper_filename = File.join('native', klass) + '.c'
+  java_filename = full_file_path('src/main/java', package, klass) + '.java'
+  wrapper_filename = File.join('src/main/c', klass) + '.c'
 end
 
 File.open(java_filename, 'w') {|o| o.write java_class}

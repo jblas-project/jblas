@@ -5,4 +5,6 @@ Mikio L. Braun
 Additional Programming and Contributions:
 
 Johannes Schaback
-Jan Saputra Müller
+Jan Saputra Müller (exponential matrix multiplication, decomposition)
+Matthias L. Jugel (packaging)
+Nicolas Oury (generalized eigenvectors)

@@ -32,7 +32,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## --- END LICENSE BLOCK ---
 
-VERSION=1.1.1
+VERSION=1.2.0
 
 ######################################################################
 #
@@ -54,11 +54,18 @@ PACKAGE=org.jblas
 # generate path from package name
 PACKAGE_PATH=$(subst .,/,$(PACKAGE))
 
-LIB_PATH=native-libs/$(LINKAGE_TYPE)/$(OS_NAME)/$(OS_ARCH)
-FULL_LIB_PATH=native-libs/$(LINKAGE_TYPE)/$(OS_NAME)/$(OS_ARCH_WITH_FLAVOR)
+SRC=src/main
+SRC_JAVA=$(SRC)/java
+SRC_C=$(SRC)/c
+RESOURCES=$(SRC)/resources
 
-GENERATED_SOURCES=src/$(PACKAGE_PATH)/NativeBlas.java native/NativeBlas.c
-GENERATED_HEADERS=include/org_jblas_NativeBlas.h include/org_jblas_util_ArchFlavor.h
+TARGET_C=target/c
+
+LIB_PATH=$(RESOURCES)/lib/$(LINKAGE_TYPE)/$(OS_NAME)/$(OS_ARCH)
+FULL_LIB_PATH=$(RESOURCES)/lib/$(LINKAGE_TYPE)/$(OS_NAME)/$(OS_ARCH_WITH_FLAVOR)
+
+GENERATED_SOURCES=$(SRC_JAVA)/$(PACKAGE_PATH)/NativeBlas.java $(SRC_C)/NativeBlas.c
+GENERATED_HEADERS=$(SRC_C)/org_jblas_NativeBlas.h $(SRC_C)/org_jblas_util_ArchFlavor.h
 SHARED_LIBS=$(FULL_LIB_PATH)/$(LIB)jblas.$(SO) $(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO) 
 
 #######################################################################
@@ -91,7 +98,7 @@ generate-wrapper: $(GENERATED_SOURCES) $(GENERATED_HEADERS)
 
 # Clean all object files
 clean:
-	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) $(FULL_LIB_PATH)/*.$(SO) src/$(PACKAGE_PATH)/NativeBlas.java generated-sources
+	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) $(FULL_LIB_PATH)/*.$(SO) $(SRC_JAVA)/$(PACKAGE_PATH)/NativeBlas.java $(SRC_C)/NativeBlas.c generated-sources
 
 # Full clean, including information extracted from the fortranwrappers.
 # You will need the original fortran sources in order to rebuild
@@ -110,7 +117,7 @@ endif
 generated-sources: \
   scripts/fortranwrapper.rb scripts/fortran/types.rb \
   scripts/fortran/java.rb scripts/java-class.java scripts/java-impl.c \
-  src/org/jblas/util/ArchFlavor.java #src/org/jblas/NativeBlas.java 
+  $(SRC_JAVA)/org/jblas/util/ArchFlavor.java #src/org/jblas/NativeBlas.java
 	$(RUBY) scripts/fortranwrapper.rb --complexcc $(CCC) $(PACKAGE) NativeBlas \
 	$(BLAS)/[sdcz]copy.f \
 	$(BLAS)/[sdcz]swap.f \
@@ -137,20 +144,23 @@ generated-sources: \
 	ant javah
 	touch $@
 
-native/NativeBlas.c: generated-sources
+$(SRC_C)/NativeBlas.c: generated-sources
 
-native/NativeBlas.o: native/NativeBlas.c
-	$(CC) $(CFLAGS) $(INCDIRS) -c native/NativeBlas.c -o $@
+$(TARGET_C):
+	mkdir $(TARGET_C)
 
-native/jblas_arch_flavor.o: generated-sources
-	$(CC) $(CFLAGS) $(INCDIRS) -c native/jblas_arch_flavor.c -o $@
+$(TARGET_C)/NativeBlas.o: $(SRC_C)/NativeBlas.c $(TARGET_C)
+	$(CC) $(CFLAGS) $(INCDIRS) -c $(SRC_C)/NativeBlas.c -o $@
+
+$(TARGET_C)/jblas_arch_flavor.o: generated-sources
+	$(CC) $(CFLAGS) $(INCDIRS) -c $(SRC_C)/jblas_arch_flavor.c -o $@
 
 # Move the compile library to the machine specific directory.
-$(FULL_LIB_PATH)/$(LIB)jblas.$(SO) : native/NativeBlas.$(SO)
+$(FULL_LIB_PATH)/$(LIB)jblas.$(SO) : $(TARGET_C)/NativeBlas.$(SO)
 	mkdir -p $(FULL_LIB_PATH)
 	mv "$<" "$@"
 
-$(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO): native/jblas_arch_flavor.$(SO)
+$(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO): $(SRC_C)/jblas_arch_flavor.$(SO)
 	mkdir -p $(LIB_PATH)
 	mv "$<" "$@"
 

@@ -43,7 +43,7 @@ include Path
 configure :fortran => ['F77', 'LD']
 
 desc 'deciding whether to use g77 or gfortran'
-configure 'F77', 'LD' => [:os_arch, :cc] do
+configure 'F77', 'LD' => ['OS_NAME', 'CC'] do
   #unless ENV['CC'].nil?
   #  CONFIG['CC'] = ENV['CC']
   #  return
@@ -52,6 +52,10 @@ configure 'F77', 'LD' => [:os_arch, :cc] do
   if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
     CONFIG['LD'] = CONFIG['CC']
     CONFIG['F77'] = 'gfortran-mp-4.3'
+    CONFIG['CCC'] = 'c99'
+  elsif CONFIG['OS_NAME'] == 'Windows' and CONFIG['OS_ARCH'] == 'amd64'
+    CONFIG['LD'] = W64_PREFIX + 'gfortran'
+    CONFIG['F77'] = W64_PREFIX + 'gfortran'
     CONFIG['CCC'] = 'c99'
   else
     g77 = Path.where('g77')
