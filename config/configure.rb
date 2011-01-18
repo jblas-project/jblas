@@ -82,6 +82,7 @@ options summary:
                            (default for Windows!)
   --ptatlas                Link against multithreaded versions of ATLAS libraries
   --arch-flavor=...        Set architectural flavor (e.g. --arch-flavor=sse2)
+  --libs=lib1,lib2,...     Override libraries to search in
 EOS
 
 configure :all => [:os_arch, :tools, :java, :cc, :fortran, :make, :lapack_sources, :libs]

@@ -65,7 +65,7 @@ ATLAS_REQUIRED_SYMBOLS = [
   'ATL_caxpy'
 ]
 
-LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_' ]
+LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_', 'dgemm_' ]
 
 ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas f77blas cblas atlas)
 PT_ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas ptf77blas ptcblas atlas)
@@ -113,17 +113,22 @@ end
 desc 'looking for libraries...'
 configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARCH'] do
 
-  case CONFIG['BUILD_TYPE']
-  when 'atlas'
-    if $opts.defined? :ptatlas
-      libs = PT_ATLAS_LIBS
-    else
-      libs = ATLAS_LIBS
-    end
-    syms = ATLAS_REQUIRED_SYMBOLS
-  when 'lapack'
-    libs = LAPACK_LIBS
+  if $opts.defined? :libs
+    libs = $opts[:libs].split(',')
     syms = LAPACK_REQUIRED_SYMBOLS
+  else
+    case CONFIG['BUILD_TYPE']
+    when 'atlas'
+      if $opts.defined? :ptatlas
+        libs = PT_ATLAS_LIBS
+      else
+        libs = ATLAS_LIBS
+      end
+      syms = ATLAS_REQUIRED_SYMBOLS
+    when 'lapack'
+      libs = LAPACK_LIBS
+      syms = LAPACK_REQUIRED_SYMBOLS
+    end
   end
 
   result = LibHelpers.find_libs(CONFIG[:libpath], libs, syms)
