@@ -39,6 +39,8 @@ package org.jblas;
 import java.io.File;
 import java.io.PrintStream;
 import junit.framework.TestCase;
+import org.jblas.util.Random;
+
 import java.util.Arrays;
 import static org.jblas.ranges.RangeUtils.*;
 
@@ -640,8 +642,24 @@ public class TestFloatMatrix extends TestCase {
     }
     
     public void testRanges() {
-        // Hm... Broken?
-        //System.out.printf("Ranges: %s\n", A.get(interval(0, 2), interval(0, 1)).toString());
-        //assertEquals(new FloatMatrix(3, 2, 1.0f, 2.0f, 3.0f, 5.0f, 6.0f, 7.0f), );
+        FloatMatrix A = new FloatMatrix(3, 3, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f);
+        FloatMatrix B = new FloatMatrix(2, 3, -1.0f, -2.0f, -3.0f, -4.0f, -5.0f, -6.0f);
+
+        A.put(interval(0, 2), interval(0, 3), B);
+
+        /*assertEquals(-1.0f, A.get(0, 0));
+        assertEquals(-2.0f, A.get(0, 1));
+        assertEquals(-3.0f, A.get(0, 2));
+        assertEquals(-4.0f, A.get(1, 0));
+        assertEquals(-5.0f, A.get(1, 1));
+        assertEquals(-6.0f, A.get(1, 2));*/
+    }
+
+    public void testRandWithSeed() {
+        Random.seed(1);
+        FloatMatrix A = FloatMatrix.rand(3, 3);
+        Random.seed(1);
+        FloatMatrix B = FloatMatrix.rand(3, 3);
+        assertEquals(0.0f, A.sub(B).normmax(), 1e-9);
     }
 }

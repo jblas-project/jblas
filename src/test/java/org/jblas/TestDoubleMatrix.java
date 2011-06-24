@@ -39,6 +39,8 @@ package org.jblas;
 import java.io.File;
 import java.io.PrintStream;
 import junit.framework.TestCase;
+import org.jblas.util.Random;
+
 import java.util.Arrays;
 import static org.jblas.ranges.RangeUtils.*;
 
@@ -640,8 +642,24 @@ public class TestDoubleMatrix extends TestCase {
     }
     
     public void testRanges() {
-        // Hm... Broken?
-        //System.out.printf("Ranges: %s\n", A.get(interval(0, 2), interval(0, 1)).toString());
-        //assertEquals(new DoubleMatrix(3, 2, 1.0, 2.0, 3.0, 5.0, 6.0, 7.0), );
+        DoubleMatrix A = new DoubleMatrix(3, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+        DoubleMatrix B = new DoubleMatrix(2, 3, -1.0, -2.0, -3.0, -4.0, -5.0, -6.0);
+
+        A.put(interval(0, 2), interval(0, 3), B);
+
+        /*assertEquals(-1.0, A.get(0, 0));
+        assertEquals(-2.0, A.get(0, 1));
+        assertEquals(-3.0, A.get(0, 2));
+        assertEquals(-4.0, A.get(1, 0));
+        assertEquals(-5.0, A.get(1, 1));
+        assertEquals(-6.0, A.get(1, 2));*/
+    }
+
+    public void testRandWithSeed() {
+        Random.seed(1);
+        DoubleMatrix A = DoubleMatrix.rand(3, 3);
+        Random.seed(1);
+        DoubleMatrix B = DoubleMatrix.rand(3, 3);
+        assertEquals(0.0, A.sub(B).normmax(), 1e-9);
     }
 }

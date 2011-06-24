@@ -1,3 +1,14 @@
+Roadmap to jblas 1.2.1
+
+1. Linux / 32 bit / sse2
+2. Linux / 32 bit / sse3
+3. Linux / 64 bit / sse2
+4. Linux / 64 bit / sse3
+5. Mac OS X / 64 bit / sse3
+6. Windows / 32 bit / sse2
+7. Windows / 32 bit / sse3
+8. Windows / 64 bit / lapack lite only
+
 Roadmap to jblas-0.3.1
 
 - collect static builds for Windows(32), Linux(32/64), MacOSX(32/64).

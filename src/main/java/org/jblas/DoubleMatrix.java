@@ -39,6 +39,8 @@ package org.jblas;
 
 import org.jblas.exceptions.SizeException;
 import org.jblas.ranges.Range;
+import org.jblas.util.Random;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -436,9 +438,8 @@ public class DoubleMatrix implements Serializable {
     public static DoubleMatrix rand(int rows, int columns) {
         DoubleMatrix m = new DoubleMatrix(rows, columns);
 
-        java.util.Random r = new java.util.Random();
         for (int i = 0; i < rows * columns; i++) {
-            m.data[i] = r.nextDouble();
+            m.data[i] = (double) Random.nextDouble();
         }
 
         return m;
@@ -453,9 +454,8 @@ public class DoubleMatrix implements Serializable {
     public static DoubleMatrix randn(int rows, int columns) {
         DoubleMatrix m = new DoubleMatrix(rows, columns);
 
-        java.util.Random r = new java.util.Random();
         for (int i = 0; i < rows * columns; i++) {
-            m.data[i] = (double) r.nextGaussian();
+            m.data[i] = (double) Random.nextGaussian();
         }
 
         return m;
@@ -904,6 +904,7 @@ public class DoubleMatrix implements Serializable {
         x.checkColumns(cs.length());
 
         for (; rs.hasMore(); rs.next()) {
+            cs.init(0, columns);
             for (; cs.hasMore(); cs.next()) {
                 put(rs.value(), cs.value(), x.get(rs.index(), cs.index()));
             }
