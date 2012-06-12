@@ -53,6 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <property name="external" value="${basedir}/external" />
     <property name="scripts" value="${basedir}/scripts" />
     <property name="pkgbase" value="org.jblas" />
+    <property name="ruby" value="ruby" />
 
     <!-- Macros -->
 
@@ -61,7 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <attribute name="path" default="${src}"/>
         <sequential>
             <echo message="Generating float version of @{class}"/>
-            <exec executable="ruby">
+            <exec executable="${ruby}">
                 <arg line="scripts/class_to_float.rb @{path} @{class}"/>
             </exec>
         </sequential>
@@ -70,7 +71,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <attribute name="class"/>
         <sequential>
             <echo message="Add float versions to class @{class}"/>
-            <exec executable="ruby">
+            <exec executable="${ruby}">
                 <arg line="scripts/static_class_to_float.rb ${src} @{class}"/>
             </exec>
         </sequential>
@@ -78,7 +79,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <macrodef name="rjpp" description="Run the ruby-java preprocessor.">
         <attribute name="file"/>
         <sequential>
-            <exec executable="ruby">
+            <exec executable="${ruby}">
                 <arg line="scripts/rjpp.rb @{file}"/>
             </exec>
         </sequential>
@@ -104,7 +105,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <attribute name="definitions" />
         <attribute name="file" />
         <sequential>
-            <exec executable="ruby">
+            <exec executable="${ruby}">
                 <arg line="-I templates scripts/macro.rb templates/@{definitions}.rb templates/@{file} src/@{file}" />
             </exec>
         </sequential>

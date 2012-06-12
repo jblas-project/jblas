@@ -35,7 +35,7 @@
 require 'config/config'
 require 'config/path'
 
-include Config
+include JblasConfig
 include Path
 
 configure :make => ['MAKE']
@@ -47,7 +47,7 @@ configure 'MAKE' do
     CONFIG['MAKE'] = 'gmake'
   else
     if Path.where_with_output('make -v', /GNU Make/).nil?
-      Config.fail('I need GNU make to run...')
+      JblasConfig.fail('I need GNU make to run...')
     end
     CONFIG['MAKE'] = 'make'
   end

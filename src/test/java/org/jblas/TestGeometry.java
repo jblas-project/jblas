@@ -36,41 +36,49 @@
 
 package org.jblas;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TestGeometry extends TestCase {
-	public void testCenter() {
-		DoubleMatrix x = new DoubleMatrix(3, 1, 1.0, 2.0, 3.0);
-		
-		Geometry.center(x);
-		
-		assertEquals(new DoubleMatrix(3, 1, -1.0, 0.0, 1.0), x);
-		
-		DoubleMatrix M = new DoubleMatrix(new double[][] {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}});
-		
-		//M.print();
-		
-		DoubleMatrix MR = Geometry.centerRows(M.dup());
-		DoubleMatrix MC = Geometry.centerColumns(M.dup());
-		
-		//MR.print();
-		//MC.print();
-		
-		assertEquals(new DoubleMatrix(new double[][] {{-1.0, 0.0, 1.0}, {-1.0, 0.0, 1.0}, {-1.0, 0.0, 1.0}}), MR);
-		assertEquals(new DoubleMatrix(new double[][] {{-3.0, -3.0, -3.0}, {0.0, 0.0, 0.0}, {3.0, 3.0, 3.0}}), MC);
-	}				
-	
-	public void testPwDist() {
-		DoubleMatrix M = new DoubleMatrix(3, 5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0);
-		
-		DoubleMatrix D = Geometry.pairwiseSquaredDistances(M, M);
-		
-		D.print();
-		
-		M = M.transpose();
-				
-		D = Geometry.pairwiseSquaredDistances(M, M);
-		
-		D.print();
-	}
+import static org.junit.Assert.*;
+
+public class TestGeometry {
+
+  private final double eps = 1e-10;
+
+  @Test
+  public void testCenter() {
+    DoubleMatrix x = new DoubleMatrix(3, 1, 1.0, 2.0, 3.0);
+
+    Geometry.center(x);
+
+    assertEquals(new DoubleMatrix(3, 1, -1.0, 0.0, 1.0), x);
+
+    DoubleMatrix M = new DoubleMatrix(new double[][]{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {7.0, 8.0, 9.0}});
+
+    DoubleMatrix MR = Geometry.centerRows(M.dup());
+    DoubleMatrix MC = Geometry.centerColumns(M.dup());
+
+    assertEquals(new DoubleMatrix(new double[][]{{-1.0, 0.0, 1.0}, {-1.0, 0.0, 1.0}, {-1.0, 0.0, 1.0}}), MR);
+    assertEquals(new DoubleMatrix(new double[][]{{-3.0, -3.0, -3.0}, {0.0, 0.0, 0.0}, {3.0, 3.0, 3.0}}), MC);
+  }
+
+  @Test
+  public void testPwDist() {
+    DoubleMatrix M = new DoubleMatrix(3, 5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0);
+
+    DoubleMatrix D = Geometry.pairwiseSquaredDistances(M, M);
+
+    assertEquals(0.0, new DoubleMatrix(5, 5,
+        0.0, 27.0, 108.0, 243.0, 432.0,
+        27.0, 0.0, 27.0, 108.0, 243.0,
+        108.0, 27.0, 0.0, 27.0, 108.0,
+        243.0, 108.0, 27.0, 0.0, 27.0,
+        432.0, 243.0, 108.0, 27.0, 0.0).distance2(D), eps);
+
+    M = M.transpose();
+
+    D = Geometry.pairwiseSquaredDistances(M, M);
+
+    assertEquals(0.0, new DoubleMatrix(3, 3,
+        0.0, 5.0, 20.0, 5.0, 0.0, 5.0, 20.0, 5.0, 0.0).distance2(D), eps);
+  }
 }

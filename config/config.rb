@@ -34,7 +34,7 @@
 
 require 'config/path'
 
-module Config
+module JblasConfig
   class ConfigError < Exception
     attr_reader :message
 
@@ -285,7 +285,7 @@ module Config
 end
 
 if __FILE__ == $0
-  include Config
+  include JblasConfig
 
   configure :say_hello do
     puts "Hello"

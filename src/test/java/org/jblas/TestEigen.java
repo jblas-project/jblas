@@ -42,57 +42,60 @@ package org.jblas;
 
 import junit.framework.TestCase;
 import org.jblas.util.Logger;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Test Class for org.jblas.Eigen
- * 
+ *
  * @author mikio
  */
-public class TestEigen extends TestCase {
 
-    public TestEigen(String testName) {
-        super(testName);
-        Logger.getLogger().setLevel(Logger.DEBUG);
-    }
+public class TestEigen {
 
-    public void testEigenvalues() {
-        DoubleMatrix A = new DoubleMatrix(2, 2, 3.0, -3.0, 1.0, 1.0);
+  private final double eps = 1e-10;
 
-        ComplexDoubleMatrix E = Eigen.eigenvalues(A);
+  @Test
+  public void testEigenvalues() {
+    DoubleMatrix A = new DoubleMatrix(2, 2, 3.0, -3.0, 1.0, 1.0);
 
-        //System.out.printf("E = %s\n", E.toString());
+    ComplexDoubleMatrix E = Eigen.eigenvalues(A);
 
-        ComplexDoubleMatrix[] EV = Eigen.eigenvectors(A);
+    ComplexDoubleMatrix[] EV = Eigen.eigenvectors(A);
 
-        //System.out.printf("values = %s\n", EV[1].toString());
-        //System.out.printf("vectors = %s\n", EV[0].toString());
-    }
+    ComplexDoubleMatrix X = EV[0];
+    ComplexDoubleMatrix L = EV[1];
 
-    public void testSymmetricEigenvalues() {
-        DoubleMatrix A = new DoubleMatrix(new double[][]{
-                {3.0, 1.0, 0.5},
-                {1.0, 3.0, 1.0},
-                {0.5, 1.0, 3.0}
-        });
+    assertEquals(0.0, A.toComplex().mmul(X).sub(X.mmul(L)).norm2(), eps);
+  }
 
-        DoubleMatrix B = new DoubleMatrix(new double[][]{
-                {2.0, 0.1, 0.0},
-                {0.1, 2.0, 0.1},
-                {0.0, 0.1, 2.0}
-        });
+  @Test
+  public void testSymmetricEigenvalues() {
+    DoubleMatrix A = new DoubleMatrix(new double[][]{
+        {3.0, 1.0, 0.5},
+        {1.0, 3.0, 1.0},
+        {0.5, 1.0, 3.0}
+    });
 
-        DoubleMatrix[] results = Eigen.symmetricGeneralizedEigenvectors(A, B);
+    DoubleMatrix B = new DoubleMatrix(new double[][]{
+        {2.0, 0.1, 0.0},
+        {0.1, 2.0, 0.1},
+        {0.0, 0.1, 2.0}
+    });
 
-        DoubleMatrix V = results[0];
-        DoubleMatrix L = results[1];
+    DoubleMatrix[] results = Eigen.symmetricGeneralizedEigenvectors(A, B);
 
-        DoubleMatrix LHS = A.mmul(V);
-        DoubleMatrix RHS = B.mmul(V).mmul(DoubleMatrix.diag(L));
+    DoubleMatrix V = results[0];
+    DoubleMatrix L = results[1];
 
-        assertEquals(0.0, LHS.sub(RHS).normmax(), 1e-3);
+    DoubleMatrix LHS = A.mmul(V);
+    DoubleMatrix RHS = B.mmul(V).mmul(DoubleMatrix.diag(L));
 
-        DoubleMatrix eigenvalues = Eigen.symmetricGeneralizedEigenvalues(A, B);
+    assertEquals(0.0, LHS.sub(RHS).normmax(), eps);
 
-        assertEquals(0.0, eigenvalues.sub(L).normmax(), 1e-3);
-    }
+    DoubleMatrix eigenvalues = Eigen.symmetricGeneralizedEigenvalues(A, B);
+
+    assertEquals(0.0, eigenvalues.sub(L).normmax(), eps);
+  }
 }

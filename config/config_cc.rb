@@ -36,7 +36,7 @@ require 'config/path'
 require 'config/config'
 require 'config/config_java'
 
-include Config
+include JblasConfig
 include Path
 
 # Set up flags for different environments.
@@ -44,12 +44,12 @@ configure :cc => 'CC'
 
 desc 'Setting up gcc and flags'
 configure 'CC', 'CFLAGS' => ['OS_NAME', 'OS_ARCH', 'JAVA_HOME'] do
-  os_name = Config::CONFIG['OS_NAME']
-  java_home = Config::CONFIG['JAVA_HOME']
+  os_name = JblasConfig::CONFIG['OS_NAME']
+  java_home = JblasConfig::CONFIG['JAVA_HOME']
   case os_name
   when 'Linux'
     Path.check_cmd('gcc', 'make', 'ld')
-    Config::CONFIG << <<EOS
+    JblasConfig::CONFIG << <<EOS
 CC = gcc
 CFLAGS = -fPIC
 INCDIRS += -Iinclude -I#{java_home}/include -I#{java_home}/include/linux
@@ -60,7 +60,7 @@ LDFLAGS += -shared
 EOS
   when 'SunOS'
     Path.check_cmd('gcc', 'make', 'ld')
-    Config::CONFIG << <<EOS
+    JblasConfig::CONFIG << <<EOS
 CC = gcc
 CFLAGS = -fPIC
 INCDIRS += -Iinclude -I#{java_home}/include -I#{java_home}/include/solaris
@@ -73,7 +73,7 @@ EOS
     if w64build?
       Path.check_cmd(W64_PREFIX + 'gcc', 'make', W64_PREFIX + 'ld')
       Path.check_cmd('cygpath')
-      Config::CONFIG << <<EOS
+      JblasConfig::CONFIG << <<EOS
 CC = #{W64_PREFIX}gcc
 CFLAGS = -ggdb -D__int64='long long'
 INCDIRS += -I"#{dir java_home}/include" -I"#{dir java_home}/include/win32" -Iinclude
@@ -85,7 +85,7 @@ EOS
     else
       Path.check_cmd('gcc', 'make', 'ld')
       Path.check_cmd('cygpath')
-      Config::CONFIG << <<EOS
+      JblasConfig::CONFIG << <<EOS
 CC = gcc
 CFLAGS = -ggdb -D__int64='long long'
 INCDIRS += -I"#{dir java_home}/include" -I"#{dir java_home}/include/win32" -Iinclude
@@ -97,7 +97,7 @@ EOS
     end
   when 'Mac\ OS\ X'
     Path.check_cmd('gcc-mp-4.3', 'make')
-    Config::CONFIG << <<EOS
+    JblasConfig::CONFIG << <<EOS
 CC = gcc-mp-4.3
 LD = gcc-mp-4.3
 CFLAGS = -fPIC
@@ -108,11 +108,11 @@ RUBY = ruby
 LDFLAGS += -shared
 EOS
   else
-    Config.fail "Sorry, the OS #{os_name} is currently not supported"
+    JblasConfig.fail "Sorry, the OS #{os_name} is currently not supported"
   end
 
-  if %w(i386 x86 x86_64 amd64).include? Config::CONFIG['OS_ARCH']
-    Config::CONFIG['CFLAGS'] << ' -DHAS_CPUID'
+  if %w(i386 x86 x86_64 amd64).include? JblasConfig::CONFIG['OS_ARCH']
+    JblasConfig::CONFIG['CFLAGS'] << ' -DHAS_CPUID'
   end
 
   ok(CONFIG['CC'])

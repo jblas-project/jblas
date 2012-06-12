@@ -646,8 +646,8 @@ public class DoubleMatrix implements Serializable {
         DoubleMatrix result = new DoubleMatrix(rs.length(), cs.length());
 
         for (; rs.hasMore(); rs.next()) {
+            cs.init(0, columns);
             for (; cs.hasMore(); cs.next()) {
-                cs.init(0,columns);
                 result.put(rs.index(), cs.index(), get(rs.value(), cs.value()));
             }
         }
@@ -3379,4 +3379,8 @@ public class DoubleMatrix implements Serializable {
     return xori(value, new DoubleMatrix(rows, columns));
     }
 //RJPP-END--------------------------------------------------------------
+
+    public ComplexDoubleMatrix toComplex() {
+      return new ComplexDoubleMatrix(this);
+    }
 }

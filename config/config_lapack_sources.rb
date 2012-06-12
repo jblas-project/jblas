@@ -37,7 +37,7 @@ require 'config/path'
 require 'config/opts'
 require 'config/string_ext'
 
-include Config
+include JblasConfig
 
 configure :lapack_sources => 'LAPACK_HOME'
 def check_lapack_home(lapack_home)
@@ -54,7 +54,7 @@ configure 'LAPACK_HOME' do
   rescue ConfigError => e
     if $opts.defined? :download_lapack
       puts "trying to download lapack (about 5M)"
-      print "Looking for wget..."; check_cmd 'wget'; Config.ok
+      print "Looking for wget..."; check_cmd 'wget'; JblasConfig.ok
       lapack_tgz = File.join('.', 'lapack-lite-3.1.1.tgz')
       File.delete(lapack_tgz) if File.exist?(lapack_tgz)
       system("wget http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz")
@@ -79,5 +79,5 @@ end
 
 if __FILE__ == $0
   $opts = Opts.new(ARGV)
-  Config.run :lapack_sources
+  JblasConfig.run :lapack_sources
 end

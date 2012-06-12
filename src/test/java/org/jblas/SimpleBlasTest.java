@@ -34,25 +34,20 @@
  */
 // --- END LICENSE BLOCK ---
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.jblas;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
+ * Some test for class SimpleBlas
  *
- * @author mikio
+ * @author Mikio L. Braun
  */
-public class SimpleBlasTest extends TestCase {
+public class SimpleBlasTest {
     
-    public SimpleBlasTest(String testName) {
-        super(testName);
-    }
-
+    @Test
     public void testGeev() {
         DoubleMatrix A = new DoubleMatrix(2, 2, 3.0, -3.0, 1.0, 1.0);
         DoubleMatrix WR = new DoubleMatrix(2);
@@ -65,11 +60,11 @@ public class SimpleBlasTest extends TestCase {
         assertEquals(new DoubleMatrix(2, 1, 2.0, 2.0), WR);
         assertEquals(new DoubleMatrix(2, 1, Math.sqrt(2.0), -Math.sqrt(2.0)), WI);
         
-        System.out.printf("WR = %s\n", WR.toString());
+        /*System.out.printf("WR = %s\n", WR.toString());
         System.out.printf("WI = %s\n", WI.toString());
         System.out.printf("VR = %s\n", VR.toString());
         System.out.printf("VL = %s\n", VL.toString());
-        System.out.printf("A = %s\n", A.toString());
+        System.out.printf("A = %s\n", A.toString());*/
         
     }
 }

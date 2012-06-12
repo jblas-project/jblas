@@ -40,7 +40,7 @@ require 'config/config'
 require 'config/string_ext'
 require 'config/config_java'
 
-include Config
+include JblasConfig
 
 def detect_os
   os_name = %x(java -cp config PrintProperty os.name).chomp

@@ -37,7 +37,7 @@ require 'config/config'
 require 'config/path'
 require 'config/config_os_arch'
 
-include Config
+include JblasConfig
 include Path
 
 configure :java => ['FOUND_JAVA', 'JAVA_HOME']

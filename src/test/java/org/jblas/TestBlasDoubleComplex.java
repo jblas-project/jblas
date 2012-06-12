@@ -35,20 +35,23 @@
 // --- END LICENSE BLOCK ---
 package org.jblas;
 
-import junit.framework.TestCase;
+import org.junit.*;
+import static org.junit.Assert.*;
 
-public class TestBlasDoubleComplex extends TestCase {
+public class TestBlasDoubleComplex {
 
+    @Test
     public void testZCOPY() {
         double[] a = { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 };
         double[] b = new double[6];
         NativeBlas.zcopy(3, a, 0, 1, b, 0, 1);
 
         for (int i = 0; i < 6; i++) {
-            assertEquals((double)(i+1), b[i]);
+            assertEquals((double)(i+1), b[i], 1e-6);
         }
     }
 
+    @Test
     public void testZDOTU() {
         double[] a = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
 
@@ -56,6 +59,7 @@ public class TestBlasDoubleComplex extends TestCase {
         assertEquals(new ComplexDouble(-21.0, 88.0), c);
     }
 
+    @Test
     public void testAxpy() {
         double[] x = {0.0, -1.0};
         double[] y = {0.0, 1.0};

@@ -53,11 +53,15 @@
 #
 # So you can run the rjpp twice on a file and get the same result as
 # running it once. This property is called idempotency in mathematics X-D
+#
+# New feature:
+#
+# /*
 
 
 # print usage
 if ARGV.length == 0
-  puts "Usage: jrpp file"
+  puts "Usage: rjpp file"
 end
 
 def collect(*args)
@@ -79,10 +83,15 @@ file.gsub! /\/\/RJPP-BEGIN.*?\/\/RJPP-END[^\n]*\n/m, ''
 
 # expand code
 file.gsub! /\/\*\#(.*?)\#\*\//m do |s|
-  expansion = eval($1).to_s
   result = s
-  unless expansion.empty?
-    result << "\n//RJPP-BEGIN------------------------------------------------------------\n" + expansion + "//RJPP-END--------------------------------------------------------------"
+  expansion = eval($1)
+  if expansion
+    if Array === expansion
+      expansion = expansion.join
+    end
+    unless expansion.empty?
+      result << ("\n//RJPP-BEGIN------------------------------------------------------------\n" + expansion + "//RJPP-END--------------------------------------------------------------")
+    end
   end
   result
 end

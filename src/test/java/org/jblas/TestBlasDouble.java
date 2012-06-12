@@ -36,148 +36,166 @@
 
 package org.jblas;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-import static org.jblas.MatrixFunctions.*;
+import static org.jblas.MatrixFunctions.abs;
+import static org.jblas.MatrixFunctions.expi;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-public class TestBlasDouble extends TestCase {
+public class TestBlasDouble {
 
-	/** test sum of absolute values */
-	public void testAsum() {
-		double[] a = new double[]{1.0, 2.0, 3.0, 4.0};
-		
-		assertEquals(10.0, NativeBlas.dasum(4, a, 0, 1));
-		assertEquals(4.0, NativeBlas.dasum(2, a, 0, 2));
-		assertEquals(5.0, NativeBlas.dasum(2, a, 1, 1));
-	}
-	
-	/** test scalar product */
-	public void testDot() {
-		double[] a = new double[] { 1.0, 2.0, 3.0, 4.0 };
-		double[] b = new double[] { 4.0, 5.0, 6.0, 7.0 };
+  /**
+   * test sum of absolute values
+   */
+  @Test
+  public void testAsum() {
+    double[] a = new double[]{1.0, 2.0, 3.0, 4.0};
 
-		assertEquals(32.0, NativeBlas.ddot(3, a, 0, 1, b, 0, 1));
-		assertEquals(22.0, NativeBlas.ddot(2, a, 0, 2, b, 0, 2));
-		assertEquals(5.0 + 12.0 + 21.0, NativeBlas.ddot(3, a, 0, 1, b, 1, 1));
-	}
-	
-        public void testSwap() {
-            double[] a = new double[] { 1.0, 2.0, 3.0, 4.0 };
-            double[] b = new double[] { 4.0, 5.0, 6.0, 7.0 };
-            double[] c = new double[] { 1.0, 2.0, 3.0, 4.0 };
-            double[] d = new double[] { 4.0, 5.0, 6.0, 7.0 };
-            
-            System.out.println("dswap");
-            NativeBlas.dswap(4, a, 0, 1, b, 0, 1);
-            assertTrue(arraysEqual(a, d));
-            assertTrue(arraysEqual(b, c));
+    assertEquals(10.0, NativeBlas.dasum(4, a, 0, 1), 1e-6);
+    assertEquals(4.0, NativeBlas.dasum(2, a, 0, 2), 1e-6);
+    assertEquals(5.0, NativeBlas.dasum(2, a, 1, 1), 1e-6);
+  }
 
-            System.out.println("dswap same");
-            NativeBlas.dswap(2, a, 0, 2, a, 1, 2);
-            assertTrue(arraysEqual(a, 5.0, 4.0, 7.0, 6.0));
-        }
-        
-	/* test vector addition */
-	public void testAxpy() {
-		double[] x = new double[] { 1.0, 2.0, 3.0, 4.0 };
-		double[] y = new double[] { 0.0, 0.0, 0.0, 0.0 };
-		
-		NativeBlas.daxpy(4, 2.0, x, 0, 1, y, 0, 1);
-		
-		for(int i = 0; i < 4; i++)
-			assertEquals(2*x[i], y[i]);
-	}
-	
-	/* test matric-vector multiplication */
-	public void testGemv() {
-		double[] A = new double[] { 1.0, 2.0, 3.0,
-										  4.0, 5.0, 6.0,
-										  7.0, 8.0, 9.0 };
-		
-		double[] x = new double[] {1.0, 3.0, 7.0 };
-		double[] y = new double[] { 0.0, 0.0, 0.0 };
-		
-		NativeBlas.dgemv('N', 3, 3, 1.0, A, 0, 3, x, 0, 1, 0.0, y, 0, 1);
-		
-		//printMatrix(3, 3, A);
-		//printMatrix(3, 1, x);
-		//printMatrix(3, 1, y);
-		
-		assertTrue(arraysEqual(y, 62.0, 73.0, 84.0));
-		
-		NativeBlas.dgemv('T', 3, 3, 1.0, A, 0, 3, x, 0, 1, 0.5, y, 0, 1);
+  /**
+   * test scalar product
+   */
+  @Test
+  public void testDot() {
+    double[] a = new double[]{1.0, 2.0, 3.0, 4.0};
+    double[] b = new double[]{4.0, 5.0, 6.0, 7.0};
 
-		//printMatrix(3, 1, y);
-		assertTrue(arraysEqual(y, 59.0, 97.5, 136.0));
-	}
-		
-	/** Compare double buffer against an array of doubles */
-	private boolean arraysEqual(double[] a, double... b) {
-		if (a.length != b.length)
-			return false;
-		else { 
-			double diff = 0.0;
-			for (int i = 0; i < b.length; i++)
-				diff += abs(a[i] - b[i]);
-			return diff < 1e-6;
-		}
-	}
-	
-	public static void main(String[] args) {
-		TestBlasDouble t = new TestBlasDouble();
-		
-		t.testAsum();
-	}
-	
-	public static void testSolve() {
-		DoubleMatrix A = new DoubleMatrix(3, 3, 3.0, 5.0, 6.0, 1.0, 0.0, 0.0, 2.0, 4.0, 0.0);
-		DoubleMatrix X = new DoubleMatrix(3, 1, 1.0, 2.0, 3.0);
-		int[] p = new int[3];
-		SimpleBlas.gesv(A, p, X);
-		A.print();
-		X.print();
-		// De-shuffle X
-		for (int i = 2; i >= 0; i--) {
-			int perm = p[i] - 1;
-			double t = X.get(i); X.put(i, X.get(perm)); X.put(perm, t);
-		}
-		System.out.println();
-		X.print();
-	}
-	
-	public static void testSymmetricSolve() {
-		System.out.println("--- Symmetric solve");
-		DoubleMatrix A = new DoubleMatrix(3, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
-		DoubleMatrix x = new DoubleMatrix(3, 1, 1.0, 2.0, 3.0);
-		int[] p = new int[3];
-		SimpleBlas.sysv('U', A, p, x);
-		A.print();
-		x.print();
-	}
-	
-	public static void testSYEV() {
-		System.out.println("--- Symmetric eigenvalues");
-		int n = 10;
-		DoubleMatrix x = DoubleMatrix.randn(n).sort();
-		
-		//DoubleMatrix A = new DoubleMatrix(new double[][] {{1.0, 0.5, 0.1}, {0.5, 1.0, 0.5}, {0.1, 0.5, 1.0}});
-		DoubleMatrix A = expi(Geometry.pairwiseSquaredDistances(x, x).muli(-2.0));
-		DoubleMatrix w = new DoubleMatrix(n);
-		
-		DoubleMatrix B = A.dup();
-		System.out.println("Computing eigenvalues with SYEV");
-		SimpleBlas.syev('V', 'U', B, w);
-		System.out.println("Eigenvalues: ");
-		w.print();
-		System.out.println("Eigenvectors: ");
-		B.print();
+    assertEquals(32.0, NativeBlas.ddot(3, a, 0, 1, b, 0, 1), 1e-6);
+    assertEquals(22.0, NativeBlas.ddot(2, a, 0, 2, b, 0, 2), 1e-6);
+    assertEquals(5.0 + 12.0 + 21.0, NativeBlas.ddot(3, a, 0, 1, b, 1, 1), 1e-6);
+  }
 
-		B = A.dup();
-		System.out.println("Computing eigenvalues with SYEVD");
-		SimpleBlas.syevd('V', 'U', B, w);
-		System.out.println("Eigenvalues: ");
-		w.print();
-		System.out.println("Eigenvectors: ");
-		B.print();
-	}
+  @Test
+  public void testSwap() {
+    double[] a = new double[]{1.0, 2.0, 3.0, 4.0};
+    double[] b = new double[]{4.0, 5.0, 6.0, 7.0};
+    double[] c = new double[]{1.0, 2.0, 3.0, 4.0};
+    double[] d = new double[]{4.0, 5.0, 6.0, 7.0};
+
+    NativeBlas.dswap(4, a, 0, 1, b, 0, 1);
+    assertTrue(arraysEqual(a, d));
+    assertTrue(arraysEqual(b, c));
+
+    NativeBlas.dswap(2, a, 0, 2, a, 1, 2);
+    assertTrue(arraysEqual(a, 5.0, 4.0, 7.0, 6.0));
+  }
+
+  /* test vector addition */
+  @Test
+  public void testAxpy() {
+    double[] x = new double[]{1.0, 2.0, 3.0, 4.0};
+    double[] y = new double[]{0.0, 0.0, 0.0, 0.0};
+
+    NativeBlas.daxpy(4, 2.0, x, 0, 1, y, 0, 1);
+
+    for (int i = 0; i < 4; i++)
+      assertEquals(2 * x[i], y[i], 1e-6);
+  }
+
+  /* test matric-vector multiplication */
+  @Test
+  public void testGemv() {
+    double[] A = new double[]{1.0, 2.0, 3.0,
+        4.0, 5.0, 6.0,
+        7.0, 8.0, 9.0};
+
+    double[] x = new double[]{1.0, 3.0, 7.0};
+    double[] y = new double[]{0.0, 0.0, 0.0};
+
+    NativeBlas.dgemv('N', 3, 3, 1.0, A, 0, 3, x, 0, 1, 0.0, y, 0, 1);
+
+    //printMatrix(3, 3, A);
+    //printMatrix(3, 1, x);
+    //printMatrix(3, 1, y);
+
+    assertTrue(arraysEqual(y, 62.0, 73.0, 84.0));
+
+    NativeBlas.dgemv('T', 3, 3, 1.0, A, 0, 3, x, 0, 1, 0.5, y, 0, 1);
+
+    //printMatrix(3, 1, y);
+    assertTrue(arraysEqual(y, 59.0, 97.5, 136.0));
+  }
+
+  /**
+   * Compare double buffer against an array of doubles
+   */
+  private boolean arraysEqual(double[] a, double... b) {
+    if (a.length != b.length)
+      return false;
+    else {
+      double diff = 0.0;
+      for (int i = 0; i < b.length; i++)
+        diff += abs(a[i] - b[i]);
+      return diff < 1e-6 * a.length;
+    }
+  }
+
+  @Test
+  public void testSolve() {
+    DoubleMatrix A = new DoubleMatrix(3, 3, 3.0, 5.0, 6.0, 1.0, 0.0, 0.0, 2.0, 4.0, 0.0);
+    DoubleMatrix X = new DoubleMatrix(3, 1, 1.0, 2.0, 3.0);
+    int[] p = new int[3];
+    SimpleBlas.gesv(A, p, X);
+    //A.print();
+    //X.print();
+
+    // De-shuffle X
+    for (int i = 2; i >= 0; i--) {
+      int perm = p[i] - 1;
+      double t = X.get(i);
+      X.put(i, X.get(perm));
+      X.put(perm, t);
+    }
+
+    //X.print();
+    assertTrue(arraysEqual(X.data, -0.25, -0.125, 0.5));
+  }
+
+  @Test
+  public void testSymmetricSolve() {
+    //System.out.println("--- Symmetric solve");
+    DoubleMatrix A = new DoubleMatrix(3, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+    DoubleMatrix x = new DoubleMatrix(3, 1, 1.0, 2.0, 3.0);
+    int[] p = new int[3];
+    SimpleBlas.sysv('U', A, p, x);
+    //A.print();
+    //x.print();
+    assertTrue(arraysEqual(x.data, 0.3, 0.0, 0.1));
+  }
+
+  @Test
+  public void testSYEV() {
+    /* From R:
+        > x <- matrix(c(1,0.5,0.1,0.5,1.0, 0.5, 0.1, 0.5, 1.0), 3, 3)
+        > eigen(x)
+        $values
+        [1] 1.7588723 0.9000000 0.3411277
+
+        $vectors
+                   [,1]          [,2]       [,3]
+        [1,] -0.5173332 -7.071068e-01  0.4820439
+        [2,] -0.6817131 -7.182297e-16 -0.7316196
+        [3,] -0.5173332  7.071068e-01  0.4820439
+    */
+
+    DoubleMatrix A = new DoubleMatrix(new double[][]{{1.0, 0.5, 0.1}, {0.5, 1.0, 0.5}, {0.1, 0.5, 1.0}});
+    DoubleMatrix w = new DoubleMatrix(3);
+
+    DoubleMatrix B = A.dup();
+    SimpleBlas.syev('V', 'U', B, w);
+
+    assertTrue(arraysEqual(w.data, 0.34112765606210876, 0.9, 1.7588723439378915));
+    assertTrue(arraysEqual(B.data, -0.48204393949466345, 0.731619628490741, -0.482043939494664, -0.7071067811865474, 1.3877787807814457E-16, 0.707106781186547, 0.5173332005549852, 0.6817130768931094, 0.5173332005549856));
+
+    B = A.dup();
+    SimpleBlas.syevd('V', 'U', B, w);
+
+    assertTrue(arraysEqual(w.data, 0.34112765606210876, 0.9, 1.7588723439378915));
+    assertTrue(arraysEqual(B.data, -0.48204393949466345, 0.731619628490741, -0.482043939494664, -0.7071067811865474, 1.3877787807814457E-16, 0.707106781186547, 0.5173332005549852, 0.6817130768931094, 0.5173332005549856));
+  }
 }

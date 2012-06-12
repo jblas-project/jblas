@@ -40,11 +40,11 @@ module LibHelpers
   module_function
 
   def libname(name)
-    case Config::CONFIG['LINKAGE_TYPE']
+    case JblasConfig::CONFIG['LINKAGE_TYPE']
     when 'static'
       'lib' + name + '.a'
     when 'dynamic'
-      case Config::CONFIG['OS_NAME']
+      case JblasConfig::CONFIG['OS_NAME']
       when 'Linux'
         'lib' + name + '.so'
       when 'SunOS'
@@ -54,17 +54,17 @@ module LibHelpers
       when 'Mac\ OS\ X'
         'lib' + name + '.dylib'
       else
-        Config.fail "Sorry, OS '#{Config::CONFIG['OS_NAME']}' is not supported yet..."
+        JblasConfig.fail "Sorry, OS '#{JblasConfig::CONFIG['OS_NAME']}' is not supported yet..."
       end
     else
-      raise "LINKAGE_TYPE should be either dynamic or static, but is #{Config::CONFIG['LINKAGE_TYPE']}"
+      raise "LINKAGE_TYPE should be either dynamic or static, but is #{JblasConfig::CONFIG['LINKAGE_TYPE']}"
     end
   end
 
   # returns an array of the symbols defined in the library +fn+.
   def libsyms(fn)
     nmopt = File.extname(fn) == '.so' ? '-D' : ''
-    %x(#{Config::CONFIG['NM']} -p #{nmopt} #{fn.escape}).grep(/ T _?([a-zA-Z0-9_]+)/) {|m| $1}
+    %x(#{JblasConfig::CONFIG['NM']} -p #{nmopt} #{fn.escape}).split("\n").grep(/ T _?([a-zA-Z0-9_]+)/) {|m| $1}
   end
 
   def locate_lib(libpath, name, symbol=nil)
@@ -73,10 +73,10 @@ module LibHelpers
     end
 
     if not p
-      Config.fail("couldn't find library '#{name}' in\npath #{libpath.join ':'}")
+      JblasConfig.fail("couldn't find library '#{name}' in\npath #{libpath.join ':'}")
     end
 
-    Config.log "found library #{name} in #{p}"
+    JblasConfig.log "found library #{name} in #{p}"
     return p
   end
 
@@ -86,26 +86,26 @@ module LibHelpers
   def locate_one_of_libs(libpath, names, symbol=nil)
     p = nil
     l = nil
-    Config.log "Searching for one of #{names.join ', '} in #{libpath.join ':'}#{if symbol then ' having symbol ' + symbol.to_s end}"
+    JblasConfig.log "Searching for one of #{names.join ', '} in #{libpath.join ':'}#{if symbol then ' having symbol ' + symbol.to_s end}"
     for name in names
-      Config.log "  Searching for #{libname(name)}"
+      JblasConfig.log "  Searching for #{libname(name)}"
       p = Path.where(libname(name), libpath) do |fn|
         symbol.nil? or libsyms(fn).include? symbol
       end
 
       if p
         l = name
-        Config.log "Found at #{l} at #{p}"
+        JblasConfig.log "Found at #{l} at #{p}"
         break
       end
     end
 
     if not p
-      Config.log "Haven't found any of #{names.join ', '}!"
-      Config.fail("couldn't find library '#{name}' in\npath #{LIBPATH.join ':'}")
+      JblasConfig.log "Haven't found any of #{names.join ', '}!"
+      JblasConfig.fail("couldn't find library '#{name}' in\npath #{LIBPATH.join ':'}")
     end
 
-    Config.log "found library #{l} in #{p}"
+    JblasConfig.log "found library #{l} in #{p}"
     return p, l
   end
 
@@ -133,7 +133,7 @@ module LibHelpers
 
     not_found_symbols = symbols.reject {|s| found_symbols.include? s }
     unless not_found_symbols.empty?
-      Config.fail "Could not locate libraries for the following symbols: #{not_found_symbols.join ', '}."
+      JblasConfig.fail "Could not locate libraries for the following symbols: #{not_found_symbols.join ', '}."
     end
 
     #found_symbols.each_pair {|k,v| printf "%20s: %s\n", k, v.inspect}
@@ -160,7 +160,7 @@ if __FILE__ == $0
 
   libs = %w(atlas lapack blas f77blas cblas lapack_atlas)
 
-  Config::CONFIG['BUILD_TYPE'] = 'static'
-  Config::CONFIG['OS_NAME'] = 'Linux'
+  JblasConfig::CONFIG['BUILD_TYPE'] = 'static'
+  JblasConfig::CONFIG['OS_NAME'] = 'Linux'
   p find_libs(paths, libs, symbols_needed)
 end

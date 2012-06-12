@@ -36,33 +36,40 @@
 
 package org.jblas;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TestComplexFloat extends TestCase {
-    public TestComplexFloat() {
-    }
+import static org.junit.Assert.assertEquals;
+
+public class TestComplexFloat  {
 
 	private ComplexFloat a, b;
-	
+
+  private final double eps = 1e-16;
+
+  @Before
 	public void setUp() {
 		a = new ComplexFloat(1, 2);
 		b = new ComplexFloat(3, 4);
 	}
-	
+
+  @Test
 	public void testAdd() {
 		ComplexFloat c = a.add(b);
 		
-		assertEquals(4.0f, c.real());
-		assertEquals(6.0f, c.imag());
+		assertEquals(4.0f, c.real(), eps);
+		assertEquals(6.0f, c.imag(), eps);
 	}
 
+  @Test
 	public void testMul() {
 		ComplexFloat c = a.mul(b);
 		
-		assertEquals(-5.0f, c.real());
-		assertEquals(10.0f, c.imag());
+		assertEquals(-5.0f, c.real(), eps);
+		assertEquals(10.0f, c.imag(), eps);
 	}
-	
+
+  @Test
 	public void testMulAndDiv() {
 		ComplexFloat d = a.mul(b).div(b);
 		
@@ -72,7 +79,8 @@ public class TestComplexFloat extends TestCase {
 
 		assertEquals(new ComplexFloat(1.0f, 2.0f), d);
 	}
-	
+
+  @Test
 	public void testDivByZero() {
 		a.div(new ComplexFloat(0.0f, 0.0f));
 	}

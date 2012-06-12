@@ -646,8 +646,8 @@ public class FloatMatrix implements Serializable {
         FloatMatrix result = new FloatMatrix(rs.length(), cs.length());
 
         for (; rs.hasMore(); rs.next()) {
+            cs.init(0, columns);
             for (; cs.hasMore(); cs.next()) {
-                cs.init(0,columns);
                 result.put(rs.index(), cs.index(), get(rs.value(), cs.value()));
             }
         }
@@ -3379,4 +3379,8 @@ public class FloatMatrix implements Serializable {
     return xori(value, new FloatMatrix(rows, columns));
     }
 //RJPP-END--------------------------------------------------------------
+
+    public ComplexFloatMatrix toComplex() {
+      return new ComplexFloatMatrix(this);
+    }
 }

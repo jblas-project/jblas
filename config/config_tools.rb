@@ -37,7 +37,7 @@ require 'config/path'
 require 'config/config_os_arch'
 require 'config/windows'
 
-include Config
+include JblasConfig
 include Path
 
 configure :tools => ['FOUND_NM', 'FOUND_CYGPATH']

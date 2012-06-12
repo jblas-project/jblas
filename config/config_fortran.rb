@@ -37,7 +37,7 @@ require 'config/config'
 require 'config/config_cc'
 require 'config/config_os_arch'
 
-include Config
+include JblasConfig
 include Path
 
 configure :fortran => ['F77', 'LD']

@@ -32,6 +32,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## --- END LICENSE BLOCK ---
 
+$: << "."
+
 require 'config/path'
 require 'config/config'
 require 'config/opts'
@@ -44,7 +46,7 @@ require 'config/config_make'
 require 'config/config_lapack_sources'
 require 'config/config_libs'
 
-include Config
+include JblasConfig
 include Path
 
 args = []

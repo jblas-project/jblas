@@ -54,7 +54,7 @@ require 'config/opts'
 require 'config/config_os_arch'
 require 'config/config_fortran'
 
-include Config
+include JblasConfig
 
 ATLAS_REQUIRED_SYMBOLS = [
   'dsyev_', # eigenvalue function not yet included in ATLAS/LAPACK
@@ -169,6 +169,6 @@ end
 
 if __FILE__ == $0
   $opts = Opts.new(ARGV)
-  Config.run :libs
-  Config::CONFIG.dump($stdout)
+  JblasConfig.run :libs
+  JblasConfig::CONFIG.dump($stdout)
 end

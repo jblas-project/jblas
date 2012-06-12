@@ -67,7 +67,25 @@ def translate(s)
   s.gsub! /<Double>/, '<Float>'
   s.gsub! /readDouble/, 'readFloat'
   s.gsub! /java.lang.Double/, 'java.lang.Float'
-  s
+
+  # go through lines. If a line starts with "//FLOAT//" replace the next line by the following line
+  discard_lines = 0
+  result = []
+  s.split("\n").each do |line|
+    if discard_lines > 0
+      discard_lines -= 1
+    else
+      i = line.index('//FLOAT//')
+      if i
+        discard_lines = 1
+        result <<= line[(i + "//FLOAT//".length)..-1]
+      else
+        result <<= line
+      end
+    end
+  end
+
+  result.join("\n")
 end
 
 if ARGV.size < 2

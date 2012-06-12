@@ -76,8 +76,8 @@ module Path
   # Check whether a cmd could be found.
   def check_cmd(*cmds)
     cmds.each do |cmd|
-      Config.log "Searching for command #{cmd}"
-      Config.fail("coulnd't find command #{cmd}") unless Path.where cmd
+      JblasConfig.log "Searching for command #{cmd}"
+      JblasConfig.fail("coulnd't find command #{cmd}") unless Path.where cmd
     end
     yield self if block_given?
     return
@@ -87,8 +87,8 @@ module Path
   def check_files(path, *files)
     files.each do |file|
       file = File.join(path, *file)
-      Config.log "Searching for file #{file}"
-      Config.fail("couldn't find #{file}") unless File.exist? file
+      JblasConfig.log "Searching for file #{file}"
+      JblasConfig.fail("couldn't find #{file}") unless File.exist? file
     end
     yield if block_given?
     return
@@ -96,7 +96,7 @@ module Path
 
   # translate dir (mainly necessary for cygwin)
   def dir(s)
-    case Config::CONFIG['OS_NAME']
+    case JblasConfig::CONFIG['OS_NAME']
     when 'Windows'
       s = s.gsub(/\\/, '\\\\\\\\')
       %x(cygpath -u '#{s}').chomp

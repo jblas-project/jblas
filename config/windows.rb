@@ -37,5 +37,5 @@ require 'config/config'
 W64_PREFIX = 'x86_64-w64-mingw32-'
 
 def w64build?
-  Config::CONFIG['OS_NAME'] == 'Windows' and Config::CONFIG['OS_ARCH'] == 'amd64'
+  JblasConfig::CONFIG['OS_NAME'] == 'Windows' and JblasConfig::CONFIG['OS_ARCH'] == 'amd64'
 end
