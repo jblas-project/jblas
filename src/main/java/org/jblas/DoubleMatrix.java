@@ -647,6 +647,7 @@ public class DoubleMatrix implements Serializable {
 
         for (; rs.hasMore(); rs.next()) {
             for (; cs.hasMore(); cs.next()) {
+                cs.init(0,columns);
                 result.put(rs.index(), cs.index(), get(rs.value(), cs.value()));
             }
         }
