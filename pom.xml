@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
 
   <name>jblas</name>
-  <url>http://maven.apache.org</url>
+  <url>http://jblas.org</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,6 +16,7 @@
 
   <build>
     <plugins>
+      <!-- the usual config of the maven compiler plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -25,6 +26,8 @@
           <target>1.5</target>
         </configuration>
       </plugin>
+
+      <!-- some config for the jar -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -37,6 +40,8 @@
           </archive>
         </configuration>
       </plugin>
+
+      <!-- we need to call some ant targets to generate automatic sources -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>

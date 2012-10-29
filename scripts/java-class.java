@@ -74,19 +74,12 @@ import org.jblas.util.Logger;
 public class <%= classname %> {
 
   static {
-	  try {
-		  System.loadLibrary("jblas");
-        } catch (UnsatisfiedLinkError e) {
-            Logger.getLogger().config(
-                    "BLAS native library not found in path. Copying native library "
-                    + "from the archive. Consider installing the library somewhere "
-                    + "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
-            new org.jblas.util.LibraryLoader().loadLibrary("jblas", true);
-        }
-    }
-    private static int[] intDummy = new int[1];
-    private static double[] doubleDummy = new double[1];
-    private static float[] floatDummy = new float[1];
+    NativeBlasLibraryLoader.loadLibraryAndCheckErrors();
+  }
+
+  private static int[] intDummy = new int[1];
+  private static double[] doubleDummy = new double[1];
+  private static float[] floatDummy = new float[1];
 
      
 <% for r in routines -%>

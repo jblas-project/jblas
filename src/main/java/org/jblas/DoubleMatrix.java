@@ -3383,4 +3383,31 @@ public class DoubleMatrix implements Serializable {
     public ComplexDoubleMatrix toComplex() {
       return new ComplexDoubleMatrix(this);
     }
+
+  public DoubleMatrix $plus(DoubleMatrix other) {
+    return add(other);
+  }
+
+  public DoubleMatrix $plus$eq(DoubleMatrix other) {
+    System.out.println("called $plus$eq");
+    return addi(other);
+  }
+
+  public DoubleMatrix $div(DoubleMatrix other) {
+    System.out.println("called div");
+    return div(other);
+  }
+
+  public DoubleMatrix $div$colon(DoubleMatrix other) {
+    System.out.println("called rdiv");
+    return other.rdiv(this);
+  }
+
+  public DoubleMatrix $times(DoubleMatrix other) {
+    return mul(other);
+  }
+
+  public DoubleMatrix $times$tilde(DoubleMatrix other) {
+    return mmul(other);
+  }
 }

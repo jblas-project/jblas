@@ -3383,4 +3383,31 @@ public class FloatMatrix implements Serializable {
     public ComplexFloatMatrix toComplex() {
       return new ComplexFloatMatrix(this);
     }
+
+  public FloatMatrix $plus(FloatMatrix other) {
+    return add(other);
+  }
+
+  public FloatMatrix $plus$eq(FloatMatrix other) {
+    System.out.println("called $plus$eq");
+    return addi(other);
+  }
+
+  public FloatMatrix $div(FloatMatrix other) {
+    System.out.println("called div");
+    return div(other);
+  }
+
+  public FloatMatrix $div$colon(FloatMatrix other) {
+    System.out.println("called rdiv");
+    return other.rdiv(this);
+  }
+
+  public FloatMatrix $times(FloatMatrix other) {
+    return mul(other);
+  }
+
+  public FloatMatrix $times$tilde(FloatMatrix other) {
+    return mmul(other);
+  }
 }

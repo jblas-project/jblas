@@ -1,3 +1,11 @@
+Release 1.2.1
+
+Bug fixes and code side changes.
+
+- Fixed bugs with Range objects
+- Moved test code to JUnit 4.
+- Fixed configure script and code-generation to Ruby 1.9
+
 Release 1.2.0 - January 7, 2011
 
 - Added Generalized Eigenvalues for symmetric matrices (which you
