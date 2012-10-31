@@ -3,15 +3,15 @@ package org.jblas;
 import org.jblas.util.Logger;
 
 /**
- * <one line description>
- * <p/>
- * <longer description>
- * <p/>
- * User: mikio
+ * Help class for loading libraries needed for NativeBlas
+ *
+ * The only use of this class is to have NativeBlas inherit from this class.
+ *
+ * User: Mikio L. Braun
  * Date: 10/24/12
  * Time: 3:15 PM
  */
-public class NativeBlasLibraryLoader {
+class NativeBlasLibraryLoader {
   static void loadLibraryAndCheckErrors() {
     try {
       try {
