@@ -41,8 +41,8 @@ class NativeBlasLibraryLoader {
           "For more information, see http://github.com/mikiobraun/jblas/wiki/Missing-Libraries");
       } else if (name.equals("Linux") && arch.equals("amd64")) {
         System.err.println("On Linux 64bit, you need additional support libraries.\n" +
-          "You need to install libgfortran.\n\n" +
-          "For example for debian or Ubuntu, type \"aptitude install libgfortran3\"\n\n" +
+          "You need to install libgfortran3.\n\n" +
+          "For example for debian or Ubuntu, type \"sudo apt-get install libgfortran3\"\n\n" +
           "For more information, see https://github.com/mikiobraun/jblas/wiki/Missing-Libraries");
       }
     }
