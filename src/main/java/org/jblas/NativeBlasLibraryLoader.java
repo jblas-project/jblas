@@ -33,16 +33,16 @@ public class NativeBlasLibraryLoader {
 
       if (name.startsWith("Windows") && e.getMessage().contains("Can't find dependent libraries")) {
         System.err.println("On Windows, you need some additional support libraries.\n" +
-          "For example, you can install the two packages \n" +
+          "For example, you can install the two packages in cygwin:\n" +
           "\n" +
-          "   mingw64-x86_64-gcc-core mingw64-x86_64-gfortran\n" +
+          "   mingw64-x86_64-gcc-core   mingw64-x86_64-gfortran\n" +
           "\n" +
-          "and add the directory /usr/x86_64-w64-mingw32/sys-root/mingw/bin to your path.\n\n" +
+          "and add the directory <cygwin-home>\\usr\\x86_64-w64-mingw32\\sys-root\\mingw\\bin to your path.\n\n" +
           "For more information, see http://github.com/mikiobraun/jblas/wiki/Missing-Libraries");
       } else if (name.equals("Linux") && arch.equals("amd64")) {
         System.err.println("On Linux 64bit, you need additional support libraries.\n" +
           "You need to install libgfortran.\n\n" +
-          "For example for debian or Ubuntu, you have to install the \"libgfortran3\" package\n\n" +
+          "For example for debian or Ubuntu, type \"aptitude install libgfortran3\"\n\n" +
           "For more information, see https://github.com/mikiobraun/jblas/wiki/Missing-Libraries");
       }
     }

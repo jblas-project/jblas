@@ -176,6 +176,7 @@ public class LibraryLoader {
             logger.error("Could not create the temp file: " + io.toString() + ".\n");
         } catch (UnsatisfiedLinkError ule) {
             logger.error("Couldn't load copied link file: " + ule.toString() + ".\n");
+            throw ule;
         }
     }
 }
