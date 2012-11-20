@@ -617,7 +617,7 @@ public class FloatMatrix implements Serializable {
 
     /** Get all elements for a given column and the specified rows. */
     public FloatMatrix get(int[] indices, int c) {
-        FloatMatrix result = new FloatMatrix(indices.length, c);
+        FloatMatrix result = new FloatMatrix(indices.length, 1);
 
         for (int i = 0; i < indices.length; i++) {
             result.put(i, get(indices[i], c));
