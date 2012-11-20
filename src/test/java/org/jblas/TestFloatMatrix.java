@@ -97,7 +97,7 @@ public class TestFloatMatrix {
   }
 
   @Test
-  public void testGetWithRowIndices() {
+  public void testGetWithRowIndicesAndSingleColumn() {
     FloatMatrix M = new FloatMatrix(new float[][] {{1, 2}, {3, 4}});
 
     assertEquals(new FloatMatrix(2, 1, 1, 3), M.get(new int[]{0, 1}, 0));
