@@ -281,7 +281,7 @@ public class ComplexDoubleMatrix {
 	}
 	
 	public ComplexDoubleMatrix get(int[] indices, int c) {
-		ComplexDoubleMatrix result = new ComplexDoubleMatrix(indices.length, c);
+		ComplexDoubleMatrix result = new ComplexDoubleMatrix(indices.length, 1);
 		
 		for (int i = 0; i < indices.length; i++)
 			result.put(i, get(indices[i], c));

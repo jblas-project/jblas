@@ -98,6 +98,14 @@ public class TestDoubleMatrix {
   }
 
   @Test
+  public void testGetWithRowIndicesAndSingleColumn() {
+    DoubleMatrix M = new DoubleMatrix(new double[][] {{1, 2}, {3, 4}});
+
+    assertEquals(new DoubleMatrix(2, 1, 1, 3), M.get(new int[]{0, 1}, 0));
+    assertEquals(new DoubleMatrix(2, 1, 2, 4), M.get(new int[]{0, 1}, 1));
+  }
+
+  @Test
   public void testCopy() {
     DoubleMatrix M = new DoubleMatrix();
 
