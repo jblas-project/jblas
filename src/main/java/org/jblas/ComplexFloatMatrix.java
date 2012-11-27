@@ -281,7 +281,7 @@ public class ComplexFloatMatrix {
 	}
 	
 	public ComplexFloatMatrix get(int[] indices, int c) {
-		ComplexFloatMatrix result = new ComplexFloatMatrix(indices.length, c);
+		ComplexFloatMatrix result = new ComplexFloatMatrix(indices.length, 1);
 		
 		for (int i = 0; i < indices.length; i++)
 			result.put(i, get(indices[i], c));
