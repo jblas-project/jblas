@@ -62,7 +62,7 @@ public class Singular {
 
         NativeBlas.zgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n), rwork, 0);
 
-        return new ComplexDoubleMatrix[]{U, new ComplexDoubleMatrix(S), V.transpose()};
+        return new ComplexDoubleMatrix[]{U, new ComplexDoubleMatrix(S), V.hermitian()};
     }
 
     /**
