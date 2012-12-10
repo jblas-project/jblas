@@ -16,7 +16,7 @@ see also the file RELEASE_NOTES
 
 Homepage: http://jblas.org
 
-![travis status](https://travis-ci.org/Quantisan/jblas.png)
+![travis status](https://travis-ci.org/mikiobraun/jblas.png)
 
 INSTALL
 -------
