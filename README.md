@@ -16,6 +16,8 @@ see also the file RELEASE_NOTES
 
 Homepage: http://jblas.org
 
+![travis status](https://travis-ci.org/Quantisan/jblas.png)
+
 INSTALL
 
 In principle, all you need is the jblas-1.2.0,jar in your
