@@ -161,8 +161,14 @@ public class SimpleBlas {
         return NativeBlas.idamax(x.length, x.data, 0, 1) - 1;
     }
 
+  /**
+   * Compute index of element with largest absolute value (complex version).
+   *
+   * @param x matrix
+   * @return index of element with largest absolute value.
+   */
     public static int iamax(ComplexDoubleMatrix x) {
-        return NativeBlas.izamax(x.length, x.data, 0, 1);
+        return NativeBlas.izamax(x.length, x.data, 0, 1) - 1;
     }
 
     /***************************************************************************
@@ -503,8 +509,14 @@ public class SimpleBlas {
         return NativeBlas.isamax(x.length, x.data, 0, 1) - 1;
     }
 
+  /**
+   * Compute index of element with largest absolute value (complex version).
+   *
+   * @param x matrix
+   * @return index of element with largest absolute value.
+   */
     public static int iamax(ComplexFloatMatrix x) {
-        return NativeBlas.icamax(x.length, x.data, 0, 1);
+        return NativeBlas.icamax(x.length, x.data, 0, 1) - 1;
     }
 
     /***************************************************************************

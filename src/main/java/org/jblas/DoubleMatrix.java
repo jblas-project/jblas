@@ -517,6 +517,27 @@ public class DoubleMatrix implements Serializable {
         return m;
     }
 
+  /**
+   * Construct a matrix of arbitrary shape and set the diagonal according
+   * to a passed vector.
+   *
+   * length of needs to be smaller than rows or columns.
+   *
+   * @param x vector to fill the diagonal with
+   * @param rows number of rows of the resulting matrix
+   * @param columns number of columns of the resulting matrix
+   * @return a matrix with dimensions rows * columns whose diagonal elements are filled by x
+   */
+    public static DoubleMatrix diag(DoubleMatrix x, int rows, int columns) {
+      DoubleMatrix m = new DoubleMatrix(rows, columns);
+
+      for (int i = 0; i < x.length; i++) {
+          m.put(i, i, x.get(i));
+      }
+
+      return m;
+    }
+
     /**
      * Create a 1-by-1 matrix. For many operations, this matrix functions like a
      * normal double.

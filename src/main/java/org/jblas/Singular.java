@@ -32,7 +32,7 @@ public class Singular {
     /**
      * Compute a singular-value decomposition of A (sparse variant).
      * Sparse means that the matrices U and V are not square but
-     * only have as many columns (or rows) as possible.
+     * only have as many columns (or rows) as necessary.
      * 
      * @param A
      * @return A DoubleMatrix[3] array of U, S, V such that A = U * diag(S) * V'
@@ -50,6 +50,14 @@ public class Singular {
         return new DoubleMatrix[]{U, S, V.transpose()};
     }
 
+  /**
+   * Compute a singular-value decomposition of A (sparse variant).
+   * Sparse means that the matrices U and V are not square but only have
+   * as many columns (or rows) as necessary.
+   *
+   * @param A
+   * @return A ComplexDoubleMatrix[3] array of U, S, V such that A = U * diag(S) * V*
+   */
     public static ComplexDoubleMatrix[] sparseSVD(ComplexDoubleMatrix A) {
         int m = A.rows;
         int n = A.columns;
@@ -63,6 +71,26 @@ public class Singular {
         NativeBlas.zgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n), rwork, 0);
 
         return new ComplexDoubleMatrix[]{U, new ComplexDoubleMatrix(S), V.hermitian()};
+    }
+
+    /**
+     * Compute a singular-value decomposition of A.
+     *
+     * @return A ComplexDoubleMatrix[3] array of U, S, V such that A = U * diag(S) * V'
+     */
+    public static ComplexDoubleMatrix[] fullSVD(ComplexDoubleMatrix A) {
+      int m = A.rows;
+      int n = A.columns;
+
+      ComplexDoubleMatrix U = new ComplexDoubleMatrix(m, m);
+      DoubleMatrix S = new DoubleMatrix(min(m, n));
+      ComplexDoubleMatrix V = new ComplexDoubleMatrix(n, n);
+
+      double[] rwork = new double[5*min(m,n)];
+
+      NativeBlas.zgesvd('A', 'A', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, n, rwork, 0);
+
+      return new ComplexDoubleMatrix[]{U, new ComplexDoubleMatrix(S), V.hermitian()};
     }
 
     /**
@@ -123,7 +151,7 @@ public class Singular {
     /**
      * Compute a singular-value decomposition of A (sparse variant).
      * Sparse means that the matrices U and V are not square but
-     * only have as many columns (or rows) as possible.
+     * only have as many columns (or rows) as necessary.
      * 
      * @param A
      * @return A FloatMatrix[3] array of U, S, V such that A = U * diag(S) * V'
@@ -141,6 +169,14 @@ public class Singular {
         return new FloatMatrix[]{U, S, V.transpose()};
     }
 
+  /**
+   * Compute a singular-value decomposition of A (sparse variant).
+   * Sparse means that the matrices U and V are not square but only have
+   * as many columns (or rows) as necessary.
+   *
+   * @param A
+   * @return A ComplexFloatMatrix[3] array of U, S, V such that A = U * diag(S) * V*
+   */
     public static ComplexFloatMatrix[] sparseSVD(ComplexFloatMatrix A) {
         int m = A.rows;
         int n = A.columns;
@@ -153,7 +189,27 @@ public class Singular {
 
         NativeBlas.cgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n), rwork, 0);
 
-        return new ComplexFloatMatrix[]{U, new ComplexFloatMatrix(S), V.transpose()};
+        return new ComplexFloatMatrix[]{U, new ComplexFloatMatrix(S), V.hermitian()};
+    }
+
+    /**
+     * Compute a singular-value decomposition of A.
+     *
+     * @return A ComplexFloatMatrix[3] array of U, S, V such that A = U * diag(S) * V'
+     */
+    public static ComplexFloatMatrix[] fullSVD(ComplexFloatMatrix A) {
+      int m = A.rows;
+      int n = A.columns;
+
+      ComplexFloatMatrix U = new ComplexFloatMatrix(m, m);
+      FloatMatrix S = new FloatMatrix(min(m, n));
+      ComplexFloatMatrix V = new ComplexFloatMatrix(n, n);
+
+      float[] rwork = new float[5*min(m,n)];
+
+      NativeBlas.cgesvd('A', 'A', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, n, rwork, 0);
+
+      return new ComplexFloatMatrix[]{U, new ComplexFloatMatrix(S), V.hermitian()};
     }
 
     /**

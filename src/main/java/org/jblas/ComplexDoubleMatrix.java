@@ -57,18 +57,18 @@ public class ComplexDoubleMatrix {
 	 * 
 	 **************************************************************************/
 
-	/** Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
-	 * using <i>newData></i> as the data. The length of the data is not checked!
+	/**
+   * Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
+	 * using <i>newData></i> as the data.
 	 */
 	public ComplexDoubleMatrix(int newRows, int newColumns, double... newData) {
 		rows = newRows;
 		columns = newColumns;
 		length = rows * columns;
 
-                if (newData.length != 2 * newRows * newColumns)
+    if (newData.length != 2 * newRows * newColumns)
 			throw new IllegalArgumentException(
 					"Passed data must match matrix dimensions.");
-
                 data = newData;
 	}
 	
@@ -110,25 +110,25 @@ public class ComplexDoubleMatrix {
 	}
 		
         
-        /** Construct a complex matrix from a real matrix. */
-        public ComplexDoubleMatrix(DoubleMatrix m) {
-            this(m.rows, m.columns);
-            
-            NativeBlas.dcopy(m.length, m.data, 0, 1, data, 0, 2);
-        }
+  /** Construct a complex matrix from a real matrix. */
+  public ComplexDoubleMatrix(DoubleMatrix m) {
+    this(m.rows, m.columns);
 
-        /** Construct a complex matrix from separate real and imaginary parts. Either 
-         * part can be set to null in which case it will be ignored.
-         */
-        public ComplexDoubleMatrix(DoubleMatrix real, DoubleMatrix imag) {
-            this(real.rows, real.columns);
-            real.assertSameSize(imag);
-            
-            if (real != null)
-                NativeBlas.dcopy(length, real.data, 0, 1, data, 0, 2);
-            if (imag != null)
-                NativeBlas.dcopy(length, imag.data, 0, 1, data, 1, 2);
-        }
+    NativeBlas.dcopy(m.length, m.data, 0, 1, data, 0, 2);
+  }
+
+  /** Construct a complex matrix from separate real and imaginary parts. Either
+   * part can be set to null in which case it will be ignored.
+   */
+  public ComplexDoubleMatrix(DoubleMatrix real, DoubleMatrix imag) {
+      this(real.rows, real.columns);
+      real.assertSameSize(imag);
+
+      if (real != null)
+          NativeBlas.dcopy(length, real.data, 0, 1, data, 0, 2);
+      if (imag != null)
+          NativeBlas.dcopy(length, imag.data, 0, 1, data, 1, 2);
+  }
         
         /**
 	 * Creates a new matrix by reading it from a file.
@@ -211,6 +211,30 @@ public class ComplexDoubleMatrix {
 		
 		return m;
 	}
+
+  /**
+   * Construct a matrix of arbitrary shape and set the diagonal according
+   * to a passed vector.
+   *
+   * length of needs to be smaller than rows or columns.
+   *
+   * @param x vector to fill the diagonal with
+   * @param rows number of rows of the resulting matrix
+   * @param columns number of columns of the resulting matrix
+   * @return a matrix with dimensions rows * columns whose diagonal elements are filled by x
+   */
+  public static ComplexDoubleMatrix diag(ComplexDoubleMatrix x, int rows, int columns) {
+    if (x.length > rows || x.length > columns) {
+      throw new SizeException("Length of diagonal matrix must be larger than both rows and columns.");
+    }
+    
+    ComplexDoubleMatrix m = new ComplexDoubleMatrix(rows, columns);
+
+    for (int i = 0; i < x.length; i++)
+      m.put(i, i, x.get(i));
+
+    return m;
+  }
 	
 	/**
 	 * Create a 1 * 1 - matrix. For many operations, this matrix functions like a
