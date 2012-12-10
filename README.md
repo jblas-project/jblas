@@ -1,16 +1,16 @@
 jblas is a matrix library for Java which uses existing high
 performance BLAS and LAPACK libraries like ATLAS.
 
-Version 1.2.1
-Version 1.2.0, January 7, 2011
-Version 1.1.1
-Version 1.1, August 16, 2010
-Version 1.0.2, February 26, 2010
-Version 1.0.1, January 14, 2010
-Version 1.0, December 22, 2009
-Version 0.3, September 17, 2009
-Version 0.2, May 8, 2009
-Version 0.1, March 28, 2009
+* Version 1.2.1
+* Version 1.2.0, January 7, 2011
+* Version 1.1.1
+* Version 1.1, August 16, 2010
+* Version 1.0.2, February 26, 2010
+* Version 1.0.1, January 14, 2010
+* Version 1.0, December 22, 2009
+* Version 0.3, September 17, 2009
+* Version 0.2, May 8, 2009
+* Version 0.1, March 28, 2009
 
 see also the file RELEASE_NOTES
 
@@ -70,7 +70,7 @@ for more information.
 BUGS
 ----
 
-If you encounter any bugs, feel free to go to [http://jblas.org] and
+If you encounter any bugs, feel free to go to http://jblas.org and
 register a ticket for them. Make sure to include as much information
 as possible. For configuration problems it would also be helpful to
 include the file "configure.log".
