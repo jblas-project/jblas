@@ -19,8 +19,9 @@ Homepage: http://jblas.org
 ![travis status](https://travis-ci.org/Quantisan/jblas.png)
 
 INSTALL
+-------
 
-In principle, all you need is the jblas-1.2.0,jar in your
+In principle, all you need is the jblas-1.2.0.jar in your
 classpath. jblas-1.2.0.jar will then automagically extract your platform
 dependent native library to a tempfile and load it from there. You can
 also put that file somewhere in your load path ($LD_LIBRARY_PATH for
@@ -28,6 +29,7 @@ Linux, %PATH for Windows).
 
 
 BUILDING
+--------
 
 If you only work on the java part, an ant build.xml is provided to
 recompile the sources. In addition to that you need an installation of
@@ -48,6 +50,7 @@ further details.
 
 
 HOW TO GET STARTED
+------------------
 
 Have a look at javadoc/index.html and
 javadoc/org/jblas/DoubleMatrix.html
@@ -58,19 +61,22 @@ in case, you only have the "client" JVM installed.
 
 
 LICENSE
+-------
 
 jblas is distributed under a BSD-style license. See the file COPYING
 for more information.
 
 
 BUGS
+----
 
-If you encounter any bugs, feel free to go to http://jblas.org and
+If you encounter any bugs, feel free to go to [http://jblas.org] and
 register a ticket for them. Make sure to include as much information
 as possible. For configuration problems it would also be helpful to
 include the file "configure.log".
 
 
 CONTRIBUTORS
+------------
 
 see file AUTHORS
