@@ -82,12 +82,13 @@ public class LibraryLoader {
      *
      * If that is the case, remap the file
      */
+    String loadLibname = libname;
     if (libname.endsWith("dylib")) {
-      libname = libname.replace(".dylib", ".jnilib");
-      logger.debug("Replaced .dylib with .jnilib");
+      loadLibname = libname.replace(".dylib", ".jnilib");
+      logger.config("Replaced .dylib with .jnilib");
     }
 
-    logger.debug("Attempting to load \"" + libname + "\".");
+    logger.debug("Attempting to load \"" + loadLibname + "\".");
 
     String[] paths = {
         "/",
@@ -98,14 +99,14 @@ public class LibraryLoader {
         fatJarLibraryPathNonUnified("dynamic", flavor),
     };
 
-    InputStream is = findLibrary(paths, libname);
+    InputStream is = findLibrary(paths, loadLibname);
 
     // Oh man, have to get out of here!
     if (is == null) {
-      throw new UnsatisfiedLinkError("Couldn't find the resource " + libname + ".");
+      throw new UnsatisfiedLinkError("Couldn't find the resource " + loadLibname + ".");
     }
 
-    logger.config("Loading " + libname + " from " + libpath + ".");
+    logger.config("Loading " + loadLibname + " from " + libpath + ", copying to " + libname + ".");
     loadLibraryFromStream(libname, is);
   }
 
