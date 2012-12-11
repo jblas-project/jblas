@@ -8,11 +8,42 @@
   <packaging>jar</packaging>
 
   <name>jblas</name>
-  <url>http://jblas.org</url>
+  <description>A fast linear algebra library for Java.</description>
+  <url>http://jblas.org/</url>
+  <licenses>
+    <license>
+      <name>BSD 3-clause style license</name>
+      <url>http://opensource.org/licenses/BSD-3-Clause</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:https://github.com/mikiobraun/jblas.git</connection>
+    <developerConnection>scm:git:https://github.com/mikiobraun/jblas.git</developerConnection>
+    <url>https://github.com/mikiobraun/jblas.git</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>mikiobraun</id>
+      <name>Mikio L. Braun</name>
+      <email>mikiobraun@gmail.com</email>
+    </developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
@@ -59,16 +90,42 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- javadoc jar -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- sources.jar -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <configuration>
+          <excludeResources>true</excludeResources>
+          <excludes>
+            <exclude>**/*.rjpp</exclude>
+            <exclude>*.html</exclude>
+            <exclude>*.textile</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
-
-
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.10</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 </project>
