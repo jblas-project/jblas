@@ -33,6 +33,11 @@ public class Decompose {
             this.u = u;
             this.p = p;
         }
+
+        @Override
+        public String toString() {
+          return String.format("<LUDecomposition L=%s U=%s P=%s>", l, u, p);
+        }
     }
 //START
 
