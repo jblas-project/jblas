@@ -2678,6 +2678,7 @@ public class DoubleMatrix implements Serializable {
     public void save(String filename) throws IOException {
         DataOutputStream dos = new DataOutputStream(new FileOutputStream(filename, false));
         this.out(dos);
+        dos.close();
     }
 
     /**
@@ -2689,6 +2690,7 @@ public class DoubleMatrix implements Serializable {
     public void load(String filename) throws IOException {
         DataInputStream dis = new DataInputStream(new FileInputStream(filename));
         this.in(dis);
+        dis.close();
     }
 
     public static DoubleMatrix loadAsciiFile(String filename) throws IOException {
