@@ -3431,8 +3431,4 @@ public class DoubleMatrix implements Serializable {
     public ComplexDoubleMatrix toComplex() {
       return new ComplexDoubleMatrix(this);
     }
-
-  public DoubleMatrix $plus(DoubleMatrix other) {
-    return add(other);
-  }
 }
