@@ -37,10 +37,10 @@
 
 package org.jblas;
 
-import org.jblas.exceptions.LapackException;
-import org.jblas.exceptions.LapackArgumentException;
-import org.jblas.exceptions.LapackConvergenceException;
-import org.jblas.exceptions.LapackSingularityException;
+import org.jblas.exceptions.*;
+import org.jblas.util.Functions;
+
+import static org.jblas.util.Functions.*;
 
 //import edu.ida.core.OutputValue;
 
@@ -399,6 +399,52 @@ public class SimpleBlas {
         }
     }
 
+  /**
+   * Generalized Least Squares via *GELSD.
+   *
+   * Note that B must be padded to contain the solution matrix. This occurs when A has fewer rows
+   * than columns.
+   *
+   * For example: in A * X = B, A is (m,n), X is (n,k) and B is (m,k). Now if m < n, since B is overwritten to contain
+   * the solution (in classical LAPACK style), B needs to be padded to be an (n,k) matrix.
+   *
+   * Likewise, if m > n, the solution consists only of the first n rows of B.
+   *
+   * @param A an (m,n) matrix
+   * @param B an (max(m,n), k) matrix (well, at least)
+   */
+    public static void gelsd(DoubleMatrix A, DoubleMatrix B) {
+      int m = A.rows;
+      int n = A.columns;
+      int nrhs = B.columns;
+      int minmn = min(m, n);
+      int maxmn = max(m, n);
+
+      if (B.rows < maxmn) {
+        throw new SizeException("Result matrix B must be padded to contain the solution matrix X!");
+      }
+
+      int smlsiz = NativeBlas.ilaenv(9, "DGELSD", "", m, n, nrhs, 0);
+      int nlvl = max(0, (int) log2(minmn/ (smlsiz+1)) + 1);
+
+//      System.err.printf("GELSD\n");
+//      System.err.printf("m = %d, n = %d, nrhs = %d\n", m, n, nrhs);
+//      System.err.printf("smlsiz = %d, nlvl = %d\n", smlsiz, nlvl);
+//      System.err.printf("iwork size = %d\n", 3 * minmn * nlvl + 11 * minmn);
+
+      int[] iwork = new int[3 * minmn * nlvl + 11 * minmn];
+      double[] s = new double[minmn];
+      int[] rank = new int[1];
+      int info = NativeBlas.dgelsd(m, n, nrhs, A.data, 0, m, B.data, 0, B.rows, s, 0, -1, rank, 0, iwork, 0);
+      if (info == 0) {
+        return;
+      } else if (info < 0) {
+        throw new LapackArgumentException("DGESD", -info);
+      } else if (info > 0) {
+        throw new LapackConvergenceException("DGESD", info + " off-diagonal elements of an intermediat bidiagonal form did not converge to 0.");
+      }
+    }
+
 //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
@@ -738,6 +784,52 @@ public class SimpleBlas {
             else
                 throw new LapackException("DSYGVD", "The leading minor of order " + (info - A.rows) + " of B is not positive definite.");
         }
+    }
+
+  /**
+   * Generalized Least Squares via *GELSD.
+   *
+   * Note that B must be padded to contain the solution matrix. This occurs when A has fewer rows
+   * than columns.
+   *
+   * For example: in A * X = B, A is (m,n), X is (n,k) and B is (m,k). Now if m < n, since B is overwritten to contain
+   * the solution (in classical LAPACK style), B needs to be padded to be an (n,k) matrix.
+   *
+   * Likewise, if m > n, the solution consists only of the first n rows of B.
+   *
+   * @param A an (m,n) matrix
+   * @param B an (max(m,n), k) matrix (well, at least)
+   */
+    public static void gelsd(FloatMatrix A, FloatMatrix B) {
+      int m = A.rows;
+      int n = A.columns;
+      int nrhs = B.columns;
+      int minmn = min(m, n);
+      int maxmn = max(m, n);
+
+      if (B.rows < maxmn) {
+        throw new SizeException("Result matrix B must be padded to contain the solution matrix X!");
+      }
+
+      int smlsiz = NativeBlas.ilaenv(9, "DGELSD", "", m, n, nrhs, 0);
+      int nlvl = max(0, (int) log2(minmn/ (smlsiz+1)) + 1);
+
+//      System.err.printf("GELSD\n");
+//      System.err.printf("m = %d, n = %d, nrhs = %d\n", m, n, nrhs);
+//      System.err.printf("smlsiz = %d, nlvl = %d\n", smlsiz, nlvl);
+//      System.err.printf("iwork size = %d\n", 3 * minmn * nlvl + 11 * minmn);
+
+      int[] iwork = new int[3 * minmn * nlvl + 11 * minmn];
+      float[] s = new float[minmn];
+      int[] rank = new int[1];
+      int info = NativeBlas.sgelsd(m, n, nrhs, A.data, 0, m, B.data, 0, B.rows, s, 0, -1, rank, 0, iwork, 0);
+      if (info == 0) {
+        return;
+      } else if (info < 0) {
+        throw new LapackArgumentException("DGESD", -info);
+      } else if (info > 0) {
+        throw new LapackConvergenceException("DGESD", info + " off-diagonal elements of an intermediat bidiagonal form did not converge to 0.");
+      }
     }
 
 //END

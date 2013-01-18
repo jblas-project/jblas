@@ -377,6 +377,8 @@ EOS
           end 
         elsif javatype == 'char'
           Java::CharArgument.new(self)
+        elsif javatype == 'String'
+          Java::StringArgument.new(self)
         else
           Java::GenericArgument.new(self)
         end
@@ -710,6 +712,21 @@ EOS
 
     def make_fortran_arg
       code.fortran_args << ctype[1...-5] + " *"
+    end
+  end
+
+  class StringArgument < GenericArgument
+    def make_fortran_arg
+      code.fortran_args << 'char *'
+    end
+
+    def make_convert_arg
+      code.conversions << "  char *#{name}Str = (*env)->GetStringChars(env, #{name}, NULL);\n"
+      code.release_arrays << "  (*env)->ReleaseStringChars(env, #{name}, #{name}Str);\n"
+    end
+
+    def make_call_arg
+      code.call_args << "#{name}Str"
     end
   end
 end # module Java

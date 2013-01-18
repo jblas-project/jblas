@@ -81,7 +81,6 @@ public class <%= classname %> {
   private static double[] doubleDummy = new double[1];
   private static float[] floatDummy = new float[1];
 
-     
 <% for r in routines -%>
 <%= generate_native_declaration r %>
 <% end %>

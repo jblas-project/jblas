@@ -166,6 +166,7 @@ module Fortran
         puts "#$1 -> #$2" if $debug
         type = $1
         args = $2.scan ArgumentParens
+        type = type.sub(/\(\s+/, "(").sub(/\s+\)/, ")")
         args.each do |argname|
           puts "  #{argname} -> #{type}" if $debug
           if argname =~ /([A-Z0-9]+)\ *\(.*\)/

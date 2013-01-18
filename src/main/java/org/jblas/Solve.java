@@ -36,6 +36,8 @@
 
 package org.jblas;
 
+import org.jblas.util.Functions;
+
 /**
  * Solving linear equations.
  */
@@ -67,6 +69,45 @@ public class Solve {
 		return X;
 	}
 
+  /** Computes the Least Squares solution for over or underdetermined
+   * linear equations A*X = B
+   *
+   * In the overdetermined case, when m > n, that is, there are more equations than
+   * variables, it computes the least squares solution of X -> ||A*X - B ||_2.
+   *
+   * In the underdetermined case, when m < n (less equations than variables), there are infinitely
+   * many solutions and it computes the minimum norm solution.
+   *
+   * @param A an (m,n) matrix
+   * @param B a (m,k) matrix
+   * @return either the minimum norm or least squares solution.
+   */
+  public static DoubleMatrix solveLeastSquares(DoubleMatrix A, DoubleMatrix B) {
+    if (B.rows < A.columns) {
+      DoubleMatrix X = DoubleMatrix.concatVertically(B, new DoubleMatrix(A.columns - B.rows, B.columns));
+      System.out.println(X);
+      SimpleBlas.gelsd(A.dup(), X);
+      return X;
+    } else {
+      DoubleMatrix X = B.dup();
+      SimpleBlas.gelsd(A.dup(), X);
+      return X.getRange(0, A.columns, 0, B.columns);
+    }
+  }
+
+  /**
+   * Computes the pseudo-inverse.
+   *
+   * Note, this function uses the solveLeastSquares and might produce different numerical
+   * solutions for the underdetermined case than matlab.
+   *
+   * @param A rectangular matrix
+   * @return matrix P such that A*P*A = A and P*A*P = P.
+   */
+  public static DoubleMatrix pinv(DoubleMatrix A) {
+    return solveLeastSquares(A, DoubleMatrix.eye(A.rows));
+  }
+
 //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
@@ -96,6 +137,45 @@ public class Solve {
 		SimpleBlas.posv('U', A.dup(), X);
 		return X;
 	}
+
+  /** Computes the Least Squares solution for over or underdetermined
+   * linear equations A*X = B
+   *
+   * In the overdetermined case, when m > n, that is, there are more equations than
+   * variables, it computes the least squares solution of X -> ||A*X - B ||_2.
+   *
+   * In the underdetermined case, when m < n (less equations than variables), there are infinitely
+   * many solutions and it computes the minimum norm solution.
+   *
+   * @param A an (m,n) matrix
+   * @param B a (m,k) matrix
+   * @return either the minimum norm or least squares solution.
+   */
+  public static FloatMatrix solveLeastSquares(FloatMatrix A, FloatMatrix B) {
+    if (B.rows < A.columns) {
+      FloatMatrix X = FloatMatrix.concatVertically(B, new FloatMatrix(A.columns - B.rows, B.columns));
+      System.out.println(X);
+      SimpleBlas.gelsd(A.dup(), X);
+      return X;
+    } else {
+      FloatMatrix X = B.dup();
+      SimpleBlas.gelsd(A.dup(), X);
+      return X.getRange(0, A.columns, 0, B.columns);
+    }
+  }
+
+  /**
+   * Computes the pseudo-inverse.
+   *
+   * Note, this function uses the solveLeastSquares and might produce different numerical
+   * solutions for the underdetermined case than matlab.
+   *
+   * @param A rectangular matrix
+   * @return matrix P such that A*P*A = A and P*A*P = P.
+   */
+  public static FloatMatrix pinv(FloatMatrix A) {
+    return solveLeastSquares(A, FloatMatrix.eye(A.rows));
+  }
 
 //END
 }

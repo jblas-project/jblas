@@ -81,7 +81,6 @@ public class NativeBlas {
   private static double[] doubleDummy = new double[1];
   private static float[] floatDummy = new float[1];
 
-     
   public static native void ccopy(int n, float[] cx, int cxIdx, int incx, float[] cy, int cyIdx, int incy);
   public static native void dcopy(int n, double[] dx, int dxIdx, int incx, double[] dy, int dyIdx, int incy);
   public static native void scopy(int n, float[] sx, int sxIdx, int incx, float[] sy, int syIdx, int incy);
@@ -418,5 +417,32 @@ public class NativeBlas {
     return info;
   }
 
+  public static native int dgelsd(int m, int n, int nrhs, double[] a, int aIdx, int lda, double[] b, int bIdx, int ldb, double[] s, int sIdx, double rcond, int[] rank, int rankIdx, double[] work, int workIdx, int lwork, int[] iwork, int iworkIdx);
+  public static int dgelsd(int m, int n, int nrhs, double[] a, int aIdx, int lda, double[] b, int bIdx, int ldb, double[] s, int sIdx, double rcond, int[] rank, int rankIdx, int[] iwork, int iworkIdx) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    info = dgelsd(m, n, nrhs, doubleDummy, 0, lda, doubleDummy, 0, ldb, doubleDummy, 0, rcond, intDummy, 0, work, 0, -1, intDummy, 0);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    info = dgelsd(m, n, nrhs, a, aIdx, lda, b, bIdx, ldb, s, sIdx, rcond, rank, rankIdx, work, 0, lwork, iwork, iworkIdx);
+    return info;
+  }
+
+  public static native int sgelsd(int m, int n, int nrhs, float[] a, int aIdx, int lda, float[] b, int bIdx, int ldb, float[] s, int sIdx, float rcond, int[] rank, int rankIdx, float[] work, int workIdx, int lwork, int[] iwork, int iworkIdx);
+  public static int sgelsd(int m, int n, int nrhs, float[] a, int aIdx, int lda, float[] b, int bIdx, int ldb, float[] s, int sIdx, float rcond, int[] rank, int rankIdx, int[] iwork, int iworkIdx) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    info = sgelsd(m, n, nrhs, floatDummy, 0, lda, floatDummy, 0, ldb, floatDummy, 0, rcond, intDummy, 0, work, 0, -1, intDummy, 0);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    info = sgelsd(m, n, nrhs, a, aIdx, lda, b, bIdx, ldb, s, sIdx, rcond, rank, rankIdx, work, 0, lwork, iwork, iworkIdx);
+    return info;
+  }
+
+  public static native int ilaenv(int ispec, String name, String opts, int n1, int n2, int n3, int n4);
 
 }
