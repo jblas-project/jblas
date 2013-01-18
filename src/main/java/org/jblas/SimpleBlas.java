@@ -445,6 +445,21 @@ public class SimpleBlas {
       }
     }
 
+  public static void geqrf(DoubleMatrix A, DoubleMatrix tau) {
+    int info = NativeBlas.dgeqrf(A.rows, A.columns, A.data, 0, A.rows, tau.data, 0);
+    checkInfo("GEQRF", info);
+  }
+
+  public static void ormqr(char side, char trans, DoubleMatrix A, DoubleMatrix tau, DoubleMatrix C) {
+    int k = 0;
+    if (side == 'L')
+      k = C.rows;
+    if (side == 'R')
+      k = C.columns;
+    int info = NativeBlas.dormqr(side, trans, C.rows, C.columns, k, A.data, 0, A.rows, tau.data, 0, C.data, 0, C.rows);
+    checkInfo("ORMQR", info);
+  }
+
 //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
@@ -831,6 +846,21 @@ public class SimpleBlas {
         throw new LapackConvergenceException("DGESD", info + " off-diagonal elements of an intermediat bidiagonal form did not converge to 0.");
       }
     }
+
+  public static void geqrf(FloatMatrix A, FloatMatrix tau) {
+    int info = NativeBlas.sgeqrf(A.rows, A.columns, A.data, 0, A.rows, tau.data, 0);
+    checkInfo("GEQRF", info);
+  }
+
+  public static void ormqr(char side, char trans, FloatMatrix A, FloatMatrix tau, FloatMatrix C) {
+    int k = 0;
+    if (side == 'L')
+      k = C.rows;
+    if (side == 'R')
+      k = C.columns;
+    int info = NativeBlas.sormqr(side, trans, C.rows, C.columns, k, A.data, 0, A.rows, tau.data, 0, C.data, 0, C.rows);
+    checkInfo("ORMQR", info);
+  }
 
 //END
 }

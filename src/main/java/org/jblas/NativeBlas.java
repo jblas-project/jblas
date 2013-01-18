@@ -444,5 +444,57 @@ public class NativeBlas {
   }
 
   public static native int ilaenv(int ispec, String name, String opts, int n1, int n2, int n3, int n4);
+  public static native int dgeqrf(int m, int n, double[] a, int aIdx, int lda, double[] tau, int tauIdx, double[] work, int workIdx, int lwork);
+  public static int dgeqrf(int m, int n, double[] a, int aIdx, int lda, double[] tau, int tauIdx) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    info = dgeqrf(m, n, doubleDummy, 0, lda, doubleDummy, 0, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    info = dgeqrf(m, n, a, aIdx, lda, tau, tauIdx, work, 0, lwork);
+    return info;
+  }
+
+  public static native int sgeqrf(int m, int n, float[] a, int aIdx, int lda, float[] tau, int tauIdx, float[] work, int workIdx, int lwork);
+  public static int sgeqrf(int m, int n, float[] a, int aIdx, int lda, float[] tau, int tauIdx) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    info = sgeqrf(m, n, floatDummy, 0, lda, floatDummy, 0, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    info = sgeqrf(m, n, a, aIdx, lda, tau, tauIdx, work, 0, lwork);
+    return info;
+  }
+
+  public static native int dormqr(char side, char trans, int m, int n, int k, double[] a, int aIdx, int lda, double[] tau, int tauIdx, double[] c, int cIdx, int ldc, double[] work, int workIdx, int lwork);
+  public static int dormqr(char side, char trans, int m, int n, int k, double[] a, int aIdx, int lda, double[] tau, int tauIdx, double[] c, int cIdx, int ldc) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    info = dormqr(side, trans, m, n, k, doubleDummy, 0, lda, doubleDummy, 0, doubleDummy, 0, ldc, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    info = dormqr(side, trans, m, n, k, a, aIdx, lda, tau, tauIdx, c, cIdx, ldc, work, 0, lwork);
+    return info;
+  }
+
+  public static native int sormqr(char side, char trans, int m, int n, int k, float[] a, int aIdx, int lda, float[] tau, int tauIdx, float[] c, int cIdx, int ldc, float[] work, int workIdx, int lwork);
+  public static int sormqr(char side, char trans, int m, int n, int k, float[] a, int aIdx, int lda, float[] tau, int tauIdx, float[] c, int cIdx, int ldc) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    info = sormqr(side, trans, m, n, k, floatDummy, 0, lda, floatDummy, 0, floatDummy, 0, ldc, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    info = sormqr(side, trans, m, n, k, a, aIdx, lda, tau, tauIdx, c, cIdx, ldc, work, 0, lwork);
+    return info;
+  }
+
 
 }

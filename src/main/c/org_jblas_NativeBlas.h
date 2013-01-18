@@ -655,6 +655,38 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sgelsd
 JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ilaenv
   (JNIEnv *, jclass, jint, jstring, jstring, jint, jint, jint, jint);
 
+/*
+ * Class:     org_jblas_NativeBlas
+ * Method:    dgeqrf
+ * Signature: (II[DII[DI[DII)I
+ */
+JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dgeqrf
+  (JNIEnv *, jclass, jint, jint, jdoubleArray, jint, jint, jdoubleArray, jint, jdoubleArray, jint, jint);
+
+/*
+ * Class:     org_jblas_NativeBlas
+ * Method:    sgeqrf
+ * Signature: (II[FII[FI[FII)I
+ */
+JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sgeqrf
+  (JNIEnv *, jclass, jint, jint, jfloatArray, jint, jint, jfloatArray, jint, jfloatArray, jint, jint);
+
+/*
+ * Class:     org_jblas_NativeBlas
+ * Method:    dormqr
+ * Signature: (CCIII[DII[DI[DII[DII)I
+ */
+JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dormqr
+  (JNIEnv *, jclass, jchar, jchar, jint, jint, jint, jdoubleArray, jint, jint, jdoubleArray, jint, jdoubleArray, jint, jint, jdoubleArray, jint, jint);
+
+/*
+ * Class:     org_jblas_NativeBlas
+ * Method:    sormqr
+ * Signature: (CCIII[FII[FI[FII[FII)I
+ */
+JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sormqr
+  (JNIEnv *, jclass, jchar, jchar, jint, jint, jint, jfloatArray, jint, jint, jfloatArray, jint, jfloatArray, jint, jint, jfloatArray, jint, jint);
+
 #ifdef __cplusplus
 }
 #endif

@@ -85,7 +85,6 @@ public class Solve {
   public static DoubleMatrix solveLeastSquares(DoubleMatrix A, DoubleMatrix B) {
     if (B.rows < A.columns) {
       DoubleMatrix X = DoubleMatrix.concatVertically(B, new DoubleMatrix(A.columns - B.rows, B.columns));
-      System.out.println(X);
       SimpleBlas.gelsd(A.dup(), X);
       return X;
     } else {
@@ -154,7 +153,6 @@ public class Solve {
   public static FloatMatrix solveLeastSquares(FloatMatrix A, FloatMatrix B) {
     if (B.rows < A.columns) {
       FloatMatrix X = FloatMatrix.concatVertically(B, new FloatMatrix(A.columns - B.rows, B.columns));
-      System.out.println(X);
       SimpleBlas.gelsd(A.dup(), X);
       return X;
     } else {

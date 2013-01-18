@@ -77,7 +77,7 @@ public class Decompose {
         }
     }
 
-    /**
+    /**if (info )
      * Compute Cholesky decomposition of A
      *
      * @param A symmetric, positive definite matrix (only upper half is used)
@@ -162,5 +162,75 @@ public class Decompose {
       for (int j = 0; j < A.columns; j++)
           for (int i = j + 1; i < A.rows; i++)
               A.put(i, j, 0.0);
+  }
+
+  /**
+   * Class to represent a QR decomposition.
+   *
+   * @param <T>
+   */
+  public static class QRDecomposition<T> {
+    public T q;
+    public T r;
+
+    QRDecomposition(T q, T r) {
+      this.q = q;
+      this.r = r;
+    }
+
+    @Override
+    public String toString() {
+      return "<Q=" + q + " R=" + r + ">";
+    }
+  }
+
+  /**
+   * QR decomposition.
+   *
+   * Decomposes (m,n) matrix A into a (m,m) matrix Q and an (m,n) matrix R such that
+   * Q is orthogonal, R is upper triangular and Q * R = A
+   *
+   * @param A matrix
+   * @return QR decomposition
+   */
+  public static QRDecomposition<DoubleMatrix> qr(DoubleMatrix A) {
+    int minmn = min(A.rows, A.columns);
+    DoubleMatrix result = A.dup();
+    DoubleMatrix tau = new DoubleMatrix(minmn);
+    SimpleBlas.geqrf(result, tau);
+    DoubleMatrix R = new DoubleMatrix(A.rows, A.columns);
+    for (int i = 0; i < A.rows; i++) {
+      for (int j = i; j < A.columns; j++) {
+        R.put(i, j, result.get(i, j));
+      }
+    }
+    DoubleMatrix Q = DoubleMatrix.eye(A.rows);
+    SimpleBlas.ormqr('L', 'N', result, tau, Q);
+    return new QRDecomposition<DoubleMatrix>(Q, R);
+  }
+  
+  /**
+   * QR decomposition.
+   *
+   * Decomposes (m,n) matrix A into a (m,m) matrix Q and an (m,n) matrix R such that
+   * Q is orthogonal, R is upper triangular and Q * R = A
+   *
+   * @param A matrix
+   * @return QR decomposition
+   */
+  public static QRDecomposition<FloatMatrix> qr(FloatMatrix A) {
+    int minmn = min(A.rows, A.columns);
+    FloatMatrix result = A.dup();
+    FloatMatrix tau = new FloatMatrix(minmn);
+    SimpleBlas.geqrf(result, tau);
+    FloatMatrix R = new FloatMatrix(A.rows, A.columns);
+    for (int i = 0; i < A.rows; i++) {
+      for (int j = i; j < A.columns; j++) {
+        R.put(i, j, result.get(i, j));
+      }
+    }
+    FloatMatrix Q = FloatMatrix.eye(A.rows);
+    SimpleBlas.ormqr('L', 'N', result, tau, Q);
+    return new QRDecomposition<FloatMatrix>(Q, R);
   }
 }

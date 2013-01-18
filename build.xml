@@ -252,7 +252,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <!-- <test name="${pkgbase}.TestDoubleMatrix" />
             <test name="${pkgbase}.TestEigen" />
             <test name="${pkgbase}.ranges.IntervalRangeTest" />
-            <test name="${pkgbase}.DecomposeTest" /> -->
+            <test name="${pkgbase}.TestDecompose" /> -->
             <!-- <batchtest fork="yes" todir="${reports.tests}">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
