@@ -3,3 +3,6 @@ notifications:
   email: mikiobraun@gmail.com
   on_success: never
   on_failure: always
+
+before_install:
+  - sudo apt-get install -q libgfortran3
