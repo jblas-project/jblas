@@ -63,7 +63,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <sequential>
             <echo message="Generating float version of @{class}"/>
             <exec executable="${ruby}">
-                <arg line="scripts/class_to_float.rb @{path} @{class}"/>
+                <arg line="scripts/class_to_float.rb &quot;@{path}&quot; @{class}"/>
             </exec>
         </sequential>
     </macrodef>
@@ -72,7 +72,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <sequential>
             <echo message="Add float versions to class @{class}"/>
             <exec executable="${ruby}">
-                <arg line="scripts/static_class_to_float.rb ${src} @{class}"/>
+                <arg line="scripts/static_class_to_float.rb &quot;${src}&quot; @{class}"/>
             </exec>
         </sequential>
     </macrodef>
@@ -80,7 +80,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <attribute name="file"/>
         <sequential>
             <exec executable="${ruby}">
-                <arg line="scripts/rjpp.rb @{file}"/>
+                <arg line="scripts/rjpp.rb &quot;@{file}&quot;"/>
             </exec>
         </sequential>
     </macrodef>
@@ -235,7 +235,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <![CDATA[ <h1>jblas - Linear Algebra for Java (version ${version})</h1> ]]>
             </doctitle>
             <bottom>
-                <![CDATA[ &copy; 2008-2010 by Mikio L. Braun and contributors ]]>
+                <![CDATA[ &copy; 2008-2013 by Mikio L. Braun and contributors ]]>
             </bottom>
         </javadoc>
     </target>

@@ -2,6 +2,8 @@
 /*                detecting sse level                                 */
 /**********************************************************************/
 
+#include <stdio.h>
+#include <assert.h>
 #include "org_jblas_util_ArchFlavor.h"
 
 /*

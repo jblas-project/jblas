@@ -74,6 +74,7 @@ public class LibraryLoader {
       logger.debug("Preloading ArchFlavor library.");
       flavor = ArchFlavor.archFlavor();
     }
+    logger.debug("Found flavor = '" + flavor + "'");
 
     libname = System.mapLibraryName(libname);
 
@@ -115,6 +116,7 @@ public class LibraryLoader {
     for (String path : paths) {
       is = tryPath(path + libname);
       if (is != null) {
+        logger.debug("Found " + libname + " in " + path);
         libpath = path;
         break;
       }

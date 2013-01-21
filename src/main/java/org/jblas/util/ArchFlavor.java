@@ -66,6 +66,7 @@ public class ArchFlavor {
         String arch = System.getProperty("os.arch");
         String name = System.getProperty("os.name");
 
+
         if (name.startsWith("Windows") && arch.equals("amd64")) {
             return null;
         }
