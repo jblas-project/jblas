@@ -60,7 +60,7 @@ class NativeBlasLibraryLoader {
       loader.loadLibrary("libgcc_s_sjlj-1", false, true);
       loader.loadLibrary("libgfortran-3", false, true);
     } else if (name.equals("Linux") && arch.equals("amd64")) {
-
+      loader.loadLibrary("gfortran", false, true);
     }
   }
 }
