@@ -1,5 +1,6 @@
 package org.jblas;
 
+import org.jblas.util.LibraryLoader;
 import org.jblas.util.Logger;
 
 /**
@@ -15,13 +16,14 @@ class NativeBlasLibraryLoader {
   static void loadLibraryAndCheckErrors() {
     try {
       try {
+        loadDependentLibraries();
         System.loadLibrary("jblas");
       } catch (UnsatisfiedLinkError e) {
         Logger.getLogger().config(
             "BLAS native library not found in path. Copying native library "
                 + "from the archive. Consider installing the library somewhere "
                 + "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
-        new org.jblas.util.LibraryLoader().loadLibrary("jblas", true);
+        new LibraryLoader().loadLibrary("jblas", true, false);
       }
       // Let's do some quick tests to see whether we trigger some errors
       // when dependent libraries cannot be found
@@ -45,6 +47,20 @@ class NativeBlasLibraryLoader {
           "For example for debian or Ubuntu, type \"sudo apt-get install libgfortran3\"\n\n" +
           "For more information, see https://github.com/mikiobraun/jblas/wiki/Missing-Libraries");
       }
+    }
+  }
+
+  public static void loadDependentLibraries() {
+    String arch = System.getProperty("os.arch");
+    String name = System.getProperty("os.name");
+
+    LibraryLoader loader = new LibraryLoader();
+
+    if (name.startsWith("Windows") && arch.equals("amd64")) {
+      loader.loadLibrary("libgcc_s_sjlj-1", false, true);
+      loader.loadLibrary("libgfortran-3", false, true);
+    } else if (name.equals("Linux") && arch.equals("amd64")) {
+
     }
   }
 }
