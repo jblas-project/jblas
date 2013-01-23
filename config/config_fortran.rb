@@ -51,7 +51,7 @@ configure 'F77', 'LD' => ['OS_NAME', 'CC'] do
 
   if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
     CONFIG['LD'] = CONFIG['CC']
-    CONFIG['F77'] = 'gfortran-mp-4.3'
+    CONFIG['F77'] = 'gfortran'
     CONFIG['CCC'] = 'c99'
   elsif CONFIG['OS_NAME'] == 'Windows' and CONFIG['OS_ARCH'] == 'amd64'
     CONFIG['LD'] = W64_PREFIX + 'gfortran'

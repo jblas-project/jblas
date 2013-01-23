@@ -60,6 +60,8 @@ static jobject createObject(JNIEnv *env, const char *className, const char *sign
   va_start(args, signature);
   newObject = (*env)->NewObjectV(env, klass, init, args);
   va_end(args);
+
+  return newObject;
 }
 
 <% if $complexcc == 'f2c' %>
