@@ -67,13 +67,14 @@ public class LibraryLoader {
    * @param libname basename of the library
    * @throws UnsatisfiedLinkError if library cannot be founds
    */
-  public void loadLibrary(String libname, boolean withFlavor) {
+  public void loadLibrary(String libname, boolean withFlavor, boolean noPrefix) {
     // preload flavor libraries
     String flavor = null;
     if (withFlavor) {
       logger.debug("Preloading ArchFlavor library.");
       flavor = ArchFlavor.archFlavor();
     }
+    logger.debug("Found flavor = '" + flavor + "'");
 
     libname = System.mapLibraryName(libname);
 
@@ -107,7 +108,7 @@ public class LibraryLoader {
     }
 
     logger.config("Loading " + loadLibname + " from " + libpath + ", copying to " + libname + ".");
-    loadLibraryFromStream(libname, is);
+    loadLibraryFromStream(libname, is, noPrefix);
   }
 
   private InputStream findLibrary(String[] paths, String libname) {
@@ -115,6 +116,7 @@ public class LibraryLoader {
     for (String path : paths) {
       is = tryPath(path + libname);
       if (is != null) {
+        logger.debug("Found " + libname + " in " + path);
         libpath = path;
         break;
       }
@@ -167,6 +169,15 @@ public class LibraryLoader {
     return getClass().getResourceAsStream(path);
   }
 
+  private File createTempFile(String prefix, String suffix, boolean noPrefix) throws IOException {
+    File tempfile = File.createTempFile(prefix, suffix);
+    if (noPrefix == true) {
+      return new File(tempfile.getParentFile(), suffix);
+    } else {
+      return tempfile;
+    }
+  }
+
   /**
    * Load a system library from a stream. Copies the library to a temp file
    * and loads from there.
@@ -174,9 +185,9 @@ public class LibraryLoader {
    * @param libname name of the library (just used in constructing the library name)
    * @param is      InputStream pointing to the library
    */
-  private void loadLibraryFromStream(String libname, InputStream is) {
+  private void loadLibraryFromStream(String libname, InputStream is, boolean noPrefix) {
     try {
-      File tempfile = File.createTempFile("jblas", libname);
+      File tempfile = createTempFile("jblas", libname, noPrefix);
       tempfile.deleteOnExit();
       OutputStream os = new FileOutputStream(tempfile);
 
@@ -184,7 +195,8 @@ public class LibraryLoader {
 
       long savedTime = System.currentTimeMillis();
 
-      byte buf[] = new byte[1024];
+      // Leo says 8k block size is STANDARD ;)
+      byte buf[] = new byte[8192];
       int len;
       while ((len = is.read(buf)) > 0) {
         os.write(buf, 0, len);
@@ -195,6 +207,7 @@ public class LibraryLoader {
 
       os.close();
 
+      logger.debug("Loading library from " + tempfile.getPath() + ".");
       System.load(tempfile.getPath());
     } catch (IOException io) {
       logger.error("Could not create the temp file: " + io.toString() + ".\n");

@@ -713,4 +713,16 @@ public class TestDoubleMatrix {
     DoubleMatrix B = DoubleMatrix.rand(3, 3);
     assertEquals(0.0, A.sub(B).normmax(), 1e-9);
   }
+
+  @Test
+  public void testToString() {
+    // We have to be a bit cautious here because my Double => Float converter scripts will
+    // add a "f" to every floating point number, even in the strings. Therefore, I
+    // explicitly remove all "f"s
+    assertEquals("[1.000000, 5.000000, 9.000000; 2.000000, 6.000000, 10.000000; 3.000000, 7.000000, 11.000000; 4.000000, 8.000000, 12.000000]".replaceAll("f", ""), A.toString());
+
+    assertEquals("[1.0, 5.0, 9.0; 2.0, 6.0, 10.0; 3.0, 7.0, 11.0; 4.0, 8.0, 12.0]".replaceAll("f", ""), A.toString("%.1f"));
+
+    assertEquals("{1.0 5.0 9.0; 2.0 6.0 10.0; 3.0 7.0 11.0; 4.0 8.0 12.0}".replaceAll("f", ""), A.toString("%.1f", "{", "}", " ", "; "));
+  }
 }

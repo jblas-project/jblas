@@ -1,3 +1,19 @@
+Release 1.2.2
+
+New features
+
+- full SVD for complex matrices
+- Added travis CI support on github
+- recompiled ATLAS for Linux, moved to 3.10.0, lapack 3.4.2
+- upload to central maven repo
+
+Bug fixes
+
+- More meaningful error messages for Linux/64 and Windows
+  when libraries are missing
+- SingularValueDecomposition for complex matrices used transpose()
+  instead of hermitian()
+
 Release 1.2.1
 
 Bug fixes and code side changes.

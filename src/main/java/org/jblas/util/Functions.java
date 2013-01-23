@@ -46,4 +46,10 @@ public class Functions {
 
     public static int min(int a, int b) { return a < b ? a : b; }
     public static int max(int a, int b) { return a > b ? a : b; }
+
+  private static final double LOG2 = 0.6931471805599453;
+
+  public static double log2(double x) {
+    return Math.log(x) / LOG2;
+  }
 }

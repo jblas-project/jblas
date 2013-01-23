@@ -7,7 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* Inaccessible static: fixedFlavor */
 #undef org_jblas_util_ArchFlavor_SSE
 #define org_jblas_util_ArchFlavor_SSE 1L
 #undef org_jblas_util_ArchFlavor_SSE2

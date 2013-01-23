@@ -53,7 +53,8 @@ module Fortran
     'DOUBLE PRECISION' => 'REAL*8',
     'INTEGER' => 'INTEGER*4',
     'LOGICAL' => 'LOGICAL*4',
-    'REAL' => 'REAL*4' }
+    'REAL' => 'REAL*4',
+    'CHARACTER*(*)' => 'CHARACTER*N' }
 
   # Map fortran types to a unique name (via DefaultTypes).
   def self.standardize_type(name)

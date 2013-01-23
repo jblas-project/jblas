@@ -330,4 +330,4 @@ public class ComplexFloat {
     public boolean isImag() {
         return r == 0.0f;
     }
-}
+}

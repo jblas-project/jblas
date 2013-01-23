@@ -858,7 +858,12 @@ public class FloatMatrix implements Serializable {
     }
 
 
-    /** Set elements in linear ordering in the specified indices. */
+    /**
+     * Set elements in linear ordering in the specified indices.
+     *
+     * For example, <code>a.put(new int[]{ 1, 2, 0 }, new FloatMatrix(3, 1, 2.0f, 4.0f, 8.0f)</code>
+     * does <code>a.put(1, 2.0f), a.put(2, 4.0f), a.put(0, 8.0f)</code>.
+     */
     public FloatMatrix put(int[] indices, FloatMatrix x) {
         if (x.isScalar()) {
             return put(indices, x.scalar());
@@ -1315,25 +1320,7 @@ public class FloatMatrix implements Serializable {
     /** Generate string representation of the matrix. */
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
-
-        s.append("[");
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < columns; j++) {
-                s.append(get(i, j));
-                if (j < columns - 1) {
-                    s.append(", ");
-                }
-            }
-            if (i < rows - 1) {
-                s.append("; ");
-            }
-        }
-
-        s.append("]");
-
-        return s.toString();
+        return toString("%f");
     }
 
     /**
@@ -1343,24 +1330,38 @@ public class FloatMatrix implements Serializable {
      * decimal point.
      */
     public String toString(String fmt) {
+        return toString(fmt, "[", "]", ", ", "; ");
+    }
+
+  /**
+   * Generate string representation of the matrix, with specified
+   * format for the entries, and delimiters.
+   *
+   * @param fmt entry format (passed to String.format())
+   * @param open opening parenthesis
+   * @param close closing parenthesis
+   * @param colSep separator between columns
+   * @param rowSep separator between rows
+   */
+    public String toString(String fmt, String open, String close, String colSep, String rowSep) {
         StringWriter s = new StringWriter();
         PrintWriter p = new PrintWriter(s);
 
-        p.print("[");
+        p.print(open);
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < columns; c++) {
                 p.printf(fmt, get(r, c));
                 if (c < columns - 1) {
-                    p.print(", ");
+                    p.print(colSep);
                 }
             }
             if (r < rows - 1) {
-                p.print("; ");
+                p.print(rowSep);
             }
         }
 
-        p.print("]");
+        p.print(close);
 
         return s.toString();
     }
@@ -1811,6 +1812,30 @@ public class FloatMatrix implements Serializable {
 
     public FloatMatrix isInfinite() {
         return dup().isInfinitei();
+    }
+
+    /** Checks whether all entries (i, j) with i >= j are zero. */
+    public boolean isLowerTriangular() {
+      for (int i = 0; i < rows; i++)
+        for (int j = i+1; j < columns; j++) {
+          if (get(i, j) != 0.0f)
+            return false;
+        }
+
+      return true;
+    }
+
+  /**
+   * Checks whether all entries (i, j) with i <= j are zero.
+   */
+    public boolean isUpperTriangular() {
+      for (int i = 0; i < rows; i++)
+        for (int j = 0; j < i; j++) {
+          if (get(i, j) != 0.0f)
+            return false;
+        }
+
+      return true;
     }
 
     public FloatMatrix selecti(FloatMatrix where) {
@@ -2653,6 +2678,7 @@ public class FloatMatrix implements Serializable {
     public void save(String filename) throws IOException {
         DataOutputStream dos = new DataOutputStream(new FileOutputStream(filename, false));
         this.out(dos);
+        dos.close();
     }
 
     /**
@@ -2664,6 +2690,7 @@ public class FloatMatrix implements Serializable {
     public void load(String filename) throws IOException {
         DataInputStream dis = new DataInputStream(new FileInputStream(filename));
         this.in(dis);
+        dis.close();
     }
 
     public static FloatMatrix loadAsciiFile(String filename) throws IOException {
@@ -3404,31 +3431,4 @@ public class FloatMatrix implements Serializable {
     public ComplexFloatMatrix toComplex() {
       return new ComplexFloatMatrix(this);
     }
-
-  public FloatMatrix $plus(FloatMatrix other) {
-    return add(other);
-  }
-
-  public FloatMatrix $plus$eq(FloatMatrix other) {
-    System.out.println("called $plus$eq");
-    return addi(other);
-  }
-
-  public FloatMatrix $div(FloatMatrix other) {
-    System.out.println("called div");
-    return div(other);
-  }
-
-  public FloatMatrix $div$colon(FloatMatrix other) {
-    System.out.println("called rdiv");
-    return other.rdiv(this);
-  }
-
-  public FloatMatrix $times(FloatMatrix other) {
-    return mul(other);
-  }
-
-  public FloatMatrix $times$tilde(FloatMatrix other) {
-    return mmul(other);
-  }
 }

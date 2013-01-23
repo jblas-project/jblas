@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- Define directories -->
 
-    <property name="version" value="1.2.1" />
+    <property name="version" value="1.2.3-SNAPSHOT" />
     <property name="src" value="${basedir}/src/main/java" />
     <property name="test" value="${basedir}/src/test/java" />
     <property name="bin" value="${basedir}/target/classes" />
@@ -63,7 +63,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <sequential>
             <echo message="Generating float version of @{class}"/>
             <exec executable="${ruby}">
-                <arg line="scripts/class_to_float.rb @{path} @{class}"/>
+                <arg line="scripts/class_to_float.rb &quot;@{path}&quot; @{class}"/>
             </exec>
         </sequential>
     </macrodef>
@@ -72,7 +72,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <sequential>
             <echo message="Add float versions to class @{class}"/>
             <exec executable="${ruby}">
-                <arg line="scripts/static_class_to_float.rb ${src} @{class}"/>
+                <arg line="scripts/static_class_to_float.rb &quot;${src}&quot; @{class}"/>
             </exec>
         </sequential>
     </macrodef>
@@ -80,7 +80,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <attribute name="file"/>
         <sequential>
             <exec executable="${ruby}">
-                <arg line="scripts/rjpp.rb @{file}"/>
+                <arg line="scripts/rjpp.rb &quot;@{file}&quot;"/>
             </exec>
         </sequential>
     </macrodef>
@@ -171,7 +171,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <static-class-to-float class="${pkgbase}.MatrixFunctions"/>
         <static-class-to-float class="${pkgbase}.JavaBlas"/>
         <static-class-to-float class="${pkgbase}.Singular"/>
-        <!--<static-class-to-float class="${pkgbase}.Decompose"/>-->
     </target>
     <target name="preprocess" description="run the ruby preprocessor on necessary files">
         <rjpp file="${src}/org/jblas/DoubleMatrix.java"/>
@@ -236,7 +235,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <![CDATA[ <h1>jblas - Linear Algebra for Java (version ${version})</h1> ]]>
             </doctitle>
             <bottom>
-                <![CDATA[ &copy; 2008-2010 by Mikio L. Braun and contributors ]]>
+                <![CDATA[ &copy; 2008-2013 by Mikio L. Braun and contributors ]]>
             </bottom>
         </javadoc>
     </target>
@@ -253,7 +252,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <!-- <test name="${pkgbase}.TestDoubleMatrix" />
             <test name="${pkgbase}.TestEigen" />
             <test name="${pkgbase}.ranges.IntervalRangeTest" />
-            <test name="${pkgbase}.DecomposeTest" /> -->
+            <test name="${pkgbase}.TestDecompose" /> -->
             <!-- <batchtest fork="yes" todir="${reports.tests}">
                 <fileset dir="${test}">
                     <include name="**/*Test*.java"/>
