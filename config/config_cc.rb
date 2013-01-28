@@ -83,13 +83,13 @@ LIB =
 RUBY = ruby
 EOS
     else
-      Path.check_cmd('gcc', 'make', 'ld')
+      Path.check_cmd(W32_PREFIX + 'gcc', 'make', W32_PREFIX + 'ld')
       Path.check_cmd('cygpath')
       JblasConfig::CONFIG << <<EOS
-CC = gcc
+CC = #{W32_PREFIX}gcc
 CFLAGS = -ggdb -D__int64='long long'
 INCDIRS += -I"#{dir java_home}/include" -I"#{dir java_home}/include/win32" -Iinclude
-LDFLAGS += -mno-cygwin -shared -Wl,--add-stdcall-alias
+LDFLAGS += -shared -Wl,--add-stdcall-alias
 SO = dll
 LIB =
 RUBY = ruby

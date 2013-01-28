@@ -53,10 +53,16 @@ configure 'F77', 'LD' => ['OS_NAME', 'CC'] do
     CONFIG['LD'] = CONFIG['CC']
     CONFIG['F77'] = 'gfortran'
     CONFIG['CCC'] = 'c99'
-  elsif CONFIG['OS_NAME'] == 'Windows' and CONFIG['OS_ARCH'] == 'amd64'
-    CONFIG['LD'] = W64_PREFIX + 'gfortran'
-    CONFIG['F77'] = W64_PREFIX + 'gfortran'
-    CONFIG['CCC'] = 'c99'
+  elsif CONFIG['OS_NAME'] == 'Windows'
+    if CONFIG['OS_ARCH'] == 'amd64'
+      CONFIG['LD'] = W64_PREFIX + 'gfortran'
+      CONFIG['F77'] = W64_PREFIX + 'gfortran'
+      CONFIG['CCC'] = 'c99'
+    else
+      CONFIG['LD'] = W32_PREFIX + 'gfortran'
+      CONFIG['F77'] = W32_PREFIX + 'gfortran'
+      CONFIG['CCC'] = 'c99'
+    end
   else
     g77 = Path.where('g77')
     gfortran = Path.where('gfortran')
