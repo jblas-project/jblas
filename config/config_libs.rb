@@ -156,13 +156,18 @@ WARNING: on 64bit Linux, I cannot link the gfortran library into the shared libr
 because it's usually not compiled with -fPIC. This means that you need to
 have libgfortran.so installed on your target system. Sorry for the inconvenience!
 EOS
+      elsif CONFIG['OS_NAME'] == 'Mac\ OS\ X'
+        print "Looking for where libgfortran.a is... "
+        libgfortran_path = %x(gfortran -print-file-name=libgfortran.a).strip
+	puts "(#{libgfortran_path})"
+	CONFIG['LOADLIBES'] += [libgfortran_path] 
       else
         CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
       end
     end
-    if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
-      CONFIG['LOADLIBES'] += ['/opt/local/lib/gcc43/libgfortran.a']
-    end 
+    #if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
+    #  CONFIG['LOADLIBES'] += ['/opt/local/lib/gcc43/libgfortran.a']
+    #end 
   end
   ok
 end
