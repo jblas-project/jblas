@@ -57,9 +57,9 @@ configure 'JAVA_HOME' => ['FOUND_JAVA', 'OS_NAME'] do
   else
     java_home = dir(File.dirname(%x(java -cp config PrintProperty java.home)))
   end
-  if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
-    java_home = File.join(java_home, 'Home')
-  end
+  #if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
+  #  java_home = File.join(java_home, 'Home')
+  #end
   check_files java_home, ['include', 'jni.h'] do
     CONFIG['JAVA_HOME'] = java_home #.escape
   end
