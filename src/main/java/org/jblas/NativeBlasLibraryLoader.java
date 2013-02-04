@@ -59,8 +59,9 @@ class NativeBlasLibraryLoader {
     if (name.startsWith("Windows") && arch.equals("amd64")) {
       loader.loadLibrary("libgcc_s_sjlj-1", false, true);
       loader.loadLibrary("libgfortran-3", false, true);
-    } else if (name.equals("Linux") && arch.equals("amd64")) {
-      //loader.loadLibrary("gfortran", false, true);
+    } else if (name.startsWith("Windows") && arch.equals("x86")) {
+      loader.loadLibrary("libgcc_s_dw2-1", false, true);
+      loader.loadLibrary("libgfortran-3", false, true);
     }
   }
 }

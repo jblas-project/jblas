@@ -147,22 +147,27 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARC
     CONFIG['LOADLIBES'] += result.keys.
       sort {|x, y| libs.index(x) <=> libs.index(y)}.
       map {|s| File.join(result[s], LibHelpers.libname(s)).escape }
-    if CONFIG['F77'] == 'gfortran'
+    if CONFIG['F77'] =~ /gfortran$/
       puts CONFIG['OS_ARCH']
       if CONFIG['OS_NAME'] == 'Linux' and CONFIG['OS_ARCH'] == 'amd64'
-	CONFIG['LOADLIBES'] += ['-lgfortran']
+	      CONFIG['LOADLIBES'] += ['-lgfortran']
         puts <<EOS
 WARNING: on 64bit Linux, I cannot link the gfortran library into the shared library
 because it's usually not compiled with -fPIC. This means that you need to
 have libgfortran.so installed on your target system. Sorry for the inconvenience!
 EOS
+      elsif CONFIG['OS_NAME'] == 'Mac\ OS\ X'
+        print "Looking for where libgfortran.a is... "
+        libgfortran_path = %x(gfortran -print-file-name=libgfortran.a).strip
+	      puts "(#{libgfortran_path})"
+	      CONFIG['LOADLIBES'] += [libgfortran_path]
       else
         CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
       end
     end
-    if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
-      CONFIG['LOADLIBES'] += ['/opt/local/lib/gcc43/libgfortran.a']
-    end 
+    #if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
+    #  CONFIG['LOADLIBES'] += ['/opt/local/lib/gcc43/libgfortran.a']
+    #end 
   end
   ok
 end
