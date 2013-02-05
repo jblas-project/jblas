@@ -1941,7 +1941,7 @@ public class DoubleMatrix implements Serializable {
                 }
             }
         }
-        return this;
+        return result;
     }
 
     /**
@@ -1977,7 +1977,7 @@ public class DoubleMatrix implements Serializable {
             }
 
         }
-        return this;
+        return result;
     }
 
     public DoubleMatrix mini(double v) {
@@ -2043,7 +2043,7 @@ public class DoubleMatrix implements Serializable {
                 }
             }
         }
-        return this;
+        return result;
     }
 
     /**
@@ -2079,7 +2079,7 @@ public class DoubleMatrix implements Serializable {
             }
 
         }
-        return this;
+        return result;
     }
 
     public DoubleMatrix maxi(double v) {
