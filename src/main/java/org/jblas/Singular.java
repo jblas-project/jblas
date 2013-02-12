@@ -4,6 +4,8 @@
  */
 package org.jblas;
 
+import org.jblas.exceptions.LapackConvergenceException;
+
 import static org.jblas.util.Functions.min;
 
 /**
@@ -24,7 +26,11 @@ public class Singular {
         DoubleMatrix S = new DoubleMatrix(min(m, n));
         DoubleMatrix V = new DoubleMatrix(n, n);
 
-        NativeBlas.dgesvd('A', 'A', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, n);
+        int info = NativeBlas.dgesvd('A', 'A', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, n);
+
+        if (info > 0) {
+          throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+        }
 
         return new DoubleMatrix[]{U, S, V.transpose()};
     }
@@ -45,7 +51,11 @@ public class Singular {
         DoubleMatrix S = new DoubleMatrix(min(m, n));
         DoubleMatrix V = new DoubleMatrix(min(m, n), n);
 
-        NativeBlas.dgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n));
+        int info = NativeBlas.dgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n));
+
+        if (info > 0) {
+          throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+        }
 
         return new DoubleMatrix[]{U, S, V.transpose()};
     }
@@ -68,7 +78,11 @@ public class Singular {
 
         double[] rwork = new double[5*min(m,n)];
 
-        NativeBlas.zgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n), rwork, 0);
+        int info = NativeBlas.zgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n), rwork, 0);
+
+        if (info > 0) {
+          throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+        }
 
         return new ComplexDoubleMatrix[]{U, new ComplexDoubleMatrix(S), V.hermitian()};
     }
@@ -88,7 +102,11 @@ public class Singular {
 
       double[] rwork = new double[5*min(m,n)];
 
-      NativeBlas.zgesvd('A', 'A', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, n, rwork, 0);
+      int info = NativeBlas.zgesvd('A', 'A', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, n, rwork, 0);
+
+      if (info > 0) {
+        throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+      }
 
       return new ComplexDoubleMatrix[]{U, new ComplexDoubleMatrix(S), V.hermitian()};
     }
@@ -104,7 +122,11 @@ public class Singular {
         int n = A.columns;
         DoubleMatrix S = new DoubleMatrix(min(m, n));
 
-        NativeBlas.dgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, 1);
+        int info = NativeBlas.dgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, 1);
+
+        if (info > 0) {
+          throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+        }
 
         return S;
     }
@@ -121,7 +143,11 @@ public class Singular {
         DoubleMatrix S = new DoubleMatrix(min(m, n));
         double[] rwork = new double[5*min(m,n)];
 
-        NativeBlas.zgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, min(m,n), rwork, 0);
+        int info = NativeBlas.zgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, min(m,n), rwork, 0);
+
+        if (info > 0) {
+          throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+        }
 
         return S;
     }
@@ -143,7 +169,11 @@ public class Singular {
         FloatMatrix S = new FloatMatrix(min(m, n));
         FloatMatrix V = new FloatMatrix(n, n);
 
-        NativeBlas.sgesvd('A', 'A', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, n);
+        int info = NativeBlas.sgesvd('A', 'A', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, n);
+
+        if (info > 0) {
+          throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+        }
 
         return new FloatMatrix[]{U, S, V.transpose()};
     }
@@ -164,7 +194,11 @@ public class Singular {
         FloatMatrix S = new FloatMatrix(min(m, n));
         FloatMatrix V = new FloatMatrix(min(m, n), n);
 
-        NativeBlas.sgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n));
+        int info = NativeBlas.sgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n));
+
+        if (info > 0) {
+          throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+        }
 
         return new FloatMatrix[]{U, S, V.transpose()};
     }
@@ -187,7 +221,11 @@ public class Singular {
 
         float[] rwork = new float[5*min(m,n)];
 
-        NativeBlas.cgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n), rwork, 0);
+        int info = NativeBlas.cgesvd('S', 'S', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, min(m, n), rwork, 0);
+
+        if (info > 0) {
+          throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+        }
 
         return new ComplexFloatMatrix[]{U, new ComplexFloatMatrix(S), V.hermitian()};
     }
@@ -207,7 +245,11 @@ public class Singular {
 
       float[] rwork = new float[5*min(m,n)];
 
-      NativeBlas.cgesvd('A', 'A', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, n, rwork, 0);
+      int info = NativeBlas.cgesvd('A', 'A', m, n, A.dup().data, 0, m, S.data, 0, U.data, 0, m, V.data, 0, n, rwork, 0);
+
+      if (info > 0) {
+        throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+      }
 
       return new ComplexFloatMatrix[]{U, new ComplexFloatMatrix(S), V.hermitian()};
     }
@@ -223,7 +265,11 @@ public class Singular {
         int n = A.columns;
         FloatMatrix S = new FloatMatrix(min(m, n));
 
-        NativeBlas.sgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, 1);
+        int info = NativeBlas.sgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, 1);
+
+        if (info > 0) {
+          throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+        }
 
         return S;
     }
@@ -240,7 +286,11 @@ public class Singular {
         FloatMatrix S = new FloatMatrix(min(m, n));
         float[] rwork = new float[5*min(m,n)];
 
-        NativeBlas.cgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, min(m,n), rwork, 0);
+        int info = NativeBlas.cgesvd('N', 'N', m, n, A.dup().data, 0, m, S.data, 0, null, 0, 1, null, 0, min(m,n), rwork, 0);
+
+        if (info > 0) {
+          throw new LapackConvergenceException("GESVD", info + " superdiagonals of an intermediate bidiagonal form failed to converge.");
+        }
 
         return S;
     }

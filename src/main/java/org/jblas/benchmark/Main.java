@@ -62,7 +62,8 @@ public class Main {
                 + "  --arch-flavor=value     overriding arch flavor (e.g. --arch-flavor=sse2)%n"
                 + "  --skip-java             don't run java benchmarks%n"
                 + "  --help                  show this help%n"
-                + "  --debug                 set config levels to debug%n");
+                + "  --debug                 set config levels to debug%n"
+                + "%njblas version " + org.jblas.Info.VERSION + "%n");
     }
 
     public static void main(String[] args) {
@@ -71,6 +72,10 @@ public class Main {
 
         boolean skipJava = false;
         boolean unrecognizedOptions = false;
+
+        Logger log = Logger.getLogger();
+
+        log.info("jblas version is " + org.jblas.Info.VERSION);
 
         for (String arg : args) {
             if (arg.startsWith("--")) {
