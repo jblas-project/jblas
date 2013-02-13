@@ -3431,4 +3431,4 @@ public class FloatMatrix implements Serializable {
     public ComplexFloatMatrix toComplex() {
       return new ComplexFloatMatrix(this);
     }
-}
+}

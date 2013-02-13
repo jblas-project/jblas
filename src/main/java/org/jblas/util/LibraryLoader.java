@@ -75,7 +75,7 @@ public class LibraryLoader {
     if (withFlavor) {
       logger.debug("Preloading ArchFlavor library.");
       flavor = ArchFlavor.archFlavor();
-      if (flavor.equals("sse2")) {
+      if (flavor != null && flavor.equals("sse2")) {
         throw new UnsupportedArchitectureException("Support for SSE2 processors stopped with version 1.2.2. Sorry.");
       }
     }
