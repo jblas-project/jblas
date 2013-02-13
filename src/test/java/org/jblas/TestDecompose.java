@@ -57,7 +57,7 @@ public class TestDecompose {
 
   @Test
   public void qrRectangular2Double() {
-    DoubleMatrix A = new DoubleMatrix(3, 2, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+    DoubleMatrix A = new DoubleMatrix(3, 2, 1.0, 2.0, 2.5, 4.0, 5.0, 6.0);
 
     Decompose.QRDecomposition<DoubleMatrix> qr = Decompose.qr(A);
 
