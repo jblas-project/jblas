@@ -1830,7 +1830,7 @@ public class FloatMatrix implements Serializable {
    */
     public boolean isUpperTriangular() {
       for (int i = 0; i < rows; i++)
-        for (int j = 0; j < i; j++) {
+        for (int j = 0; j < i && j < columns; j++) {
           if (get(i, j) != 0.0f)
             return false;
         }

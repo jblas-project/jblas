@@ -451,11 +451,7 @@ public class SimpleBlas {
   }
 
   public static void ormqr(char side, char trans, DoubleMatrix A, DoubleMatrix tau, DoubleMatrix C) {
-    int k = 0;
-    if (side == 'L')
-      k = C.rows;
-    if (side == 'R')
-      k = C.columns;
+    int k = tau.length;
     int info = NativeBlas.dormqr(side, trans, C.rows, C.columns, k, A.data, 0, A.rows, tau.data, 0, C.data, 0, C.rows);
     checkInfo("ORMQR", info);
   }
@@ -853,11 +849,7 @@ public class SimpleBlas {
   }
 
   public static void ormqr(char side, char trans, FloatMatrix A, FloatMatrix tau, FloatMatrix C) {
-    int k = 0;
-    if (side == 'L')
-      k = C.rows;
-    if (side == 'R')
-      k = C.columns;
+    int k = tau.length;
     int info = NativeBlas.sormqr(side, trans, C.rows, C.columns, k, A.data, 0, A.rows, tau.data, 0, C.data, 0, C.rows);
     checkInfo("ORMQR", info);
   }

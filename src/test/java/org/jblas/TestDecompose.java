@@ -57,11 +57,13 @@ public class TestDecompose {
 
   @Test
   public void qrRectangular2Double() {
-    DoubleMatrix A = new DoubleMatrix(3, 2, 1.0, 2.0, 2.5, 4.0, 5.0, 6.0);
+    DoubleMatrix A = new DoubleMatrix(4, 2, 1.0, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 6.5);
 
     Decompose.QRDecomposition<DoubleMatrix> qr = Decompose.qr(A);
 
-    assertEquals(0.0, DoubleMatrix.eye(3).sub(qr.q.transpose().mmul(qr.q)).normmax(), 1e-10);
+    DoubleMatrix qtq = qr.q.transpose().mmul(qr.q);
+
+    assertEquals(0.0, DoubleMatrix.eye(4).sub(qtq).normmax(), 1e-10);
     assertTrue(qr.r.isUpperTriangular());
     assertEquals(0.0, A.sub(qr.q.mmul(qr.r)).normmax(), 1e-10);
   }
