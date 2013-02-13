@@ -10,5 +10,5 @@ package org.jblas;
  * Time: 3:28 PM
  */
 public class Info {
-  public static String VERSION = "1.2.3-SNAPSHOT";
+  public static String VERSION = "1.2.3";
 }
