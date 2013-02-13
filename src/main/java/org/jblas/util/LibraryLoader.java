@@ -35,6 +35,8 @@
 // --- END LICENSE BLOCK ---
 package org.jblas.util;
 
+import org.jblas.exceptions.UnsupportedArchitectureException;
+
 import java.io.*;
 
 /**
@@ -73,6 +75,9 @@ public class LibraryLoader {
     if (withFlavor) {
       logger.debug("Preloading ArchFlavor library.");
       flavor = ArchFlavor.archFlavor();
+      if (flavor.equals("sse2")) {
+        throw new UnsupportedArchitectureException("Support for SSE2 processors stopped with version 1.2.2. Sorry.");
+      }
     }
     logger.debug("Found flavor = '" + flavor + "'");
 
@@ -81,7 +86,7 @@ public class LibraryLoader {
     /*
      * JDK 7 changed the ending for Mac OS from "jnilib" to "dylib".
      *
-     * If that is the case, remap the file
+     * If that is the case, remap the filename.
      */
     String loadLibname = libname;
     if (libname.endsWith("dylib")) {

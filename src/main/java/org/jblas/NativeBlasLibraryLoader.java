@@ -1,5 +1,6 @@
 package org.jblas;
 
+import org.jblas.exceptions.UnsupportedArchitectureException;
 import org.jblas.util.LibraryLoader;
 import org.jblas.util.Logger;
 
@@ -47,6 +48,8 @@ class NativeBlasLibraryLoader {
           "For example for debian or Ubuntu, type \"sudo apt-get install libgfortran3\"\n\n" +
           "For more information, see https://github.com/mikiobraun/jblas/wiki/Missing-Libraries");
       }
+    } catch (UnsupportedArchitectureException e) {
+      System.err.println(e.getMessage());
     }
   }
 
