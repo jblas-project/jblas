@@ -1,6 +1,7 @@
 jblas is a matrix library for Java which uses existing high
 performance BLAS and LAPACK libraries like ATLAS.
 
+* Version 1.2.3, February 13, 2013
 * Version 1.2.2, December 17, 2012
 * Version 1.2.1
 * Version 1.2.0, January 7, 2011

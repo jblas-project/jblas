@@ -190,6 +190,10 @@ public class Decompose {
    * Decomposes (m,n) matrix A into a (m,m) matrix Q and an (m,n) matrix R such that
    * Q is orthogonal, R is upper triangular and Q * R = A
    *
+   * Note that if A has more rows than columns, then the lower rows of R will contain
+   * only zeros, such that the corresponding later columns of Q do not enter the computation
+   * at all. For some reason, LAPACK does not properly normalize those columns.
+   *
    * @param A matrix
    * @return QR decomposition
    */

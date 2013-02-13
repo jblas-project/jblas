@@ -1,3 +1,24 @@
+Release 1.2.3
+
+New features
+
+- LU decomposition for float
+- Least squares and Pseudo-inverse to Solve.
+- QR decomposition.
+- Removed dependency on external libgfortran for Windows.
+- Now also runs on CentOS and other Linux 2.6 distros out of the box.
+
+Removed features
+
+- Support for SSE2. I don't have access to such processors anymore. Sorry.
+
+Bug fixes
+
+- load and save didn't close the streams.
+- Bug in maxi and mini.
+- Recompiled on Linux 2.6.32 to resolve glibc version dependency
+  problems. Now also runs on centos.
+
 Release 1.2.2
 
 New features

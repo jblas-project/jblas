@@ -42,4 +42,4 @@ package org.jblas;
 public interface FloatFunction {
         /** Compute the function. */
 	public float compute(float x);
-}
+}
