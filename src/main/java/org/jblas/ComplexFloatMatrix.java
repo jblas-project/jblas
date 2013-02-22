@@ -805,9 +805,19 @@ public class ComplexFloatMatrix {
 
 	/** Get index of an element */
 	public int index(int rowIndex, int columnIndex) {
-		//System.out.printf("Index for (%d, %d) -> %d\n", rowIndex, columnIndex, (rows * columnIndex + rowIndex) * 2);
 		return rows * columnIndex + rowIndex;
 	}
+
+  /** Compute the row index of a linear index. */
+  public int indexRows(int i) {
+    return i - indexColumns(i) * rows;
+  }
+
+  /** Compute the column index of a linear index. */
+  public int indexColumns(int i) {
+    return i / rows;
+  }
+
 
 	public ComplexFloat get(int i) {
 		return new ComplexFloat(data[i * 2], data[i * 2 + 1]);

@@ -1230,12 +1230,12 @@ public class DoubleMatrix implements Serializable {
 
     /** Compute the row index of a linear index. */
     public int indexRows(int i) {
-		return i - (indexColumns(i) * rows);
+		  return i - indexColumns(i) * rows;
     }
 
     /** Compute the column index of a linear index. */
     public int indexColumns(int i) {
-		return (int) Math.floor(i / rows);		
+		  return i / rows;
     }
 
     /** Get a matrix element (linear indexing). */
