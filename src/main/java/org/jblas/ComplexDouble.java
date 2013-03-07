@@ -36,8 +36,6 @@
 
 package org.jblas;
 
-import java.nio.DoubleBuffer;
-
 /**
  * A complex value with double precision.
  * 
@@ -258,7 +256,7 @@ public class ComplexDouble {
 
     /** Returns the argument of a complex number. */
     public double arg() {
-        return (double) Math.acos(r/abs());
+        return (double) Math.atan2(r, i);
     }
 
     public ComplexDouble invi() {
@@ -295,7 +293,11 @@ public class ComplexDouble {
         double a = abs();
         double s2 = (double)Math.sqrt(2);
         double p = (double)Math.sqrt(a + r)/s2;
-        double q = (double)Math.sqrt(a - r)/s2 * Math.signum(i);
+        double sgn = Math.signum(i);
+        if (sgn == 0.0) {
+          sgn = 1.0;
+        }
+        double q = (double)Math.sqrt(a - r)/s2 * Math.signum(sgn);
         return new ComplexDouble(p, q);
     }
     

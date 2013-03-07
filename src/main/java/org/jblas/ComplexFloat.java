@@ -36,8 +36,6 @@
 
 package org.jblas;
 
-import java.nio.FloatBuffer;
-
 /**
  * A complex value with float precision.
  * 
@@ -258,7 +256,7 @@ public class ComplexFloat {
 
     /** Returns the argument of a complex number. */
     public float arg() {
-        return (float) Math.acos(r/abs());
+        return (float) Math.atan2(r, i);
     }
 
     public ComplexFloat invi() {
@@ -295,7 +293,11 @@ public class ComplexFloat {
         float a = abs();
         float s2 = (float)Math.sqrt(2);
         float p = (float)Math.sqrt(a + r)/s2;
-        float q = (float)Math.sqrt(a - r)/s2 * Math.signum(i);
+        float sgn = Math.signum(i);
+        if (sgn == 0.0f) {
+          sgn = 1.0f;
+        }
+        float q = (float)Math.sqrt(a - r)/s2 * Math.signum(sgn);
         return new ComplexFloat(p, q);
     }
     

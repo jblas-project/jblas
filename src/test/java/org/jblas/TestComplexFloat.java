@@ -84,4 +84,12 @@ public class TestComplexFloat  {
 	public void testDivByZero() {
 		a.div(new ComplexFloat(0.0f, 0.0f));
 	}
+
+  @Test
+  public void testSqrt() {
+    assertEquals(new ComplexFloat(0.0f, 1.0f), new ComplexFloat(-1.0f, 0.0f).sqrt());
+    assertEquals(new ComplexFloat(3.0f, 0.0f), new ComplexFloat(9.0f).sqrt());
+    assertEquals(new ComplexFloat(0.0f, 3.0f), new ComplexFloat(-9.0f).sqrt());
+    assertEquals(new ComplexFloat(1.0f, -4.0f), new ComplexFloat(-15.0f, -8.0f).sqrt());
+  }
 }
