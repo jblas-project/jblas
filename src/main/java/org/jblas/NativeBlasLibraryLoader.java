@@ -10,22 +10,28 @@ import org.jblas.util.Logger;
  * The only use of this class is to have NativeBlas inherit from this class.
  *
  * User: Mikio L. Braun
- * Date: 10/24/12
- * Time: 3:15 PM
+ * Date: Oct 24, 2012
  */
 class NativeBlasLibraryLoader {
   static void loadLibraryAndCheckErrors() {
     try {
       try {
-        loadDependentLibraries();
+        // Try to load it first, probably it's in the path
         System.loadLibrary("jblas");
       } catch (UnsatisfiedLinkError e) {
+        // Nope, ok, so let's copy it.
         Logger.getLogger().config(
             "BLAS native library not found in path. Copying native library "
                 + "from the archive. Consider installing the library somewhere "
                 + "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
+
+        // potentially load dependet libraries (mostly Cygwin libs for Windows)
+        loadDependentLibraries();
+
+        // Ok, and now load it!
         new LibraryLoader().loadLibrary("jblas", true, false);
       }
+
       // Let's do some quick tests to see whether we trigger some errors
       // when dependent libraries cannot be found
       double[] a = new double[1];

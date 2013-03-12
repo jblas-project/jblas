@@ -1,25 +1,25 @@
 // --- BEGIN LICENSE BLOCK ---
-/* 
+/*
  * Copyright (c) 2009, Mikio L. Braun
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
- * 
+ *
  *     * Redistributions in binary form must reproduce the above
  *       copyright notice, this list of conditions and the following
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
- * 
+ *
  *     * Neither the name of the Technische Universität Berlin nor the
  *       names of its contributors may be used to endorse or promote
  *       products derived from this software without specific prior
  *       written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -47,6 +47,39 @@ public class LibraryLoader {
 
   private Logger logger;
   private String libpath;
+
+  private static File tempDir;
+
+  static {
+    final Logger logger = Logger.getLogger();
+
+    try {
+    tempDir = File.createTempFile("jblas", "");
+    System.out.println(tempDir.getAbsolutePath());
+
+    if (!tempDir.delete() || !tempDir.mkdir()) {
+      throw new IOException(String.format("Couldn't create directory \"%s\"", tempDir.getAbsolutePath()));
+    }
+
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      @Override
+      public void run() {
+        for (File f: tempDir.listFiles()) {
+          if (!f.delete()) {
+            logger.info("Deleting " + f.getAbsolutePath());
+            logger.warning(String.format("Couldn't delete temporary file \"%s\"", f.getAbsolutePath()));
+          }
+        }
+        logger.info("Deleting " + tempDir.getAbsolutePath());
+        if (!tempDir.delete()) {
+          logger.warning(String.format("Couldn't delete temporary directory \"%s\"", tempDir.getAbsolutePath()));
+        }
+      }
+    });
+    } catch(IOException ex) {
+      logger.error("Couldn't create temporary directory: " + ex.getMessage());
+    }
+  }
 
   public LibraryLoader() {
     logger = Logger.getLogger();
@@ -97,17 +130,13 @@ public class LibraryLoader {
     logger.debug("Attempting to load \"" + loadLibname + "\".");
 
     String[] paths = {
-        "/",
-        "/bin/",
         fatJarLibraryPath("static", flavor),
-        fatJarLibraryPathNonUnified("static", flavor),
         fatJarLibraryPath("dynamic", flavor),
-        fatJarLibraryPathNonUnified("dynamic", flavor),
     };
 
     InputStream is = findLibrary(paths, loadLibname);
 
-    // Oh man, have to get out of here!
+    // Haven't found the lib anywhere? Throw a reception.
     if (is == null) {
       throw new UnsatisfiedLinkError("Couldn't find the resource " + loadLibname + ".");
     }
@@ -154,19 +183,6 @@ public class LibraryLoader {
   }
 
   /**
-   * Full path without the OS name non-unified.
-   */
-  private String fatJarLibraryPathNonUnified(String linkage, String flavor) {
-    String sep = "/"; //System.getProperty("file.separator");
-    String os_name = System.getProperty("os.name");
-    String os_arch = System.getProperty("os.arch");
-    String path = sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep;
-    if (null != flavor)
-      path += flavor + sep;
-    return path;
-  }
-
-  /**
    * Try to open a file at the given position.
    */
   private InputStream tryPath(String path) {
@@ -175,8 +191,8 @@ public class LibraryLoader {
   }
 
   private File createTempFile(String prefix, String suffix, boolean noPrefix) throws IOException {
-    File tempfile = File.createTempFile(prefix, suffix);
-    if (noPrefix == true) {
+    File tempfile = File.createTempFile(prefix, suffix, tempDir);
+    if (noPrefix) {
       return new File(tempfile.getParentFile(), suffix);
     } else {
       return tempfile;
