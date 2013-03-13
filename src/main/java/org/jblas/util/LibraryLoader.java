@@ -55,7 +55,6 @@ public class LibraryLoader {
 
     try {
     tempDir = File.createTempFile("jblas", "");
-    System.out.println(tempDir.getAbsolutePath());
 
     if (!tempDir.delete() || !tempDir.mkdir()) {
       throw new IOException(String.format("Couldn't create directory \"%s\"", tempDir.getAbsolutePath()));

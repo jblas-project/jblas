@@ -2081,4 +2081,4 @@ public class ComplexFloatMatrix {
 	   return xori(new ComplexFloat(value));
 	 }
 //RJPP-END--------------------------------------------------------------
-}
+}
