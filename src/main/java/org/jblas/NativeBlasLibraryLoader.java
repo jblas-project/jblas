@@ -29,7 +29,7 @@ class NativeBlasLibraryLoader {
         loadDependentLibraries();
 
         // Ok, and now load it!
-        new LibraryLoader().loadLibrary("jblas", true, false);
+        new LibraryLoader().loadLibrary("jblas", true);
       }
 
       // Let's do some quick tests to see whether we trigger some errors
@@ -66,11 +66,11 @@ class NativeBlasLibraryLoader {
     LibraryLoader loader = new LibraryLoader();
 
     if (name.startsWith("Windows") && arch.equals("amd64")) {
-      loader.loadLibrary("libgcc_s_sjlj-1", false, true);
-      loader.loadLibrary("libgfortran-3", false, true);
+      loader.loadLibrary("libgcc_s_sjlj-1", false);
+      loader.loadLibrary("libgfortran-3", false);
     } else if (name.startsWith("Windows") && arch.equals("x86")) {
-      loader.loadLibrary("libgcc_s_dw2-1", false, true);
-      loader.loadLibrary("libgfortran-3", false, true);
+      loader.loadLibrary("libgcc_s_dw2-1", false);
+      loader.loadLibrary("libgfortran-3", false);
     }
   }
 }

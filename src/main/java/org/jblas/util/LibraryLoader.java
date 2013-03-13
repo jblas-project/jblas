@@ -65,8 +65,8 @@ public class LibraryLoader {
       @Override
       public void run() {
         for (File f: tempDir.listFiles()) {
+          logger.info("Deleting " + f.getAbsolutePath());
           if (!f.delete()) {
-            logger.info("Deleting " + f.getAbsolutePath());
             logger.warning(String.format("Couldn't delete temporary file \"%s\"", f.getAbsolutePath()));
           }
         }
@@ -102,7 +102,7 @@ public class LibraryLoader {
    * @param libname basename of the library
    * @throws UnsatisfiedLinkError if library cannot be founds
    */
-  public void loadLibrary(String libname, boolean withFlavor, boolean noPrefix) {
+  public void loadLibrary(String libname, boolean withFlavor) {
     // preload flavor libraries
     String flavor = null;
     if (withFlavor) {
@@ -142,7 +142,7 @@ public class LibraryLoader {
     }
 
     logger.config("Loading " + loadLibname + " from " + libpath + ", copying to " + libname + ".");
-    loadLibraryFromStream(libname, is, noPrefix);
+    loadLibraryFromStream(libname, is);
   }
 
   private InputStream findLibrary(String[] paths, String libname) {
@@ -190,13 +190,8 @@ public class LibraryLoader {
     return getClass().getResourceAsStream(path);
   }
 
-  private File createTempFile(String prefix, String suffix, boolean noPrefix) throws IOException {
-    File tempfile = File.createTempFile(prefix, suffix, tempDir);
-    if (noPrefix) {
-      return new File(tempfile.getParentFile(), suffix);
-    } else {
-      return tempfile;
-    }
+  private File createTempFile(String name) throws IOException {
+    return new File(tempDir + File.separator + name);
   }
 
   /**
@@ -206,10 +201,9 @@ public class LibraryLoader {
    * @param libname name of the library (just used in constructing the library name)
    * @param is      InputStream pointing to the library
    */
-  private void loadLibraryFromStream(String libname, InputStream is, boolean noPrefix) {
+  private void loadLibraryFromStream(String libname, InputStream is) {
     try {
-      File tempfile = createTempFile("jblas", libname, noPrefix);
-      tempfile.deleteOnExit();
+      File tempfile = createTempFile(libname);
       OutputStream os = new FileOutputStream(tempfile);
 
       logger.debug("tempfile.getPath() = " + tempfile.getPath());
