@@ -496,5 +496,31 @@ public class NativeBlas {
     return info;
   }
 
+  public static native int dsygvx(int itype, char jobz, char range, char uplo, int n, double[] a, int aIdx, int lda, double[] b, int bIdx, int ldb, double vl, double vu, int il, int iu, double abstol, int[] m, int mIdx, double[] w, int wIdx, double[] z, int zIdx, int ldz, double[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx);
+  public static int dsygvx(int itype, char jobz, char range, char uplo, int n, double[] a, int aIdx, int lda, double[] b, int bIdx, int ldb, double vl, double vu, int il, int iu, double abstol, int[] m, int mIdx, double[] w, int wIdx, double[] z, int zIdx, int ldz, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    info = dsygvx(itype, jobz, range, uplo, n, doubleDummy, 0, lda, doubleDummy, 0, ldb, vl, vu, il, iu, abstol, intDummy, 0, doubleDummy, 0, doubleDummy, 0, ldz, work, 0, -1, intDummy, 0, intDummy, 0);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    info = dsygvx(itype, jobz, range, uplo, n, a, aIdx, lda, b, bIdx, ldb, vl, vu, il, iu, abstol, m, mIdx, w, wIdx, z, zIdx, ldz, work, 0, lwork, iwork, iworkIdx, ifail, ifailIdx);
+    return info;
+  }
+
+  public static native int ssygvx(int itype, char jobz, char range, char uplo, int n, float[] a, int aIdx, int lda, float[] b, int bIdx, int ldb, float vl, float vu, int il, int iu, float abstol, int[] m, int mIdx, float[] w, int wIdx, float[] z, int zIdx, int ldz, float[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx);
+  public static int ssygvx(int itype, char jobz, char range, char uplo, int n, float[] a, int aIdx, int lda, float[] b, int bIdx, int ldb, float vl, float vu, int il, int iu, float abstol, int[] m, int mIdx, float[] w, int wIdx, float[] z, int zIdx, int ldz, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    info = ssygvx(itype, jobz, range, uplo, n, floatDummy, 0, lda, floatDummy, 0, ldb, vl, vu, il, iu, abstol, intDummy, 0, floatDummy, 0, floatDummy, 0, ldz, work, 0, -1, intDummy, 0, intDummy, 0);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    info = ssygvx(itype, jobz, range, uplo, n, a, aIdx, lda, b, bIdx, ldb, vl, vu, il, iu, abstol, m, mIdx, w, wIdx, z, zIdx, ldz, work, 0, lwork, iwork, iworkIdx, ifail, ifailIdx);
+    return info;
+  }
+
 
 }

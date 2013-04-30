@@ -143,7 +143,8 @@ generated-sources: \
 	$(LAPACK)/[sd]sygvd.f \
 	$(LAPACK)/[sd]gelsd.f \
 	$(LAPACK)/ilaenv.f \
-	$(LAPACK)/[sd]geqrf.f $(LAPACK)/[sd]ormqr.f
+	$(LAPACK)/[sd]geqrf.f $(LAPACK)/[sd]ormqr.f \
+	$(LAPACK)/[sd]sygvx.f
 	ant javah
 	touch $@
 
