@@ -98,7 +98,10 @@ generate-wrapper: $(GENERATED_SOURCES) $(GENERATED_HEADERS)
 
 # Clean all object files
 clean:
-	rm -f native/*.o native/*.$(SO) $(LIB_PATH)/*.$(SO) $(FULL_LIB_PATH)/*.$(SO) $(SRC_JAVA)/$(PACKAGE_PATH)/NativeBlas.java $(SRC_C)/NativeBlas.c generated-sources
+	rm -f native/*.o native/*.$(SO) \
+	 $(LIB_PATH)/$(LIB)jblas.$(SO) $(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO) \
+	 $(FULL_LIB_PATH)/$(LIB)jblas.$(SO) $(FULL_LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO) \
+	 $(SRC_JAVA)/$(PACKAGE_PATH)/NativeBlas.java $(SRC_C)/NativeBlas.c generated-sources
 
 # Full clean, including information extracted from the fortranwrappers.
 # You will need the original fortran sources in order to rebuild
