@@ -173,7 +173,7 @@ public class Eigen {
 		int[] m = new int[1];
 		DoubleMatrix W = new DoubleMatrix(A.rows);
 		DoubleMatrix Z = new DoubleMatrix(A.rows, A.rows);
-		SimpleBlas.dsygvx(1, 'N', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
+		SimpleBlas.sygvx(1, 'N', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
 		return W;
 	}
 
@@ -197,7 +197,7 @@ public class Eigen {
 		int[] m = new int[1];
 		DoubleMatrix W = new DoubleMatrix(A.rows);
 		DoubleMatrix Z = new DoubleMatrix(A.rows, A.columns);
-		SimpleBlas.dsygvx(1, 'N', 'I', 'U', A.dup(), B.dup(), 0.0, 0.0, il, iu, abstol, m, W, Z);
+		SimpleBlas.sygvx(1, 'N', 'I', 'U', A.dup(), B.dup(), 0.0, 0.0, il, iu, abstol, m, W, Z);
 		return W;
 	}
 
@@ -223,7 +223,7 @@ public class Eigen {
 		int[] m = new int[1];
 		DoubleMatrix W = new DoubleMatrix(A.rows);
 		DoubleMatrix Z = new DoubleMatrix(A.rows, A.columns);
-		SimpleBlas.dsygvx(1, 'V', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
+		SimpleBlas.sygvx(1, 'V', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
 		DoubleMatrix[] result = new DoubleMatrix[2];
 		result[0] = Z;
 		result[1] = W;
@@ -252,7 +252,7 @@ public class Eigen {
 		int[] m = new int[1];
 		DoubleMatrix W = new DoubleMatrix(A.rows);
 		DoubleMatrix Z = new DoubleMatrix(A.rows, A.columns);
-		SimpleBlas.dsygvx(1, 'V', 'I', 'U', A.dup(), B.dup(), 0, 0, il, iu, abstol, m, W, Z);
+		SimpleBlas.sygvx(1, 'V', 'I', 'U', A.dup(), B.dup(), 0, 0, il, iu, abstol, m, W, Z);
 		DoubleMatrix[] result = new DoubleMatrix[2];
 		result[0] = Z;
 		result[1] = W;
@@ -371,112 +371,6 @@ public class Eigen {
         result[1] = W;
         return result;
     }
-    
-    /**
-	 * Computes selected eigenvalues of the real generalized symmetric-definite
-	 * eigenproblem of the form A x = L B x Here A and B are
-	 * assumed to be symmetric and B is also positive definite.
-	 * The selection is based on the given range of values for
-	 * the desired eigenvalues.
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param vl	lower bound of the smallest eigenvalue to return
-	 * @param vu	upper bound of the largest eigenvalue to return
-	 * @return		a vector of eigenvalues L
-	 */
-	public static FloatMatrix symmetricGeneralizedEigenvalues(FloatMatrix A, FloatMatrix B, float vl, float vu) {
-		A.assertSquare();
-		B.assertSquare();
-		float abstol = (float) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		FloatMatrix W = new FloatMatrix(A.rows);
-		FloatMatrix Z = new FloatMatrix(A.rows, A.rows);
-		SimpleBlas.dsygvx(1, 'N', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
-		return W;
-	}
-
-	/**
-	 * Computes selected eigenvalues of the real generalized symmetric-definite
-	 * eigenproblem of the form A x = L B x Here A and B are
-	 * assumed to be symmetric and B is also positive definite.
-	 * The selection is based on the given range of indices for
-	 * the desired eigenvalues.
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param il	lower index (in ascending order) of the smallest eigenvalue to return
-	 * @param iu	upper index (in ascending order) of the largest eigenvalue to return
-	 * @return		a vector of eigenvalues L
-	 */
-	public static FloatMatrix symmetricGeneralizedEigenvalues(FloatMatrix A, FloatMatrix B, int il, int iu) {
-		A.assertSquare();
-		B.assertSquare();
-		float abstol = (float) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		FloatMatrix W = new FloatMatrix(A.rows);
-		FloatMatrix Z = new FloatMatrix(A.rows, A.columns);
-		SimpleBlas.dsygvx(1, 'N', 'I', 'U', A.dup(), B.dup(), 0.0f, 0.0f, il, iu, abstol, m, W, Z);
-		return W;
-	}
-
-	/**
-	 * Computes selected eigenvalues and their corresponding
-	 * eigenvectors of the real generalized symmetric-definite
-	 * eigenproblem of the form A x = L B x Here A and B are
-	 * assumed to be symmetric and B is also positive definite.
-	 * The selection is based on the given range of values for
-	 * the desired eigenvalues.
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param vl	lower bound of the smallest eigenvalue to return
-	 * @param vu	upper bound of the largest eigenvalue to return
-	 * @return 		an array of matrices of length two. The first one is an array of the eigenvectors x
-	 *         		The second one is a vector containing the corresponding eigenvalues L.
-	 */
-	public static FloatMatrix[] symmetricGeneralizedEigenvectors(FloatMatrix A, FloatMatrix B, float vl, float vu) {
-		A.assertSquare();
-		B.assertSquare();
-		float abstol = (float) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		FloatMatrix W = new FloatMatrix(A.rows);
-		FloatMatrix Z = new FloatMatrix(A.rows, A.columns);
-		SimpleBlas.dsygvx(1, 'V', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
-		FloatMatrix[] result = new FloatMatrix[2];
-		result[0] = Z;
-		result[1] = W;
-		return result;
-	}
-
-	/**
-	 * Computes selected eigenvalues and their corresponding
-	 * eigenvectors of the real generalized symmetric-definite
-	 * eigenproblem of the form A x = L B x Here A and B are
-	 * assumed to be symmetric and B is also positive definite.
-	 * The selection is based on the given range of indices for
-	 * the desired eigenvalues.
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param il	lower index (in ascending order) of the smallest eigenvalue to return
-	 * @param iu	upper index (in ascending order) of the largest eigenvalue to return
-	 * @return		an array of matrices of length two. The first one is an array of the eigenvectors x
-	 *         		The second one is a vector containing the corresponding eigenvalues L.
-	 */
-	public static FloatMatrix[] symmetricGeneralizedEigenvectors(FloatMatrix A, FloatMatrix B, int il, int iu) {
-		A.assertSquare();
-		B.assertSquare();
-		float abstol = (float) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		FloatMatrix W = new FloatMatrix(A.rows);
-		FloatMatrix Z = new FloatMatrix(A.rows, A.columns);
-		SimpleBlas.dsygvx(1, 'V', 'I', 'U', A.dup(), B.dup(), 0, 0, il, iu, abstol, m, W, Z);
-		FloatMatrix[] result = new FloatMatrix[2];
-		result[0] = Z;
-		result[1] = W;
-		return result;
-	}
 
 //END
 }
