@@ -399,6 +399,26 @@ public class SimpleBlas {
 				throw new LapackException("DSYGVD", "The leading minor of order " + (info - A.rows) + " of B is not positive definite.");
 		}
 	}
+	
+	public static int sygvx(int itype, char jobz, char range, char uplo, DoubleMatrix A,
+			DoubleMatrix B, double vl, double vu, int il, int iu, double abstol,
+			int[] m, DoubleMatrix W, DoubleMatrix Z) {
+		int[] iwork = new int[1];
+		int[] ifail = new int[1];
+		int info = NativeBlas.dsygvx(itype, jobz, range, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, vl, vu, il, iu, abstol, m, 0, W.data, 0, Z.data, 0, Z.rows, iwork, 0, ifail, 0);
+		if (info == 0) {
+			return 0;
+		} else {
+			if (info < 0) {
+				throw new LapackArgumentException("DSYGVX", -info);
+			}
+			if(info <= A.rows) {
+				throw new LapackConvergenceException("DSYGVX", info + " eigenvectors failed to converge");
+			} else {
+				throw new LapackException("DSYGVX", "The leading minor order " + (info - A.rows) + " of B is not postivie definite.");
+			}
+		}
+	}
 
 	/**
 	 * Generalized Least Squares via *GELSD.
@@ -797,6 +817,26 @@ public class SimpleBlas {
 				throw new LapackException("DSYGVD", "The leading minor of order " + (info - A.rows) + " of B is not positive definite.");
 		}
 	}
+	
+	public static int sygvx(int itype, char jobz, char range, char uplo, FloatMatrix A,
+			FloatMatrix B, float vl, float vu, int il, int iu, float abstol,
+			int[] m, FloatMatrix W, FloatMatrix Z) {
+		int[] iwork = new int[1];
+		int[] ifail = new int[1];
+		int info = NativeBlas.ssygvx(itype, jobz, range, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, vl, vu, il, iu, abstol, m, 0, W.data, 0, Z.data, 0, Z.rows, iwork, 0, ifail, 0);
+		if (info == 0) {
+			return 0;
+		} else {
+			if (info < 0) {
+				throw new LapackArgumentException("DSYGVX", -info);
+			}
+			if(info <= A.rows) {
+				throw new LapackConvergenceException("DSYGVX", info + " eigenvectors failed to converge");
+			} else {
+				throw new LapackException("DSYGVX", "The leading minor order " + (info - A.rows) + " of B is not postivie definite.");
+			}
+		}
+	}
 
 	/**
 	 * Generalized Least Squares via *GELSD.
@@ -853,46 +893,6 @@ public class SimpleBlas {
 		int k = tau.length;
 		int info = NativeBlas.sormqr(side, trans, C.rows, C.columns, k, A.data, 0, A.rows, tau.data, 0, C.data, 0, C.rows);
 		checkInfo("ORMQR", info);
-	}
-	
-	public static int sygvx(int itype, char jobz, char range, char uplo, DoubleMatrix A,
-			DoubleMatrix B, double vl, double vu, int il, int iu, double abstol,
-			int[] m, DoubleMatrix W, DoubleMatrix Z) {
-		int[] iwork = new int[1];
-		int[] ifail = new int[1];
-		int info = NativeBlas.dsygvx(itype, jobz, range, uplo, A.rows, A.data, 0, 0,   B.data, 0, 0, vl, vu, il, iu, abstol, m, 0, W.data, 0, Z.data, 0, 0, iwork, 0, ifail, 0);
-		if (info == 0) {
-			return 0;
-		} else {
-			if (info < 0) {
-				throw new LapackArgumentException("DSYGVX", -info);
-			}
-			if(info <= A.rows) {
-				throw new LapackConvergenceException("DSYGVX", info + " eigenvectors failed to converge");
-			} else {
-				throw new LapackException("DSYGVX", "The leading monor order " + (info - A.rows) + " of B is not postivie definite.");
-			}
-		}
-	}
-
-	public static int sygvx(int itype, char jobz, char range, char uplo, FloatMatrix A,
-			FloatMatrix B, float vl, float vu, int il, int iu, float abstol,
-			int[] m, FloatMatrix W, FloatMatrix Z) {
-		int[] iwork = new int[1];
-		int[] ifail = new int[1];
-		int info = NativeBlas.ssygvx(itype, jobz, range, uplo, A.rows, A.data, 0, 0,   B.data, 0, 0, vl, vu, il, iu, abstol, m, 0, W.data, 0, Z.data, 0, 0, iwork, 0, ifail, 0);
-		if (info == 0) {
-			return 0;
-		} else {
-			if (info < 0) {
-				throw new LapackArgumentException("DSYGVX", -info);
-			}
-			if(info <= A.rows) {
-				throw new LapackConvergenceException("DSYGVX", info + " eigenvectors failed to converge");
-			} else {
-				throw new LapackException("DSYGVX", "The leading monor order " + (info - A.rows) + " of B is not postivie definite.");
-			}
-		}
 	}
 
 	//END
