@@ -99,16 +99,18 @@ public class TestSolve {
     assertEquals(0.0f, pinvA.mmul(A).mmul(pinvA).sub(pinvA).normmax(), 1e-5f);
   }
 
-//  @Test
-//  public void randomSized() {
-//    Random r = new Random();
-//    int m = 700; // r.nextInt(1000);
-//    int n = 700; // r.nextInt(1000);
-//    DoubleMatrix A = DoubleMatrix.rand(m, n);
-//
-//    System.out.printf("Pinv for %d * %d matrix...\n", A.rows, A.columns);
-//    double t = System.nanoTime();
-//    Solve.pinv(A);
-//    System.out.printf("Pinv for %d * %d matrix took %.1fs\n", A.rows, A.columns, (System.nanoTime() - t) / 1e9);
-//  }
+  @Test
+  public void randomSized() {
+      for (int i = 0; i < 1000; i++) {
+	  Random r = new Random();
+	  int m = 362; // r.nextInt(1000);
+	  int n = 8; // r.nextInt(1000);
+	  DoubleMatrix A = DoubleMatrix.rand(m, n);
+	  
+	  System.out.printf("Pinv for %d * %d matrix...\n", A.rows, A.columns);
+	  double t = System.nanoTime();
+	  Solve.pinv(A);
+	  System.out.printf("Pinv for %d * %d matrix took %.1fs\n", A.rows, A.columns, (System.nanoTime() - t) / 1e9);
+      }
+  }
 }
