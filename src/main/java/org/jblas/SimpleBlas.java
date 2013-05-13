@@ -1,7 +1,9 @@
 // --- BEGIN LICENSE BLOCK ---
 /* 
- * Copyright (c) 2009-2011, Mikio L. Braun
+ * Copyright (c) 2009-2013, Mikio L. Braun
  *               2011, Nicolas Oury
+ *               2013, Alexander Sehlström
+ *
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -37,13 +39,9 @@
 
 package org.jblas;
 
-import org.jblas.DoubleMatrix;
 import org.jblas.exceptions.*;
-import org.jblas.util.Functions;
 
 import static org.jblas.util.Functions.*;
-
-//import edu.ida.core.OutputValue;
 
 /**
  * This class provides a cleaner direct interface to the BLAS routines by
