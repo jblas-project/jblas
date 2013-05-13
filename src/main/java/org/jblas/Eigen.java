@@ -1,6 +1,9 @@
 // --- BEGIN LICENSE BLOCK ---
 /* 
- * Copyright (c) 2009, Mikio L. Braun
+ * Copyright (c) 2009-13, Mikio L. Braun
+ *               2011, Nicola Oury
+ *               2013, Alexander Sehlström
+ *
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +40,6 @@
 package org.jblas;
 
 import org.jblas.exceptions.NoEigenResultException;
-import org.jblas.exceptions.SizeException;
 import org.jblas.ranges.IntervalRange;
 import org.jblas.ranges.Range;
 
@@ -157,161 +159,152 @@ public class Eigen {
         result[1] = W;
         return result;
     }
-    
-    /**
-	 * Computes selected eigenvalues of the real generalized
-	 * symmetric-definite eigenproblem of the form A x = L B x
-	 * or, equivalently, (A - L B)x = 0. Here A and B are
-	 * assumed to be symmetric and B is also positive definite.
-	 * The selection is based on the given range of values for
-	 * the desired eigenvalues. The range is half open: (vl,vu].
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param vl	lower bound of the smallest eigenvalue to return
-	 * @param vu	upper bound of the largest eigenvalue to return
-	 * @return		a vector of eigenvalues L
-	 * @throws IllegalArgumentException	if <code>vl &gt; vu</code>
-	 * @throws NoEigenResultException if no eigevalues are found for the selected range: (vl,vu]
-	 */
-	public static DoubleMatrix symmetricGeneralizedEigenvalues(DoubleMatrix A, DoubleMatrix B, double vl, double vu) {
-		A.assertSquare();
-		B.assertSquare();
-		A.assertSameSize(B);
-		if (vu <= vl) {
-			throw new IllegalArgumentException("Bound exception: make sure vu > vl");
-		}
-		double abstol = (double) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		DoubleMatrix W = new DoubleMatrix(A.rows);
-		DoubleMatrix Z = new DoubleMatrix(A.rows, A.rows);
-		SimpleBlas.sygvx(1, 'N', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
-		if (m[0] == 0) {
-			throw new NoEigenResultException("No eigenvalues found for selected range");
-		}
-		return W.get(new IntervalRange(0, m[0]), 0);
-	}
 
-	/**
-	 * Computes selected eigenvalues of the real generalized
-	 * symmetric-definite eigenproblem of the form A x = L B x
-	 * or, equivalently, (A - L B)x = 0. Here A and B are
-	 * assumed to be symmetric and B is also positive definite.
-	 * The selection is based on the given range of indices for
-	 * the desired eigenvalues.
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param il	lower index (in ascending order) of the smallest eigenvalue to return (index is 0-based)
-	 * @param iu	upper index (in ascending order) of the largest eigenvalue to return (index is 0-based)
-	 * @return		a vector of eigenvalues L
-	 * @throws IllegalArgumentException	if <code>il &gt; iu</code>
-	 * @throws IllegalArgumentException if <code>il &lt; 0 </code>
-	 * @throws IllegalArgumentException if <code>iu &gt; A.rows - 1</code>
-	 */
-	public static DoubleMatrix symmetricGeneralizedEigenvalues(DoubleMatrix A, DoubleMatrix B, int il, int iu) {
-		A.assertSquare();
-		B.assertSquare();
-		A.assertSameSize(B);
-		if (iu < il) {
-			throw new IllegalArgumentException("Index exception: make sure iu >= il");
-		}
-		if (il < 0) {
-			throw new IllegalArgumentException("Index exception: make sure il >= 0");
-		}
-		if (iu > A.rows-1) {
-			throw new IllegalArgumentException("Index exception: make sure iu <= A.rows - 1");
-		}
-		double abstol = (double) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		DoubleMatrix W = new DoubleMatrix(A.rows);
-		DoubleMatrix Z = new DoubleMatrix(A.rows, A.columns);
-		SimpleBlas.sygvx(1, 'N', 'I', 'U', A.dup(), B.dup(), 0.0, 0.0, il+1, iu+1, abstol, m, W, Z);
-		return W.get(new IntervalRange(0, m[0]), 0);
-	}
+  /**
+   * Computes selected eigenvalues of the real generalized symmetric-definite eigenproblem of the form A x = L B x
+   * or, equivalently, (A - L B)x = 0. Here A and B are assumed to be symmetric and B is also positive definite.
+   * The selection is based on the given range of values for the desired eigenvalues.
+   * <p/>
+   * The range is half open: (vl,vu].
+   *
+   * @param A  symmetric Matrix A. Only the upper triangle will be considered.
+   * @param B  symmetric Matrix B. Only the upper triangle will be considered.
+   * @param vl lower bound of the smallest eigenvalue to return
+   * @param vu upper bound of the largest eigenvalue to return
+   * @throws IllegalArgumentException if <code>vl &gt; vu</code>
+   * @throws NoEigenResultException   if no eigevalues are found for the selected range: (vl,vu]
+   * @return a vector of eigenvalues L
+   */
+  public static DoubleMatrix symmetricGeneralizedEigenvalues(DoubleMatrix A, DoubleMatrix B, double vl, double vu) {
+    A.assertSquare();
+    B.assertSquare();
+    A.assertSameSize(B);
+    if (vu <= vl) {
+      throw new IllegalArgumentException("Bound exception: make sure vu > vl");
+    }
+    double abstol = (double) 1e-9;    // What is a good tolerance?
+    int[] m = new int[1];
+    DoubleMatrix W = new DoubleMatrix(A.rows);
+    DoubleMatrix Z = new DoubleMatrix(A.rows, A.rows);
+    SimpleBlas.sygvx(1, 'N', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
+    if (m[0] == 0) {
+      throw new NoEigenResultException("No eigenvalues found for selected range");
+    }
+    return W.get(new IntervalRange(0, m[0]), 0);
+  }
 
-	/**
-	 * Computes selected eigenvalues and their corresponding
-	 * eigenvectors of the real generalized symmetric-definite
-	 * eigenproblem of the form A x = L B x or, equivalently,
-	 * (A - L B)x = 0. Here A and B are assumed to be symmetric
-	 * and B is also positive definite. The selection is based
-	 * on the given range of values for the desired eigenvalues.
-	 * The range is half open: (vl,vu].
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param vl	lower bound of the smallest eigenvalue to return
-	 * @param vu	upper bound of the largest eigenvalue to return
-	 * @return 		an array of matrices of length two. The first one is an array of the eigenvectors x.
-	 *         		The second one is a vector containing the corresponding eigenvalues L.
-	 * @throws IllegalArgumentException	if <code>vl &gt; vu</code>
-	 * @throws NoEigenResultException if no eigevalues are found for the selected range: (vl,vu]
-	 */
-	public static DoubleMatrix[] symmetricGeneralizedEigenvectors(DoubleMatrix A, DoubleMatrix B, double vl, double vu) {
-		A.assertSquare();
-		B.assertSquare();
-		A.assertSameSize(B);
-		if (vu <= vl) {
-			throw new IllegalArgumentException("Bound exception: make sure vu > vl");
-		}
-		double abstol = (double) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		DoubleMatrix W = new DoubleMatrix(A.rows);
-		DoubleMatrix Z = new DoubleMatrix(A.rows, A.columns);
-		SimpleBlas.sygvx(1, 'V', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
-		if (m[0] == 0) {
-			throw new NoEigenResultException("No eigenvalues found for selected range");
-		}
-		DoubleMatrix[] result = new DoubleMatrix[2];
-		Range r = new IntervalRange(0, m[0]);
-		result[0] = Z.get(new IntervalRange(0, A.rows), r);
-		result[1] = W.get(r, 0);
-		return result;
-	}
+  /**
+   * Computes selected eigenvalues of the real generalized symmetric-definite eigenproblem of the form A x = L B x
+   * or, equivalently, (A - L B)x = 0. Here A and B are assumed to be symmetric and B is also positive definite.
+   * The selection is based on the given range of indices for the desired eigenvalues.
+   *
+   * @param A  symmetric Matrix A. Only the upper triangle will be considered.
+   * @param B  symmetric Matrix B. Only the upper triangle will be considered.
+   * @param il lower index (in ascending order) of the smallest eigenvalue to return (index is 0-based)
+   * @param iu upper index (in ascending order) of the largest eigenvalue to return (index is 0-based)
+   * @throws IllegalArgumentException if <code>il &gt; iu</code> or <code>il &lt; 0 </code> or <code>iu &gt; A.rows - 1</code>
+   * @return a vector of eigenvalues L
+   */
+  public static DoubleMatrix symmetricGeneralizedEigenvalues(DoubleMatrix A, DoubleMatrix B, int il, int iu) {
+    A.assertSquare();
+    B.assertSquare();
+    A.assertSameSize(B);
+    if (iu < il) {
+      throw new IllegalArgumentException("Index exception: make sure iu >= il");
+    }
+    if (il < 0) {
+      throw new IllegalArgumentException("Index exception: make sure il >= 0");
+    }
+    if (iu > A.rows - 1) {
+      throw new IllegalArgumentException("Index exception: make sure iu <= A.rows - 1");
+    }
+    double abstol = (double) 1e-9;    // What is a good tolerance?
+    int[] m = new int[1];
+    DoubleMatrix W = new DoubleMatrix(A.rows);
+    DoubleMatrix Z = new DoubleMatrix(A.rows, A.columns);
+    SimpleBlas.sygvx(1, 'N', 'I', 'U', A.dup(), B.dup(), 0.0, 0.0, il + 1, iu + 1, abstol, m, W, Z);
+    return W.get(new IntervalRange(0, m[0]), 0);
+  }
 
-	/**
-	 * Computes selected eigenvalues and their corresponding
-	 * eigenvectors of the real generalized symmetric-definite
-	 * eigenproblem of the form A x = L B x or, equivalently,
-	 * (A - L B)x = 0. Here A and B are assumed to be symmetric
-	 * and B is also positive definite. The selection is based
-	 * on the given range of values for the desired eigenvalues.
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param il	lower index (in ascending order) of the smallest eigenvalue to return (index is 0-based)
-	 * @param iu	upper index (in ascending order) of the largest eigenvalue to return (index is 0-based)
-	 * @return		an array of matrices of length two. The first one is an array of the eigenvectors x.
-	 *         		The second one is a vector containing the corresponding eigenvalues L.
-	 * @throws IllegalArgumentException	if <code>il &gt; iu</code>
-	 * @throws IllegalArgumentException if <code>il &lt; 0 </code>
-	 * @throws IllegalArgumentException if <code>iu &gt; A.rows - 1</code>
-	 */
-	public static DoubleMatrix[] symmetricGeneralizedEigenvectors(DoubleMatrix A, DoubleMatrix B, int il, int iu) {
-		A.assertSquare();
-		B.assertSquare();
-		A.assertSameSize(B);
-		if (iu < il) {
-			throw new IllegalArgumentException("Index exception: make sure iu >= il");
-		}
-		if (il < 0) {
-			throw new IllegalArgumentException("Index exception: make sure il >= 0");
-		}
-		if (iu > A.rows-1) {
-			throw new IllegalArgumentException("Index exception: make sure iu <= A.rows - 1");
-		}
-		double abstol = (double) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		DoubleMatrix W = new DoubleMatrix(A.rows);
-		DoubleMatrix Z = new DoubleMatrix(A.rows, A.columns);
-		SimpleBlas.sygvx(1, 'V', 'I', 'U', A.dup(), B.dup(), 0, 0, il+1, iu+1, abstol, m, W, Z);
-		DoubleMatrix[] result = new DoubleMatrix[2];
-		Range r = new IntervalRange(0, m[0]);
-		result[0] = Z.get(new IntervalRange(0, A.rows), r);
-		result[1] = W.get(r, 0);
-		return result;
-	}
+  /**
+   * Computes selected eigenvalues and their corresponding eigenvectors of the real generalized symmetric-definite
+   * eigenproblem of the form A x = L B x or, equivalently, (A - L B)x = 0. Here A and B are assumed to be symmetric
+   * and B is also positive definite. The selection is based on the given range of values for the desired eigenvalues.
+   *
+   * The range is half open: (vl,vu].
+   *
+   * @param A  symmetric Matrix A. Only the upper triangle will be considered.
+   * @param B  symmetric Matrix B. Only the upper triangle will be considered.
+   * @param vl lower bound of the smallest eigenvalue to return
+   * @param vu upper bound of the largest eigenvalue to return
+   * @return an array of matrices of length two. The first one is an array of the eigenvectors x.
+   *         The second one is a vector containing the corresponding eigenvalues L.
+   * @throws IllegalArgumentException if <code>vl &gt; vu</code>
+   * @throws NoEigenResultException   if no eigevalues are found for the selected range: (vl,vu]
+   */
+  public static DoubleMatrix[] symmetricGeneralizedEigenvectors(DoubleMatrix A, DoubleMatrix B, double vl, double vu) {
+    A.assertSquare();
+    B.assertSquare();
+    A.assertSameSize(B);
+    if (vu <= vl) {
+      throw new IllegalArgumentException("Bound exception: make sure vu > vl");
+    }
+    double abstol = (double) 1e-9;    // What is a good tolerance?
+    int[] m = new int[1];
+    DoubleMatrix W = new DoubleMatrix(A.rows);
+    DoubleMatrix Z = new DoubleMatrix(A.rows, A.columns);
+    SimpleBlas.sygvx(1, 'V', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
+    if (m[0] == 0) {
+      throw new NoEigenResultException("No eigenvalues found for selected range");
+    }
+    DoubleMatrix[] result = new DoubleMatrix[2];
+    Range r = new IntervalRange(0, m[0]);
+    result[0] = Z.get(new IntervalRange(0, A.rows), r);
+    result[1] = W.get(r, 0);
+    return result;
+  }
+
+  /**
+   * Computes selected eigenvalues and their corresponding
+   * eigenvectors of the real generalized symmetric-definite
+   * eigenproblem of the form A x = L B x or, equivalently,
+   * (A - L B)x = 0. Here A and B are assumed to be symmetric
+   * and B is also positive definite. The selection is based
+   * on the given range of values for the desired eigenvalues.
+   *
+   * @param A  symmetric Matrix A. Only the upper triangle will be considered.
+   * @param B  symmetric Matrix B. Only the upper triangle will be considered.
+   * @param il lower index (in ascending order) of the smallest eigenvalue to return (index is 0-based)
+   * @param iu upper index (in ascending order) of the largest eigenvalue to return (index is 0-based)
+   * @throws IllegalArgumentException if <code>il &gt; iu</code> or <code>il &lt; 0 </code>
+   *         or <code>iu &gt; A.rows - 1</code>
+   * @return an array of matrices of length two. The first one is an array of the eigenvectors x.
+   * The second one is a vector containing the corresponding eigenvalues L.
+   */
+  public static DoubleMatrix[] symmetricGeneralizedEigenvectors(DoubleMatrix A, DoubleMatrix B, int il, int iu) {
+    A.assertSquare();
+    B.assertSquare();
+    A.assertSameSize(B);
+    if (iu < il) {
+      throw new IllegalArgumentException("Index exception: make sure iu >= il");
+    }
+    if (il < 0) {
+      throw new IllegalArgumentException("Index exception: make sure il >= 0");
+    }
+    if (iu > A.rows - 1) {
+      throw new IllegalArgumentException("Index exception: make sure iu <= A.rows - 1");
+    }
+    double abstol = (double) 1e-9;    // What is a good tolerance?
+    int[] m = new int[1];
+    DoubleMatrix W = new DoubleMatrix(A.rows);
+    DoubleMatrix Z = new DoubleMatrix(A.rows, A.columns);
+    SimpleBlas.sygvx(1, 'V', 'I', 'U', A.dup(), B.dup(), 0, 0, il + 1, iu + 1, abstol, m, W, Z);
+    DoubleMatrix[] result = new DoubleMatrix[2];
+    Range r = new IntervalRange(0, m[0]);
+    result[0] = Z.get(new IntervalRange(0, A.rows), r);
+    result[1] = W.get(r, 0);
+    return result;
+  }
 
 //BEGIN
   // The code below has been automatically generated.
@@ -425,161 +418,152 @@ public class Eigen {
         result[1] = W;
         return result;
     }
-    
-    /**
-	 * Computes selected eigenvalues of the real generalized
-	 * symmetric-definite eigenproblem of the form A x = L B x
-	 * or, equivalently, (A - L B)x = 0. Here A and B are
-	 * assumed to be symmetric and B is also positive definite.
-	 * The selection is based on the given range of values for
-	 * the desired eigenvalues. The range is half open: (vl,vu].
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param vl	lower bound of the smallest eigenvalue to return
-	 * @param vu	upper bound of the largest eigenvalue to return
-	 * @return		a vector of eigenvalues L
-	 * @throws IllegalArgumentException	if <code>vl &gt; vu</code>
-	 * @throws NoEigenResultException if no eigevalues are found for the selected range: (vl,vu]
-	 */
-	public static FloatMatrix symmetricGeneralizedEigenvalues(FloatMatrix A, FloatMatrix B, float vl, float vu) {
-		A.assertSquare();
-		B.assertSquare();
-		A.assertSameSize(B);
-		if (vu <= vl) {
-			throw new IllegalArgumentException("Bound exception: make sure vu > vl");
-		}
-		float abstol = (float) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		FloatMatrix W = new FloatMatrix(A.rows);
-		FloatMatrix Z = new FloatMatrix(A.rows, A.rows);
-		SimpleBlas.sygvx(1, 'N', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
-		if (m[0] == 0) {
-			throw new NoEigenResultException("No eigenvalues found for selected range");
-		}
-		return W.get(new IntervalRange(0, m[0]), 0);
-	}
 
-	/**
-	 * Computes selected eigenvalues of the real generalized
-	 * symmetric-definite eigenproblem of the form A x = L B x
-	 * or, equivalently, (A - L B)x = 0. Here A and B are
-	 * assumed to be symmetric and B is also positive definite.
-	 * The selection is based on the given range of indices for
-	 * the desired eigenvalues.
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param il	lower index (in ascending order) of the smallest eigenvalue to return (index is 0-based)
-	 * @param iu	upper index (in ascending order) of the largest eigenvalue to return (index is 0-based)
-	 * @return		a vector of eigenvalues L
-	 * @throws IllegalArgumentException	if <code>il &gt; iu</code>
-	 * @throws IllegalArgumentException if <code>il &lt; 0 </code>
-	 * @throws IllegalArgumentException if <code>iu &gt; A.rows - 1</code>
-	 */
-	public static FloatMatrix symmetricGeneralizedEigenvalues(FloatMatrix A, FloatMatrix B, int il, int iu) {
-		A.assertSquare();
-		B.assertSquare();
-		A.assertSameSize(B);
-		if (iu < il) {
-			throw new IllegalArgumentException("Index exception: make sure iu >= il");
-		}
-		if (il < 0) {
-			throw new IllegalArgumentException("Index exception: make sure il >= 0");
-		}
-		if (iu > A.rows-1) {
-			throw new IllegalArgumentException("Index exception: make sure iu <= A.rows - 1");
-		}
-		float abstol = (float) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		FloatMatrix W = new FloatMatrix(A.rows);
-		FloatMatrix Z = new FloatMatrix(A.rows, A.columns);
-		SimpleBlas.sygvx(1, 'N', 'I', 'U', A.dup(), B.dup(), 0.0f, 0.0f, il+1, iu+1, abstol, m, W, Z);
-		return W.get(new IntervalRange(0, m[0]), 0);
-	}
+  /**
+   * Computes selected eigenvalues of the real generalized symmetric-definite eigenproblem of the form A x = L B x
+   * or, equivalently, (A - L B)x = 0. Here A and B are assumed to be symmetric and B is also positive definite.
+   * The selection is based on the given range of values for the desired eigenvalues.
+   * <p/>
+   * The range is half open: (vl,vu].
+   *
+   * @param A  symmetric Matrix A. Only the upper triangle will be considered.
+   * @param B  symmetric Matrix B. Only the upper triangle will be considered.
+   * @param vl lower bound of the smallest eigenvalue to return
+   * @param vu upper bound of the largest eigenvalue to return
+   * @throws IllegalArgumentException if <code>vl &gt; vu</code>
+   * @throws NoEigenResultException   if no eigevalues are found for the selected range: (vl,vu]
+   * @return a vector of eigenvalues L
+   */
+  public static FloatMatrix symmetricGeneralizedEigenvalues(FloatMatrix A, FloatMatrix B, float vl, float vu) {
+    A.assertSquare();
+    B.assertSquare();
+    A.assertSameSize(B);
+    if (vu <= vl) {
+      throw new IllegalArgumentException("Bound exception: make sure vu > vl");
+    }
+    float abstol = (float) 1e-9;    // What is a good tolerance?
+    int[] m = new int[1];
+    FloatMatrix W = new FloatMatrix(A.rows);
+    FloatMatrix Z = new FloatMatrix(A.rows, A.rows);
+    SimpleBlas.sygvx(1, 'N', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
+    if (m[0] == 0) {
+      throw new NoEigenResultException("No eigenvalues found for selected range");
+    }
+    return W.get(new IntervalRange(0, m[0]), 0);
+  }
 
-	/**
-	 * Computes selected eigenvalues and their corresponding
-	 * eigenvectors of the real generalized symmetric-definite
-	 * eigenproblem of the form A x = L B x or, equivalently,
-	 * (A - L B)x = 0. Here A and B are assumed to be symmetric
-	 * and B is also positive definite. The selection is based
-	 * on the given range of values for the desired eigenvalues.
-	 * The range is half open: (vl,vu].
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param vl	lower bound of the smallest eigenvalue to return
-	 * @param vu	upper bound of the largest eigenvalue to return
-	 * @return 		an array of matrices of length two. The first one is an array of the eigenvectors x.
-	 *         		The second one is a vector containing the corresponding eigenvalues L.
-	 * @throws IllegalArgumentException	if <code>vl &gt; vu</code>
-	 * @throws NoEigenResultException if no eigevalues are found for the selected range: (vl,vu]
-	 */
-	public static FloatMatrix[] symmetricGeneralizedEigenvectors(FloatMatrix A, FloatMatrix B, float vl, float vu) {
-		A.assertSquare();
-		B.assertSquare();
-		A.assertSameSize(B);
-		if (vu <= vl) {
-			throw new IllegalArgumentException("Bound exception: make sure vu > vl");
-		}
-		float abstol = (float) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		FloatMatrix W = new FloatMatrix(A.rows);
-		FloatMatrix Z = new FloatMatrix(A.rows, A.columns);
-		SimpleBlas.sygvx(1, 'V', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
-		if (m[0] == 0) {
-			throw new NoEigenResultException("No eigenvalues found for selected range");
-		}
-		FloatMatrix[] result = new FloatMatrix[2];
-		Range r = new IntervalRange(0, m[0]);
-		result[0] = Z.get(new IntervalRange(0, A.rows), r);
-		result[1] = W.get(r, 0);
-		return result;
-	}
+  /**
+   * Computes selected eigenvalues of the real generalized symmetric-definite eigenproblem of the form A x = L B x
+   * or, equivalently, (A - L B)x = 0. Here A and B are assumed to be symmetric and B is also positive definite.
+   * The selection is based on the given range of indices for the desired eigenvalues.
+   *
+   * @param A  symmetric Matrix A. Only the upper triangle will be considered.
+   * @param B  symmetric Matrix B. Only the upper triangle will be considered.
+   * @param il lower index (in ascending order) of the smallest eigenvalue to return (index is 0-based)
+   * @param iu upper index (in ascending order) of the largest eigenvalue to return (index is 0-based)
+   * @throws IllegalArgumentException if <code>il &gt; iu</code> or <code>il &lt; 0 </code> or <code>iu &gt; A.rows - 1</code>
+   * @return a vector of eigenvalues L
+   */
+  public static FloatMatrix symmetricGeneralizedEigenvalues(FloatMatrix A, FloatMatrix B, int il, int iu) {
+    A.assertSquare();
+    B.assertSquare();
+    A.assertSameSize(B);
+    if (iu < il) {
+      throw new IllegalArgumentException("Index exception: make sure iu >= il");
+    }
+    if (il < 0) {
+      throw new IllegalArgumentException("Index exception: make sure il >= 0");
+    }
+    if (iu > A.rows - 1) {
+      throw new IllegalArgumentException("Index exception: make sure iu <= A.rows - 1");
+    }
+    float abstol = (float) 1e-9;    // What is a good tolerance?
+    int[] m = new int[1];
+    FloatMatrix W = new FloatMatrix(A.rows);
+    FloatMatrix Z = new FloatMatrix(A.rows, A.columns);
+    SimpleBlas.sygvx(1, 'N', 'I', 'U', A.dup(), B.dup(), 0.0f, 0.0f, il + 1, iu + 1, abstol, m, W, Z);
+    return W.get(new IntervalRange(0, m[0]), 0);
+  }
 
-	/**
-	 * Computes selected eigenvalues and their corresponding
-	 * eigenvectors of the real generalized symmetric-definite
-	 * eigenproblem of the form A x = L B x or, equivalently,
-	 * (A - L B)x = 0. Here A and B are assumed to be symmetric
-	 * and B is also positive definite. The selection is based
-	 * on the given range of values for the desired eigenvalues.
-	 *
-	 * @param A		symmetric Matrix A. Only the upper triangle will be considered.
-	 * @param B		symmetric Matrix B. Only the upper triangle will be considered.
-	 * @param il	lower index (in ascending order) of the smallest eigenvalue to return (index is 0-based)
-	 * @param iu	upper index (in ascending order) of the largest eigenvalue to return (index is 0-based)
-	 * @return		an array of matrices of length two. The first one is an array of the eigenvectors x.
-	 *         		The second one is a vector containing the corresponding eigenvalues L.
-	 * @throws IllegalArgumentException	if <code>il &gt; iu</code>
-	 * @throws IllegalArgumentException if <code>il &lt; 0 </code>
-	 * @throws IllegalArgumentException if <code>iu &gt; A.rows - 1</code>
-	 */
-	public static FloatMatrix[] symmetricGeneralizedEigenvectors(FloatMatrix A, FloatMatrix B, int il, int iu) {
-		A.assertSquare();
-		B.assertSquare();
-		A.assertSameSize(B);
-		if (iu < il) {
-			throw new IllegalArgumentException("Index exception: make sure iu >= il");
-		}
-		if (il < 0) {
-			throw new IllegalArgumentException("Index exception: make sure il >= 0");
-		}
-		if (iu > A.rows-1) {
-			throw new IllegalArgumentException("Index exception: make sure iu <= A.rows - 1");
-		}
-		float abstol = (float) 1e-9;		// What is a good tolerance?
-		int[] m = new int[1];
-		FloatMatrix W = new FloatMatrix(A.rows);
-		FloatMatrix Z = new FloatMatrix(A.rows, A.columns);
-		SimpleBlas.sygvx(1, 'V', 'I', 'U', A.dup(), B.dup(), 0, 0, il+1, iu+1, abstol, m, W, Z);
-		FloatMatrix[] result = new FloatMatrix[2];
-		Range r = new IntervalRange(0, m[0]);
-		result[0] = Z.get(new IntervalRange(0, A.rows), r);
-		result[1] = W.get(r, 0);
-		return result;
-	}
+  /**
+   * Computes selected eigenvalues and their corresponding eigenvectors of the real generalized symmetric-definite
+   * eigenproblem of the form A x = L B x or, equivalently, (A - L B)x = 0. Here A and B are assumed to be symmetric
+   * and B is also positive definite. The selection is based on the given range of values for the desired eigenvalues.
+   *
+   * The range is half open: (vl,vu].
+   *
+   * @param A  symmetric Matrix A. Only the upper triangle will be considered.
+   * @param B  symmetric Matrix B. Only the upper triangle will be considered.
+   * @param vl lower bound of the smallest eigenvalue to return
+   * @param vu upper bound of the largest eigenvalue to return
+   * @return an array of matrices of length two. The first one is an array of the eigenvectors x.
+   *         The second one is a vector containing the corresponding eigenvalues L.
+   * @throws IllegalArgumentException if <code>vl &gt; vu</code>
+   * @throws NoEigenResultException   if no eigevalues are found for the selected range: (vl,vu]
+   */
+  public static FloatMatrix[] symmetricGeneralizedEigenvectors(FloatMatrix A, FloatMatrix B, float vl, float vu) {
+    A.assertSquare();
+    B.assertSquare();
+    A.assertSameSize(B);
+    if (vu <= vl) {
+      throw new IllegalArgumentException("Bound exception: make sure vu > vl");
+    }
+    float abstol = (float) 1e-9;    // What is a good tolerance?
+    int[] m = new int[1];
+    FloatMatrix W = new FloatMatrix(A.rows);
+    FloatMatrix Z = new FloatMatrix(A.rows, A.columns);
+    SimpleBlas.sygvx(1, 'V', 'V', 'U', A.dup(), B.dup(), vl, vu, 0, 0, abstol, m, W, Z);
+    if (m[0] == 0) {
+      throw new NoEigenResultException("No eigenvalues found for selected range");
+    }
+    FloatMatrix[] result = new FloatMatrix[2];
+    Range r = new IntervalRange(0, m[0]);
+    result[0] = Z.get(new IntervalRange(0, A.rows), r);
+    result[1] = W.get(r, 0);
+    return result;
+  }
+
+  /**
+   * Computes selected eigenvalues and their corresponding
+   * eigenvectors of the real generalized symmetric-definite
+   * eigenproblem of the form A x = L B x or, equivalently,
+   * (A - L B)x = 0. Here A and B are assumed to be symmetric
+   * and B is also positive definite. The selection is based
+   * on the given range of values for the desired eigenvalues.
+   *
+   * @param A  symmetric Matrix A. Only the upper triangle will be considered.
+   * @param B  symmetric Matrix B. Only the upper triangle will be considered.
+   * @param il lower index (in ascending order) of the smallest eigenvalue to return (index is 0-based)
+   * @param iu upper index (in ascending order) of the largest eigenvalue to return (index is 0-based)
+   * @throws IllegalArgumentException if <code>il &gt; iu</code> or <code>il &lt; 0 </code>
+   *         or <code>iu &gt; A.rows - 1</code>
+   * @return an array of matrices of length two. The first one is an array of the eigenvectors x.
+   * The second one is a vector containing the corresponding eigenvalues L.
+   */
+  public static FloatMatrix[] symmetricGeneralizedEigenvectors(FloatMatrix A, FloatMatrix B, int il, int iu) {
+    A.assertSquare();
+    B.assertSquare();
+    A.assertSameSize(B);
+    if (iu < il) {
+      throw new IllegalArgumentException("Index exception: make sure iu >= il");
+    }
+    if (il < 0) {
+      throw new IllegalArgumentException("Index exception: make sure il >= 0");
+    }
+    if (iu > A.rows - 1) {
+      throw new IllegalArgumentException("Index exception: make sure iu <= A.rows - 1");
+    }
+    float abstol = (float) 1e-9;    // What is a good tolerance?
+    int[] m = new int[1];
+    FloatMatrix W = new FloatMatrix(A.rows);
+    FloatMatrix Z = new FloatMatrix(A.rows, A.columns);
+    SimpleBlas.sygvx(1, 'V', 'I', 'U', A.dup(), B.dup(), 0, 0, il + 1, iu + 1, abstol, m, W, Z);
+    FloatMatrix[] result = new FloatMatrix[2];
+    Range r = new IntervalRange(0, m[0]);
+    result[0] = Z.get(new IntervalRange(0, A.rows), r);
+    result[1] = W.get(r, 0);
+    return result;
+  }
 
 //END
 }
