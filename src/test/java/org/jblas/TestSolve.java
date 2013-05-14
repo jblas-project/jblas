@@ -99,6 +99,7 @@ public class TestSolve {
     assertEquals(0.0f, pinvA.mmul(A).mmul(pinvA).sub(pinvA).normmax(), 1e-5f);
   }
 
+  /*
   @Test
   public void randomSized() {
       for (int i = 0; i < 1000; i++) {
@@ -113,4 +114,5 @@ public class TestSolve {
 	  System.out.printf("Pinv for %d * %d matrix took %.1fs\n", A.rows, A.columns, (System.nanoTime() - t) / 1e9);
       }
   }
+  */
 }
