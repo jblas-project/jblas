@@ -276,13 +276,13 @@ public class SimpleBlas {
 		return b;
 	}
 
-	//STOP
+//STOP
 
 	private static void checkInfo(String name, int info) {
 		if (info < -1)
 			throw new LapackArgumentException(name, info);
 	}
-	//START
+//START
 
 	public static DoubleMatrix sysv(char uplo, DoubleMatrix a, int[] ipiv,
 			DoubleMatrix b) {
@@ -443,13 +443,14 @@ public class SimpleBlas {
 			throw new SizeException("Result matrix B must be padded to contain the solution matrix X!");
 		}
 
-		int smlsiz = NativeBlas.ilaenv(9, "DGELSD", "", m, n, nrhs, 0);
+		//int smlsiz = NativeBlas.ilaenv(9, "DGELSD", "", m, n, nrhs, -1);
+		int smlsiz = 25;
 		int nlvl = max(0, (int) log2(minmn/ (smlsiz+1)) + 1);
 
-		//      System.err.printf("GELSD\n");
-		//      System.err.printf("m = %d, n = %d, nrhs = %d\n", m, n, nrhs);
-		//      System.err.printf("smlsiz = %d, nlvl = %d\n", smlsiz, nlvl);
-		//      System.err.printf("iwork size = %d\n", 3 * minmn * nlvl + 11 * minmn);
+		//System.err.printf("GELSD\n");
+		//System.err.printf("m = %d, n = %d, nrhs = %d\n", m, n, nrhs);
+		//System.err.printf("smlsiz = %d, nlvl = %d\n", smlsiz, nlvl);
+		//System.err.printf("iwork size = %d\n", 3 * minmn * nlvl + 11 * minmn);
 
 		int[] iwork = new int[3 * minmn * nlvl + 11 * minmn];
 		double[] s = new double[minmn];
@@ -475,7 +476,7 @@ public class SimpleBlas {
 		checkInfo("ORMQR", info);
 	}
 
-	//BEGIN
+//BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
 	/***************************************************************************
@@ -638,7 +639,7 @@ public class SimpleBlas {
 	public static FloatMatrix ger(float alpha, FloatMatrix x,
 			FloatMatrix y, FloatMatrix a) {
 		NativeBlas.sger(a.rows, a.columns, alpha, x.data, 0, 1, y.data, 0, 1, a.data,
-        0, a.rows);
+				0, a.rows);
 		return a;
 	}
 
@@ -648,7 +649,7 @@ public class SimpleBlas {
 	public static ComplexFloatMatrix geru(ComplexFloat alpha, ComplexFloatMatrix x,
 			ComplexFloatMatrix y, ComplexFloatMatrix a) {
 		NativeBlas.cgeru(a.rows, a.columns, alpha, x.data, 0, 1, y.data, 0, 1, a.data,
-        0, a.rows);
+				0, a.rows);
 		return a;
 	}
 
@@ -673,7 +674,7 @@ public class SimpleBlas {
 	public static FloatMatrix gemm(float alpha, FloatMatrix a,
 			FloatMatrix b, float beta, FloatMatrix c) {
 		NativeBlas.sgemm('N', 'N', c.rows, c.columns, a.columns, alpha, a.data, 0,
-        a.rows, b.data, 0, b.rows, beta, c.data, 0, c.rows);
+				a.rows, b.data, 0, b.rows, beta, c.data, 0, c.rows);
 		return c;
 	}
 
@@ -691,7 +692,7 @@ public class SimpleBlas {
 	public static FloatMatrix gesv(FloatMatrix a, int[] ipiv,
 			FloatMatrix b) {
 		int info = NativeBlas.sgesv(a.rows, b.columns, a.data, 0, a.rows, ipiv, 0,
-        b.data, 0, b.rows);
+				b.data, 0, b.rows);
 		checkInfo("DGESV", info);
 
 		if (info > 0)
@@ -701,11 +702,11 @@ public class SimpleBlas {
 		return b;
 	}
 
-	
+
 	public static FloatMatrix sysv(char uplo, FloatMatrix a, int[] ipiv,
 			FloatMatrix b) {
 		int info = NativeBlas.ssysv(uplo, a.rows, b.columns, a.data, 0, a.rows, ipiv, 0,
-        b.data, 0, b.rows);
+				b.data, 0, b.rows);
 		checkInfo("SYSV", info);
 
 		if (info > 0)
@@ -773,7 +774,7 @@ public class SimpleBlas {
 		int[] m = new int[1];
 
 		int info = NativeBlas.ssyevr(jobz, range, uplo, n, a.data, 0, a.rows, vl, vu,
-        il, iu, abstol, m, 0, w.data, 0, z.data, 0, z.rows, isuppz, 0);
+				il, iu, abstol, m, 0, w.data, 0, z.data, 0, z.rows, isuppz, 0);
 
 		checkInfo("SYEVR", info);
 
@@ -794,7 +795,7 @@ public class SimpleBlas {
 	public static int geev(char jobvl, char jobvr, FloatMatrix A,
 			FloatMatrix WR, FloatMatrix WI, FloatMatrix VL, FloatMatrix VR) {
 		int info = NativeBlas.sgeev(jobvl, jobvr, A.rows, A.data, 0, A.rows, WR.data, 0,
-        WI.data, 0, VL.data, 0, VL.rows, VR.data, 0, VR.rows);
+				WI.data, 0, VL.data, 0, VL.rows, VR.data, 0, VR.rows);
 		if (info > 0)
 			throw new LapackConvergenceException("DGEEV", "First " + info + " eigenvalues have not converged.");
 		return info;
@@ -815,31 +816,28 @@ public class SimpleBlas {
 				throw new LapackException("DSYGVD", "The leading minor of order " + (info - A.rows) + " of B is not positive definite.");
 		}
 	}
+	
+	public static int sygvx(int itype, char jobz, char range, char uplo, FloatMatrix A,
+			FloatMatrix B, float vl, float vu, int il, int iu, float abstol,
+			int[] m, FloatMatrix W, FloatMatrix Z) {
+		int[] iwork = new int[1];
+		int[] ifail = new int[1];
+		int info = NativeBlas.ssygvx(itype, jobz, range, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, vl, vu, il, iu, abstol, m, 0, W.data, 0, Z.data, 0, Z.rows, iwork, 0, ifail, 0);
+		if (info == 0) {
+			return 0;
+		} else {
+			if (info < 0) {
+				throw new LapackArgumentException("DSYGVX", -info);
+			}
+			if(info <= A.rows) {
+				throw new LapackConvergenceException("DSYGVX", info + " eigenvectors failed to converge");
+			} else {
+				throw new LapackException("DSYGVX", "The leading minor order " + (info - A.rows) + " of B is not postivie definite.");
+			}
+		}
+	}
 
-  /**
-   * Generalized symmetric eigenvalue and eigenvector ranges via *SYGVX.
-   */
-  public static int sygvx(int itype, char jobz, char range, char uplo, FloatMatrix A, FloatMatrix B,
-                          float vl, float vu, int il, int iu, float abstol,
-                          int[] m, FloatMatrix W, FloatMatrix Z) {
-    int[] iwork = new int[1];
-    int[] ifail = new int[1];
-    int info = NativeBlas.ssygvx(itype, jobz, range, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, vl, vu, il, iu, abstol, m, 0, W.data, 0, Z.data, 0, Z.rows, iwork, 0, ifail, 0);
-    if (info == 0) {
-      return 0;
-    } else {
-      if (info < 0) {
-        throw new LapackArgumentException("DSYGVX", -info);
-      }
-      if (info <= A.rows) {
-        throw new LapackConvergenceException("DSYGVX", info + " eigenvectors failed to converge");
-      } else {
-        throw new LapackException("DSYGVX", "The leading minor order " + (info - A.rows) + " of B is not postivie definite.");
-      }
-    }
-  }
-
-  /**
+	/**
 	 * Generalized Least Squares via *GELSD.
 	 *
 	 * Note that B must be padded to contain the solution matrix. This occurs when A has fewer rows
@@ -864,13 +862,14 @@ public class SimpleBlas {
 			throw new SizeException("Result matrix B must be padded to contain the solution matrix X!");
 		}
 
-		int smlsiz = NativeBlas.ilaenv(9, "DGELSD", "", m, n, nrhs, 0);
+		//int smlsiz = NativeBlas.ilaenv(9, "DGELSD", "", m, n, nrhs, -1);
+		int smlsiz = 25;
 		int nlvl = max(0, (int) log2(minmn/ (smlsiz+1)) + 1);
 
-		//      System.err.printf("GELSD\n");
-		//      System.err.printf("m = %d, n = %d, nrhs = %d\n", m, n, nrhs);
-		//      System.err.printf("smlsiz = %d, nlvl = %d\n", smlsiz, nlvl);
-		//      System.err.printf("iwork size = %d\n", 3 * minmn * nlvl + 11 * minmn);
+		//System.err.printf("GELSD\n");
+		//System.err.printf("m = %d, n = %d, nrhs = %d\n", m, n, nrhs);
+		//System.err.printf("smlsiz = %d, nlvl = %d\n", smlsiz, nlvl);
+		//System.err.printf("iwork size = %d\n", 3 * minmn * nlvl + 11 * minmn);
 
 		int[] iwork = new int[3 * minmn * nlvl + 11 * minmn];
 		float[] s = new float[minmn];
@@ -896,5 +895,5 @@ public class SimpleBlas {
 		checkInfo("ORMQR", info);
 	}
 
-	//END
+//END
 }
