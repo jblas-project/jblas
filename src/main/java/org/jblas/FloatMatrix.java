@@ -77,7 +77,7 @@ import java.util.List;
  * <table class="my">
  * <tr><th>Method<th>Description
  * <tr><td>FloatMatrix(m,n, [value1, value2, value3...])<td>Values are filled in row by row.
- * <tr><td>FloatMatrix(new float[][] {{value1, value2, ...}, ...}<td>Inner arrays are columns.
+ * <tr><td>FloatMatrix(new float[][] {{value1, value2, ...}, ...}<td>Inner arrays are rows.
  * <tr><td>FloatMatrix.zeros(m,n) <td>Initial values set to 0.0f.
  * <tr><td>FloatMatrix.ones(m,n) <td>Initial values set to 1.0f.
  * <tr><td>FloatMatrix.rand(m,n) <td>Values drawn at random between 0.0f and 1.0f.
