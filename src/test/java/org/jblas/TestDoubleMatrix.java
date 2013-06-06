@@ -39,6 +39,7 @@ package org.jblas;
 import java.io.File;
 import java.io.PrintStream;
 
+import org.jblas.ranges.IntervalRange;
 import org.jblas.util.Random;
 
 import java.util.Arrays;
@@ -724,5 +725,35 @@ public class TestDoubleMatrix {
     assertEquals("[1.0, 5.0, 9.0; 2.0, 6.0, 10.0; 3.0, 7.0, 11.0; 4.0, 8.0, 12.0]".replaceAll("f", ""), A.toString("%.1f"));
 
     assertEquals("{1.0 5.0 9.0; 2.0 6.0 10.0; 3.0 7.0 11.0; 4.0 8.0 12.0}".replaceAll("f", ""), A.toString("%.1f", "{", "}", " ", "; "));
+  }
+
+  @Test
+  public void testGetRowsWithRanges() {
+    DoubleMatrix m = new DoubleMatrix(new double[][]{{1,2,3},{4,5,6},{7,8,9},{10,11,12}});
+    DoubleMatrix m1 = m.getRows(new org.jblas.ranges.IntervalRange(0, 2));
+    assertEquals("[1, 2, 3; 4, 5, 6]", m1.toString("%.0f"));
+
+    DoubleMatrix m2 = m.getRows(new org.jblas.ranges.IntervalRange(2, m.rows));
+    assertEquals("[7, 8, 9; 10, 11, 12]", m2.toString("%.0f"));
+
+    DoubleMatrix m3 = m.getRows(new org.jblas.ranges.IndicesRange(new int[] {1, 3, 0}));
+    assertEquals("[4, 5, 6; 10, 11, 12; 1, 2, 3]", m3.toString("%.0f"));
+
+  }
+
+  @Test
+  public void testGetColumsWithRanges() {
+    DoubleMatrix m = new DoubleMatrix(new double[][]{{ 1, 2, 3},
+                                                     { 4, 5, 6},
+                                                     { 7, 8, 9},
+                                                     {10,11,12}});
+    DoubleMatrix m1 = m.getColumns(new org.jblas.ranges.IntervalRange(0, 2));
+    assertEquals("[1, 2; 4, 5; 7, 8; 10, 11]", m1.toString("%.0f"));
+
+    DoubleMatrix m2 = m.getColumns(new org.jblas.ranges.IntervalRange(2, m.columns));
+    assertEquals("[3; 6; 9; 12]", m2.toString("%.0f"));
+
+    DoubleMatrix m3 = m.getColumns(new org.jblas.ranges.IndicesRange(new int[] {0, 1, 0}));
+    assertEquals("[1, 2, 1; 4, 5, 4; 7, 8, 7; 10, 11, 10]", m3.toString("%.0f"));
   }
 }

@@ -798,10 +798,10 @@ public class FloatMatrix implements Serializable {
         }
         result.checkColumns(columns);
 
-        for (int c = 0; c < columns; c++) {
-            indices.init(0, rows);
-            for (int r = 0; indices.hasMore(); indices.next(), r++) {
-                result.put(r, c, get(indices.index(), c));
+      indices.init(0, rows);
+      for (int r = 0; indices.hasMore(); indices.next(), r++) {
+            for (int c = 0; c < columns; c++) {
+                result.put(r, c, get(indices.value(), c));
             }
         }
         return result;
@@ -825,6 +825,30 @@ public class FloatMatrix implements Serializable {
     /** Get whole columns as specified by the non-zero entries of a matrix. */
     public FloatMatrix getColumns(FloatMatrix cindices) {
         return getColumns(cindices.findIndices());
+    }
+
+
+    /** Get whole columns as specified by Range. */
+    public FloatMatrix getColumns(Range indices, FloatMatrix result) {
+        indices.init(0, columns);
+        if (result.columns < indices.length()) {
+            throw new SizeException("Result matrix does not have enough columns (" + result.columns + " < " + indices.length() + ")");
+        }
+        result.checkRows(rows);
+
+        indices.init(0, columns);
+        for (int c = 0; indices.hasMore(); indices.next(), c++) {
+            for (int r = 0; r < rows; r++) {
+                result.put(r, c, get(r, indices.value()));
+            }
+        }
+        return result;
+    }
+
+    public FloatMatrix getColumns(Range indices) {
+        indices.init(0, columns);
+        FloatMatrix result = new FloatMatrix(rows, indices.length());
+        return getColumns(indices, result);
     }
 
     /**

@@ -798,10 +798,10 @@ public class DoubleMatrix implements Serializable {
         }
         result.checkColumns(columns);
 
-        for (int c = 0; c < columns; c++) {
-            indices.init(0, rows);
-            for (int r = 0; indices.hasMore(); indices.next(), r++) {
-                result.put(r, c, get(indices.index(), c));
+      indices.init(0, rows);
+      for (int r = 0; indices.hasMore(); indices.next(), r++) {
+            for (int c = 0; c < columns; c++) {
+                result.put(r, c, get(indices.value(), c));
             }
         }
         return result;
@@ -825,6 +825,30 @@ public class DoubleMatrix implements Serializable {
     /** Get whole columns as specified by the non-zero entries of a matrix. */
     public DoubleMatrix getColumns(DoubleMatrix cindices) {
         return getColumns(cindices.findIndices());
+    }
+
+
+    /** Get whole columns as specified by Range. */
+    public DoubleMatrix getColumns(Range indices, DoubleMatrix result) {
+        indices.init(0, columns);
+        if (result.columns < indices.length()) {
+            throw new SizeException("Result matrix does not have enough columns (" + result.columns + " < " + indices.length() + ")");
+        }
+        result.checkRows(rows);
+
+        indices.init(0, columns);
+        for (int c = 0; indices.hasMore(); indices.next(), c++) {
+            for (int r = 0; r < rows; r++) {
+                result.put(r, c, get(r, indices.value()));
+            }
+        }
+        return result;
+    }
+
+    public DoubleMatrix getColumns(Range indices) {
+        indices.init(0, columns);
+        DoubleMatrix result = new DoubleMatrix(rows, indices.length());
+        return getColumns(indices, result);
     }
 
     /**
