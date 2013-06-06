@@ -77,7 +77,7 @@ import java.util.List;
  * <table class="my">
  * <tr><th>Method<th>Description
  * <tr><td>DoubleMatrix(m,n, [value1, value2, value3...])<td>Values are filled in row by row.
- * <tr><td>DoubleMatrix(new double[][] {{value1, value2, ...}, ...}<td>Inner arrays are columns.
+ * <tr><td>DoubleMatrix(new double[][] {{value1, value2, ...}, ...}<td>Inner arrays are rows.
  * <tr><td>DoubleMatrix.zeros(m,n) <td>Initial values set to 0.0.
  * <tr><td>DoubleMatrix.ones(m,n) <td>Initial values set to 1.0.
  * <tr><td>DoubleMatrix.rand(m,n) <td>Values drawn at random between 0.0 and 1.0.
