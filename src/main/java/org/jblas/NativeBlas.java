@@ -496,6 +496,32 @@ public class NativeBlas {
     return info;
   }
 
+  public static native int dorgqr(int m, int n, int k, double[] a, int aIdx, int lda, double[] tau, int tauIdx, double[] work, int workIdx, int lwork);
+  public static int dorgqr(int m, int n, int k, double[] a, int aIdx, int lda, double[] tau, int tauIdx) {
+    int info;
+    double[] work = new double[1];
+    int lwork;
+    info = dorgqr(m, n, k, doubleDummy, 0, lda, doubleDummy, 0, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork];
+    info = dorgqr(m, n, k, a, aIdx, lda, tau, tauIdx, work, 0, lwork);
+    return info;
+  }
+
+  public static native int sorgqr(int m, int n, int k, float[] a, int aIdx, int lda, float[] tau, int tauIdx, float[] work, int workIdx, int lwork);
+  public static int sorgqr(int m, int n, int k, float[] a, int aIdx, int lda, float[] tau, int tauIdx) {
+    int info;
+    float[] work = new float[1];
+    int lwork;
+    info = sorgqr(m, n, k, floatDummy, 0, lda, floatDummy, 0, work, 0, -1);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork];
+    info = sorgqr(m, n, k, a, aIdx, lda, tau, tauIdx, work, 0, lwork);
+    return info;
+  }
+
   public static native int dsygvx(int itype, char jobz, char range, char uplo, int n, double[] a, int aIdx, int lda, double[] b, int bIdx, int ldb, double vl, double vu, int il, int iu, double abstol, int[] m, int mIdx, double[] w, int wIdx, double[] z, int zIdx, int ldz, double[] work, int workIdx, int lwork, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx);
   public static int dsygvx(int itype, char jobz, char range, char uplo, int n, double[] a, int aIdx, int lda, double[] b, int bIdx, int ldb, double vl, double vu, int il, int iu, double abstol, int[] m, int mIdx, double[] w, int wIdx, double[] z, int zIdx, int ldz, int[] iwork, int iworkIdx, int[] ifail, int ifailIdx) {
     int info;
