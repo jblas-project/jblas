@@ -476,6 +476,11 @@ public class SimpleBlas {
 		checkInfo("ORMQR", info);
 	}
 
+  public static void orgqr(int n, int k, DoubleMatrix A, DoubleMatrix tau) {
+    int info = NativeBlas.dorgqr(A.rows, n, k, A.data, 0, A.rows, tau.data, 0);
+    checkInfo("ORGQR", info);
+  }
+
 //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
@@ -894,6 +899,11 @@ public class SimpleBlas {
 		int info = NativeBlas.sormqr(side, trans, C.rows, C.columns, k, A.data, 0, A.rows, tau.data, 0, C.data, 0, C.rows);
 		checkInfo("ORMQR", info);
 	}
+
+  public static void orgqr(int n, int k, FloatMatrix A, FloatMatrix tau) {
+    int info = NativeBlas.sorgqr(A.rows, n, k, A.data, 0, A.rows, tau.data, 0);
+    checkInfo("ORGQR", info);
+  }
 
 //END
 }
