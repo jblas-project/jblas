@@ -43,6 +43,7 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ComplexFloatMatrix {
 	
@@ -570,7 +571,7 @@ public class ComplexFloatMatrix {
 	}
 
 	public ComplexFloatMatrix putReal(ComplexFloatMatrix rindices, ComplexFloatMatrix cindices, float v) {
-		return putReal(rindices, cindices, v);
+		return putReal(rindices.findIndices(), cindices.findIndices(), v);
 	}
 
 	public ComplexFloatMatrix putImag(ComplexFloatMatrix rindices, ComplexFloatMatrix cindices, float v) {
@@ -656,11 +657,13 @@ public class ComplexFloatMatrix {
 
 		if (!sameSize(other))
 			return false;
-		
-		FloatMatrix diff = MatrixFunctions.absi(sub(other)).getReal();
-		
-		return diff.max() / (rows * columns) < 1e-6;
+
+    return Arrays.equals(data, other.data);
 	}
+  
+  public int hashCode() {
+    return rows ^ columns ^ Arrays.hashCode(data);
+  }
 
 	
 	/** Resize the matrix. All elements will be set to zero. */
@@ -953,12 +956,7 @@ public class ComplexFloatMatrix {
 	}
 
 	public float[] toDoubleArray() {
-		float[] array = new float[2*length];
-		
-		for (int i = 0; i < 2*length; i++)
-			array[i] = data[i];
-		
-		return array;
+		return data.clone();
 	}
 	
 	public ComplexFloat[] toArray() {

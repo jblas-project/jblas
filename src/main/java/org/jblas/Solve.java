@@ -36,8 +36,6 @@
 
 package org.jblas;
 
-import org.jblas.util.Functions;
-
 /**
  * Solving linear equations.
  */

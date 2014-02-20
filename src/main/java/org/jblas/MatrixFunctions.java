@@ -35,8 +35,6 @@
 // --- END LICENSE BLOCK ---
 
 package org.jblas;
- 
-import java.lang.Math;
 
 /**
  * This class provides the functions from java.lang.Math for matrices. The

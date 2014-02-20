@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestComplexFloat  {
 
@@ -73,11 +74,11 @@ public class TestComplexFloat  {
 	public void testMulAndDiv() {
 		ComplexFloat d = a.mul(b).div(b);
 		
-		assertEquals(new ComplexFloat(1.0f, 2.0f), d);
+		assertTrue(new ComplexFloat(1.0f, 2.0f).eq(d));
 		
 		d = a.mul(b).mul(b.inv());
 
-		assertEquals(new ComplexFloat(1.0f, 2.0f), d);
+		assertTrue(new ComplexFloat(1.0f, 2.0f).eq(d));
 	}
 
   @Test

@@ -36,10 +36,6 @@
 
 package org.jblas;
 
-import org.jblas.DoubleMatrix;
-import org.jblas.FloatMatrix;
-import org.jblas.Solve;
-import org.jblas.util.Random;
 import org.junit.*;
 import static org.junit.Assert.*;
 

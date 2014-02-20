@@ -302,7 +302,7 @@ public class ComplexDouble {
     }
     
     /**
-     * Comparing two DoubleComplex values.
+     * Comparing two ComplexDouble values.
      */
     public boolean equals(Object o) {
         if (!(o instanceof ComplexDouble)) {
@@ -310,7 +310,11 @@ public class ComplexDouble {
         }
         ComplexDouble c = (ComplexDouble) o;
 
-        return eq(c);
+        return r == c.r && i == c.i;
+    }
+
+    public int hashCode() {
+        return Double.valueOf(r).hashCode() ^ Double.valueOf(i).hashCode();
     }
 
     public boolean eq(ComplexDouble c) {

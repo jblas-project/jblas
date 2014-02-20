@@ -39,7 +39,6 @@ package org.jblas;
 import java.io.File;
 import java.io.PrintStream;
 
-import org.jblas.ranges.IntervalRange;
 import org.jblas.util.Random;
 
 import java.util.Arrays;
@@ -72,8 +71,8 @@ public class TestDoubleMatrix {
   public void testConstructionAndSetGet() {
     double[][] dataA = {{1.0, 5.0, 9.0}, {2.0, 6.0, 10.0}, {3.0, 7.0, 11.0}, {4.0, 8.0, 12.0}};
 
-    assertEquals(A.rows, 4);
-    assertEquals(A.columns, 3);
+    assertEquals(4, A.rows);
+    assertEquals(3, A.columns);
 
     for (int r = 0; r < 4; r++) {
       for (int c = 0; c < 3; c++) {

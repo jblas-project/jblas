@@ -43,6 +43,7 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ComplexDoubleMatrix {
 	
@@ -570,7 +571,7 @@ public class ComplexDoubleMatrix {
 	}
 
 	public ComplexDoubleMatrix putReal(ComplexDoubleMatrix rindices, ComplexDoubleMatrix cindices, double v) {
-		return putReal(rindices, cindices, v);
+		return putReal(rindices.findIndices(), cindices.findIndices(), v);
 	}
 
 	public ComplexDoubleMatrix putImag(ComplexDoubleMatrix rindices, ComplexDoubleMatrix cindices, double v) {
@@ -656,11 +657,13 @@ public class ComplexDoubleMatrix {
 
 		if (!sameSize(other))
 			return false;
-		
-		DoubleMatrix diff = MatrixFunctions.absi(sub(other)).getReal();
-		
-		return diff.max() / (rows * columns) < 1e-6;
+
+    return Arrays.equals(data, other.data);
 	}
+  
+  public int hashCode() {
+    return rows ^ columns ^ Arrays.hashCode(data);
+  }
 
 	
 	/** Resize the matrix. All elements will be set to zero. */
@@ -953,12 +956,7 @@ public class ComplexDoubleMatrix {
 	}
 
 	public double[] toDoubleArray() {
-		double[] array = new double[2*length];
-		
-		for (int i = 0; i < 2*length; i++)
-			array[i] = data[i];
-		
-		return array;
+		return data.clone();
 	}
 	
 	public ComplexDouble[] toArray() {

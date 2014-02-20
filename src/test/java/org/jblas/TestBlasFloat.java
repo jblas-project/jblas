@@ -39,7 +39,6 @@ package org.jblas;
 import org.junit.Test;
 
 import static org.jblas.MatrixFunctions.abs;
-import static org.jblas.MatrixFunctions.expi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
