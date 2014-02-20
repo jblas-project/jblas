@@ -153,22 +153,21 @@ generated-sources: \
 
 $(SRC_C)/NativeBlas.c: generated-sources
 
-$(TARGET_C):
-	mkdir $(TARGET_C)
-
-$(TARGET_C)/NativeBlas.o: $(SRC_C)/NativeBlas.c $(TARGET_C)
+$(TARGET_C)/NativeBlas.o: $(SRC_C)/NativeBlas.c
+	@mkdir -p "$(dir $@)"
 	$(CC) $(CFLAGS) $(INCDIRS) -c $(SRC_C)/NativeBlas.c -o $@
 
 $(TARGET_C)/jblas_arch_flavor.o: generated-sources
+	@mkdir -p "$(dir $@)"
 	$(CC) $(CFLAGS) $(INCDIRS) -c $(SRC_C)/jblas_arch_flavor.c -o $@
 
 # Move the compile library to the machine specific directory.
 $(FULL_LIB_PATH)/$(LIB)jblas.$(SO) : $(TARGET_C)/NativeBlas.$(SO)
-	mkdir -p $(FULL_LIB_PATH)
+	@mkdir -p "$(dir $@)"
 	mv "$<" "$@"
 
 $(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO): $(SRC_C)/jblas_arch_flavor.$(SO)
-	mkdir -p $(LIB_PATH)
+	@mkdir -p "$(dir $@)"
 	mv "$<" "$@"
 
 ######################################################################
