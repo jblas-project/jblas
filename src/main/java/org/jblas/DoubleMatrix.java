@@ -304,7 +304,8 @@ public class DoubleMatrix implements Serializable {
      *
      **************************************************************************/
     /** Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
-     * using <i>newData></i> as the data. The length of the data is not checked!
+     * using <i>newData></i> as the data. Note that any change to the DoubleMatrix
+     * will change the input array, too.
      */
     public DoubleMatrix(int newRows, int newColumns, double... newData) {
         rows = newRows;
@@ -343,7 +344,11 @@ public class DoubleMatrix implements Serializable {
     public DoubleMatrix(int len) {
         this(len, 1, new double[len]);
     }
-
+    
+    /**
+     * Create a a row vector using <i>newData</i> as the data array.
+     * Note that any change to the created DoubleMatrix will change in input array.
+     */
     public DoubleMatrix(double[] newData) {
         this(newData.length, 1, newData);
     }
@@ -359,7 +364,9 @@ public class DoubleMatrix implements Serializable {
 
     /**
      * Creates a new <i>n</i> times <i>m</i> <tt>DoubleMatrix</tt> from
-     * the given <i>n</i> times <i>m</i> 2D data array. The first dimension of the array makes the
+     * the given <i>n</i> times <i>m</i> 2D data array. Note that the input array
+     * is copied and any change to the DoubleMatrix will not change the input array.
+     * The first dimension of the array makes the
      * rows (<i>n</i>) and the second dimension the columns (<i>m</i>). For example, the
      * given code <br/><br/>
      * <code>new DoubleMatrix(new double[][]{{1d, 2d, 3d}, {4d, 5d, 6d}, {7d, 8d, 9d}}).print();</code><br/><br/>
