@@ -97,9 +97,7 @@ public class ComplexDoubleMatrix {
 	}
 	
 	public ComplexDoubleMatrix(double[] newData) {
-		this(newData.length/2);
-				
-		data = newData;
+		this(newData.length/2, 1, newData);
 	}
 
 	public ComplexDoubleMatrix(ComplexDouble[] newData) {
@@ -986,7 +984,7 @@ public class ComplexDoubleMatrix {
 		boolean[] array = new boolean[length];
 		
 		for (int i = 0; i < length; i++)
-			array[i] = get(i).isZero() ? false : true;
+			array[i] = !get(i).isZero();
 		
 		return array;
 	}
@@ -996,7 +994,7 @@ public class ComplexDoubleMatrix {
 		
 		for (int r = 0; r < rows; r++)
 			for (int c = 0; c < columns; c++)
-				array[r][c] = get(r, c).isZero() ? false : true;
+				array[r][c] = !get(r, c).isZero();
 				
 		return array;
 	}

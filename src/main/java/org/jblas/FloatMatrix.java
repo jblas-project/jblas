@@ -60,6 +60,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * A general matrix class for <tt>float</tt> typed values.
@@ -292,6 +293,11 @@ public class FloatMatrix implements Serializable {
     public static final FloatMatrix EMPTY = new FloatMatrix();
     static final long serialVersionUID = -1249281332731183060L;
 
+    // Precompile regex patterns
+    private static final Pattern SEMICOLON = Pattern.compile(";");
+    private static final Pattern WHITESPACES = Pattern.compile("\\s+");
+    private static final Pattern COMMA = Pattern.compile(",");
+
     /**************************************************************************
      *
      * Constructors and factory functions
@@ -339,8 +345,7 @@ public class FloatMatrix implements Serializable {
     }
 
     public FloatMatrix(float[] newData) {
-        this(newData.length);
-        data = newData;
+        this(newData.length, 1, newData);
     }
 
     /**
@@ -384,7 +389,7 @@ public class FloatMatrix implements Serializable {
         this(data.size());
 
         int c = 0;
-        for (java.lang.Float d : data) {
+        for (float d : data) {
             put(c++, d);
         }
     }
@@ -400,16 +405,13 @@ public class FloatMatrix implements Serializable {
      * for example "1 2 3; 4 5 6; 7 8 9".
      */
     public static FloatMatrix valueOf(String text) {
-        String[] rowValues = text.split(";");
-
-        // process first line
-        String[] columnValues = rowValues[0].trim().split("\\s+");
+        String[] rowValues = SEMICOLON.split(text);
 
         FloatMatrix result = null;
 
         // process rest
         for (int r = 0; r < rowValues.length; r++) {
-            columnValues = rowValues[r].trim().split("\\s+");
+          String[] columnValues = WHITESPACES.split(rowValues[r].trim());
 
             if (r == 0) {
                 result = new FloatMatrix(rowValues.length, columnValues.length);
@@ -1441,7 +1443,7 @@ public class FloatMatrix implements Serializable {
         boolean[] array = new boolean[length];
 
         for (int i = 0; i < length; i++) {
-            array[i] = get(i) != 0.0f ? true : false;
+            array[i] = get(i) != 0.0f;
         }
 
         return array;
@@ -1453,7 +1455,7 @@ public class FloatMatrix implements Serializable {
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < columns; c++) {
-                array[r][c] = get(r, c) != 0.0f ? true : false;
+                array[r][c] = get(r, c) != 0.0f;
             }
         }
 
@@ -1474,7 +1476,7 @@ public class FloatMatrix implements Serializable {
      */
     public class ElementsAsListView extends AbstractList<Float> implements ConvertsToFloatMatrix {
 
-        private FloatMatrix me;
+        private final FloatMatrix me;
 
         public ElementsAsListView(FloatMatrix me) {
             this.me = me;
@@ -1497,7 +1499,7 @@ public class FloatMatrix implements Serializable {
 
     public class RowsAsListView extends AbstractList<FloatMatrix> implements ConvertsToFloatMatrix {
 
-        private FloatMatrix me;
+        private final FloatMatrix me;
 
         public RowsAsListView(FloatMatrix me) {
             this.me = me;
@@ -1520,7 +1522,7 @@ public class FloatMatrix implements Serializable {
 
     public class ColumnsAsListView extends AbstractList<FloatMatrix> implements ConvertsToFloatMatrix {
 
-        private FloatMatrix me;
+        private final FloatMatrix me;
 
         public ColumnsAsListView(FloatMatrix me) {
             this.me = me;
@@ -2727,7 +2729,7 @@ public class FloatMatrix implements Serializable {
         int rows = 0;
         int columns = -1;
         while ((line = is.readLine()) != null) {
-            String[] elements = line.split("\\s+");
+            String[] elements = WHITESPACES.split(line);
             int numElements = elements.length;
             if (elements[0].length() == 0) {
                 numElements--;
@@ -2753,7 +2755,7 @@ public class FloatMatrix implements Serializable {
         FloatMatrix result = new FloatMatrix(rows, columns);
         int r = 0;
         while ((line = is.readLine()) != null) {
-            String[] elements = line.split("\\s+");
+            String[] elements = WHITESPACES.split(line);
             int firstElement = (elements[0].length() == 0) ? 1 : 0;
             for (int c = 0, cc = firstElement; c < columns; c++, cc++) {
                 result.put(r, c, Float.valueOf(elements[cc]));
@@ -2770,7 +2772,7 @@ public class FloatMatrix implements Serializable {
         String line;
         int columns = -1;
         while ((line = is.readLine()) != null) {
-            String[] elements = line.split(",");
+            String[] elements = COMMA.split(line);
             int numElements = elements.length;
             if (elements[0].length() == 0) {
                 numElements--;
