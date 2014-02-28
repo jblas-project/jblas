@@ -40,8 +40,6 @@
  */
 package org.jblas;
 
-import junit.framework.TestCase;
-import org.jblas.util.Logger;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

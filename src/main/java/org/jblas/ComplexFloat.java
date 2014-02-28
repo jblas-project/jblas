@@ -302,7 +302,7 @@ public class ComplexFloat {
     }
     
     /**
-     * Comparing two DoubleComplex values.
+     * Comparing two ComplexFloat values.
      */
     public boolean equals(Object o) {
         if (!(o instanceof ComplexFloat)) {
@@ -310,7 +310,11 @@ public class ComplexFloat {
         }
         ComplexFloat c = (ComplexFloat) o;
 
-        return eq(c);
+        return r == c.r && i == c.i;
+    }
+
+    public int hashCode() {
+        return Float.valueOf(r).hashCode() ^ Float.valueOf(i).hashCode();
     }
 
     public boolean eq(ComplexFloat c) {

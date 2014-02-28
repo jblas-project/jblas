@@ -304,7 +304,8 @@ public class FloatMatrix implements Serializable {
      *
      **************************************************************************/
     /** Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
-     * using <i>newData></i> as the data. The length of the data is not checked!
+     * using <i>newData></i> as the data. Note that any change to the FloatMatrix
+     * will change the input array, too.
      */
     public FloatMatrix(int newRows, int newColumns, float... newData) {
         rows = newRows;
@@ -343,7 +344,11 @@ public class FloatMatrix implements Serializable {
     public FloatMatrix(int len) {
         this(len, 1, new float[len]);
     }
-
+    
+    /**
+     * Create a a row vector using <i>newData</i> as the data array.
+     * Note that any change to the created FloatMatrix will change in input array.
+     */
     public FloatMatrix(float[] newData) {
         this(newData.length, 1, newData);
     }
@@ -359,7 +364,9 @@ public class FloatMatrix implements Serializable {
 
     /**
      * Creates a new <i>n</i> times <i>m</i> <tt>FloatMatrix</tt> from
-     * the given <i>n</i> times <i>m</i> 2D data array. The first dimension of the array makes the
+     * the given <i>n</i> times <i>m</i> 2D data array. Note that the input array
+     * is copied and any change to the FloatMatrix will not change the input array.
+     * The first dimension of the array makes the
      * rows (<i>n</i>) and the second dimension the columns (<i>m</i>). For example, the
      * given code <br/><br/>
      * <code>new FloatMatrix(new float[][]{{1d, 2d, 3d}, {4d, 5d, 6d}, {7d, 8d, 9d}}).print();</code><br/><br/>

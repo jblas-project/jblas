@@ -41,8 +41,6 @@
 
 package org.jblas.ranges;
 
-import org.jblas.*;
-
 /**
  * A range over all available indices. Can be used to address whole columns or rows. Like
  * the ":" index in matlab. Don't forget to call init() before using this range.

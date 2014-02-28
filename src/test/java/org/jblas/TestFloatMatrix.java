@@ -39,7 +39,6 @@ package org.jblas;
 import java.io.File;
 import java.io.PrintStream;
 
-import org.jblas.ranges.IntervalRange;
 import org.jblas.util.Random;
 
 import java.util.Arrays;
@@ -71,8 +70,8 @@ public class TestFloatMatrix {
   public void testConstructionAndSetGet() {
     float[][] dataA = {{1.0f, 5.0f, 9.0f}, {2.0f, 6.0f, 10.0f}, {3.0f, 7.0f, 11.0f}, {4.0f, 8.0f, 12.0f}};
 
-    assertEquals(A.rows, 4);
-    assertEquals(A.columns, 3);
+    assertEquals(4, A.rows);
+    assertEquals(3, A.columns);
 
     for (int r = 0; r < 4; r++) {
       for (int c = 0; c < 3; c++) {
