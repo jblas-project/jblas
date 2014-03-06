@@ -50,7 +50,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class TestDoubleMatrix {
+public class TestDoubleMatrix extends AbstractTestJblas {
 
   //FLOAT// private final float eps = 1e-6f;
   private final double eps = 1e-16;
@@ -719,7 +719,7 @@ public class TestDoubleMatrix {
     // We have to be a bit cautious here because my Double => Float converter scripts will
     // add a "f" to every floating point number, even in the strings. Therefore, I
     // explicitly remove all "f"s
-    assertEquals("[1.000000, 5.000000, 9.000000; 2.000000, 6.000000, 10.000000; 3.000000, 7.000000, 11.000000; 4.000000, 8.000000, 12.000000]".replaceAll("f", ""), A.toString());
+    assertEquals( "[1.000000, 5.000000, 9.000000; 2.000000, 6.000000, 10.000000; 3.000000, 7.000000, 11.000000; 4.000000, 8.000000, 12.000000]".replaceAll( "f", "" ), A.toString() );
 
     assertEquals("[1.0, 5.0, 9.0; 2.0, 6.0, 10.0; 3.0, 7.0, 11.0; 4.0, 8.0, 12.0]".replaceAll("f", ""), A.toString("%.1f"));
 
