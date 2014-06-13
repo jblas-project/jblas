@@ -721,8 +721,9 @@ EOS
     end
 
     def make_convert_arg
-      code.conversions << "  char *#{name}Str = (*env)->GetStringChars(env, #{name}, NULL);\n"
-      code.release_arrays << "  (*env)->ReleaseStringChars(env, #{name}, #{name}Str);\n"
+      code.conversions << "  const jchar *_#{name}Str = (*env)->GetStringChars(env, #{name}, NULL);\n"
+      code.conversions << "  char *#{name}Str = (char *) _#{name}Str;\n"
+      code.release_arrays << "  (*env)->ReleaseStringChars(env, #{name}, _#{name}Str);\n"
     end
 
     def make_call_arg
