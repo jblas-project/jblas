@@ -32,6 +32,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// --- END LICENSE BLOCK ---
 
+#include <string.h>
 #include "<%= header_file_name %>.h"
 
 #define CORE_PACKAGE "org/jblas/"
