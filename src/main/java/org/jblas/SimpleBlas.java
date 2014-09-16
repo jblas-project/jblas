@@ -195,13 +195,23 @@ public class SimpleBlas {
 							y.data[i] += a.get(i, j) * xj;
 					}
 				}
-			} else {
-				for (int j = 0; j < a.columns; j++) {
-					double byj = beta * y.data[j];
-					double xj = x.get(j);
-					for (int i = 0; i < a.rows; i++)
-						y.data[j] = a.get(i, j) * xj + byj;
-				}
+			} else {// mayebe we can rm if else?
+				for (int i = 0; i < y.length; i++)
+		                    y.data[i] = beta * y.data[i];
+	
+		                for (int j = 0; j < a.columns; j++) {
+		                    double xj = x.get(j);
+		                    if (xj != 0.0) {
+		                        for (int i = 0; i < a.rows; i++)
+		                            y.data[i] += alpha * a.get(i, j) * xj;
+		                    }
+		                }
+//				for (int j = 0; j < a.columns; j++) {
+//					double byj = beta * y.data[j];
+//					double xj = x.get(j);
+//					for (int i = 0; i < a.rows; i++)
+//						y.data[j] = a.get(i, j) * xj + byj;
+//				}
 			}
 		}
 		return y;
@@ -621,13 +631,24 @@ public class SimpleBlas {
 							y.data[i] += a.get(i, j) * xj;
 					}
 				}
-			} else {
-				for (int j = 0; j < a.columns; j++) {
-					float byj = beta * y.data[j];
-					float xj = x.get(j);
-					for (int i = 0; i < a.rows; i++)
-						y.data[j] = a.get(i, j) * xj + byj;
-				}
+			} else {// mayebe we can rm if else? 
+				for (int i = 0; i < y.length; i++)
+		                    y.data[i] = beta * y.data[i];
+	
+		                for (int j = 0; j < a.columns; j++) {
+		                    double xj = x.get(j);
+		                    if (xj != 0.0) {
+		                        for (int i = 0; i < a.rows; i++)
+		                            y.data[i] += alpha * a.get(i, j) * xj;
+		                    }
+		                }
+//				for (int j = 0; j < a.columns; j++) {
+//					double byj = beta * y.data[j];
+//					double xj = x.get(j);
+//					for (int i = 0; i < a.rows; i++)
+//						y.data[j] = a.get(i, j) * xj + byj;
+//				}			
+
 			}
 		}
 		return y;
