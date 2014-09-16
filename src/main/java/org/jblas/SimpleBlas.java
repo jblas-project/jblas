@@ -195,7 +195,7 @@ public class SimpleBlas {
 							y.data[i] += a.get(i, j) * xj;
 					}
 				}
-			} else {// mayebe we can rm if else?
+			} else {// mayebe we can remove if else?
 				for (int i = 0; i < y.length; i++)
 		                    y.data[i] = beta * y.data[i];
 	
@@ -206,12 +206,6 @@ public class SimpleBlas {
 		                            y.data[i] += alpha * a.get(i, j) * xj;
 		                    }
 		                }
-//				for (int j = 0; j < a.columns; j++) {
-//					double byj = beta * y.data[j];
-//					double xj = x.get(j);
-//					for (int i = 0; i < a.rows; i++)
-//						y.data[j] = a.get(i, j) * xj + byj;
-//				}
 			}
 		}
 		return y;
@@ -631,7 +625,7 @@ public class SimpleBlas {
 							y.data[i] += a.get(i, j) * xj;
 					}
 				}
-			} else {// mayebe we can rm if else? 
+			} else {// mayebe we can remove if else? 
 				for (int i = 0; i < y.length; i++)
 		                    y.data[i] = beta * y.data[i];
 	
@@ -642,13 +636,6 @@ public class SimpleBlas {
 		                            y.data[i] += alpha * a.get(i, j) * xj;
 		                    }
 		                }
-//				for (int j = 0; j < a.columns; j++) {
-//					double byj = beta * y.data[j];
-//					double xj = x.get(j);
-//					for (int i = 0; i < a.rows; i++)
-//						y.data[j] = a.get(i, j) * xj + byj;
-//				}			
-
 			}
 		}
 		return y;
