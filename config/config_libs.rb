@@ -65,11 +65,14 @@ ATLAS_REQUIRED_SYMBOLS = [
   'ATL_caxpy'
 ]
 
+NVBLAS_LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_', 'dgemm_']
+  
 LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_', 'dgemm_' ]
 
 ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas f77blas cblas atlas)
 PT_ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas ptf77blas ptcblas atlas)
 LAPACK_LIBS = %w(lapack_fortran lapack blas_fortran blas)
+NVBLAS_LAPACK_LIBS = %w(lapack blas nvblas)
 
 configure :libs => 'LOADLIBES'
 
@@ -93,17 +96,20 @@ configure :libpath => 'OS_NAME' do
     if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
       CONFIG[:libpath] = ['/opt/local/lib']
     else
-      CONFIG[:libpath] = %w(/usr/lib /lib /usr/lib/sse2)
+      CONFIG[:libpath] = %w(/usr/local/cuda/lib64 /usr/lib /lib /usr/lib/sse2)
     end
   end
   ok(CONFIG[:libpath].inspect)
 end
 
-desc 'determining whether to build for lapack or atlas'
+desc 'determining whether to build for lapack, nvblas or atlas'
 configure 'BUILD_TYPE' do
   if $opts.defined? :lapack_build
     CONFIG['BUILD_TYPE'] = 'lapack'
     ok('lapack')
+  elsif $opts.defined? :nvblas_build
+    CONFIG['BUILD_TYPE'] = 'nvblas'
+    ok('nvblas')
   else
     CONFIG['BUILD_TYPE'] = 'atlas'
     ok('atlas')
@@ -128,6 +134,9 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARC
     when 'lapack'
       libs = LAPACK_LIBS
       syms = LAPACK_REQUIRED_SYMBOLS
+    when 'nvblas'
+      libs = NVBLAS_LAPACK_LIBS
+      syms = NVBLAS_LAPACK_REQUIRED_SYMBOLS
     end
   end
 
