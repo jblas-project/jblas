@@ -184,28 +184,21 @@ public class SimpleBlas {
 			NativeBlas.dgemv('N', a.rows, a.columns, alpha, a.data, 0, a.rows, x.data, 0,
 					1, beta, y.data, 0, 1);
 		} else {
-			if (beta == 0.0) {
+			if (beta != 0.0) {
+				for (int i = 0; i < y.length; i++)
+					y.data[i] = beta * y.data[i];
+			} else {
 				for (int i = 0; i < y.length; i++)
 					y.data[i] = 0.0;
+			}
 
-				for (int j = 0; j < a.columns; j++) {
-					double xj = x.get(j);
-					if (xj != 0.0) {
-						for (int i = 0; i < a.rows; i++)
-							y.data[i] += a.get(i, j) * xj;
-					}
-				}
-			} else {// mayebe we can remove if else?
-				for (int i = 0; i < y.length; i++)
-		                    y.data[i] = beta * y.data[i];
 	
-		                for (int j = 0; j < a.columns; j++) {
-		                    double xj = x.get(j);
-		                    if (xj != 0.0) {
-		                        for (int i = 0; i < a.rows; i++)
-		                            y.data[i] += alpha * a.get(i, j) * xj;
-		                    }
-		                }
+			for (int j = 0; j < a.columns; j++) {
+				double xj = x.get(j);
+				if (xj != 0.0) {
+					for (int i = 0; i < a.rows; i++)
+							y.data[i] += alpha * a.get(i, j) * xj;
+				}
 			}
 		}
 		return y;
@@ -614,28 +607,21 @@ public class SimpleBlas {
 			NativeBlas.sgemv('N', a.rows, a.columns, alpha, a.data, 0, a.rows, x.data, 0,
 					1, beta, y.data, 0, 1);
 		} else {
-			if (beta == 0.0f) {
+			if (beta != 0.0f) {
+				for (int i = 0; i < y.length; i++)
+					y.data[i] = beta * y.data[i];
+			} else {
 				for (int i = 0; i < y.length; i++)
 					y.data[i] = 0.0f;
+			}
 
-				for (int j = 0; j < a.columns; j++) {
-					float xj = x.get(j);
-					if (xj != 0.0f) {
-						for (int i = 0; i < a.rows; i++)
-							y.data[i] += a.get(i, j) * xj;
-					}
-				}
-			} else {// mayebe we can remove if else? 
-				for (int i = 0; i < y.length; i++)
-		                    y.data[i] = beta * y.data[i];
 	
-		                for (int j = 0; j < a.columns; j++) {
-		                    double xj = x.get(j);
-		                    if (xj != 0.0) {
-		                        for (int i = 0; i < a.rows; i++)
-		                            y.data[i] += alpha * a.get(i, j) * xj;
-		                    }
-		                }
+			for (int j = 0; j < a.columns; j++) {
+				float xj = x.get(j);
+				if (xj != 0.0f) {
+					for (int i = 0; i < a.rows; i++)
+							y.data[i] += alpha * a.get(i, j) * xj;
+				}
 			}
 		}
 		return y;
