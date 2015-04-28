@@ -32,6 +32,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// --- END LICENSE BLOCK ---
 
+#include <string.h>
 #include "org_jblas_NativeBlas.h"
 
 #define CORE_PACKAGE "org/jblas/"
@@ -4555,13 +4556,15 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ilaenv(JNIEnv *env, jclass this
 {
   extern jint ilaenv_(jint *, char *, char *, jint *, jint *, jint *, jint *);
   
-  char *nameStr = (*env)->GetStringChars(env, name, NULL);
-  char *optsStr = (*env)->GetStringChars(env, opts, NULL);
+  const jchar *_nameStr = (*env)->GetStringChars(env, name, NULL);
+  char *nameStr = (char *) _nameStr;
+  const jchar *_optsStr = (*env)->GetStringChars(env, opts, NULL);
+  char *optsStr = (char *) _optsStr;
 
   savedEnv = env;
   jint retval = ilaenv_(&ispec, nameStr, optsStr, &n1, &n2, &n3, &n4);
-  (*env)->ReleaseStringChars(env, name, nameStr);
-  (*env)->ReleaseStringChars(env, opts, optsStr);
+  (*env)->ReleaseStringChars(env, name, _nameStr);
+  (*env)->ReleaseStringChars(env, opts, _optsStr);
 
   return retval;
 }
