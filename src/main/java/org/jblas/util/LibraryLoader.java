@@ -203,23 +203,25 @@ public class LibraryLoader {
   private void loadLibraryFromStream(String libname, InputStream is) {
     try {
       File tempfile = createTempFile(libname);
-      OutputStream os = new FileOutputStream(tempfile);
+      if (!tempfile.exists()){ 
+        OutputStream os = new FileOutputStream(tempfile);
 
-      logger.debug("tempfile.getPath() = " + tempfile.getPath());
+        logger.debug("tempfile.getPath() = " + tempfile.getPath());
 
-      long savedTime = System.currentTimeMillis();
+        long savedTime = System.currentTimeMillis();
 
-      // Leo says 8k block size is STANDARD ;)
-      byte buf[] = new byte[8192];
-      int len;
-      while ((len = is.read(buf)) > 0) {
-        os.write(buf, 0, len);
+        // Leo says 8k block size is STANDARD ;)
+        byte buf[] = new byte[8192];
+        int len;
+        while ((len = is.read(buf)) > 0) {
+          os.write(buf, 0, len);
+        }
+
+        double seconds = (double) (System.currentTimeMillis() - savedTime) / 1e3;
+        logger.debug("Copying took " + seconds + " seconds.");
+
+        os.close();
       }
-
-      double seconds = (double) (System.currentTimeMillis() - savedTime) / 1e3;
-      logger.debug("Copying took " + seconds + " seconds.");
-
-      os.close();
 
       logger.debug("Loading library from " + tempfile.getPath() + ".");
       System.load(tempfile.getPath());
