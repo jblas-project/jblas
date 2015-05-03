@@ -56,7 +56,7 @@ public class LibraryLoader {
 
   static {
     final Logger logger = Logger.getLogger();
-    createdFiles = new ArrayList<>();
+    createdFiles = new ArrayList<String>();
 
     tempDir = new File(System.getProperty("java.io.tmpdir"));
 
