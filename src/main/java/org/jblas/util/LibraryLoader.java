@@ -38,6 +38,9 @@ package org.jblas.util;
 import org.jblas.exceptions.UnsupportedArchitectureException;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Class which allows to load a dynamic file as resource (for example, from a
@@ -49,35 +52,28 @@ public class LibraryLoader {
   private String libpath;
 
   private static File tempDir;
+  private static ArrayList<String> createdFiles;
 
   static {
     final Logger logger = Logger.getLogger();
+    createdFiles = new ArrayList<>();
 
-    try {
-    tempDir = File.createTempFile("jblas", "");
-
-    if (!tempDir.delete() || !tempDir.mkdir()) {
-      throw new IOException(String.format("Couldn't create directory \"%s\"", tempDir.getAbsolutePath()));
-    }
+    tempDir = new File(System.getProperty("java.io.tmpdir"));
 
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
-        for (File f: tempDir.listFiles()) {
+        for (String path: createdFiles) {
+          File f = new File(path);
           logger.info("Deleting " + f.getAbsolutePath());
-          if (!f.delete()) {
-            logger.warning(String.format("Couldn't delete temporary file \"%s\"", f.getAbsolutePath()));
+          try{
+            Files.delete(Paths.get(path));
+          } catch (Exception e) {
+            logger.warning(String.format("Couldn't delete temporary %s \"%s\"", f.isDirectory()? "directory" : "file", e.toString()));
           }
-        }
-        logger.info("Deleting " + tempDir.getAbsolutePath());
-        if (!tempDir.delete()) {
-          logger.warning(String.format("Couldn't delete temporary directory \"%s\"", tempDir.getAbsolutePath()));
         }
       }
     });
-    } catch(IOException ex) {
-      logger.error("Couldn't create temporary directory: " + ex.getMessage());
-    }
   }
 
   public LibraryLoader() {
@@ -203,26 +199,25 @@ public class LibraryLoader {
   private void loadLibraryFromStream(String libname, InputStream is) {
     try {
       File tempfile = createTempFile(libname);
-      if (!tempfile.exists()){ 
+      if (!tempfile.exists()){
         OutputStream os = new FileOutputStream(tempfile);
-
+        createdFiles.add(0, tempfile.getAbsolutePath());
+    
         logger.debug("tempfile.getPath() = " + tempfile.getPath());
-
+    
         long savedTime = System.currentTimeMillis();
-
+    
         // Leo says 8k block size is STANDARD ;)
         byte buf[] = new byte[8192];
         int len;
         while ((len = is.read(buf)) > 0) {
           os.write(buf, 0, len);
         }
-
+    
         double seconds = (double) (System.currentTimeMillis() - savedTime) / 1e3;
         logger.debug("Copying took " + seconds + " seconds.");
-
         os.close();
       }
-
       logger.debug("Loading library from " + tempfile.getPath() + ".");
       System.load(tempfile.getPath());
     } catch (IOException io) {
