@@ -1,6 +1,7 @@
 jblas is a matrix library for Java which uses existing high
 performance BLAS and LAPACK libraries like ATLAS.
 
+* Version 1.2.4, May 11, 2015
 * Version 1.2.3, February 13, 2013
 * Version 1.2.2, December 17, 2012
 * Version 1.2.1
@@ -24,20 +25,28 @@ Travis Page: https://travis-ci.org/mikiobraun/jblas
 INSTALL
 -------
 
-In principle, all you need is the jblas-1.2.0.jar in your
-classpath. jblas-1.2.0.jar will then automagically extract your platform
+In principle, all you need is the jblas-1.2.4.jar in your
+classpath. jblas-1.2.4.jar will then automagically extract your platform
 dependent native library to a tempfile and load it from there. You can
 also put that file somewhere in your load path ($LD_LIBRARY_PATH for
 Linux, %PATH for Windows).
+
+Or, use the following dependency in maven
+
+  <dependency>
+    <groupId>org.jblas</groupId>
+    <artifactId>jblas</artifactId>
+    <version>1.2.4</version>
+  </dependency>
 
 
 BUILDING
 --------
 
-If you only work on the java part, an ant build.xml is provided to
-recompile the sources. In addition to that you need an installation of
+If you only work on the java part, you can use maven to recompile from the sources.
+In addition to that you need an installation of
 ruby for some scripts which automaticall generate code. Then, you just
-type "ant" on the command line.
+type "mvn package" on the command line.
 
 If you want to build jblas from the sources including the native part,
 you need to set up quite a few things:
@@ -59,8 +68,7 @@ Have a look at javadoc/index.html and
 javadoc/org/jblas/DoubleMatrix.html
 
 If you want to validate your installation and get some performance
-numbers, try "java -server -jar jblas-1.2.0.jar", or drop the server
-in case, you only have the "client" JVM installed.
+numbers, try "java -jar jblas-1.2.4.jar".
 
 
 LICENSE

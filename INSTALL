@@ -1,35 +1,11 @@
 INSTALL Guide 
 
+Version 1.2.4, May 11, 2015
 Version 1.2.0, January 7, 2011
 Version 1.0, December 22, 2009
 Version 0.3, September 17, 2009
 Version 0.2, May 8, 2009
 Version 0.1, March 28, 2009
-
-If you just want to get started, I recommend that you download the
-multiplatform" jar file which already includes the required native
-BLAS and LAPACK code based on lapack-lite
-(http://www.netlib.org/lapack/lapack-lite-3.1.1.tgz) and ATLAS
-(http://math-atlas.sourceforge.net/) for a number of operating
-systems. Currently supported are:
-
-- Windows
-- Linux
-- Mac OS X
-
-both in 32 bit and 64 bit versions.
-
-If you are only adding code on the Java side, then you can work with
-the supplied build.xml ant script. Simply type "ant jar" to compile
-the new jar file.
-
-Starting with version 1.2.0, you can also use maven to compile the project.
-Both alternatives exist in parallel.
-
-If you want to access further functions from LAPACK, you need to
-recompile the native part. This procedure is a bit more involved, see
-below.
-
 
 COMPILING JBLAS (JAVA PART)
 ===========================
@@ -40,8 +16,31 @@ Prerequisites:
   - maven
   - ruby
 
+MAVEN BUILD
+-----------
+
+Just the usual "mvn clean install" builds everything and installs the jar
+file in your local repository.
+
+
+INSTALLING JBLAS
+----------------
+
+1. Add "jblas-1.2.4.jar" to your CLASSPATH
+
+2. By default, the dynamic libraries are extracted from the jar file
+   to the default temporary directory and loaded from there. If you
+   don't want to do this, extract the dynamic library from jblas-1.2.0.jar
+   and copy it somewhere where it can be found.
+
+   For Linux, use LD_LIBRARY_PATH, for Windows, PATH
+
+
 ANT BUILD
 ---------
+
+(Ant build is only used for historical purposes, and to trigger the
+regeneration of Float variants from Double files)
 
 Running "ant clean jar" should do the job ;)
 
@@ -62,24 +61,7 @@ Running "ant clean jar" should do the job ;)
   Build a jar file without the JNI and ATLAS libraries. Both must be
   installed in the usual library locations.
 
-MAVEN BUILD
------------
 
-Just the usual "mvn clean install" builds everything and installs the jar
-file in your local repository.
-
-INSTALLING JBLAS
-----------------
-
-1. Add "jblas-1.2.0.jar" to your CLASSPATH
-
-2. By default, the dynamic libraries are extracted from the jar file
-   to the default temporary directory and loaded from there. If you
-   don't want to do this, extract the dynamic library from jblas-1.2.0.jar
-   and copy it somewhere where it can be found.
-
-   For Linux, use LD_LIBRARY_PATH, for Windows, PATH
-   
 
 COMPILING THE NATIVE PART
 =========================
@@ -93,8 +75,8 @@ your distribution.
 The build goes like this:
 
 - run ./configure with options (see below)
-- run "make" to build the JNI library
-- run "ant jar" to package the library into the jar file
+- run "make clean all" to build the JNI library
+- run "mvn clean package" to package the library into the jar file
 
 
 BUILD OPTIONS
@@ -153,6 +135,24 @@ The configure script understands the following options:
 --help
    print help
 
+--libpath=DIR1:DIR2:...
+   Specify the directory where the files will lie
+
+--build-type=TYPE
+   Tweak the libraries to look for. TYPE is one of atlas, lapack, openblas, and nvblas
+
+--libs=LIB1,LIB2,...
+
+Building against different versions of LAPACK and BLAS libraries. In principle,
+using these flags you can fully specify which libraries to try in which directories.
+The configure script will then go through those libraries in the specified directories
+and look whether it can find a few core methods.
+
+The --built-type flag presets the libraries a bit, but otherwise doesn't change much.
+
+Once configured with the --static-libs flag, "make all" links against the libraries
+and copies the resulting shared library to the corresponding directory to be included
+with the resulting jar file.
 
 
 

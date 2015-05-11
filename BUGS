@@ -1,8 +1,17 @@
 Known Bugs:
 
-- XERBLA handling under Mac OS X
+- tempfiles don't get deleted under Windows
+
+  Under Windows, the JVM cannot delete the temp files used to extract the data
+  once these files are linked because you cannot delete a file as long as
+  someone has it opened.
+
+  Workaround is to clear out the temp directory from time to time.
+
+- XERBLA handling under Mac OS X (still current?)
 
   Under Mac OS X, xerbla isn't properly handled, leading to an error message
 and the exit of the program. The linker does not take our own version
 of xerbla, but instead uses the one supplied by the BLAS library. I
 still need to figure out what the right options are.
+

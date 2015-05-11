@@ -2,7 +2,8 @@ Main Developer:
 
 Mikio L. Braun
 
-Additional Programming and Contributions:
+Additional Programming and Contributions (not all, only significant code additions)
+(unless noted diffently, funny looking names are github user names)
 
 Johannes Schaback
 Jan Saputra Müller (exponential matrix multiplication, decomposition)
@@ -11,3 +12,10 @@ Nicolas Oury (generalized eigenvectors)
 http://github.com/cheshirekow (fixed with range objects)
 Quantisan (travis integration)
 robbymckilliam (fixes with complex SVD)
+srowen (various performance fixes)
+mtbrandy (ppc64le atlas libraries)
+jey (adding orgqr)
+lifeiteng (fixing SimpleBlas.gemv)
+sehlstrom (range clarification for Eigen)
+chmp (doc updates)
+mpoussevain (Tests and French locale)

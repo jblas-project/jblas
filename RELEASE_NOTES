@@ -1,3 +1,31 @@
+Release 1.2.4 - May 11, 2015
+
+New features
+
+- new libraries for 64bit Linux ppc64le (provided by mtbrandy)
+- built-type configuration parameter to switch to OpenBLAS (proposed by etrain)
+  or NVBLAS (proposed by EmergentOrder)
+
+Bug fixes (tons of)
+
+- Fixed documentation errors where it talked about row vectors when
+  they really were column vectors. (reported by GratefulTony and others)
+- Fixed documentation where it talked about data being laid out in rows
+  where it actually is by columns. (reported by boscogh)
+- Fixed documentation on which arrays are copied and which are taken (chmp)
+- Fixed arg() in the ComplexDouble and ComplexFloat examples (reported by be9)
+- Fixed equals/hashCode broken contract (reported by m0nzderr)
+- bug in FloatMatrix.out (reported by XSoftLab)
+- Fixed use of temporary files under Windows
+- Several bugfixes and performance improvements (by srowen)
+- Fixed SimplesBlas.gemv (lifeiteng)
+- Fixes on the C code to suppress compiler warnings (keszybz)
+- Fixed a bug where tests fail in French locale (mpoussevin and srowen)
+- Clarifications on the Eigen method ranges (sehlstrom)
+- Fix in indexRows/indexColumns method (landesfeind)
+
+---------------------------------------------------------------------
+
 Release 1.2.3
 
 New features
@@ -19,6 +47,8 @@ Bug fixes
 - Recompiled on Linux 2.6.32 to resolve glibc version dependency
   problems. Now also runs on centos.
 
+---------------------------------------------------------------------
+
 Release 1.2.2
 
 New features
@@ -35,6 +65,8 @@ Bug fixes
 - SingularValueDecomposition for complex matrices used transpose()
   instead of hermitian()
 
+---------------------------------------------------------------------
+
 Release 1.2.1
 
 Bug fixes and code side changes.
@@ -42,6 +74,8 @@ Bug fixes and code side changes.
 - Fixed bugs with Range objects
 - Moved test code to JUnit 4.
 - Fixed configure script and code-generation to Ruby 1.9
+
+---------------------------------------------------------------------
 
 Release 1.2.0 - January 7, 2011
 
