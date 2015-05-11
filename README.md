@@ -33,12 +33,13 @@ Linux, %PATH for Windows).
 
 Or, use the following dependency in maven
 
+```HTML
   <dependency>
     <groupId>org.jblas</groupId>
     <artifactId>jblas</artifactId>
     <version>1.2.4</version>
   </dependency>
-
+```
 
 BUILDING
 --------

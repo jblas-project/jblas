@@ -155,4 +155,20 @@ and copies the resulting shared library to the corresponding directory to be inc
 with the resulting jar file.
 
 
+SOME INTERNAL NOTES
+-------------------
+
+Here is some of the stuff that happens
+
+- configure executes the Ruby scripts in the config directory to generate
+  configure.out
+- configure.out is used by the Makefile to set the right variables
+- make clean all also reconstructs the files using "ant javah" to generate
+  the headers
+- maven can be used to compile the Java portion of Java, but it calls into
+  ant which runs the ruby scripsts class_to_float.rb and static_class_to_float.rb
+  to construct Float variants of many Double classes, or fill in float based
+  code in classes like org.jblas.Eigen
+- last time I checked, I needed to build the final libs on an older version of
+  CentOS so that it runs on Linux 2.6
 
