@@ -256,7 +256,7 @@ public class ComplexDouble {
 
     /** Returns the argument of a complex number. */
     public double arg() {
-        return (double) Math.atan2(r, i);
+        return (double) Math.atan2(i, r);
     }
 
     public ComplexDouble invi() {

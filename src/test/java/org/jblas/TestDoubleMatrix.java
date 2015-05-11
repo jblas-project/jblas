@@ -318,18 +318,18 @@ public class TestDoubleMatrix extends AbstractTestJblas {
     DoubleMatrix R = new DoubleMatrix();
 
     // In-place, but independent operands
-    assertEquals(result, B.divi(C, R));
+    assertTrue(result.compare(B.divi(C, R), 1e-6));
 
     // In-place on this
     R = B.dup();
-    assertEquals(result, R.divi(C, R));
+    assertTrue(result.compare(R.divi(C, R), 1e-6));
 
     // In-place on other
     R = C.dup();
-    assertEquals(result, B.divi(R, R));
+    assertTrue(result.compare(B.divi(R, R), 1e-6));
 
     // fully dynamic
-    assertEquals(result, B.div(C));
+    assertTrue(result.compare(B.div(C), 1e-6));
 
     result = new DoubleMatrix(3, 1, 1.0, 2.0, 4.0);
 
@@ -351,18 +351,18 @@ public class TestDoubleMatrix extends AbstractTestJblas {
     DoubleMatrix R = new DoubleMatrix();
 
     // In-place, but independent operands
-    assertEquals(result, C.rdivi(B, R));
+    assertTrue(result.compare(C.rdivi(B, R), 1e-6));
 
     // In-place on this
     R = C.dup();
-    assertEquals(result, R.rdivi(B, R));
+    assertTrue(result.compare(R.rdivi(B, R), 1e-6));
 
     // In-place on other
     R = B.dup();
-    assertEquals(result, C.rdivi(R, R));
+    assertTrue(result.compare(C.rdivi(R, R), 1e-6));
 
     // fully dynamic
-    assertEquals(result, C.rdiv(B));
+    assertTrue(result.compare(C.rdiv(B), 1e-6));
 
     result = new DoubleMatrix(3, 1, 0.5, 0.25, 0.125);
 

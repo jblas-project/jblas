@@ -51,8 +51,8 @@ public class Main {
     static Benchmark[] multiplicationBenchmarks = {
         new JavaDoubleMultiplicationBenchmark(),
         new JavaFloatMultiplicationBenchmark(),
-        new ATLASDoubleMultiplicationBenchmark(),
-        new ATLASFloatMultiplicationBenchmark(),};
+        new NativeDoubleMultiplicationBenchmark(),
+        new NativeFloatMultiplicationBenchmark(),};
 
     public static void printHelp() {
         System.out.printf("Usage: benchmark [opts]%n"

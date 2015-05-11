@@ -35,6 +35,8 @@
 // --- END LICENSE BLOCK ---
 package org.jblas;
 
+import org.jblas.util.Logger;
+
 /**
  * Native BLAS and LAPACK functions.
  *

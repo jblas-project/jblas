@@ -38,7 +38,7 @@ package org.jblas;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Some test for class SimpleBlas
@@ -57,8 +57,8 @@ public class SimpleBlasTest {
         
         SimpleBlas.geev('V', 'N', A, WR, WI, VR, VL);
         
-        assertEquals(new DoubleMatrix(2, 1, 2.0, 2.0), WR);
-        assertEquals(new DoubleMatrix(2, 1, Math.sqrt(2.0), -Math.sqrt(2.0)), WI);
+        assertTrue(new DoubleMatrix(2, 1, 2.0, 2.0).compare(WR, 1e-6));
+        assertTrue(new DoubleMatrix(2, 1, Math.sqrt(2.0), -Math.sqrt(2.0)).compare(WI, 1e-6));
         
         /*System.out.printf("WR = %s\n", WR.toString());
         System.out.printf("WI = %s\n", WI.toString());

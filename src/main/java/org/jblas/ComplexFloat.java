@@ -256,7 +256,7 @@ public class ComplexFloat {
 
     /** Returns the argument of a complex number. */
     public float arg() {
-        return (float) Math.atan2(r, i);
+        return (float) Math.atan2(i, r);
     }
 
     public ComplexFloat invi() {

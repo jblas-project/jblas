@@ -68,7 +68,7 @@ import java.util.regex.Pattern;
  * Don't be intimidated by the large number of methods this function defines. Most
  * are overloads provided for ease of use. For example, for each arithmetic operation,
  * up to six overloaded versions exist to handle in-place computations, and
- * scalar arguments.
+ * scalar arguments (like adding a number to all elements of a matrix).
  * 
  * <h3>Construction</h3>
  * 
@@ -77,7 +77,7 @@ import java.util.regex.Pattern;
  * 
  * <table class="my">
  * <tr><th>Method<th>Description
- * <tr><td>DoubleMatrix(m,n, [value1, value2, value3...])<td>Values are filled in row by row.
+ * <tr><td>DoubleMatrix(m,n, [value1, value2, value3...])<td>Values are filled in column by column.
  * <tr><td>DoubleMatrix(new double[][] {{value1, value2, ...}, ...}<td>Inner arrays are rows.
  * <tr><td>DoubleMatrix.zeros(m,n) <td>Initial values set to 0.0.
  * <tr><td>DoubleMatrix.ones(m,n) <td>Initial values set to 1.0.
@@ -91,13 +91,15 @@ import java.util.regex.Pattern;
  * using the following constructors and static methods.</p>
  * 
  * <table class="my">
- * <tr><th>Method<th>Description
- * <tr><td>DoubleMatrix(m)<td>Constructs a column vector.
- * <tr><td>DoubleMatrix(new double[] {value1, value2, ...})<td>Constructs a column vector.
- * <tr><td>DoubleMatrix.zeros(m) <td>Initial values set to 0.0.
- * <tr><td>DoubleMatrix.ones(m) <td>Initial values set to 1.0.
- * <tr><td>DoubleMatrix.rand(m) <td>Values drawn at random between 0.0 and 1.0.
- * <tr><td>DoubleMatrix.randn(m) <td>Values drawn from normal distribution.
+ * <tr><th>Method</th>                        <th>Description</th></tr>
+ * <tr><td>DoubleMatrix(m)</td>               <td>Constructs a column vector.</td></tr>
+ * <tr><td>DoubleMatrix(new double[] {value1, value2, ...})</td><td>Constructs a column vector.</td></tr>
+ * <tr><td>DoubleMatrix.zeros(m)</td>         <td>Initial values set to 0.0.</td></tr>
+ * <tr><td>DoubleMatrix.ones(m)</td>          <td>Initial values set to 1.0.</td></tr>
+ * <tr><td>DoubleMatrix.rand(m)</td>          <td>Values drawn at random between 0.0 and 1.0.</td></tr>
+ * <tr><td>DoubleMatrix.randn(m)</td>         <td>Values drawn from normal distribution.</td></tr>
+ * <tr><td>DoubleMatrix.linspace(a, b, n)</td><td>n linearly spaced values from a to b.</td></tr>
+ * <tr><td>DoubleMatrix.logspace(a, b, n)</td><td>n logarithmically spaced values form 10^a to 10^b.</td></tr>
  * </table>
  * 
  * <p>You can also construct new matrices by concatenating matrices either horziontally
@@ -125,7 +127,7 @@ import java.util.regex.Pattern;
  * <tr><td>x.getRow(i)<td>Get a copy of row i.
  * <tr><td>x.putRow(i, c)<td>Put matrix c into row i.
  * <tr><td>x.swapColumns(i, j)<td>Swap the contents of columns i and j.
- * <tr><td>x.swapRows(i, j)<td>Swap the contents of columns i and j.
+ * <tr><td>x.swapRows(i, j)<td>Swap the contents of rows i and j.
  * </table>
  * 
  * <p>For <tt>get</tt> and <tt>put</tt>, you can also pass integer arrays,
@@ -163,7 +165,7 @@ import java.util.regex.Pattern;
  *    
  * <h3>Size and Shape</h3>
  * 
- * <p>The following methods permit to acces the size of a matrix and change its size or shape.</p>
+ * <p>The following methods permit to access the size of a matrix and change its size or shape.</p>
  * 
  * <table class="my">
  * <tr><th>x.Method<th>Description
@@ -189,8 +191,9 @@ import java.util.regex.Pattern;
  * <p>The usual arithmetic operations are implemented. Each operation exists in a
  * in-place version, recognizable by the suffix <tt>"i"</tt>, to which you can supply
  * the result matrix (or <tt>this</tt> is used, if missing). Using in-place operations
- * can also lead to a smaller memory footprint, as the number of temporary objects
- * which are directly garbage collected again is reduced.</p>
+ * can also lead to a smaller memory footprint, as the number of temporary objects is
+ * reduced (although the JVM garbage collector is usually pretty good at reusing these
+ * temporary object immediately with little overhead.)</p>
  * 
  * <p>Whenever you specify a result vector, the result vector must already have the
  * correct dimensions.</p>
@@ -219,22 +222,26 @@ import java.util.regex.Pattern;
  * <tr><td>x + y <td>x.add(y)			<td>
  * <tr><td>x - y <td>x.sub(y), y.rsub(x) <td>rsub subtracts left from right hand side
  * <tr><td rowspan=3>x * y 	<td>x.mul(y) <td>element-wise multiplication 
- * <tr>						<td>x.mmul(y)<td>matrix-matrix multiplication
- * <tr>						<td>x.dot(y) <td>scalar-product
+ * <tr>                     <td>x.mmul(y)<td>matrix-matrix multiplication
+ * <tr>                     <td>x.dot(y) <td>scalar-product
  * <tr><td>x / y <td>x.div(y), y.rdiv(x) <td>rdiv divides right hand side by left hand side.
- * <tr><td>- x	<td>x.neg()				<td>
+ * <tr><td>- x	 <td>x.neg()				<td>
  * </table>
  * 
  * <p>There also exist operations which work on whole columns or rows.</p>
  * 
  * <table class="my">
- * <tr><th>Method <th>Description
- * <tr><td>x.addRowVector<td>adds a vector to each row (addiRowVector works in-place)
- * <tr><td>x.addColumnVector<td>adds a vector to each column
- * <tr><td>x.subRowVector<td>subtracts a vector from each row
- * <tr><td>x.subColumnVector<td>subtracts a vector from each column
- * <tr><td>x.mulRow<td>Multiplies a row by a scalar
- * <tr><td>x.mulColumn<td>multiplies a row by a column
+ * <tr><th>Method</th>           <th>Description</th></tr>
+ * <tr><td>x.addRowVector</td>   <td>adds a vector to each row (addiRowVector works in-place)</td></tr>
+ * <tr><td>x.addColumnVector</td><td>adds a vector to each column</td></tr>
+ * <tr><td>x.subRowVector</td>   <td>subtracts a vector from each row</td></tr>
+ * <tr><td>x.subColumnVector</td><td>subtracts a vector from each column</td></tr>
+ * <tr><td>x.mulRowVector</td>   <td>Multiplies each row by a vector (elementwise)</td></tr>
+ * <tr><td>x.mulColumnVector</td><td>Multiplies each column by a vector (elementwise)</td></tr>
+ * <tr><td>x.divRowVector</td>   <td>Divide each row by a vector (elementwise)</td></tr>
+ * <tr><td>x.divColumnVector</td><td>Divide each column by a vector (elementwise)</td></tr>
+ * <tr><td>x.mulRow</td>         <td>Multiplies a row by a scalar</td></tr>
+ * <tr><td>x.mulColumn</td>      <td>Multiplies a column by a scalar</td></tr>
  * </table>
  * 
  * <p>In principle, you could achieve the same result by first calling getColumn(), 
@@ -306,6 +313,10 @@ public class DoubleMatrix implements Serializable {
     /** Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
      * using <i>newData></i> as the data. Note that any change to the DoubleMatrix
      * will change the input array, too.
+     *
+     * @param newRows the number of rows of the new matrix
+     * @param newColumns the number of columns of the new matrix
+     * @param newData the data array to be used. Data must be stored by column (column-major)
      */
     public DoubleMatrix(int newRows, int newColumns, double... newData) {
         rows = newRows;
@@ -323,6 +334,7 @@ public class DoubleMatrix implements Serializable {
 
     /**
      * Creates a new <i>n</i> times <i>m</i> <tt>DoubleMatrix</tt>.
+     *
      * @param newRows the number of rows (<i>n</i>) of the new matrix.
      * @param newColumns the number of columns (<i>m</i>) of the new matrix.
      */
@@ -338,7 +350,8 @@ public class DoubleMatrix implements Serializable {
     }
 
     /**
-     * Create a Matrix of length <tt>len</tt>. By default, this creates a row vector.
+     * Create a Matrix of length <tt>len</tt>. This creates a column vector.
+     *
      * @param len
      */
     public DoubleMatrix(int len) {
@@ -346,7 +359,7 @@ public class DoubleMatrix implements Serializable {
     }
     
     /**
-     * Create a a row vector using <i>newData</i> as the data array.
+     * Create a a column vector using <i>newData</i> as the data array.
      * Note that any change to the created DoubleMatrix will change in input array.
      */
     public DoubleMatrix(double[] newData) {
@@ -355,6 +368,7 @@ public class DoubleMatrix implements Serializable {
 
     /**
      * Creates a new matrix by reading it from a file.
+     *
      * @param filename the path and name of the file to read the matrix from
      * @throws IOException
      */
@@ -392,6 +406,11 @@ public class DoubleMatrix implements Serializable {
         }
     }
 
+    /**
+     * Creates a DoubleMatrix column vector from the given List&lt;Double&rt;.
+     *
+     * @param data data from which the entries are taken.
+     */
     public DoubleMatrix(List<Double> data) {
         this(data.size());
 
@@ -454,7 +473,7 @@ public class DoubleMatrix implements Serializable {
         return m;
     }
 
-    /** Creates a row vector with random values uniformly in 0..1. */
+    /** Creates a column vector with random values uniformly in 0..1. */
     public static DoubleMatrix rand(int len) {
         return rand(len, 1);
     }
@@ -470,7 +489,7 @@ public class DoubleMatrix implements Serializable {
         return m;
     }
 
-    /** Create row vector with normally distributed random values. */
+    /** Create column vector with normally distributed random values. */
     public static DoubleMatrix randn(int len) {
         return randn(len, 1);
     }
@@ -480,7 +499,7 @@ public class DoubleMatrix implements Serializable {
         return new DoubleMatrix(rows, columns);
     }
 
-    /** Creates a row vector of given length. */
+    /** Creates a column vector of given length. */
     public static DoubleMatrix zeros(int length) {
         return zeros(length, 1);
     }
@@ -496,7 +515,7 @@ public class DoubleMatrix implements Serializable {
         return m;
     }
 
-    /** Creates a row vector with all elements equal to 1. */
+    /** Creates a column vector with all elements equal to 1. */
     public static DoubleMatrix ones(int length) {
         return ones(length, 1);
     }
@@ -567,6 +586,15 @@ public class DoubleMatrix implements Serializable {
         return get(0);
     }
 
+    /**
+     * Construct a column vector whose entries are logarithmically spaced points from
+     * 10^lower to 10^upper using the specified number of steps
+     *
+     * @param lower starting exponent
+     * @param upper ending exponent
+     * @param size number of steps
+     * @return a column vector with (10^lower, ... 10^upper) with size many entries.
+     */
     public static DoubleMatrix logspace(double lower, double upper, int size) {
         DoubleMatrix result = new DoubleMatrix(size);
         for (int i = 0; i < size; i++) {
@@ -577,6 +605,15 @@ public class DoubleMatrix implements Serializable {
         return result;
     }
 
+    /**
+     * Construct a column vector whose entries are linearly spaced points from lower to upper with size
+     * many steps.
+     *
+     * @param lower starting value
+     * @param upper end value
+     * @param size number of steps
+     * @return a column vector of size (lower, ..., upper) with size many entries.
+     */
     public static DoubleMatrix linspace(int lower, int upper, int size) {
         DoubleMatrix result = new DoubleMatrix(size);
         for (int i = 0; i < size; i++) {
@@ -1109,10 +1146,9 @@ public class DoubleMatrix implements Serializable {
     /**
      * Compare two matrices. Returns true if and only if other is also a
      * DoubleMatrix which has the same size and the maximal absolute
-     * difference in matrix elements is smaller thatn 1e-6.
+     * difference in matrix elements is smaller than the specified tolerance
      */
-    @Override
-    public boolean equals(Object o) {
+    public boolean compare(Object o, double tolerance) {
         if (!(o instanceof DoubleMatrix)) {
             return false;
         }
@@ -1125,7 +1161,22 @@ public class DoubleMatrix implements Serializable {
 
         DoubleMatrix diff = MatrixFunctions.absi(sub(other));
 
-        return diff.max() / (rows * columns) < 1e-6;
+        return diff.max() / (rows * columns) < tolerance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof DoubleMatrix)) {
+            return false;
+        }
+
+        DoubleMatrix other = (DoubleMatrix) o;
+
+        if (!sameSize(other)) {
+            return false;
+        } else {
+            return Arrays.equals(data, other.data);
+        }
     }
 
     @Override
@@ -2826,22 +2877,22 @@ public class DoubleMatrix implements Serializable {
     def gen_overloads(base, result_rows, result_cols, verb=''); <<-EOS
     #{doc verb.capitalize + " a matrix (in place)."}
     public DoubleMatrix #{base}i(DoubleMatrix other) {
-    return #{base}i(other, this);
+      return #{base}i(other, this);
     }
 
-    #{doc verb.capitalize + " a matrix (in place)."}
+    #{doc verb.capitalize + " a matrix."}
     public DoubleMatrix #{base}(DoubleMatrix other) {
-    return #{base}i(other, new DoubleMatrix(#{result_rows}, #{result_cols}));
+      return #{base}i(other, new DoubleMatrix(#{result_rows}, #{result_cols}));
     }
 
     #{doc verb.capitalize + " a scalar (in place)."}
     public DoubleMatrix #{base}i(double v) {
-    return #{base}i(v, this);
+      return #{base}i(v, this);
     }
 
     #{doc verb.capitalize + " a scalar."}
     public DoubleMatrix #{base}(double v) {
-    return #{base}i(v, new DoubleMatrix(rows, columns));
+      return #{base}i(v, new DoubleMatrix(rows, columns));
     }
     EOS
     end
@@ -2854,43 +2905,43 @@ public class DoubleMatrix implements Serializable {
     def gen_compare(name, op, cmp); <<-EOS
     #{doc 'Test for ' + cmp + ' (in-place).'}
     public DoubleMatrix #{name}i(DoubleMatrix other, DoubleMatrix result) {
-    if (other.isScalar())
-    return #{name}i(other.scalar(), result);
+      if (other.isScalar())
+        return #{name}i(other.scalar(), result);
 
-    assertSameLength(other);
-    ensureResultLength(other, result);
+      assertSameLength(other);
+      ensureResultLength(other, result);
 
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) #{op} other.get(i) ? 1.0 : 0.0);
-    return result;
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) #{op} other.get(i) ? 1.0 : 0.0);
+      return result;
     }
 
     #{doc 'Test for ' + cmp + ' (in-place).'}
     public DoubleMatrix #{name}i(DoubleMatrix other) {
-    return #{name}i(other, this);
+      return #{name}i(other, this);
     }
 
     #{doc 'Test for ' + cmp + '.'}
     public DoubleMatrix #{name}(DoubleMatrix other) {
-    return #{name}i(other, new DoubleMatrix(rows, columns));
+      return #{name}i(other, new DoubleMatrix(rows, columns));
     }
 
     #{doc 'Test for ' + cmp + ' against a scalar (in-place).'}
     public DoubleMatrix #{name}i(double value, DoubleMatrix result) {
-    ensureResultLength(null, result);
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) #{op} value ? 1.0 : 0.0);
-    return result;
+      ensureResultLength(null, result);
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) #{op} value ? 1.0 : 0.0);
+      return result;
     }
 
     #{doc 'Test for ' + cmp + ' against a scalar (in-place).'}
     public DoubleMatrix #{name}i(double value) {
-    return #{name}i(value, this);
+      return #{name}i(value, this);
     }
 
     #{doc 'test for ' + cmp + ' against a scalar.'}
     public DoubleMatrix #{name}(double value) {
-    return #{name}i(value, new DoubleMatrix(rows, columns));
+      return #{name}i(value, new DoubleMatrix(rows, columns));
     }
     EOS
     end
@@ -2899,41 +2950,41 @@ public class DoubleMatrix implements Serializable {
     def gen_logical(name, op, cmp); <<-EOS
     #{doc 'Compute elementwise ' + cmp + ' (in-place).'}
     public DoubleMatrix #{name}i(DoubleMatrix other, DoubleMatrix result) {
-    assertSameLength(other);
-    ensureResultLength(other, result);
+      assertSameLength(other);
+      ensureResultLength(other, result);
 
-    for (int i = 0; i < length; i++)
-    result.put(i, (get(i) != 0.0) #{op} (other.get(i) != 0.0) ? 1.0 : 0.0);
-    return result;
+      for (int i = 0; i < length; i++)
+        result.put(i, (get(i) != 0.0) #{op} (other.get(i) != 0.0) ? 1.0 : 0.0);
+      return result;
     }
 
     #{doc 'Compute elementwise ' + cmp + ' (in-place).'}
     public DoubleMatrix #{name}i(DoubleMatrix other) {
-    return #{name}i(other, this);
+      return #{name}i(other, this);
     }
 
     #{doc 'Compute elementwise ' + cmp + '.'}
     public DoubleMatrix #{name}(DoubleMatrix other) {
-    return #{name}i(other, new DoubleMatrix(rows, columns));
+      return #{name}i(other, new DoubleMatrix(rows, columns));
     }
 
     #{doc 'Compute elementwise ' + cmp + ' against a scalar (in-place).'}
     public DoubleMatrix #{name}i(double value, DoubleMatrix result) {
-    ensureResultLength(null, result);
-    boolean val = (value != 0.0);
-    for (int i = 0; i < length; i++)
-    result.put(i, (get(i) != 0.0) #{op} val ? 1.0 : 0.0);
-    return result;
+      ensureResultLength(null, result);
+      boolean val = (value != 0.0);
+      for (int i = 0; i < length; i++)
+        result.put(i, (get(i) != 0.0) #{op} val ? 1.0 : 0.0);
+      return result;
     }
 
     #{doc 'Compute elementwise ' + cmp + ' against a scalar (in-place).'}
     public DoubleMatrix #{name}i(double value) {
-    return #{name}i(value, this);
+      return #{name}i(value, this);
     }
 
     #{doc 'Compute elementwise ' + cmp + ' against a scalar.'}
     public DoubleMatrix #{name}(double value) {
-    return #{name}i(value, new DoubleMatrix(rows, columns));
+      return #{name}i(value, new DoubleMatrix(rows, columns));
     }
     EOS
     end
@@ -2959,505 +3010,505 @@ public class DoubleMatrix implements Serializable {
 //RJPP-BEGIN------------------------------------------------------------
     /** Add a matrix (in place). */
     public DoubleMatrix addi(DoubleMatrix other) {
-    return addi(other, this);
+      return addi(other, this);
     }
 
-    /** Add a matrix (in place). */
+    /** Add a matrix. */
     public DoubleMatrix add(DoubleMatrix other) {
-    return addi(other, new DoubleMatrix(rows, columns));
+      return addi(other, new DoubleMatrix(rows, columns));
     }
 
     /** Add a scalar (in place). */
     public DoubleMatrix addi(double v) {
-    return addi(v, this);
+      return addi(v, this);
     }
 
     /** Add a scalar. */
     public DoubleMatrix add(double v) {
-    return addi(v, new DoubleMatrix(rows, columns));
+      return addi(v, new DoubleMatrix(rows, columns));
     }
 
     /** Subtract a matrix (in place). */
     public DoubleMatrix subi(DoubleMatrix other) {
-    return subi(other, this);
+      return subi(other, this);
     }
 
-    /** Subtract a matrix (in place). */
+    /** Subtract a matrix. */
     public DoubleMatrix sub(DoubleMatrix other) {
-    return subi(other, new DoubleMatrix(rows, columns));
+      return subi(other, new DoubleMatrix(rows, columns));
     }
 
     /** Subtract a scalar (in place). */
     public DoubleMatrix subi(double v) {
-    return subi(v, this);
+      return subi(v, this);
     }
 
     /** Subtract a scalar. */
     public DoubleMatrix sub(double v) {
-    return subi(v, new DoubleMatrix(rows, columns));
+      return subi(v, new DoubleMatrix(rows, columns));
     }
 
     /** (right-)subtract a matrix (in place). */
     public DoubleMatrix rsubi(DoubleMatrix other) {
-    return rsubi(other, this);
+      return rsubi(other, this);
     }
 
-    /** (right-)subtract a matrix (in place). */
+    /** (right-)subtract a matrix. */
     public DoubleMatrix rsub(DoubleMatrix other) {
-    return rsubi(other, new DoubleMatrix(rows, columns));
+      return rsubi(other, new DoubleMatrix(rows, columns));
     }
 
     /** (right-)subtract a scalar (in place). */
     public DoubleMatrix rsubi(double v) {
-    return rsubi(v, this);
+      return rsubi(v, this);
     }
 
     /** (right-)subtract a scalar. */
     public DoubleMatrix rsub(double v) {
-    return rsubi(v, new DoubleMatrix(rows, columns));
+      return rsubi(v, new DoubleMatrix(rows, columns));
     }
 
     /** Elementwise divide by a matrix (in place). */
     public DoubleMatrix divi(DoubleMatrix other) {
-    return divi(other, this);
+      return divi(other, this);
     }
 
-    /** Elementwise divide by a matrix (in place). */
+    /** Elementwise divide by a matrix. */
     public DoubleMatrix div(DoubleMatrix other) {
-    return divi(other, new DoubleMatrix(rows, columns));
+      return divi(other, new DoubleMatrix(rows, columns));
     }
 
     /** Elementwise divide by a scalar (in place). */
     public DoubleMatrix divi(double v) {
-    return divi(v, this);
+      return divi(v, this);
     }
 
     /** Elementwise divide by a scalar. */
     public DoubleMatrix div(double v) {
-    return divi(v, new DoubleMatrix(rows, columns));
+      return divi(v, new DoubleMatrix(rows, columns));
     }
 
     /** (right-)elementwise divide by a matrix (in place). */
     public DoubleMatrix rdivi(DoubleMatrix other) {
-    return rdivi(other, this);
+      return rdivi(other, this);
     }
 
-    /** (right-)elementwise divide by a matrix (in place). */
+    /** (right-)elementwise divide by a matrix. */
     public DoubleMatrix rdiv(DoubleMatrix other) {
-    return rdivi(other, new DoubleMatrix(rows, columns));
+      return rdivi(other, new DoubleMatrix(rows, columns));
     }
 
     /** (right-)elementwise divide by a scalar (in place). */
     public DoubleMatrix rdivi(double v) {
-    return rdivi(v, this);
+      return rdivi(v, this);
     }
 
     /** (right-)elementwise divide by a scalar. */
     public DoubleMatrix rdiv(double v) {
-    return rdivi(v, new DoubleMatrix(rows, columns));
+      return rdivi(v, new DoubleMatrix(rows, columns));
     }
 
     /** Elementwise multiply by a matrix (in place). */
     public DoubleMatrix muli(DoubleMatrix other) {
-    return muli(other, this);
+      return muli(other, this);
     }
 
-    /** Elementwise multiply by a matrix (in place). */
+    /** Elementwise multiply by a matrix. */
     public DoubleMatrix mul(DoubleMatrix other) {
-    return muli(other, new DoubleMatrix(rows, columns));
+      return muli(other, new DoubleMatrix(rows, columns));
     }
 
     /** Elementwise multiply by a scalar (in place). */
     public DoubleMatrix muli(double v) {
-    return muli(v, this);
+      return muli(v, this);
     }
 
     /** Elementwise multiply by a scalar. */
     public DoubleMatrix mul(double v) {
-    return muli(v, new DoubleMatrix(rows, columns));
+      return muli(v, new DoubleMatrix(rows, columns));
     }
 
     /** Matrix-multiply by a matrix (in place). */
     public DoubleMatrix mmuli(DoubleMatrix other) {
-    return mmuli(other, this);
+      return mmuli(other, this);
     }
 
-    /** Matrix-multiply by a matrix (in place). */
+    /** Matrix-multiply by a matrix. */
     public DoubleMatrix mmul(DoubleMatrix other) {
-    return mmuli(other, new DoubleMatrix(rows, other.columns));
+      return mmuli(other, new DoubleMatrix(rows, other.columns));
     }
 
     /** Matrix-multiply by a scalar (in place). */
     public DoubleMatrix mmuli(double v) {
-    return mmuli(v, this);
+      return mmuli(v, this);
     }
 
     /** Matrix-multiply by a scalar. */
     public DoubleMatrix mmul(double v) {
-    return mmuli(v, new DoubleMatrix(rows, columns));
+      return mmuli(v, new DoubleMatrix(rows, columns));
     }
 
     /** Test for "less than" (in-place). */
     public DoubleMatrix lti(DoubleMatrix other, DoubleMatrix result) {
-    if (other.isScalar())
-    return lti(other.scalar(), result);
+      if (other.isScalar())
+        return lti(other.scalar(), result);
 
-    assertSameLength(other);
-    ensureResultLength(other, result);
+      assertSameLength(other);
+      ensureResultLength(other, result);
 
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) < other.get(i) ? 1.0 : 0.0);
-    return result;
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) < other.get(i) ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for "less than" (in-place). */
     public DoubleMatrix lti(DoubleMatrix other) {
-    return lti(other, this);
+      return lti(other, this);
     }
 
     /** Test for "less than". */
     public DoubleMatrix lt(DoubleMatrix other) {
-    return lti(other, new DoubleMatrix(rows, columns));
+      return lti(other, new DoubleMatrix(rows, columns));
     }
 
     /** Test for "less than" against a scalar (in-place). */
     public DoubleMatrix lti(double value, DoubleMatrix result) {
-    ensureResultLength(null, result);
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) < value ? 1.0 : 0.0);
-    return result;
+      ensureResultLength(null, result);
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) < value ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for "less than" against a scalar (in-place). */
     public DoubleMatrix lti(double value) {
-    return lti(value, this);
+      return lti(value, this);
     }
 
     /** test for "less than" against a scalar. */
     public DoubleMatrix lt(double value) {
-    return lti(value, new DoubleMatrix(rows, columns));
+      return lti(value, new DoubleMatrix(rows, columns));
     }
 
     /** Test for "greater than" (in-place). */
     public DoubleMatrix gti(DoubleMatrix other, DoubleMatrix result) {
-    if (other.isScalar())
-    return gti(other.scalar(), result);
+      if (other.isScalar())
+        return gti(other.scalar(), result);
 
-    assertSameLength(other);
-    ensureResultLength(other, result);
+      assertSameLength(other);
+      ensureResultLength(other, result);
 
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) > other.get(i) ? 1.0 : 0.0);
-    return result;
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) > other.get(i) ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for "greater than" (in-place). */
     public DoubleMatrix gti(DoubleMatrix other) {
-    return gti(other, this);
+      return gti(other, this);
     }
 
     /** Test for "greater than". */
     public DoubleMatrix gt(DoubleMatrix other) {
-    return gti(other, new DoubleMatrix(rows, columns));
+      return gti(other, new DoubleMatrix(rows, columns));
     }
 
     /** Test for "greater than" against a scalar (in-place). */
     public DoubleMatrix gti(double value, DoubleMatrix result) {
-    ensureResultLength(null, result);
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) > value ? 1.0 : 0.0);
-    return result;
+      ensureResultLength(null, result);
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) > value ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for "greater than" against a scalar (in-place). */
     public DoubleMatrix gti(double value) {
-    return gti(value, this);
+      return gti(value, this);
     }
 
     /** test for "greater than" against a scalar. */
     public DoubleMatrix gt(double value) {
-    return gti(value, new DoubleMatrix(rows, columns));
+      return gti(value, new DoubleMatrix(rows, columns));
     }
 
     /** Test for "less than or equal" (in-place). */
     public DoubleMatrix lei(DoubleMatrix other, DoubleMatrix result) {
-    if (other.isScalar())
-    return lei(other.scalar(), result);
+      if (other.isScalar())
+        return lei(other.scalar(), result);
 
-    assertSameLength(other);
-    ensureResultLength(other, result);
+      assertSameLength(other);
+      ensureResultLength(other, result);
 
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) <= other.get(i) ? 1.0 : 0.0);
-    return result;
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) <= other.get(i) ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for "less than or equal" (in-place). */
     public DoubleMatrix lei(DoubleMatrix other) {
-    return lei(other, this);
+      return lei(other, this);
     }
 
     /** Test for "less than or equal". */
     public DoubleMatrix le(DoubleMatrix other) {
-    return lei(other, new DoubleMatrix(rows, columns));
+      return lei(other, new DoubleMatrix(rows, columns));
     }
 
     /** Test for "less than or equal" against a scalar (in-place). */
     public DoubleMatrix lei(double value, DoubleMatrix result) {
-    ensureResultLength(null, result);
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) <= value ? 1.0 : 0.0);
-    return result;
+      ensureResultLength(null, result);
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) <= value ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for "less than or equal" against a scalar (in-place). */
     public DoubleMatrix lei(double value) {
-    return lei(value, this);
+      return lei(value, this);
     }
 
     /** test for "less than or equal" against a scalar. */
     public DoubleMatrix le(double value) {
-    return lei(value, new DoubleMatrix(rows, columns));
+      return lei(value, new DoubleMatrix(rows, columns));
     }
 
     /** Test for "greater than or equal" (in-place). */
     public DoubleMatrix gei(DoubleMatrix other, DoubleMatrix result) {
-    if (other.isScalar())
-    return gei(other.scalar(), result);
+      if (other.isScalar())
+        return gei(other.scalar(), result);
 
-    assertSameLength(other);
-    ensureResultLength(other, result);
+      assertSameLength(other);
+      ensureResultLength(other, result);
 
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) >= other.get(i) ? 1.0 : 0.0);
-    return result;
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) >= other.get(i) ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for "greater than or equal" (in-place). */
     public DoubleMatrix gei(DoubleMatrix other) {
-    return gei(other, this);
+      return gei(other, this);
     }
 
     /** Test for "greater than or equal". */
     public DoubleMatrix ge(DoubleMatrix other) {
-    return gei(other, new DoubleMatrix(rows, columns));
+      return gei(other, new DoubleMatrix(rows, columns));
     }
 
     /** Test for "greater than or equal" against a scalar (in-place). */
     public DoubleMatrix gei(double value, DoubleMatrix result) {
-    ensureResultLength(null, result);
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) >= value ? 1.0 : 0.0);
-    return result;
+      ensureResultLength(null, result);
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) >= value ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for "greater than or equal" against a scalar (in-place). */
     public DoubleMatrix gei(double value) {
-    return gei(value, this);
+      return gei(value, this);
     }
 
     /** test for "greater than or equal" against a scalar. */
     public DoubleMatrix ge(double value) {
-    return gei(value, new DoubleMatrix(rows, columns));
+      return gei(value, new DoubleMatrix(rows, columns));
     }
 
     /** Test for equality (in-place). */
     public DoubleMatrix eqi(DoubleMatrix other, DoubleMatrix result) {
-    if (other.isScalar())
-    return eqi(other.scalar(), result);
+      if (other.isScalar())
+        return eqi(other.scalar(), result);
 
-    assertSameLength(other);
-    ensureResultLength(other, result);
+      assertSameLength(other);
+      ensureResultLength(other, result);
 
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) == other.get(i) ? 1.0 : 0.0);
-    return result;
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) == other.get(i) ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for equality (in-place). */
     public DoubleMatrix eqi(DoubleMatrix other) {
-    return eqi(other, this);
+      return eqi(other, this);
     }
 
     /** Test for equality. */
     public DoubleMatrix eq(DoubleMatrix other) {
-    return eqi(other, new DoubleMatrix(rows, columns));
+      return eqi(other, new DoubleMatrix(rows, columns));
     }
 
     /** Test for equality against a scalar (in-place). */
     public DoubleMatrix eqi(double value, DoubleMatrix result) {
-    ensureResultLength(null, result);
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) == value ? 1.0 : 0.0);
-    return result;
+      ensureResultLength(null, result);
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) == value ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for equality against a scalar (in-place). */
     public DoubleMatrix eqi(double value) {
-    return eqi(value, this);
+      return eqi(value, this);
     }
 
     /** test for equality against a scalar. */
     public DoubleMatrix eq(double value) {
-    return eqi(value, new DoubleMatrix(rows, columns));
+      return eqi(value, new DoubleMatrix(rows, columns));
     }
 
     /** Test for inequality (in-place). */
     public DoubleMatrix nei(DoubleMatrix other, DoubleMatrix result) {
-    if (other.isScalar())
-    return nei(other.scalar(), result);
+      if (other.isScalar())
+        return nei(other.scalar(), result);
 
-    assertSameLength(other);
-    ensureResultLength(other, result);
+      assertSameLength(other);
+      ensureResultLength(other, result);
 
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) != other.get(i) ? 1.0 : 0.0);
-    return result;
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) != other.get(i) ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for inequality (in-place). */
     public DoubleMatrix nei(DoubleMatrix other) {
-    return nei(other, this);
+      return nei(other, this);
     }
 
     /** Test for inequality. */
     public DoubleMatrix ne(DoubleMatrix other) {
-    return nei(other, new DoubleMatrix(rows, columns));
+      return nei(other, new DoubleMatrix(rows, columns));
     }
 
     /** Test for inequality against a scalar (in-place). */
     public DoubleMatrix nei(double value, DoubleMatrix result) {
-    ensureResultLength(null, result);
-    for (int i = 0; i < length; i++)
-    result.put(i, get(i) != value ? 1.0 : 0.0);
-    return result;
+      ensureResultLength(null, result);
+      for (int i = 0; i < length; i++)
+        result.put(i, get(i) != value ? 1.0 : 0.0);
+      return result;
     }
 
     /** Test for inequality against a scalar (in-place). */
     public DoubleMatrix nei(double value) {
-    return nei(value, this);
+      return nei(value, this);
     }
 
     /** test for inequality against a scalar. */
     public DoubleMatrix ne(double value) {
-    return nei(value, new DoubleMatrix(rows, columns));
+      return nei(value, new DoubleMatrix(rows, columns));
     }
 
     /** Compute elementwise logical and (in-place). */
     public DoubleMatrix andi(DoubleMatrix other, DoubleMatrix result) {
-    assertSameLength(other);
-    ensureResultLength(other, result);
+      assertSameLength(other);
+      ensureResultLength(other, result);
 
-    for (int i = 0; i < length; i++)
-    result.put(i, (get(i) != 0.0) & (other.get(i) != 0.0) ? 1.0 : 0.0);
-    return result;
+      for (int i = 0; i < length; i++)
+        result.put(i, (get(i) != 0.0) & (other.get(i) != 0.0) ? 1.0 : 0.0);
+      return result;
     }
 
     /** Compute elementwise logical and (in-place). */
     public DoubleMatrix andi(DoubleMatrix other) {
-    return andi(other, this);
+      return andi(other, this);
     }
 
     /** Compute elementwise logical and. */
     public DoubleMatrix and(DoubleMatrix other) {
-    return andi(other, new DoubleMatrix(rows, columns));
+      return andi(other, new DoubleMatrix(rows, columns));
     }
 
     /** Compute elementwise logical and against a scalar (in-place). */
     public DoubleMatrix andi(double value, DoubleMatrix result) {
-    ensureResultLength(null, result);
-    boolean val = (value != 0.0);
-    for (int i = 0; i < length; i++)
-    result.put(i, (get(i) != 0.0) & val ? 1.0 : 0.0);
-    return result;
+      ensureResultLength(null, result);
+      boolean val = (value != 0.0);
+      for (int i = 0; i < length; i++)
+        result.put(i, (get(i) != 0.0) & val ? 1.0 : 0.0);
+      return result;
     }
 
     /** Compute elementwise logical and against a scalar (in-place). */
     public DoubleMatrix andi(double value) {
-    return andi(value, this);
+      return andi(value, this);
     }
 
     /** Compute elementwise logical and against a scalar. */
     public DoubleMatrix and(double value) {
-    return andi(value, new DoubleMatrix(rows, columns));
+      return andi(value, new DoubleMatrix(rows, columns));
     }
 
     /** Compute elementwise logical or (in-place). */
     public DoubleMatrix ori(DoubleMatrix other, DoubleMatrix result) {
-    assertSameLength(other);
-    ensureResultLength(other, result);
+      assertSameLength(other);
+      ensureResultLength(other, result);
 
-    for (int i = 0; i < length; i++)
-    result.put(i, (get(i) != 0.0) | (other.get(i) != 0.0) ? 1.0 : 0.0);
-    return result;
+      for (int i = 0; i < length; i++)
+        result.put(i, (get(i) != 0.0) | (other.get(i) != 0.0) ? 1.0 : 0.0);
+      return result;
     }
 
     /** Compute elementwise logical or (in-place). */
     public DoubleMatrix ori(DoubleMatrix other) {
-    return ori(other, this);
+      return ori(other, this);
     }
 
     /** Compute elementwise logical or. */
     public DoubleMatrix or(DoubleMatrix other) {
-    return ori(other, new DoubleMatrix(rows, columns));
+      return ori(other, new DoubleMatrix(rows, columns));
     }
 
     /** Compute elementwise logical or against a scalar (in-place). */
     public DoubleMatrix ori(double value, DoubleMatrix result) {
-    ensureResultLength(null, result);
-    boolean val = (value != 0.0);
-    for (int i = 0; i < length; i++)
-    result.put(i, (get(i) != 0.0) | val ? 1.0 : 0.0);
-    return result;
+      ensureResultLength(null, result);
+      boolean val = (value != 0.0);
+      for (int i = 0; i < length; i++)
+        result.put(i, (get(i) != 0.0) | val ? 1.0 : 0.0);
+      return result;
     }
 
     /** Compute elementwise logical or against a scalar (in-place). */
     public DoubleMatrix ori(double value) {
-    return ori(value, this);
+      return ori(value, this);
     }
 
     /** Compute elementwise logical or against a scalar. */
     public DoubleMatrix or(double value) {
-    return ori(value, new DoubleMatrix(rows, columns));
+      return ori(value, new DoubleMatrix(rows, columns));
     }
 
     /** Compute elementwise logical xor (in-place). */
     public DoubleMatrix xori(DoubleMatrix other, DoubleMatrix result) {
-    assertSameLength(other);
-    ensureResultLength(other, result);
+      assertSameLength(other);
+      ensureResultLength(other, result);
 
-    for (int i = 0; i < length; i++)
-    result.put(i, (get(i) != 0.0) ^ (other.get(i) != 0.0) ? 1.0 : 0.0);
-    return result;
+      for (int i = 0; i < length; i++)
+        result.put(i, (get(i) != 0.0) ^ (other.get(i) != 0.0) ? 1.0 : 0.0);
+      return result;
     }
 
     /** Compute elementwise logical xor (in-place). */
     public DoubleMatrix xori(DoubleMatrix other) {
-    return xori(other, this);
+      return xori(other, this);
     }
 
     /** Compute elementwise logical xor. */
     public DoubleMatrix xor(DoubleMatrix other) {
-    return xori(other, new DoubleMatrix(rows, columns));
+      return xori(other, new DoubleMatrix(rows, columns));
     }
 
     /** Compute elementwise logical xor against a scalar (in-place). */
     public DoubleMatrix xori(double value, DoubleMatrix result) {
-    ensureResultLength(null, result);
-    boolean val = (value != 0.0);
-    for (int i = 0; i < length; i++)
-    result.put(i, (get(i) != 0.0) ^ val ? 1.0 : 0.0);
-    return result;
+      ensureResultLength(null, result);
+      boolean val = (value != 0.0);
+      for (int i = 0; i < length; i++)
+        result.put(i, (get(i) != 0.0) ^ val ? 1.0 : 0.0);
+      return result;
     }
 
     /** Compute elementwise logical xor against a scalar (in-place). */
     public DoubleMatrix xori(double value) {
-    return xori(value, this);
+      return xori(value, this);
     }
 
     /** Compute elementwise logical xor against a scalar. */
     public DoubleMatrix xor(double value) {
-    return xori(value, new DoubleMatrix(rows, columns));
+      return xori(value, new DoubleMatrix(rows, columns));
     }
 //RJPP-END--------------------------------------------------------------
 

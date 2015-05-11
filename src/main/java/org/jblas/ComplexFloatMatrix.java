@@ -1442,7 +1442,7 @@ public class ComplexFloatMatrix {
 		
 		dos.writeInt(data.length);
 		for(int i=0; i < data.length;i++)
-			dos.writeDouble(data[i]);
+			dos.writeFloat(data[i]);
 	}
 	
 	/**
