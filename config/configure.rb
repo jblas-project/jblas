@@ -73,8 +73,7 @@ Usage: ./configure [options]
 
 options summary:
   --lapack=DIR             lapack-lite directory
-  --lapack-build           build against fortran lapack instead of ATLAS
-  --libpath=DIR1:DIR2:...  comma separated list of directories to contain
+  --libpath=DIR1:DIR2:...  colon separated list of directories to contain
                            the ATLAS libraries
   --download-lapack        try to download and compile lapack if not
                            found
@@ -85,6 +84,11 @@ options summary:
   --ptatlas                Link against multithreaded versions of ATLAS libraries
   --arch-flavor=...        Set architectural flavor (e.g. --arch-flavor=sse2)
   --libs=lib1,lib2,...     Override libraries to search in
+
+  --lapack-build           build against fortran lapack instead of ATLAS
+  --built-type=...         One of 'lapack', 'atlas', 'openblas', 'nvblas'
+                           (default is 'atlas')
+                           You might still have to set libpath correctly
 EOS
 
 configure :all => [:os_arch, :tools, :java, :cc, :fortran, :make, :lapack_sources, :libs]

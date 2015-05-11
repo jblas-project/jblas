@@ -57,19 +57,25 @@ require 'config/config_fortran'
 include JblasConfig
 
 ATLAS_REQUIRED_SYMBOLS = [
-  'dsyev_', # eigenvalue function not yet included in ATLAS/LAPACK
-  'ATL_dgemm',
-  'dgemm_', # matrix-matrix multiplication
-  'daxpy_', # blas-related function
-  'cblas_daxpy', # atlas itself often uses cblas
-  'ATL_caxpy'
+    'dsyev_', # eigenvalue function not yet included in ATLAS/LAPACK
+    'ATL_dgemm',
+    'dgemm_', # matrix-matrix multiplication
+    'daxpy_', # blas-related function
+    'cblas_daxpy', # atlas itself often uses cblas
+    'ATL_caxpy'
 ]
 
-LAPACK_REQUIRED_SYMBOLS = [ 'dsyev_', 'daxpy_', 'dgemm_' ]
+LAPACK_REQUIRED_SYMBOLS = ['dsyev_', 'daxpy_', 'dgemm_']
 
 ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas f77blas cblas atlas)
 PT_ATLAS_LIBS = %w(lapack lapack_fortran lapack_atlas ptf77blas ptcblas atlas)
 LAPACK_LIBS = %w(lapack_fortran lapack blas_fortran blas)
+
+OPENBLAS_LIBS = %w(openblas)
+OPENBLAS_REQUIRED_SYMBOLS = LAPACK_REQUIRED_SYMBOLS
+
+NVBLAS_LIBS = %w(nvblas)
+NVBLAS_REQUIRED_SYMBOLS = LAPACK_REQUIRED_SYMBOLS
 
 configure :libs => 'LOADLIBES'
 
@@ -101,12 +107,17 @@ end
 
 desc 'determining whether to build for lapack or atlas'
 configure 'BUILD_TYPE' do
-  if $opts.defined? :lapack_build
-    CONFIG['BUILD_TYPE'] = 'lapack'
-    ok('lapack')
+  if $opts.defined? :build_type
+    CONFIG['BUILD_TYPE'] = $opts[:build_type]
+    ok(CONFIG['BUILD_TYPE'])
   else
-    CONFIG['BUILD_TYPE'] = 'atlas'
-    ok('atlas')
+    if $opts.defined? :lapack_build
+      CONFIG['BUILD_TYPE'] = 'lapack'
+      ok('lapack')
+    else
+      CONFIG['BUILD_TYPE'] = 'atlas'
+      ok('atlas')
+    end
   end
 end
 
@@ -118,16 +129,22 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARC
     syms = LAPACK_REQUIRED_SYMBOLS
   else
     case CONFIG['BUILD_TYPE']
-    when 'atlas'
-      if $opts.defined? :ptatlas
-        libs = PT_ATLAS_LIBS
-      else
-        libs = ATLAS_LIBS
-      end
-      syms = ATLAS_REQUIRED_SYMBOLS
-    when 'lapack'
-      libs = LAPACK_LIBS
-      syms = LAPACK_REQUIRED_SYMBOLS
+      when 'atlas'
+        if $opts.defined? :ptatlas
+          libs = PT_ATLAS_LIBS
+        else
+          libs = ATLAS_LIBS
+        end
+        syms = ATLAS_REQUIRED_SYMBOLS
+      when 'lapack'
+        libs = LAPACK_LIBS
+        syms = LAPACK_REQUIRED_SYMBOLS
+      when 'nvblas'
+        libs = NVBLAS_LIBS
+        syms = NVBLAS_REQUIRED_SYMBOLS
+      when 'openblas'
+        libs = OPENBLAS_LIBS
+        syms = OPENBLAS_REQUIRED_SYMBOLS
     end
   end
 
@@ -135,36 +152,36 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARC
   p result
 
   case CONFIG['LINKAGE_TYPE']
-  when 'dynamic'
-    CONFIG['LDFLAGS'] += result.values.uniq.map {|s| '-L' + s.escape}
-    CONFIG['LOADLIBES'] += result.keys.map {|s| '-l' + s.escape}
-  when 'static'
-    CONFIG['LOADLIBES'] += ['-Wl,-z,muldefs'] unless CONFIG['OS_NAME'] == 'Mac\ OS\ X' or CONFIG['OS_NAME'] == 'Windows'
+    when 'dynamic'
+      CONFIG['LDFLAGS'] += result.values.uniq.map { |s| '-L' + s.escape }
+      CONFIG['LOADLIBES'] += result.keys.map { |s| '-l' + s.escape }
+    when 'static'
+      CONFIG['LOADLIBES'] += ['-Wl,-z,muldefs'] unless CONFIG['OS_NAME'] == 'Mac\ OS\ X' or CONFIG['OS_NAME'] == 'Windows'
 
-    # Add the libraries with their full path to the command line.
-    # We have to sort them in the order as they appear in +libs+, otherwise
-    # we'll have unresolved symbols, at least under Linux.
-    CONFIG['LOADLIBES'] += result.keys.
-      sort {|x, y| libs.index(x) <=> libs.index(y)}.
-      map {|s| File.join(result[s], LibHelpers.libname(s)).escape }
-    if CONFIG['F77'] =~ /gfortran$/
-      puts CONFIG['OS_ARCH']
-      if CONFIG['OS_NAME'] == 'Linux' and CONFIG['OS_ARCH'] == 'amd64'
-	      CONFIG['LOADLIBES'] += ['-lgfortran']
-        puts <<EOS
+      # Add the libraries with their full path to the command line.
+      # We have to sort them in the order as they appear in +libs+, otherwise
+      # we'll have unresolved symbols, at least under Linux.
+      CONFIG['LOADLIBES'] += result.keys.
+          sort { |x, y| libs.index(x) <=> libs.index(y) }.
+          map { |s| File.join(result[s], LibHelpers.libname(s)).escape }
+      if CONFIG['F77'] =~ /gfortran$/
+        puts CONFIG['OS_ARCH']
+        if CONFIG['OS_NAME'] == 'Linux' and CONFIG['OS_ARCH'] == 'amd64'
+          CONFIG['LOADLIBES'] += ['-lgfortran']
+          puts <<EOS
 WARNING: on 64bit Linux, I cannot link the gfortran library into the shared library
 because it's usually not compiled with -fPIC. This means that you need to
 have libgfortran.so installed on your target system. Sorry for the inconvenience!
 EOS
-      elsif CONFIG['OS_NAME'] == 'Mac\ OS\ X'
-        print "Looking for where libgfortran.a is... "
-        libgfortran_path = %x(gfortran -print-file-name=libgfortran.a).strip
-	      puts "(#{libgfortran_path})"
-	      CONFIG['LOADLIBES'] += [libgfortran_path]
-      else
-        CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
+        elsif CONFIG['OS_NAME'] == 'Mac\ OS\ X'
+          print "Looking for where libgfortran.a is... "
+          libgfortran_path = %x(gfortran -print-file-name=libgfortran.a).strip
+          puts "(#{libgfortran_path})"
+          CONFIG['LOADLIBES'] += [libgfortran_path]
+        else
+          CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
+        end
       end
-    end
     #if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
     #  CONFIG['LOADLIBES'] += ['/opt/local/lib/gcc43/libgfortran.a']
     #end 
