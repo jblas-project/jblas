@@ -689,6 +689,22 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sormqr
 
 /*
  * Class:     org_jblas_NativeBlas
+ * Method:    dorgqr
+ * Signature: (III[DII[DI[DII)I
+ */
+JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dorgqr
+  (JNIEnv *, jclass, jint, jint, jint, jdoubleArray, jint, jint, jdoubleArray, jint, jdoubleArray, jint, jint);
+
+/*
+ * Class:     org_jblas_NativeBlas
+ * Method:    sorgqr
+ * Signature: (III[FII[FI[FII)I
+ */
+JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sorgqr
+  (JNIEnv *, jclass, jint, jint, jint, jfloatArray, jint, jint, jfloatArray, jint, jfloatArray, jint, jint);
+
+/*
+ * Class:     org_jblas_NativeBlas
  * Method:    dsygvx
  * Signature: (ICCCI[DII[DIIDDIID[II[DI[DII[DII[II[II)I
  */

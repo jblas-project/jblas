@@ -110,7 +110,7 @@ static void throwIllegalArgumentException(JNIEnv *env, const char *message)
 /**********************************************************************/
 
 static char *routine_names[] = {
- "CAXPY",  "CCOPY",  "CDOTC",  "CDOTU",  "CGEEV",  "CGEMM",  "CGEMV",  "CGERC",  "CGERU",  "CGESVD",  "CSCAL",  "CSSCAL",  "CSWAP",  "DASUM",  "DAXPY",  "DCOPY",  "DDOT",  "DGEEV",  "DGELSD",  "DGEMM",  "DGEMV",  "DGEQRF",  "DGER",  "DGESV",  "DGESVD",  "DGETRF",  "DNRM2",  "DORMQR",  "DPOSV",  "DPOTRF",  "DSCAL",  "DSWAP",  "DSYEV",  "DSYEVD",  "DSYEVR",  "DSYEVX",  "DSYGVD",  "DSYGVX",  "DSYSV",  "DZASUM",  "DZNRM2",  "ICAMAX",  "IDAMAX",  "ILAENV",  "ISAMAX",  "IZAMAX",  "SASUM",  "SAXPY",  "SCASUM",  "SCNRM2",  "SCOPY",  "SDOT",  "SGEEV",  "SGELSD",  "SGEMM",  "SGEMV",  "SGEQRF",  "SGER",  "SGESV",  "SGESVD",  "SGETRF",  "SNRM2",  "SORMQR",  "SPOSV",  "SPOTRF",  "SSCAL",  "SSWAP",  "SSYEV",  "SSYEVD",  "SSYEVR",  "SSYEVX",  "SSYGVD",  "SSYGVX",  "SSYSV",  "ZAXPY",  "ZCOPY",  "ZDOTC",  "ZDOTU",  "ZDSCAL",  "ZGEEV",  "ZGEMM",  "ZGEMV",  "ZGERC",  "ZGERU",  "ZGESVD",  "ZSCAL",  "ZSWAP", 	0
+ "CAXPY",  "CCOPY",  "CDOTC",  "CDOTU",  "CGEEV",  "CGEMM",  "CGEMV",  "CGERC",  "CGERU",  "CGESVD",  "CSCAL",  "CSSCAL",  "CSWAP",  "DASUM",  "DAXPY",  "DCOPY",  "DDOT",  "DGEEV",  "DGELSD",  "DGEMM",  "DGEMV",  "DGEQRF",  "DGER",  "DGESV",  "DGESVD",  "DGETRF",  "DNRM2",  "DORGQR",  "DORMQR",  "DPOSV",  "DPOTRF",  "DSCAL",  "DSWAP",  "DSYEV",  "DSYEVD",  "DSYEVR",  "DSYEVX",  "DSYGVD",  "DSYGVX",  "DSYSV",  "DZASUM",  "DZNRM2",  "ICAMAX",  "IDAMAX",  "ILAENV",  "ISAMAX",  "IZAMAX",  "SASUM",  "SAXPY",  "SCASUM",  "SCNRM2",  "SCOPY",  "SDOT",  "SGEEV",  "SGELSD",  "SGEMM",  "SGEMV",  "SGEQRF",  "SGER",  "SGESV",  "SGESVD",  "SGETRF",  "SNRM2",  "SORGQR",  "SORMQR",  "SPOSV",  "SPOTRF",  "SSCAL",  "SSWAP",  "SSYEV",  "SSYEVD",  "SSYEVR",  "SSYEVX",  "SSYGVD",  "SSYGVX",  "SSYSV",  "ZAXPY",  "ZCOPY",  "ZDOTC",  "ZDOTU",  "ZDSCAL",  "ZGEEV",  "ZGEMM",  "ZGEMV",  "ZGERC",  "ZGERU",  "ZGESVD",  "ZSCAL",  "ZSWAP", 	0
 };
 
 static char *routine_arguments[][23] = {
@@ -141,6 +141,7 @@ static char *routine_arguments[][23] = {
    { "JOBU", "JOBVT", "M", "N", "A", "LDA", "S", "U", "LDU", "VT", "LDVT", "WORK", "LWORK", "INFO" }, 
    { "M", "N", "A", "LDA", "IPIV", "INFO" }, 
    { "N", "X", "INCX" }, 
+   { "M", "N", "K", "A", "LDA", "TAU", "WORK", "LWORK", "INFO" }, 
    { "SIDE", "TRANS", "M", "N", "K", "A", "LDA", "TAU", "C", "LDC", "WORK", "LWORK", "INFO" }, 
    { "UPLO", "N", "NRHS", "A", "LDA", "B", "LDB", "INFO" }, 
    { "UPLO", "N", "A", "LDA", "INFO" }, 
@@ -176,6 +177,7 @@ static char *routine_arguments[][23] = {
    { "JOBU", "JOBVT", "M", "N", "A", "LDA", "S", "U", "LDU", "VT", "LDVT", "WORK", "LWORK", "INFO" }, 
    { "M", "N", "A", "LDA", "IPIV", "INFO" }, 
    { "N", "X", "INCX" }, 
+   { "M", "N", "K", "A", "LDA", "TAU", "WORK", "LWORK", "INFO" }, 
    { "SIDE", "TRANS", "M", "N", "K", "A", "LDA", "TAU", "C", "LDC", "WORK", "LWORK", "INFO" }, 
    { "UPLO", "N", "NRHS", "A", "LDA", "B", "LDB", "INFO" }, 
    { "UPLO", "N", "A", "LDA", "INFO" }, 
@@ -4832,6 +4834,114 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sormqr(JNIEnv *env, jclass this
   if(aPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, JNI_ABORT);
     aPtrBase = 0;
+  }
+
+  return info;
+}
+
+JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dorgqr(JNIEnv *env, jclass this, jint m, jint n, jint k, jdoubleArray a, jint aIdx, jint lda, jdoubleArray tau, jint tauIdx, jdoubleArray work, jint workIdx, jint lwork)
+{
+  extern void dorgqr_(jint *, jint *, jint *, jdouble *, jint *, jdouble *, jdouble *, jint *, int *);
+  
+  jdouble *tauPtrBase = 0, *tauPtr = 0;
+  if (tau) {
+    tauPtrBase = (*env)->GetDoubleArrayElements(env, tau, NULL);
+    tauPtr = tauPtrBase + tauIdx;
+  }
+  jdouble *aPtrBase = 0, *aPtr = 0;
+  if (a) {
+    if((*env)->IsSameObject(env, a, tau) == JNI_TRUE)
+      aPtrBase = tauPtrBase;
+    else
+      aPtrBase = (*env)->GetDoubleArrayElements(env, a, NULL);
+    aPtr = aPtrBase + aIdx;
+  }
+  jdouble *workPtrBase = 0, *workPtr = 0;
+  if (work) {
+    if((*env)->IsSameObject(env, work, tau) == JNI_TRUE)
+      workPtrBase = tauPtrBase;
+    else
+      if((*env)->IsSameObject(env, work, a) == JNI_TRUE)
+      workPtrBase = aPtrBase;
+    else
+      workPtrBase = (*env)->GetDoubleArrayElements(env, work, NULL);
+    workPtr = workPtrBase + workIdx;
+  }
+  int info;
+
+  savedEnv = env;
+  dorgqr_(&m, &n, &k, aPtr, &lda, tauPtr, workPtr, &lwork, &info);
+  if(workPtrBase) {
+    (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
+    if (workPtrBase == tauPtrBase)
+      tauPtrBase = 0;
+    if (workPtrBase == aPtrBase)
+      aPtrBase = 0;
+    workPtrBase = 0;
+  }
+  if(aPtrBase) {
+    (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
+    if (aPtrBase == tauPtrBase)
+      tauPtrBase = 0;
+    aPtrBase = 0;
+  }
+  if(tauPtrBase) {
+    (*env)->ReleaseDoubleArrayElements(env, tau, tauPtrBase, JNI_ABORT);
+    tauPtrBase = 0;
+  }
+
+  return info;
+}
+
+JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sorgqr(JNIEnv *env, jclass this, jint m, jint n, jint k, jfloatArray a, jint aIdx, jint lda, jfloatArray tau, jint tauIdx, jfloatArray work, jint workIdx, jint lwork)
+{
+  extern void sorgqr_(jint *, jint *, jint *, jfloat *, jint *, jfloat *, jfloat *, jint *, int *);
+  
+  jfloat *tauPtrBase = 0, *tauPtr = 0;
+  if (tau) {
+    tauPtrBase = (*env)->GetFloatArrayElements(env, tau, NULL);
+    tauPtr = tauPtrBase + tauIdx;
+  }
+  jfloat *aPtrBase = 0, *aPtr = 0;
+  if (a) {
+    if((*env)->IsSameObject(env, a, tau) == JNI_TRUE)
+      aPtrBase = tauPtrBase;
+    else
+      aPtrBase = (*env)->GetFloatArrayElements(env, a, NULL);
+    aPtr = aPtrBase + aIdx;
+  }
+  jfloat *workPtrBase = 0, *workPtr = 0;
+  if (work) {
+    if((*env)->IsSameObject(env, work, tau) == JNI_TRUE)
+      workPtrBase = tauPtrBase;
+    else
+      if((*env)->IsSameObject(env, work, a) == JNI_TRUE)
+      workPtrBase = aPtrBase;
+    else
+      workPtrBase = (*env)->GetFloatArrayElements(env, work, NULL);
+    workPtr = workPtrBase + workIdx;
+  }
+  int info;
+
+  savedEnv = env;
+  sorgqr_(&m, &n, &k, aPtr, &lda, tauPtr, workPtr, &lwork, &info);
+  if(workPtrBase) {
+    (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
+    if (workPtrBase == tauPtrBase)
+      tauPtrBase = 0;
+    if (workPtrBase == aPtrBase)
+      aPtrBase = 0;
+    workPtrBase = 0;
+  }
+  if(aPtrBase) {
+    (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
+    if (aPtrBase == tauPtrBase)
+      tauPtrBase = 0;
+    aPtrBase = 0;
+  }
+  if(tauPtrBase) {
+    (*env)->ReleaseFloatArrayElements(env, tau, tauPtrBase, JNI_ABORT);
+    tauPtrBase = 0;
   }
 
   return info;
