@@ -317,18 +317,18 @@ public class TestFloatMatrix extends AbstractTestJblas {
     FloatMatrix R = new FloatMatrix();
 
     // In-place, but independent operands
-    assertEquals(result, B.divi(C, R));
+    assertTrue(result.compare(B.divi(C, R), eps));
 
     // In-place on this
     R = B.dup();
-    assertEquals(result, R.divi(C, R));
+    assertTrue(result.compare(R.divi(C, R), eps));
 
     // In-place on other
     R = C.dup();
-    assertEquals(result, B.divi(R, R));
+    assertTrue(result.compare(B.divi(R, R), eps));
 
     // fully dynamic
-    assertEquals(result, B.div(C));
+    assertTrue(result.compare(B.div(C), eps));
 
     result = new FloatMatrix(3, 1, 1.0f, 2.0f, 4.0f);
 
@@ -350,18 +350,18 @@ public class TestFloatMatrix extends AbstractTestJblas {
     FloatMatrix R = new FloatMatrix();
 
     // In-place, but independent operands
-    assertEquals(result, C.rdivi(B, R));
+    assertTrue(result.compare(C.rdivi(B, R), eps));
 
     // In-place on this
     R = C.dup();
-    assertEquals(result, R.rdivi(B, R));
+    assertTrue(result.compare(R.rdivi(B, R), eps));
 
     // In-place on other
     R = B.dup();
-    assertEquals(result, C.rdivi(R, R));
+    assertTrue(result.compare(C.rdivi(R, R), eps));
 
     // fully dynamic
-    assertEquals(result, C.rdiv(B));
+    assertTrue(result.compare(C.rdiv(B), eps));
 
     result = new FloatMatrix(3, 1, 0.5f, 0.25f, 0.125f);
 
