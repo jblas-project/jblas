@@ -23,6 +23,7 @@ Bug fixes (tons of)
 - Fixed a bug where tests fail in French locale (mpoussevin and srowen)
 - Clarifications on the Eigen method ranges (sehlstrom)
 - Fix in indexRows/indexColumns method (landesfeind)
+- Fixed accumulation of temp files under Windows (thanks to suggestions by boscogh)
 
 ---------------------------------------------------------------------
 
