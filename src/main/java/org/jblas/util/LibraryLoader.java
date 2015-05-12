@@ -54,28 +54,70 @@ public class LibraryLoader {
     final Logger logger = Logger.getLogger();
 
     try {
-    tempDir = File.createTempFile("jblas", "");
+      tempDir = File.createTempFile("jblas", "");
 
-    if (!tempDir.delete() || !tempDir.mkdir()) {
-      throw new IOException(String.format("Couldn't create directory \"%s\"", tempDir.getAbsolutePath()));
-    }
-
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      @Override
-      public void run() {
-        for (File f: tempDir.listFiles()) {
-          logger.info("Deleting " + f.getAbsolutePath());
-          if (!f.delete()) {
-            logger.warning(String.format("Couldn't delete temporary file \"%s\"", f.getAbsolutePath()));
-          }
-        }
-        logger.info("Deleting " + tempDir.getAbsolutePath());
-        if (!tempDir.delete()) {
-          logger.warning(String.format("Couldn't delete temporary directory \"%s\"", tempDir.getAbsolutePath()));
-        }
+      if (!tempDir.delete() || !tempDir.mkdir()) {
+        throw new IOException(String.format("Couldn't create directory \"%s\"", tempDir.getAbsolutePath()));
       }
-    });
-    } catch(IOException ex) {
+
+      /*
+       * Different cleanup strategies for Windows and Linux.
+       *
+       * For *NIX operating systems: A shutdown hook to clean up the files created. Under
+       * Windows this won't work because 
+       */
+      if (getUnifiedOSName() != "Windows") {
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+          @Override
+          public void run() {
+            for (File f : tempDir.listFiles()) {
+              logger.info("Deleting " + f.getAbsolutePath());
+              if (!f.delete()) {
+                logger.warning(String.format("Couldn't delete temporary file \"%s\"", f.getAbsolutePath()));
+              }
+            }
+            logger.info("Deleting " + tempDir.getAbsolutePath());
+            if (!tempDir.delete()) {
+              logger.warning(String.format("Couldn't delete temporary directory \"%s\"", tempDir.getAbsolutePath()));
+            }
+          }
+        });
+      } else {
+        new Thread() {
+          @Override
+          public void run() {
+            try {
+              Thread.sleep(1000);
+
+              logger.info("Starting temp DLL cleanup task.");
+
+              int deletedFiles = 0;
+
+              File jblasTempDir = new File(System.getProperty("java.io.tmpdir"));
+              for (File jblasDir : jblasTempDir.listFiles()) {
+                assert (jblasDir != null);
+                if (jblasDir != tempDir && jblasDir.isDirectory() && jblasDir.getName().startsWith("jblas")) {
+                  for (File oldJblasFile : jblasDir.listFiles()) {
+                    if (!oldJblasFile.delete()) {
+                      logger.debug("Couldn't delete " + oldJblasFile.getAbsolutePath());
+                    } else {
+                      logger.debug("Deleted " + oldJblasFile.getAbsolutePath());
+                      deletedFiles++;
+                    }
+                  }
+                }
+              }
+
+              if (deletedFiles > 0) {
+                logger.info(String.format("Deleted %d unused temp DLL libraries from %s", deletedFiles, jblasTempDir.getAbsolutePath()));
+              }
+            } catch (InterruptedException ex) {
+              //
+            }
+          }
+        }.start();
+      }
+    } catch (IOException ex) {
       logger.error("Couldn't create temporary directory: " + ex.getMessage());
     }
   }
@@ -160,11 +202,15 @@ public class LibraryLoader {
   /**
    * Translate all those Windows to "Windows". ("Windows XP", "Windows Vista", "Windows 7", etc.)
    */
-  private String unifyOSName(String osname) {
+  private static String unifyOSName(String osname) {
     if (osname.startsWith("Windows")) {
       return "Windows";
     }
     return osname;
+  }
+
+  private static String getUnifiedOSName() {
+    return unifyOSName(System.getProperty("os.name"));
   }
 
   /**
@@ -173,7 +219,7 @@ public class LibraryLoader {
    */
   private String fatJarLibraryPath(String linkage, String flavor) {
     String sep = "/"; //System.getProperty("file.separator");
-    String os_name = unifyOSName(System.getProperty("os.name"));
+    String os_name = getUnifiedOSName();
     String os_arch = System.getProperty("os.arch");
     String path = sep + "lib" + sep + linkage + sep + os_name + sep + os_arch + sep;
     if (null != flavor)
@@ -216,13 +262,17 @@ public class LibraryLoader {
         os.write(buf, 0, len);
       }
 
+      os.flush();
+      InputStream lock = new FileInputStream(tempfile);
+      os.close();
+
       double seconds = (double) (System.currentTimeMillis() - savedTime) / 1e3;
       logger.debug("Copying took " + seconds + " seconds.");
 
-      os.close();
-
       logger.debug("Loading library from " + tempfile.getPath() + ".");
       System.load(tempfile.getPath());
+
+      lock.close();
     } catch (IOException io) {
       logger.error("Could not create the temp file: " + io.toString() + ".\n");
     } catch (UnsatisfiedLinkError ule) {

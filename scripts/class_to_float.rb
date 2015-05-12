@@ -32,14 +32,25 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## --- END LICENSE BLOCK ---
 
+$CRLF = false
+
 def readfile(fn)
   f = open(fn)
   s = f.read
   f.close
+  if s.index("\r\n")
+    $CRLF = true
+    puts "#$0: Detected CRLF instead of LF"
+    s.gsub! /\r\n/, "\n"
+  end
   s
 end
 
 def writefile(fn, s)
+  if $CRLF
+    puts "#$0: Translating LF back to CRLF"
+    s.gsub! /\n/, "\r\n"
+  end
   f = open(fn, 'w')
   f.write s
   f.close
