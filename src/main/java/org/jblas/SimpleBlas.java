@@ -58,7 +58,7 @@ public class SimpleBlas {
 	 */
 
 	/**
-	 * Compute x <-> y (swap two matrices)
+	 * Compute x &lt;-&gt; y (swap two matrices)
 	 */
 	public static DoubleMatrix swap(DoubleMatrix x, DoubleMatrix y) {
 		//NativeBlas.dswap(x.length, x.data, 0, 1, y.data, 0, 1);
@@ -486,7 +486,7 @@ public class SimpleBlas {
 	 */
 
 	/**
-	 * Compute x <-> y (swap two matrices)
+	 * Compute x &lt;-&gt; y (swap two matrices)
 	 */
 	public static FloatMatrix swap(FloatMatrix x, FloatMatrix y) {
 		//NativeBlas.sswap(x.length, x.data, 0, 1, y.data, 0, 1);

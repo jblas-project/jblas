@@ -103,14 +103,15 @@
         <version>2.10.3</version>
         <configuration>
           <stylesheetfile>src/main/javadoc/stylesheet.css</stylesheetfile>
+          <failOnError>false</failOnError>
         </configuration>
-        <executions>
+        <!--<executions>
           <execution>
             <goals>
               <goal>jar</goal>
             </goals>
           </execution>
-        </executions>
+        </executions>-->
       </plugin>
 
       <!-- sources.jar -->
