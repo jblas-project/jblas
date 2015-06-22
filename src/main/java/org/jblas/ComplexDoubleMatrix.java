@@ -1470,8 +1470,14 @@ public class ComplexDoubleMatrix {
 	 * @throws IOException thrown on errors while writing the matrix to the file
 	 */
 	public void save(String filename) throws IOException {
-		DataOutputStream dos = new DataOutputStream(new FileOutputStream(filename, false));
-		this.out(dos);
+            FileOutputStream fos = new FileOutputStream(filename, false);
+            DataOutputStream dos = new DataOutputStream(fos);
+            try {
+                 this.out(dos);
+            } finally {
+                dos.close();
+                fos.close();
+            }
 	}
 	
 	/**
@@ -1481,8 +1487,14 @@ public class ComplexDoubleMatrix {
 	 * @throws IOException thrown on errors while reading the matrix
 	 */
 	public void load(String filename) throws IOException {
-		DataInputStream dis = new DataInputStream(new FileInputStream(filename));
+            FileInputStream fis = new FileInputStream(filename);
+            DataInputStream dis = new DataInputStream(fis);
+            try {
 		this.in(dis);
+            } finally {
+                dis.close();
+                fis.close();
+            }
 	}
 
 	/****************************************************************

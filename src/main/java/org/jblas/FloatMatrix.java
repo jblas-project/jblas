@@ -2760,9 +2760,14 @@ public class FloatMatrix implements Serializable {
      * @throws IOException thrown on errors while writing the matrix to the file
      */
     public void save(String filename) throws IOException {
-        DataOutputStream dos = new DataOutputStream(new FileOutputStream(filename, false));
-        this.out(dos);
-        dos.close();
+        FileOutputStream fos = new FileOutputStream(filename, false);
+        DataOutputStream dos = new DataOutputStream(fos);
+        try {
+            this.out(dos);
+        } finally {
+            dos.close();
+            fos.close();
+        }
     }
 
     /**
@@ -2772,9 +2777,15 @@ public class FloatMatrix implements Serializable {
      * @throws IOException thrown on errors while reading the matrix
      */
     public void load(String filename) throws IOException {
-        DataInputStream dis = new DataInputStream(new FileInputStream(filename));
-        this.in(dis);
-        dis.close();
+        FileInputStream fis = new FileInputStream(filename);
+        DataInputStream dis = new DataInputStream(fis);
+        try {
+            this.in(dis);
+        }
+        finally {
+            dis.close();
+            fis.close();
+        }
     }
 
     public static FloatMatrix loadAsciiFile(String filename) throws IOException {
@@ -2808,19 +2819,24 @@ public class FloatMatrix implements Serializable {
         }
         is.close();
 
-        // Go through file a second time process the actual data.
-        is = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
-        FloatMatrix result = new FloatMatrix(rows, columns);
-        int r = 0;
-        while ((line = is.readLine()) != null) {
-            String[] elements = WHITESPACES.split(line);
-            int firstElement = (elements[0].length() == 0) ? 1 : 0;
-            for (int c = 0, cc = firstElement; c < columns; c++, cc++) {
-                result.put(r, c, Float.valueOf(elements[cc]));
+        FileInputStream fis = new FileInputStream(filename);
+        try {
+            // Go through file a second time process the actual data.
+            is = new BufferedReader(new InputStreamReader(fis));
+            FloatMatrix result = new FloatMatrix(rows, columns);
+            int r = 0;
+            while ((line = is.readLine()) != null) {
+                String[] elements = WHITESPACES.split(line);
+                int firstElement = (elements[0].length() == 0) ? 1 : 0;
+                for (int c = 0, cc = firstElement; c < columns; c++, cc++) {
+                    result.put(r, c, Float.valueOf(elements[cc]));
+                }
+                r++;
             }
-            r++;
+            return result;
+        } finally {
+            fis.close();
         }
-        return result;
     }
 
     public static FloatMatrix loadCSVFile(String filename) throws IOException {
