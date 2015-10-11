@@ -86,7 +86,7 @@ options summary:
   --libs=lib1,lib2,...     Override libraries to search in
 
   --lapack-build           build against fortran lapack instead of ATLAS
-  --built-type=...         One of 'lapack', 'atlas', 'openblas', 'nvblas'
+  --build-type=...         One of 'lapack', 'atlas', 'openblas', 'nvblas'
                            (default is 'atlas')
                            You might still have to set libpath correctly
 EOS
