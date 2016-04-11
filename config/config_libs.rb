@@ -157,6 +157,7 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARC
       CONFIG['LOADLIBES'] += result.keys.map { |s| '-l' + s.escape }
     when 'static'
       CONFIG['LOADLIBES'] += ['-Wl,-z,muldefs'] unless CONFIG['OS_NAME'] == 'Mac\ OS\ X' or CONFIG['OS_NAME'] == 'Windows'
+      CONFIG['LOADLIBES'] += ['-static']
 
       # Add the libraries with their full path to the command line.
       # We have to sort them in the order as they appear in +libs+, otherwise
