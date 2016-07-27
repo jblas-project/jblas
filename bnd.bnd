@@ -1,0 +1,5 @@
+-sources: false
+-dsannotations: *
+-metatype: *
+Bundle-SymbolicName: jblas
+Export-Package: org.jblas.*
