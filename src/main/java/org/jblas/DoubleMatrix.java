@@ -75,7 +75,7 @@ import java.util.regex.Pattern;
  * <p>To construct a two-dimensional matrices, you can use the following constructors
  * and static methods.</p>
  * 
- * <table class="my">
+ * <table class="my" summary="list of constructors">
  * <tr><th>Method<th>Description
  * <tr><td>DoubleMatrix(m,n, [value1, value2, value3...])<td>Values are filled in column by column.
  * <tr><td>DoubleMatrix(new double[][] {{value1, value2, ...}, ...}<td>Inner arrays are rows.
@@ -91,7 +91,7 @@ import java.util.regex.Pattern;
  * <p>Alternatively, you can construct (column) vectors, if you just supply the length
  * using the following constructors and static methods.</p>
  * 
- * <table class="my">
+ * <table class="my" summary="list of alternate constructors">
  * <tr><th>Method</th>                        <th>Description</th></tr>
  * <tr><td>DoubleMatrix(m)</td>               <td>Constructs a column vector.</td></tr>
  * <tr><td>DoubleMatrix(new double[] {value1, value2, ...})</td><td>Constructs a column vector.</td></tr>
@@ -107,7 +107,7 @@ import java.util.regex.Pattern;
  * <p>You can also construct new matrices by concatenating matrices either horziontally
  * or vertically:</p>
  * 
- * <table class="my">
+ * <table class="my" summary="construction by concatenation">
  * <tr><th>Method<th>Description
  * <tr><td>x.concatHorizontally(y)<td>New matrix will be x next to y.
  * <tr><td>x.concatVertically(y)<td>New matrix will be x atop y.
@@ -119,7 +119,7 @@ import java.util.regex.Pattern;
  * <p>To access individual elements, or whole rows and columns, use the following
  * methods:<p>
  * 
- * <table class="my">
+ * <table class="my" summary="list of getters and setters">
  * <tr><th>x.Method<th>Description
  * <tr><td>x.get(i,j)<td>Get element in row i and column j.
  * <tr><td>x.put(i, j, v)<td>Set element in row i and column j to value v
@@ -149,7 +149,7 @@ import java.util.regex.Pattern;
  *
  * <p>There exist the following Range objects. The Class <tt>RangeUtils</tt> also
  * contains the a number of handy helper methods for constructing these ranges.</p>
- * <table class="my">
+ * <table class="my" summary="list of range objects">
  * <tr><th>Class <th>RangeUtils method <th>Indices
  * <tr><td>AllRange <td>all() <td>All legal indices.
  * <tr><td>PointRange <td>point(i) <td> A single point.
@@ -162,7 +162,7 @@ import java.util.regex.Pattern;
  * 
  * <p>The following methods can be used for duplicating and copying matrices.</p>
  * 
- * <table class="my">
+ * <table class="my" summary="methods for duplicating and copying matrices">
  * <tr><th>Method<th>Description
  * <tr><td>x.dup()<td>Get a copy of x.
  * <tr><td>x.copy(y)<td>Copy the contents of y to x (possible resizing x).
@@ -173,7 +173,7 @@ import java.util.regex.Pattern;
  * 
  * <p>The following methods permit to access the size of a matrix and change its size or shape.</p>
  * 
- * <table class="my">
+ * <table class="my" summary="methods to query and change the size and shape of a matrix">
  * <tr><th>x.Method<th>Description
  * <tr><td>x.rows<td>Number of rows.
  * <tr><td>x.columns<td>Number of columns.
@@ -224,7 +224,7 @@ import java.util.regex.Pattern;
  * right-hand-side. The same effect can be achieved by passing a DoubleMatrix with
  * exactly one element.</p>
  * 
- * <table class="my">
+ * <table class="my" summary="element-wise matrix operators">
  * <tr><th>Operation <th>Method <th>Comment
  * <tr><td>x + y <td>x.add(y)			<td>
  * <tr><td>x - y <td>x.sub(y), y.rsub(x) <td>rsub subtracts left from right hand side
@@ -238,7 +238,7 @@ import java.util.regex.Pattern;
  * 
  * <p>There also exist operations which work on whole columns or rows.</p>
  * 
- * <table class="my">
+ * <table class="my" summary="column-wise matrix operators">
  * <tr><th>Method</th>           <th>Description</th></tr>
  * <tr><td>x.addRowVector</td>   <td>adds a vector to each row (addiRowVector works in-place)</td></tr>
  * <tr><td>x.addColumnVector</td><td>adds a vector to each column</td></tr>
@@ -258,7 +258,7 @@ import java.util.regex.Pattern;
  * 
  * <p>The following comparison operations are available</p>
  *  
- * <table class="my">
+ * <table class="my" summary="matrix comparison operators">
  * <tr><th>Operation <th>Method
  * <tr><td>x &lt; y		<td>x.lt(y)
  * <tr><td>x &lt;= y	<td>x.le(y)
@@ -273,7 +273,7 @@ import java.util.regex.Pattern;
  * zero is treated as "true" and zero is treated as "false". All operations are carried
  * out elementwise.</p>
  * 
- * <table class="my">
+ * <table class="my" summary="matrix elementwise logical operators">
  * <tr><th>Operation <th>Method
  * <tr><td>x &amp; y 	<td>x.and(y)
  * <tr><td>x | y 	<td>x.or(y)
@@ -284,7 +284,7 @@ import java.util.regex.Pattern;
  * 
  * <p>Finally, there are a few more methods to compute various things:</p>
  * 
- * <table class="my">
+ * <table class="my" summary="matrix min/max methods">
  * <tr><th>Method <th>Description
  * <tr><td>x.max() <td>Return maximal element
  * <tr><td>x.argmax() <td>Return index of largest element
