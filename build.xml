@@ -230,7 +230,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                  sourcepath="${src}" defaultexcludes="yes"
                  destdir="${doc}" author="true" version="true"
                  use="true" windowtitle="jblas" linksource="yes"
-                 stylesheetfile="javadoc.css" overview="${src}/overview.html">
+                 stylesheetfile="src/main/javadoc/stylesheet.css"
+                 overview="src/main/javadoc/overview.html">
             <doctitle>
                 <![CDATA[ <h1>jblas - Linear Algebra for Java (version ${version})</h1> ]]>
             </doctitle>
@@ -285,7 +286,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <include name="INSTALL" />
                 <include name="COPYING" />
                 <include name="AUTHORS" />
-                <include name="javadoc.css" />
                 <include name="javadoc/**" />
                 <include name="nbproject/**" />
                 <include name="native/jblas_arch_flavor.c" />
