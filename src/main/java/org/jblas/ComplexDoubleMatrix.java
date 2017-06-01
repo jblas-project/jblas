@@ -120,7 +120,9 @@ public class ComplexDoubleMatrix {
    * part can be set to null in which case it will be ignored.
    */
   public ComplexDoubleMatrix(DoubleMatrix real, DoubleMatrix imag) {
-      this(real.rows, real.columns);
+      this((real != null) ? real.rows : imag.rows, (real != null) ? real.columns : imag.columns);
+
+      if (real != null && imag != null)
       real.assertSameSize(imag);
 
       if (real != null)
