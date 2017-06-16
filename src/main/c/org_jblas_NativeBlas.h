@@ -8,6 +8,10 @@
 extern "C" {
 #endif
 /*
+ * Initialize library
+ */
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved);
+/*
  * Class:     org_jblas_NativeBlas
  * Method:    ccopy
  * Signature: (I[FII[FII)V
