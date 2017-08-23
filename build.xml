@@ -126,12 +126,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         <mkdir dir="${bin}" />
     </target>
     <target name="compile" depends="prepare,generate-float" description="compile java code">
-        <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" target="1.5" fork="yes" nowarn="yes">
+        <javac destdir="${bin}" encoding="utf-8" source="1.6" debug="on" compiler="javac1.5" target="1.6" fork="yes" nowarn="yes">
             <src path="${src}" />
         </javac>
     </target>
     <target name="compile-test" depends="compile" description="compile java test code">
-        <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" target="1.5" fork="yes" nowarn="yes">
+        <javac destdir="${bin}" encoding="utf-8" source="1.6" debug="on" compiler="javac1.5" target="1.6" fork="yes" nowarn="yes">
             <src path="${test}" />
             <classpath>
                 <pathelement location="${external}/junit-4.8.2.jar" />
@@ -139,7 +139,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         </javac>
     </target>
     <target name="javah" depends="prepare" description="run javah">
-        <javac destdir="${bin}" encoding="utf-8" source="1.5" debug="on" compiler="javac1.5" target="1.5" fork="yes" nowarn="yes">
+        <javac destdir="${bin}" encoding="utf-8" source="1.6" debug="on" compiler="javac1.5" target="1.6" fork="yes" nowarn="yes">
             <src path="${src}" />
             <include name="**/NativeBlas.java" />
             <include name="**/ArchFlavor.java" />
