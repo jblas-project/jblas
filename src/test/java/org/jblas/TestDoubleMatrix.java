@@ -667,6 +667,30 @@ public class TestDoubleMatrix extends AbstractTestJblas {
   }
 
   @Test
+  public void testColumnAndRowMinMaxUnsorted() {
+    assertEquals(new DoubleMatrix(1, 3, -2.0, -6.0, -8.0), E.columnMins());
+    assertEquals(new DoubleMatrix(3, 1, -4.0, -8.0, -6.0), E.rowMins());
+    assertEquals(new DoubleMatrix(1, 3, 3.0, 5.0, 9.0), E.columnMaxs());
+    assertEquals(new DoubleMatrix(3, 1, 7.0, 5.0, 9.0), E.rowMaxs());
+    int[] i = E.columnArgmins();
+    assertEquals(1, i[0]);
+    assertEquals(2, i[1]);
+    assertEquals(1, i[2]);
+    i = E.columnArgmaxs();
+    assertEquals(2, i[0]);
+    assertEquals(1, i[1]);
+    assertEquals(2, i[2]);
+    i = E.rowArgmins();
+    assertEquals(1, i[0]);
+    assertEquals(2, i[1]);
+    assertEquals(1, i[2]);
+    i = E.rowArgmaxs();
+    assertEquals(2, i[0]);
+    assertEquals(1, i[1]);
+    assertEquals(2, i[2]);
+  }
+
+  @Test
   public void testToArray() {
     assertTrue(Arrays.equals(new double[]{2.0, 4.0, 8.0}, B.toArray()));
     assertTrue(Arrays.equals(new int[]{2, 4, 8}, B.toIntArray()));
