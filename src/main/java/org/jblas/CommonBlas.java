@@ -16,18 +16,17 @@ public class CommonBlas {
 
     /**
      * inner product of x with y <- x.y
-     * @param x
-     * @param y
+     *
      * @return result of compution
      * @throws SizeException x colums is inconsistent with y rows
      */
     public static FloatMatrix inner(FloatMatrix x,FloatMatrix y) throws SizeException {
         FloatMatrix x_t = x.transpose();
         if (x_t.rows == y.rows) {
-            FloatMatrix result = new FloatMatrix(x.columns,y.columns);
-            for (int i = 0; i < x.columns; i++) {
+            FloatMatrix result = new FloatMatrix(x_t.columns,y.columns);
+            for (int i = 0; i < x_t.columns; i++) {
                 for (int j = 0; j < y.columns; j++) {
-                    float value_ij = SimpleBlas.dot(x.getColumn(i), y.getColumn(j));
+                    float value_ij = SimpleBlas.dot(x_t.getColumn(i), y.getColumn(j));
                     result.put(i, j, value_ij);
                 }
             }
@@ -38,18 +37,17 @@ public class CommonBlas {
 
     /**
      * inner product of x with y <- x.y
-     * @param x
-     * @param y
+     *
      * @return result of compution
      * @throws SizeException x colums is inconsistent with y rows
      */
     public static DoubleMatrix inner(DoubleMatrix x,DoubleMatrix y) throws SizeException {
         DoubleMatrix x_t = x.transpose();
         if (x_t.rows == y.rows) {
-            DoubleMatrix result = new DoubleMatrix(x.columns,y.columns);
-            for (int i = 0; i < x.columns; i++) {
+            DoubleMatrix result = new DoubleMatrix(x_t.columns,y.columns);
+            for (int i = 0; i < x_t.columns; i++) {
                 for (int j = 0; j < y.columns; j++) {
-                    double value_ij = SimpleBlas.dot(x.getColumn(i), y.getColumn(j));
+                    double value_ij = SimpleBlas.dot(x_t.getColumn(i), y.getColumn(j));
                     result.put(i, j, value_ij);
                 }
             }
@@ -60,8 +58,8 @@ public class CommonBlas {
 
     /**
      * provide a instance of n*n float scalar matrix which value is n
-     * @param rows
-     * @param n
+     * @param rows rows=column
+     * @param n value
      * @return result
      */
     public static FloatMatrix floatScalarMatrixInstance(int rows,float n){
@@ -74,8 +72,8 @@ public class CommonBlas {
 
     /**
      * provide a instance of n*n double scalar matrix which value is n
-     * @param rows
-     * @param n
+     * @param rows rows=column
+     * @param n value
      * @return result
      */
     public static DoubleMatrix doubleScalarMatrixInstance(int rows,double n){
