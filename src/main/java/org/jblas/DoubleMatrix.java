@@ -2568,7 +2568,7 @@ public class DoubleMatrix implements Serializable {
         return maxs;
     }
 
-    /** Return index of minimal element per row. */
+    /** Return index of maximum element per row. */
     public int[] rowArgmaxs() {
         int[] argmaxs = new int[rows];
         for (int c = 0; c < rows; c++) {
