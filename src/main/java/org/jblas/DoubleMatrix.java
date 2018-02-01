@@ -278,7 +278,7 @@ import java.util.regex.Pattern;
  * <tr><td>x.max() <td>Return maximal element
  * <tr><td>x.argmax() <td>Return index of largest element
  * <tr><td>x.min() <td>Return minimal element
- * <tr><td>x.argmin() <td>Return index of largest element
+ * <tr><td>x.argmin() <td>Return index of smallest element
  * <tr><td>x.columnMins() <td>Return column-wise minima
  * <tr><td>x.columnArgmins() <td>Return column-wise index of minima
  * <tr><td>x.columnMaxs() <td>Return column-wise maxima
