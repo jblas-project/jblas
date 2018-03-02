@@ -20,8 +20,7 @@
             <a href="org/jblas/DoubleMatrix.html">DoubleMatrix</a>,
             <a href="org/jblas/ComplexFloatMatrix.html">ComplexFloatMatrix</a> and <a
                     href="org/jblas/ComplexDoubleMatrix.html">ComplexDoubleMatrix</a> in the package
-            <code>org.jblas</code> which represent real a
-            nd complex matrices in single and
+            <code>org.jblas</code> which represent real and complex matrices in single and
             double precision.
         </li>
 
@@ -44,9 +43,9 @@
             reading or writing a whole column, row, or submatrix.
         </li>
 
-        <li>There exist only two-dimensional matrices. Vectors are matrices
+        <li>There are only two-dimensional matrices. Vectors are matrices
             whose number of columns or rows are 1. This has turned out to be
-            much more convenient thatn having separated classes.
+            much more convenient than having separated classes.
         </li>
 
         <li>Every math operator maps to a short mnemonic name. For example, +
@@ -55,7 +54,7 @@
             and so on.
         </li>
 
-        <li>Often, you can pass a double or float value, or a matric with only
+        <li>Often, you can pass a <code>double</code> or <code>float</code> value, or a matrix with only
             one element as the argument to a method, for example, to add the
             same value to all elements of the matrix.
         </li>
@@ -82,11 +81,11 @@
             to do. In other words, I&#8217;ll happily add anything somebody needs as
             long as he can check whether the method works as it should.
         </li>
-        <li>jblas uses double and float arrays to store the matrix. Whenever you
+        <li>jblas uses <code>double</code> and <code>float</code> arrays to store the matrix. Whenever you
             call a native function, the array is first copied. This means that
             it doesn&#8217;t make much sense to call a native routine if its
             computation is linear in the size of the data, but this includes
-            most of <span class="caps">BLAS</span> Level 1 and Level 2. jblas therefore uses Java
+            most of <span class="caps">BLAS</span> Level 1 and Level 2. jblas therefore uses the Java
             implementation for things like vector addition, or even
             matrix-vector multiplication and is therefore not as fast as native
             <span class="caps">BLAS</span>. Currently, I&#8217;m contemplating some caching schemes to improve
