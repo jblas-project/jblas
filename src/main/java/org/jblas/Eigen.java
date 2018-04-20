@@ -51,6 +51,7 @@ import org.jblas.ranges.Range;
  */
 public class Eigen {
     private static final DoubleMatrix dummyDouble = new DoubleMatrix(1);
+    private static final ComplexDoubleMatrix dummyComplexDouble = new ComplexDoubleMatrix(1);
 
     /**
      * Compute the eigenvalues for a symmetric matrix.
@@ -306,10 +307,38 @@ public class Eigen {
     return result;
   }
 
+  /**
+   * Computes the eigenvalues of a complex matrix.
+   */
+  public static ComplexDoubleMatrix eigenvalues(ComplexDoubleMatrix A) {
+      A.assertSquare();
+      ComplexDoubleMatrix W = new ComplexDoubleMatrix(A.rows);
+      SimpleBlas.cgeev('N', 'N', A.dup(), W, dummyComplexDouble, dummyComplexDouble);
+      return W;
+  }
+
+  /**
+   * Computes the eigenvalues and eigenvectors of a complex matrix.
+   *
+   * @return an array of ComplexDoubleMatrix objects containing the (right) eigenvectors
+   *         stored as the columns of the first matrix, and the eigenvalues as the
+   *         diagonal elements of the second matrix.
+   */
+  public static ComplexDoubleMatrix[] eigenvectors(ComplexDoubleMatrix A) {
+      A.assertSquare();
+      // setting up result arrays
+      ComplexDoubleMatrix W = new ComplexDoubleMatrix(A.rows);
+      ComplexDoubleMatrix VR = new ComplexDoubleMatrix(A.rows, A.rows);
+
+      SimpleBlas.cgeev('N', 'V', A.dup(), W, dummyComplexDouble, VR);
+      return new ComplexDoubleMatrix[]{VR, ComplexDoubleMatrix.diag(W)};
+  }
+
 //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
     private static final FloatMatrix dummyFloat = new FloatMatrix(1);
+    private static final ComplexFloatMatrix dummyComplexFloat = new ComplexFloatMatrix(1);
 
     /**
      * Compute the eigenvalues for a symmetric matrix.
@@ -563,6 +592,33 @@ public class Eigen {
     result[0] = Z.get(new IntervalRange(0, A.rows), r);
     result[1] = W.get(r, 0);
     return result;
+  }
+
+  /**
+   * Computes the eigenvalues of a complex matrix.
+   */
+  public static ComplexFloatMatrix eigenvalues(ComplexFloatMatrix A) {
+      A.assertSquare();
+      ComplexFloatMatrix W = new ComplexFloatMatrix(A.rows);
+      SimpleBlas.cgeev('N', 'N', A.dup(), W, dummyComplexFloat, dummyComplexFloat);
+      return W;
+  }
+
+  /**
+   * Computes the eigenvalues and eigenvectors of a complex matrix.
+   *
+   * @return an array of ComplexFloatMatrix objects containing the (right) eigenvectors
+   *         stored as the columns of the first matrix, and the eigenvalues as the
+   *         diagonal elements of the second matrix.
+   */
+  public static ComplexFloatMatrix[] eigenvectors(ComplexFloatMatrix A) {
+      A.assertSquare();
+      // setting up result arrays
+      ComplexFloatMatrix W = new ComplexFloatMatrix(A.rows);
+      ComplexFloatMatrix VR = new ComplexFloatMatrix(A.rows, A.rows);
+
+      SimpleBlas.cgeev('N', 'V', A.dup(), W, dummyComplexFloat, VR);
+      return new ComplexFloatMatrix[]{VR, ComplexFloatMatrix.diag(W)};
   }
 
 //END

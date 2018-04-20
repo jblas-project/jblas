@@ -96,4 +96,21 @@ public class TestEigen {
 
     assertEquals(0.0, eigenvalues.sub(L).normmax(), eps);
   }
+
+  @Test
+  public void testComplexEigenvalues() {
+      ComplexDoubleMatrix A = new ComplexDoubleMatrix(
+              new DoubleMatrix(new double[][]{ {1.0, 0}, {0, 1.0}}),
+              new DoubleMatrix(new double[][]{ {0, 1}, {-1, 0}})
+      );
+
+      ComplexDoubleMatrix E = Eigen.eigenvalues(A);
+      ComplexDoubleMatrix[] EV = Eigen.eigenvectors(A);
+      ComplexDoubleMatrix X = EV[0];
+      ComplexDoubleMatrix L = EV[1];
+
+      assertEquals(2.0, E.get(0).real(), eps);
+      assertEquals(0.0, E.get(1).real(), eps);
+      assertEquals(0.0, A.mmul(X).sub(X.mmul(L)).norm2(), eps);
+  }
 }
