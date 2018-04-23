@@ -113,4 +113,20 @@ public class TestEigen {
       assertEquals(0.0, E.get(1).real(), eps);
       assertEquals(0.0, A.mmul(X).sub(X.mmul(L)).norm2(), eps);
   }
+
+    @Test
+    public void testComplexHermitianEigenvalues() {
+        ComplexDoubleMatrix A = new ComplexDoubleMatrix(
+                new DoubleMatrix(new double[][]{{2.0, 2.0, 4.0}, {2.0, 3.0, 0.0}, {4.0, 0.0, 1.0}}),
+                new DoubleMatrix(new double[][]{{0.0, 1.0, 0.0}, {-1.0, 0.0, 1.0}, {0.0, -1.0, 0.0}})
+        );
+
+        DoubleMatrix E = Eigen.hermitianEigenvalues(A);
+        ComplexDoubleMatrix[] EV = Eigen.hermitianEigenvectors(A);
+        ComplexDoubleMatrix X = EV[0];
+        ComplexDoubleMatrix L = EV[1];
+
+        assertEquals(0.0, L.diag().sub(E.toComplex()).norm2(), eps);
+        assertEquals(0.0, A.mmul(X).sub(X.mmul(L)).norm2(), eps);
+    }
 }
