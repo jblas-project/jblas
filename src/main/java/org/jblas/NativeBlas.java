@@ -548,5 +548,31 @@ public class NativeBlas {
     return info;
   }
 
+  public static native int cheev(char jobz, char uplo, int n, float[] a, int aIdx, int lda, float[] w, int wIdx, float[] work, int workIdx, int lwork, float[] rwork, int rworkIdx);
+  public static int cheev(char jobz, char uplo, int n, float[] a, int aIdx, int lda, float[] w, int wIdx, float[] rwork, int rworkIdx) {
+    int info;
+    float[] work = new float[1*2];
+    int lwork;
+    info = cheev(jobz, uplo, n, floatDummy, 0, lda, floatDummy, 0, work, 0, -1, floatDummy, 0);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new float[lwork*2];
+    info = cheev(jobz, uplo, n, a, aIdx, lda, w, wIdx, work, 0, lwork, rwork, rworkIdx);
+    return info;
+  }
+
+  public static native int zheev(char jobz, char uplo, int n, double[] a, int aIdx, int lda, double[] w, int wIdx, double[] work, int workIdx, int lwork, double[] rwork, int rworkIdx);
+  public static int zheev(char jobz, char uplo, int n, double[] a, int aIdx, int lda, double[] w, int wIdx, double[] rwork, int rworkIdx) {
+    int info;
+    double[] work = new double[1*2];
+    int lwork;
+    info = zheev(jobz, uplo, n, doubleDummy, 0, lda, doubleDummy, 0, work, 0, -1, doubleDummy, 0);
+    if (info != 0)
+      return info;
+    lwork = (int) work[0]; work = new double[lwork*2];
+    info = zheev(jobz, uplo, n, a, aIdx, lda, w, wIdx, work, 0, lwork, rwork, rworkIdx);
+    return info;
+  }
+
 
 }
