@@ -96,6 +96,6 @@ configure :all => [:os_arch, :tools, :java, :cc, :fortran, :make, :lapack_source
 run :all
 
 puts
-puts 'Configuration succesfull, writing out results to configure.out'
+puts 'Configuration successful, writing out results to configure.out'
 open('configure.out', 'w') {|f| CONFIG.dump f}
 open('configure.xml', 'w') {|f| CONFIG.dump_xml f}
