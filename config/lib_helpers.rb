@@ -14,7 +14,7 @@
 #       disclaimer in the documentation and/or other materials provided
 #       with the distribution.
 #
-#     * Neither the name of the Technische Universität Berlin nor the
+#     * Neither the name of the Technische Universitaet Berlin nor the
 #       names of its contributors may be used to endorse or promote
 #       products derived from this software without specific prior
 #       written permission.
@@ -109,7 +109,7 @@ module LibHelpers
     return p, l
   end
 
-  # locate +libs+ in given +paths+ and look for the +symbols+
+  # Locate +libs+ in given +paths+ and look for the +symbols+
   #
   # What you get is a hash mapping libraries to their paths. If a symbol could
   # not be found, a Config::ConfigError is raised.

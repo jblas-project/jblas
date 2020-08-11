@@ -17,7 +17,7 @@
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
  * 
- *     * Neither the name of the Technische Universität Berlin nor the
+ *     * Neither the name of the Technische Universitaet Berlin nor the
  *       names of its contributors may be used to endorse or promote
  *       products derived from this software without specific prior
  *       written permission.
@@ -278,7 +278,7 @@ import java.util.regex.Pattern;
  * <tr><td>x.max() <td>Return maximal element
  * <tr><td>x.argmax() <td>Return index of largest element
  * <tr><td>x.min() <td>Return minimal element
- * <tr><td>x.argmin() <td>Return index of largest element
+ * <tr><td>x.argmin() <td>Return index of smallest element
  * <tr><td>x.columnMins() <td>Return column-wise minima
  * <tr><td>x.columnArgmins() <td>Return column-wise index of minima
  * <tr><td>x.columnMaxs() <td>Return column-wise maxima
@@ -2568,7 +2568,7 @@ public class FloatMatrix implements Serializable {
         return maxs;
     }
 
-    /** Return index of minimal element per row. */
+    /** Return index of maximum element per row. */
     public int[] rowArgmaxs() {
         int[] argmaxs = new int[rows];
         for (int c = 0; c < rows; c++) {

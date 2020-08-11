@@ -15,7 +15,7 @@
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
  * 
- *     * Neither the name of the Technische Universität Berlin nor the
+ *     * Neither the name of the Technische Universitaet Berlin nor the
  *       names of its contributors may be used to endorse or promote
  *       products derived from this software without specific prior
  *       written permission.
@@ -663,6 +663,30 @@ public class TestFloatMatrix extends AbstractTestJblas {
     assertEquals(2, i[1]);
     assertEquals(2, i[2]);
     assertEquals(2, i[3]);
+  }
+
+  @Test
+  public void testColumnAndRowMinMaxUnsorted() {
+    assertEquals(new FloatMatrix(1, 3, -2.0f, -6.0f, -8.0f), E.columnMins());
+    assertEquals(new FloatMatrix(3, 1, -4.0f, -8.0f, -6.0f), E.rowMins());
+    assertEquals(new FloatMatrix(1, 3, 3.0f, 5.0f, 9.0f), E.columnMaxs());
+    assertEquals(new FloatMatrix(3, 1, 7.0f, 5.0f, 9.0f), E.rowMaxs());
+    int[] i = E.columnArgmins();
+    assertEquals(1, i[0]);
+    assertEquals(2, i[1]);
+    assertEquals(1, i[2]);
+    i = E.columnArgmaxs();
+    assertEquals(2, i[0]);
+    assertEquals(1, i[1]);
+    assertEquals(2, i[2]);
+    i = E.rowArgmins();
+    assertEquals(1, i[0]);
+    assertEquals(2, i[1]);
+    assertEquals(1, i[2]);
+    i = E.rowArgmaxs();
+    assertEquals(2, i[0]);
+    assertEquals(1, i[1]);
+    assertEquals(2, i[2]);
   }
 
   @Test
