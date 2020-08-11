@@ -77,7 +77,9 @@ OPENBLAS_REQUIRED_SYMBOLS = LAPACK_REQUIRED_SYMBOLS
 NVBLAS_LIBS = %w(lapack_fortran lapack blas_fortran blas nvblas)
 NVBLAS_REQUIRED_SYMBOLS = LAPACK_REQUIRED_SYMBOLS
 
+
 configure :libs => 'LOADLIBES'
+
 
 desc 'determining build type'
 configure 'LINKAGE_TYPE' do
@@ -91,6 +93,7 @@ configure 'LINKAGE_TYPE' do
   ok(CONFIG['LINKAGE_TYPE'])
 end
 
+
 desc 'getting library path...'
 configure :libpath => 'OS_NAME' do
   if $opts.defined? :libpath
@@ -99,11 +102,13 @@ configure :libpath => 'OS_NAME' do
     if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
       CONFIG[:libpath] = ['/opt/local/lib']
     else
-      CONFIG[:libpath] = %w(/usr/lib /lib /usr/lib/sse2)
+      #CONFIG[:libpath] = %w(/usr/lib /lib /usr/lib/sse2)
+      CONFIG[:libpath] = %w(/usr/lib/x86_64-linux-gnu)
     end
   end
   ok(CONFIG[:libpath].inspect)
 end
+
 
 desc 'determining whether to build for lapack or atlas'
 configure 'BUILD_TYPE' do
@@ -120,6 +125,7 @@ configure 'BUILD_TYPE' do
     end
   end
 end
+
 
 desc 'looking for libraries...'
 configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARCH'] do

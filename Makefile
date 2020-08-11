@@ -221,3 +221,17 @@ all-static-jars:
 		-Dos_arch=$$(basename $$os_arch); \
 	  done; \
 	done
+
+################################################################################
+#
+# Docker development
+#
+build-ubuntu20-04:
+	docker build -f dev-ubuntu20.04.Dockerfile -t jblas/dev-ubuntu2004 .
+
+shell-ubuntu20-04:
+	docker run -it --rm -v $(PWD):/home/dev jblas/dev-ubuntu2004 /bin/bash
+
+test-ubuntu20-04:
+	docker build -f test-ubuntu20.04.Dockerfile -t jblas/test-ubuntu2004 .
+	docker run --rm jblas/test-ubuntu2004
