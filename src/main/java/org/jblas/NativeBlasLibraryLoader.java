@@ -25,7 +25,7 @@ class NativeBlasLibraryLoader {
                 + "from the archive. Consider installing the library somewhere "
                 + "in the path (for Windows: PATH, for Linux: LD_LIBRARY_PATH).");
 
-        // potentially load dependet libraries (mostly Cygwin libs for Windows)
+        // potentially load dependent libraries (mostly Cygwin libs for Windows)
         loadDependentLibraries();
 
         // Ok, and now load it!
@@ -71,6 +71,9 @@ class NativeBlasLibraryLoader {
     } else if (name.startsWith("Windows") && arch.equals("x86")) {
       loader.loadLibrary("libgcc_s_dw2-1", false);
       loader.loadLibrary("libgfortran-3", false);
+    } else if (name.equals("Linux") && arch.equals("amd64")) {
+      loader.loadLibrary("quadmath-0", false);
+      loader.loadLibrary("gfortran-4", false);
     }
   }
 }
