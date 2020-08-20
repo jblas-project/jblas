@@ -83,5 +83,14 @@ class Opts
         default
       end
     end
+
+    def check?(admissible)
+      unsupported = @opts.keys - admissible
+      unless unsupported.empty?
+        puts "Unsupported flags #{unsupported.join(', ')}"
+        return false
+      end
+      true
+    end
   end
 end

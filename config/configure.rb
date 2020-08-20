@@ -91,6 +91,11 @@ options summary:
                            You might still have to set libpath correctly
 EOS
 
+unless $opts.check?([:lapack, :libpath, :download_lapack, :static_libs, :ptatlas, :arch_flavor, :libs, :lapack_build, :build_type])
+  puts 'Configuration aborted.'
+  exit
+end
+
 configure :all => [:os_arch, :tools, :java, :cc, :fortran, :make, :lapack_sources, :libs]
 
 run :all
