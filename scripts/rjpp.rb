@@ -89,7 +89,7 @@ file.gsub! /\/\*\#(.*?)\#\*\//m do |s|
     if Array === expansion
       expansion = expansion.join
     end
-    unless expansion.empty?
+    unless expansion.empty? or expansion.is_a? Symbol
       result << ("\n//RJPP-BEGIN------------------------------------------------------------\n" + expansion + "//RJPP-END--------------------------------------------------------------")
     end
   end
