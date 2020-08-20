@@ -80,7 +80,8 @@ options summary:
   --static-libs            look for static libraries only. Results in a
                            dynamically loaded jblas library which does
                            not depend on lapack or atlas libraries. 
-                           (default for Windows!)
+                           (default now, left for backwards compatability)
+  --dynamic-libs           compile and link against dynamic libraries (creates a smaller JAR file)
   --ptatlas                Link against multithreaded versions of ATLAS libraries
   --arch-flavor=...        Set architectural flavor (e.g. --arch-flavor=sse2)
   --libs=lib1,lib2,...     Override libraries to search in
@@ -91,7 +92,8 @@ options summary:
                            You might still have to set libpath correctly
 EOS
 
-unless $opts.check?([:lapack, :libpath, :download_lapack, :static_libs, :ptatlas, :arch_flavor, :libs, :lapack_build, :build_type])
+unless $opts.check?([:lapack, :libpath, :download_lapack, :static_libs, :dyanmic_libs,
+                     :ptatlas, :arch_flavor, :libs, :lapack_build, :build_type])
   puts 'Configuration aborted.'
   exit
 end

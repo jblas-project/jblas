@@ -83,12 +83,12 @@ configure :libs => 'LOADLIBES'
 
 desc 'determining build type'
 configure 'LINKAGE_TYPE' do
-  if $opts.defined? :static_libs
-    CONFIG['LINKAGE_TYPE'] = 'static'
-    CONFIG.add_xml '<property name="linkage" value="static" />'
-  else
+  if $opts.defined? :dynamic_libs
     CONFIG['LINKAGE_TYPE'] = 'dynamic'
     CONFIG.add_xml '<property name="linkage" value="dynamic" />'
+  else
+    CONFIG['LINKAGE_TYPE'] = 'static'
+    CONFIG.add_xml '<property name="linkage" value="static" />'
   end
   ok(CONFIG['LINKAGE_TYPE'])
 end
@@ -120,8 +120,8 @@ configure 'BUILD_TYPE' do
       CONFIG['BUILD_TYPE'] = 'lapack'
       ok('lapack')
     else
-      CONFIG['BUILD_TYPE'] = 'atlas'
-      ok('atlas')
+      CONFIG['BUILD_TYPE'] = 'openblas'
+      ok('openblas')
     end
   end
 end
@@ -171,7 +171,6 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARC
           sort { |x, y| libs.index(x) <=> libs.index(y) }.
           map { |s| File.join(result[s], LibHelpers.libname(s)).escape }
       if CONFIG['F77'] =~ /gfortran$/
-        puts CONFIG['OS_ARCH']
         if CONFIG['OS_NAME'] == 'Linux' and CONFIG['OS_ARCH'] == 'amd64'
           CONFIG['LOADLIBES'] += ['-lgfortran']
         elsif CONFIG['OS_NAME'] == 'Mac\ OS\ X'
