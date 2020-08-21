@@ -74,7 +74,7 @@ public class Geometry {
         /** Center the rows of a matrix (in-place). */
 	public static DoubleMatrix centerRows(DoubleMatrix x) {
                 DoubleMatrix temp = new DoubleMatrix(x.columns);
-		for (int r = 0; r < x.rows; r++)
+		for (r: x.rows)
 			x.putRow(r, center(x.getRow(r, temp)));
 		return x;
 	}
@@ -82,7 +82,7 @@ public class Geometry {
         /** Center the columns of a matrix (in-place). */
 	public static DoubleMatrix centerColumns(DoubleMatrix x) {
                 DoubleMatrix temp = new DoubleMatrix(x.rows);
-		for (int c = 0; c < x.columns; c++)
+		for (c : x.columns)
 			x.putColumn(c, center(x.getColumn(c, temp)));
 		return x;
 	}
