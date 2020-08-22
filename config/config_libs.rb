@@ -95,7 +95,7 @@ end
 
 
 desc 'getting library path...'
-configure :libpath => 'OS_NAME' do
+configure :libpath => ['OS_NAME', 'OS_ARCH'] do
   if $opts.defined? :libpath
     CONFIG[:libpath] = $opts[:libpath].split(':')
   else
@@ -103,7 +103,11 @@ configure :libpath => 'OS_NAME' do
       CONFIG[:libpath] = ['/opt/local/lib']
     else
       #CONFIG[:libpath] = %w(/usr/lib /lib /usr/lib/sse2)
-      CONFIG[:libpath] = %w(/usr/lib/x86_64-linux-gnu)
+      if CONFIG['OS_ARCH'] == 'arm64'
+        CONFIG[:libpath] = %w(/usr/lib/aarch64-linux-gnu)
+      else
+        CONFIG[:libpath] = %w(/usr/lib/x86_64-linux-gnu)
+      end
     end
   end
   ok(CONFIG[:libpath].inspect)
