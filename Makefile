@@ -227,6 +227,12 @@ all-static-jars:
 # Docker development
 #
 
+#------------------------------------------------
+# x86_64 / amd64
+#
+# Compile with 18.04, 20.04 for testing
+
+
 #
 # Ubuntu 18.04
 #
@@ -237,14 +243,6 @@ shell-ubuntu1804:
 test-ubuntu1804:
 	docker build -f docker/test-ubuntu1804.Dockerfile -t jblas/test-ubuntu1804 .
 	docker run --rm jblas/test-ubuntu1804 /bin/bash
-
-shell-ubuntu1804-arm64:
-	docker build -f docker/dev-ubuntu1804-arm64.Dockerfile -t jblas/dev-ubuntu1804-arm64 .
-	docker run -it --rm -v $(PWD):/home/dev jblas/dev-ubuntu1804-arm64 /bin/bash
-
-test-ubuntu1804-arm64:
-	docker build -f docker/test-ubuntu1804-arm64.Dockerfile -t jblas/test-ubuntu1804-arm64 .
-	docker run --rm jblas/test-ubuntu1804-arm64 /bin/bash
 
 
 #
@@ -258,10 +256,27 @@ test-ubuntu2004:
 	docker build -f docker/test-ubuntu2004.Dockerfile -t jblas/test-ubuntu2004 .
 	docker run --rm jblas/test-ubuntu2004 /bin/bash
 
+
+#----------------------------------------------------------
+# aarch64 / arm64
+#
+# Compile with 20.04, use 18.04 for testing (other way round!)
+
+shell-ubuntu1804-arm64:
+	docker build -f docker/dev-ubuntu1804-arm64.Dockerfile -t jblas/dev-ubuntu1804-arm64 .
+	docker run -it --rm -v $(PWD):/home/dev jblas/dev-ubuntu1804-arm64 /bin/bash
+
+test-ubuntu1804-arm64:
+	docker build -f docker/test-ubuntu1804-arm64.Dockerfile -t jblas/test-ubuntu1804-arm64 .
+	docker run --rm jblas/test-ubuntu1804-arm64 /bin/bash
+
 shell-ubuntu2004-arm64:
 	docker build -f docker/dev-ubuntu2004-arm64.Dockerfile -t jblas/dev-ubuntu2004-arm64 .
 	docker run -it --rm -v $(PWD):/home/dev jblas/dev-ubuntu2004-arm64 /bin/bash
 
+test-ubuntu2004-arm64:
+	docker build -f docker/test-ubuntu2004-arm64.Dockerfile -t jblas/test-ubuntu2004-arm64 .
+	docker run --rm jblas/test-ubuntu2004-arm64 /bin/bash
 
 #
 # meta build target.
