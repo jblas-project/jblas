@@ -4,7 +4,7 @@
 
 FROM ubuntu:20.04
 
-ENV JBLAS_VERSION=1.2.4-SNAPSHOT
+ENV JBLAS_VERSION=1.2.5
 
 RUN apt-get update
 RUN apt-get -y install openjdk-8-jdk-headless

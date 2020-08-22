@@ -32,7 +32,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## --- END LICENSE BLOCK ---
 
-VERSION=1.2.4
+VERSION=1.2.5
 
 ######################################################################
 #
@@ -226,31 +226,33 @@ all-static-jars:
 #
 # Docker development
 #
-shell-ubuntu2004:
-	docker build -f dev-ubuntu2004.Dockerfile -t jblas/dev-ubuntu2004 .
-	docker run --rm -v $(PWD):/home/dev jblas/dev-ubuntu2004 /bin/bash
-
-test-ubuntu2004:
-	docker build -f test-ubuntu2004.Dockerfile -t jblas/test-ubuntu2004 .
-	docker run --rm jblas/test-ubuntu2004 /bin/bash
-
 
 #
-# Ubuntu18-04
+# Ubuntu 18.04
 #
 shell-ubuntu1804:
-	docker build -f dev-ubuntu1804.Dockerfile -t jblas/dev-ubuntu1804 .
+	docker build -f docker/dev-ubuntu1804.Dockerfile -t jblas/dev-ubuntu1804 .
 	docker run -it --rm -v $(PWD):/home/dev jblas/dev-ubuntu1804 /bin/bash
 
 test-ubuntu1804:
-	docker build -f test-ubuntu1804.Dockerfile -t jblas/test-ubuntu1804 .
+	docker build -f docker/test-ubuntu1804.Dockerfile -t jblas/test-ubuntu1804 .
 	docker run --rm jblas/test-ubuntu1804 /bin/bash
 
+#
+# Ubuntu 20.04: Does not work on Ubuntu 18.04 if you use these!
+#
+shell-ubuntu2004:
+	docker build -f docker/dev-ubuntu2004.Dockerfile -t jblas/dev-ubuntu2004 .
+	docker run -it --rm -v $(PWD):/home/dev jblas/dev-ubuntu2004 /bin/bash
 
-configure-static-openblas:
-	./configure --static-libs --build-type=openblas
+test-ubuntu2004:
+	docker build -f docker/test-ubuntu2004.Dockerfile -t jblas/test-ubuntu2004 .
+	docker run --rm jblas/test-ubuntu2004 /bin/bash
 
+#
+# meta build target.
+#
 build:
-	make configure-static-openblas
+	./configure
 	make clean all
 	mvn package -Dmaven.test.skip=True
