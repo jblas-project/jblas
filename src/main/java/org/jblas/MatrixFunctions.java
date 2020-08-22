@@ -396,7 +396,7 @@ public class MatrixFunctions {
      * Calculate matrix exponential of a square matrix.
      *
      * A scaled Pade approximation algorithm is used.
-     * The algorithm has been directly translated from Golub & Van Loan "Matrix Computations",
+     * The algorithm has been directly translated from Golub &amp; Van Loan "Matrix Computations",
      * algorithm 11.3.1. Special Horner techniques from 11.2 are also used to minimize the number
      * of matrix multiplications.
      *
@@ -827,7 +827,7 @@ public class MatrixFunctions {
      * Calculate matrix exponential of a square matrix.
      *
      * A scaled Pade approximation algorithm is used.
-     * The algorithm has been directly translated from Golub & Van Loan "Matrix Computations",
+     * The algorithm has been directly translated from Golub &amp; Van Loan "Matrix Computations",
      * algorithm 11.3f.1. Special Horner techniques from 11.2f are also used to minimize the number
      * of matrix multiplications.
      *

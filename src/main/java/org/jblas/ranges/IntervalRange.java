@@ -42,7 +42,7 @@ package org.jblas.ranges;
 
 /**
  * Range which varies from a given interval. Endpoint is exclusive!
- * <p/>
+ *
  * "new IntervalRange(0, 3)" enumerates 0, 1, 2.
  */
 public class IntervalRange implements Range {

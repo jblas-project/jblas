@@ -45,7 +45,7 @@ import org.jblas.ranges.Range;
 
 /**
  * <p>Eigenvalue and Eigenvector related functions.</p>
- * <p/>
+ *
  * <p>Methods exist for working with symmetric matrices or general eigenvalues.
  * The symmetric versions are usually much faster on symmetric matrices.</p>
  */
@@ -164,7 +164,7 @@ public class Eigen {
    * Computes selected eigenvalues of the real generalized symmetric-definite eigenproblem of the form A x = L B x
    * or, equivalently, (A - L B)x = 0. Here A and B are assumed to be symmetric and B is also positive definite.
    * The selection is based on the given range of values for the desired eigenvalues.
-   * <p/>
+   * <p>
    * The range is half open: (vl,vu].
    *
    * @param A  symmetric Matrix A. Only the upper triangle will be considered.
@@ -423,7 +423,7 @@ public class Eigen {
    * Computes selected eigenvalues of the real generalized symmetric-definite eigenproblem of the form A x = L B x
    * or, equivalently, (A - L B)x = 0. Here A and B are assumed to be symmetric and B is also positive definite.
    * The selection is based on the given range of values for the desired eigenvalues.
-   * <p/>
+   * <p>
    * The range is half open: (vl,vu].
    *
    * @param A  symmetric Matrix A. Only the upper triangle will be considered.

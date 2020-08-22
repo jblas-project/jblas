@@ -60,7 +60,7 @@ public class ComplexFloatMatrix {
 
 	/**
    * Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
-	 * using <i>newData></i> as the data.
+	 * using <i>newData</i> as the data.
 	 */
 	public ComplexFloatMatrix(int newRows, int newColumns, float... newData) {
 		rows = newRows;
@@ -144,8 +144,8 @@ public class ComplexFloatMatrix {
 	 * Creates a new <i>n</i> times <i>m</i> <tt>ComplexFloatMatrix</tt> from
 	 * the given <i>n</i> times <i>m</i> 2D data array. The first dimension of the array makes the
 	 * rows (<i>n</i>) and the second dimension the columns (<i>m</i>). For example, the
-	 * given code <br/><br/>
-	 * <code>new ComplexFloatMatrix(new float[][]{{1d, 2d, 3d}, {4d, 5d, 6d}, {7d, 8d, 9d}}).print();</code><br/><br/>
+	 * given code <br><br>
+	 * <code>new ComplexFloatMatrix(new float[][]{{1d, 2d, 3d}, {4d, 5d, 6d}, {7d, 8d, 9d}}).print();</code><br><br>
 	 * will constructs the following matrix:
 	 * <pre>
 	 * 1.0f	2.0f	3.0f

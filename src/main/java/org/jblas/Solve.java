@@ -70,10 +70,10 @@ public class Solve {
   /** Computes the Least Squares solution for over or underdetermined
    * linear equations A*X = B
    *
-   * In the overdetermined case, when m > n, that is, there are more equations than
-   * variables, it computes the least squares solution of X -> ||A*X - B ||_2.
+   * In the overdetermined case, when m &gt; n, that is, there are more equations than
+   * variables, it computes the least squares solution of X -&gt; ||A*X - B ||_2.
    *
-   * In the underdetermined case, when m < n (less equations than variables), there are infinitely
+   * In the underdetermined case, when m &lt; n (less equations than variables), there are infinitely
    * many solutions and it computes the minimum norm solution.
    *
    * @param A an (m,n) matrix
@@ -138,10 +138,10 @@ public class Solve {
   /** Computes the Least Squares solution for over or underdetermined
    * linear equations A*X = B
    *
-   * In the overdetermined case, when m > n, that is, there are more equations than
-   * variables, it computes the least squares solution of X -> ||A*X - B ||_2.
+   * In the overdetermined case, when m &gt; n, that is, there are more equations than
+   * variables, it computes the least squares solution of X -&gt; ||A*X - B ||_2.
    *
-   * In the underdetermined case, when m < n (less equations than variables), there are infinitely
+   * In the underdetermined case, when m &lt; n (less equations than variables), there are infinitely
    * many solutions and it computes the minimum norm solution.
    *
    * @param A an (m,n) matrix
