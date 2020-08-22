@@ -238,6 +238,15 @@ test-ubuntu1804:
 	docker build -f docker/test-ubuntu1804.Dockerfile -t jblas/test-ubuntu1804 .
 	docker run --rm jblas/test-ubuntu1804 /bin/bash
 
+shell-ubuntu1804-arm64:
+	docker build -f docker/dev-ubuntu1804-arm64.Dockerfile -t jblas/dev-ubuntu1804-arm64 .
+	docker run -it --rm -v $(PWD):/home/dev jblas/dev-ubuntu1804-arm64 /bin/bash
+
+test-ubuntu1804-arm64:
+	docker build -f docker/test-ubuntu1804-arm64.Dockerfile -t jblas/test-ubuntu1804-arm64 .
+	docker run --rm jblas/test-ubuntu1804-arm64 /bin/bash
+
+
 #
 # Ubuntu 20.04: Does not work on Ubuntu 18.04 if you use these!
 #
@@ -248,6 +257,11 @@ shell-ubuntu2004:
 test-ubuntu2004:
 	docker build -f docker/test-ubuntu2004.Dockerfile -t jblas/test-ubuntu2004 .
 	docker run --rm jblas/test-ubuntu2004 /bin/bash
+
+shell-ubuntu2004-arm64:
+	docker build -f docker/dev-ubuntu2004-arm64.Dockerfile -t jblas/dev-ubuntu2004-arm64 .
+	docker run -it --rm -v $(PWD):/home/dev jblas/dev-ubuntu2004-arm64 /bin/bash
+
 
 #
 # meta build target.

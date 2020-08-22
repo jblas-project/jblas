@@ -103,7 +103,7 @@ configure :libpath => ['OS_NAME', 'OS_ARCH'] do
       CONFIG[:libpath] = ['/opt/local/lib']
     else
       #CONFIG[:libpath] = %w(/usr/lib /lib /usr/lib/sse2)
-      if CONFIG['OS_ARCH'] == 'arm64'
+      if CONFIG['OS_ARCH'] == 'aarch64'
         CONFIG[:libpath] = %w(/usr/lib/aarch64-linux-gnu)
       else
         CONFIG[:libpath] = %w(/usr/lib/x86_64-linux-gnu)
