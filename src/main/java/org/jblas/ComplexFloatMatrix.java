@@ -15,7 +15,7 @@
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
  * 
- *     * Neither the name of the Technische Universität Berlin nor the
+ *     * Neither the name of the Technische Universitaet Berlin nor the
  *       names of its contributors may be used to endorse or promote
  *       products derived from this software without specific prior
  *       written permission.
@@ -1475,7 +1475,7 @@ public class ComplexFloatMatrix {
             FileOutputStream fos = new FileOutputStream(filename, false);
             DataOutputStream dos = new DataOutputStream(fos);
             try {
-                this.out(dos);
+                 this.out(dos);
             } finally {
                 dos.close();
                 fos.close();

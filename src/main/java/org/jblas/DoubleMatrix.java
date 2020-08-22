@@ -2,7 +2,7 @@
 /* 
  * Copyright (c) 2009, Mikio L. Braun
  * Copyright (c) 2008, Johannes Schaback
- * Copyright (c) 2009, Jan Saputra Müller
+ * Copyright (c) 2009, Jan Saputra Mueller
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -17,7 +17,7 @@
  *       disclaimer in the documentation and/or other materials provided
  *       with the distribution.
  * 
- *     * Neither the name of the Technische Universität Berlin nor the
+ *     * Neither the name of the Technische Universitaet Berlin nor the
  *       names of its contributors may be used to endorse or promote
  *       products derived from this software without specific prior
  *       written permission.

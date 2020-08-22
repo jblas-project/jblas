@@ -14,7 +14,7 @@
 #       disclaimer in the documentation and/or other materials provided
 #       with the distribution.
 # 
-#     * Neither the name of the Technische Universität Berlin nor the
+#     * Neither the name of the Technische Universitaet Berlin nor the
 #       names of its contributors may be used to endorse or promote
 #       products derived from this software without specific prior
 #       written permission.
@@ -89,7 +89,7 @@ file.gsub! /\/\*\#(.*?)\#\*\//m do |s|
     if Array === expansion
       expansion = expansion.join
     end
-    unless expansion.empty?
+    unless expansion.empty? or expansion.is_a? Symbol
       result << ("\n//RJPP-BEGIN------------------------------------------------------------\n" + expansion + "//RJPP-END--------------------------------------------------------------")
     end
   end

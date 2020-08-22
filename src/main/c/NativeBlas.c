@@ -14,7 +14,7 @@
 //       disclaimer in the documentation and/or other materials provided
 //       with the distribution.
 // 
-//     * Neither the name of the Technische Universität Berlin nor the
+//     * Neither the name of the Technische Universitaet Berlin nor the
 //       names of its contributors may be used to endorse or promote
 //       products derived from this software without specific prior
 //       written permission.
@@ -95,6 +95,14 @@ static ComplexDouble getComplexDouble(JNIEnv *env, jobject dc)
   jfieldID imField = (*env)->GetFieldID(env, klass, "i", "D");
 
   return (*env)->GetDoubleField(env, dc, reField) + I*(*env)->GetDoubleField(env, dc, imField);
+}
+
+
+static void throwIllegalArgumentException(JNIEnv *env, const char *message)
+{
+  jclass klass = (*env)->FindClass(env, "java/lang/IllegalArgumentException");
+
+  (*env)->ThrowNew(env, klass, message);
 }
 
 /**********************************************************************/
@@ -200,17 +208,7 @@ static char *routine_arguments[][23] = {
 /**********************************************************************/
 /*                 Our implementation of XERBLA                       */
 /**********************************************************************/
-JavaVM *JVMcache = NULL;
-
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *jvm, void *reserved)
-{
-     JVMcache=jvm; // set the global JVM pointer cache to one OnLoad JVM
-     JNIEnv *env=NULL;
-     if ((*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_2)) {
-         return JNI_ERR; // JNI version not supported
-     }
-     return JNI_VERSION_1_2;
-}
+static JNIEnv *savedEnv = 0;
 
 
 void xerbla_(char *fct, int *info)
@@ -240,11 +238,7 @@ void xerbla_(char *fct, int *info)
 	else {
 		sprintf(buffer, "XERBLA: Error on argument %d (%s) in %s", *info, arguments[*info-1], name);
 	}
-
-    JNIEnv *envPtr; // local grab of env ptr for this thread
-    (*JVMcache)->AttachCurrentThread(JVMcache, (void **)&envPtr, NULL); // attach this thread to the globally cache JVM
-    jclass klass = (*envPtr)->FindClass(envPtr, "java/lang/IllegalArgumentException");
-    (*envPtr)->ThrowNew(envPtr, klass, buffer);
+	throwIllegalArgumentException(savedEnv, buffer);
 }
 
 /**********************************************************************/
@@ -270,6 +264,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_ccopy(JNIEnv *env, jclass this,
     cyPtr = cyPtrBase + 2*cyIdx;
   }
 
+  savedEnv = env;
   ccopy_(&n, cxPtr, &incx, cyPtr, &incy);
   if(cyPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, cy, cyPtrBase, 0);
@@ -302,6 +297,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_dcopy(JNIEnv *env, jclass this,
     dyPtr = dyPtrBase + dyIdx;
   }
 
+  savedEnv = env;
   dcopy_(&n, dxPtr, &incx, dyPtr, &incy);
   if(dyPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, dy, dyPtrBase, 0);
@@ -334,6 +330,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_scopy(JNIEnv *env, jclass this,
     syPtr = syPtrBase + syIdx;
   }
 
+  savedEnv = env;
   scopy_(&n, sxPtr, &incx, syPtr, &incy);
   if(syPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, sy, syPtrBase, 0);
@@ -366,6 +363,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zcopy(JNIEnv *env, jclass this,
     zyPtr = zyPtrBase + 2*zyIdx;
   }
 
+  savedEnv = env;
   zcopy_(&n, zxPtr, &incx, zyPtr, &incy);
   if(zyPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, zy, zyPtrBase, 0);
@@ -398,6 +396,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cswap(JNIEnv *env, jclass this,
     cyPtr = cyPtrBase + 2*cyIdx;
   }
 
+  savedEnv = env;
   cswap_(&n, cxPtr, &incx, cyPtr, &incy);
   if(cyPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, cy, cyPtrBase, 0);
@@ -430,6 +429,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_dswap(JNIEnv *env, jclass this,
     dyPtr = dyPtrBase + dyIdx;
   }
 
+  savedEnv = env;
   dswap_(&n, dxPtr, &incx, dyPtr, &incy);
   if(dyPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, dy, dyPtrBase, 0);
@@ -462,6 +462,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_sswap(JNIEnv *env, jclass this,
     syPtr = syPtrBase + syIdx;
   }
 
+  savedEnv = env;
   sswap_(&n, sxPtr, &incx, syPtr, &incy);
   if(syPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, sy, syPtrBase, 0);
@@ -494,6 +495,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zswap(JNIEnv *env, jclass this,
     zyPtr = zyPtrBase + 2*zyIdx;
   }
 
+  savedEnv = env;
   zswap_(&n, zxPtr, &incx, zyPtr, &incy);
   if(zyPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, zy, zyPtrBase, 0);
@@ -528,6 +530,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_caxpy(JNIEnv *env, jclass this,
     cyPtr = cyPtrBase + 2*cyIdx;
   }
 
+  savedEnv = env;
   caxpy_(&n, &caCplx, cxPtr, &incx, cyPtr, &incy);
   if(cyPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, cy, cyPtrBase, 0);
@@ -560,6 +563,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_daxpy(JNIEnv *env, jclass this,
     dyPtr = dyPtrBase + dyIdx;
   }
 
+  savedEnv = env;
   daxpy_(&n, &da, dxPtr, &incx, dyPtr, &incy);
   if(dyPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, dy, dyPtrBase, 0);
@@ -592,6 +596,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_saxpy(JNIEnv *env, jclass this,
     syPtr = syPtrBase + syIdx;
   }
 
+  savedEnv = env;
   saxpy_(&n, &sa, sxPtr, &incx, syPtr, &incy);
   if(syPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, sy, syPtrBase, 0);
@@ -626,6 +631,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zaxpy(JNIEnv *env, jclass this,
     zyPtr = zyPtrBase + 2*zyIdx;
   }
 
+  savedEnv = env;
   zaxpy_(&n, &zaCplx, zxPtr, &incx, zyPtr, &incy);
   if(zyPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, zy, zyPtrBase, 0);
@@ -652,6 +658,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cscal(JNIEnv *env, jclass this,
     cxPtr = cxPtrBase + 2*cxIdx;
   }
 
+  savedEnv = env;
   cscal_(&n, &caCplx, cxPtr, &incx);
   if(cxPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, cx, cxPtrBase, 0);
@@ -670,6 +677,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_dscal(JNIEnv *env, jclass this,
     dxPtr = dxPtrBase + dxIdx;
   }
 
+  savedEnv = env;
   dscal_(&n, &da, dxPtr, &incx);
   if(dxPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, dx, dxPtrBase, 0);
@@ -688,6 +696,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_sscal(JNIEnv *env, jclass this,
     sxPtr = sxPtrBase + sxIdx;
   }
 
+  savedEnv = env;
   sscal_(&n, &sa, sxPtr, &incx);
   if(sxPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, sx, sxPtrBase, 0);
@@ -708,6 +717,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zscal(JNIEnv *env, jclass this,
     zxPtr = zxPtrBase + 2*zxIdx;
   }
 
+  savedEnv = env;
   zscal_(&n, &zaCplx, zxPtr, &incx);
   if(zxPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, zx, zxPtrBase, 0);
@@ -726,6 +736,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_csscal(JNIEnv *env, jclass this
     cxPtr = cxPtrBase + 2*cxIdx;
   }
 
+  savedEnv = env;
   csscal_(&n, &sa, cxPtr, &incx);
   if(cxPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, cx, cxPtrBase, 0);
@@ -744,6 +755,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zdscal(JNIEnv *env, jclass this
     zxPtr = zxPtrBase + 2*zxIdx;
   }
 
+  savedEnv = env;
   zdscal_(&n, &da, zxPtr, &incx);
   if(zxPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, zx, zxPtrBase, 0);
@@ -770,6 +782,7 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_cdotc(JNIEnv *env, jclass th
     cyPtr = cyPtrBase + 2*cyIdx;
   }
 
+  savedEnv = env;
   float complex retval = cdotc_(&n, cxPtr, &incx, cyPtr, &incy);
   if(cyPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, cy, cyPtrBase, 0);
@@ -803,6 +816,7 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_cdotu(JNIEnv *env, jclass th
     cyPtr = cyPtrBase + 2*cyIdx;
   }
 
+  savedEnv = env;
   float complex retval = cdotu_(&n, cxPtr, &incx, cyPtr, &incy);
   if(cyPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, cy, cyPtrBase, 0);
@@ -836,6 +850,7 @@ JNIEXPORT jdouble JNICALL Java_org_jblas_NativeBlas_ddot(JNIEnv *env, jclass thi
     dyPtr = dyPtrBase + dyIdx;
   }
 
+  savedEnv = env;
   jdouble retval = ddot_(&n, dxPtr, &incx, dyPtr, &incy);
   if(dyPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, dy, dyPtrBase, 0);
@@ -869,6 +884,7 @@ JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_sdot(JNIEnv *env, jclass this
     syPtr = syPtrBase + syIdx;
   }
 
+  savedEnv = env;
   jfloat retval = sdot_(&n, sxPtr, &incx, syPtr, &incy);
   if(syPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, sy, syPtrBase, 0);
@@ -902,6 +918,7 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_zdotc(JNIEnv *env, jclass th
     zyPtr = zyPtrBase + 2*zyIdx;
   }
 
+  savedEnv = env;
   double complex retval = zdotc_(&n, zxPtr, &incx, zyPtr, &incy);
   if(zyPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, zy, zyPtrBase, 0);
@@ -935,6 +952,7 @@ JNIEXPORT jobject JNICALL Java_org_jblas_NativeBlas_zdotu(JNIEnv *env, jclass th
     zyPtr = zyPtrBase + 2*zyIdx;
   }
 
+  savedEnv = env;
   double complex retval = zdotu_(&n, zxPtr, &incx, zyPtr, &incy);
   if(zyPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, zy, zyPtrBase, 0);
@@ -960,6 +978,7 @@ JNIEXPORT jdouble JNICALL Java_org_jblas_NativeBlas_dnrm2(JNIEnv *env, jclass th
     xPtr = xPtrBase + xIdx;
   }
 
+  savedEnv = env;
   jdouble retval = dnrm2_(&n, xPtr, &incx);
   if(xPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);
@@ -979,6 +998,7 @@ JNIEXPORT jdouble JNICALL Java_org_jblas_NativeBlas_dznrm2(JNIEnv *env, jclass t
     xPtr = xPtrBase + 2*xIdx;
   }
 
+  savedEnv = env;
   jdouble retval = dznrm2_(&n, xPtr, &incx);
   if(xPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, x, xPtrBase, 0);
@@ -998,6 +1018,7 @@ JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_scnrm2(JNIEnv *env, jclass th
     xPtr = xPtrBase + 2*xIdx;
   }
 
+  savedEnv = env;
   jfloat retval = scnrm2_(&n, xPtr, &incx);
   if(xPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
@@ -1017,6 +1038,7 @@ JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_snrm2(JNIEnv *env, jclass thi
     xPtr = xPtrBase + xIdx;
   }
 
+  savedEnv = env;
   jfloat retval = snrm2_(&n, xPtr, &incx);
   if(xPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, x, xPtrBase, 0);
@@ -1036,6 +1058,7 @@ JNIEXPORT jdouble JNICALL Java_org_jblas_NativeBlas_dasum(JNIEnv *env, jclass th
     dxPtr = dxPtrBase + dxIdx;
   }
 
+  savedEnv = env;
   jdouble retval = dasum_(&n, dxPtr, &incx);
   if(dxPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, dx, dxPtrBase, 0);
@@ -1048,12 +1071,14 @@ JNIEXPORT jdouble JNICALL Java_org_jblas_NativeBlas_dasum(JNIEnv *env, jclass th
 JNIEXPORT jdouble JNICALL Java_org_jblas_NativeBlas_dzasum(JNIEnv *env, jclass this, jint n, jdoubleArray zx, jint zxIdx, jint incx)
 {
   extern jdouble dzasum_(jint *, jdouble *, jint *);
+  
   jdouble *zxPtrBase = 0, *zxPtr = 0;
   if (zx) {
     zxPtrBase = (*env)->GetDoubleArrayElements(env, zx, NULL);
     zxPtr = zxPtrBase + 2*zxIdx;
   }
 
+  savedEnv = env;
   jdouble retval = dzasum_(&n, zxPtr, &incx);
   if(zxPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, zx, zxPtrBase, 0);
@@ -1073,6 +1098,7 @@ JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_sasum(JNIEnv *env, jclass thi
     sxPtr = sxPtrBase + sxIdx;
   }
 
+  savedEnv = env;
   jfloat retval = sasum_(&n, sxPtr, &incx);
   if(sxPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, sx, sxPtrBase, 0);
@@ -1092,6 +1118,7 @@ JNIEXPORT jfloat JNICALL Java_org_jblas_NativeBlas_scasum(JNIEnv *env, jclass th
     cxPtr = cxPtrBase + 2*cxIdx;
   }
 
+  savedEnv = env;
   jfloat retval = scasum_(&n, cxPtr, &incx);
   if(cxPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, cx, cxPtrBase, 0);
@@ -1111,6 +1138,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_icamax(JNIEnv *env, jclass this
     cxPtr = cxPtrBase + 2*cxIdx;
   }
 
+  savedEnv = env;
   jint retval = icamax_(&n, cxPtr, &incx);
   if(cxPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, cx, cxPtrBase, 0);
@@ -1130,6 +1158,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_idamax(JNIEnv *env, jclass this
     dxPtr = dxPtrBase + dxIdx;
   }
 
+  savedEnv = env;
   jint retval = idamax_(&n, dxPtr, &incx);
   if(dxPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, dx, dxPtrBase, 0);
@@ -1149,6 +1178,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_isamax(JNIEnv *env, jclass this
     sxPtr = sxPtrBase + sxIdx;
   }
 
+  savedEnv = env;
   jint retval = isamax_(&n, sxPtr, &incx);
   if(sxPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, sx, sxPtrBase, 0);
@@ -1168,6 +1198,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_izamax(JNIEnv *env, jclass this
     zxPtr = zxPtrBase + 2*zxIdx;
   }
 
+  savedEnv = env;
   jint retval = izamax_(&n, zxPtr, &incx);
   if(zxPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, zx, zxPtrBase, 0);
@@ -1211,6 +1242,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cgemv(JNIEnv *env, jclass this,
     yPtr = yPtrBase + 2*yIdx;
   }
 
+  savedEnv = env;
   cgemv_(&transChr, &m, &n, &alphaCplx, aPtr, &lda, xPtr, &incx, &betaCplx, yPtr, &incy);
   if(yPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, y, yPtrBase, 0);
@@ -1263,6 +1295,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_dgemv(JNIEnv *env, jclass this,
     yPtr = yPtrBase + yIdx;
   }
 
+  savedEnv = env;
   dgemv_(&transChr, &m, &n, &alpha, aPtr, &lda, xPtr, &incx, &beta, yPtr, &incy);
   if(yPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, y, yPtrBase, 0);
@@ -1315,6 +1348,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_sgemv(JNIEnv *env, jclass this,
     yPtr = yPtrBase + yIdx;
   }
 
+  savedEnv = env;
   sgemv_(&transChr, &m, &n, &alpha, aPtr, &lda, xPtr, &incx, &beta, yPtr, &incy);
   if(yPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, y, yPtrBase, 0);
@@ -1371,6 +1405,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgemv(JNIEnv *env, jclass this,
     yPtr = yPtrBase + 2*yIdx;
   }
 
+  savedEnv = env;
   zgemv_(&transChr, &m, &n, &alphaCplx, aPtr, &lda, xPtr, &incx, &betaCplx, yPtr, &incy);
   if(yPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, y, yPtrBase, 0);
@@ -1424,6 +1459,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cgerc(JNIEnv *env, jclass this,
     aPtr = aPtrBase + 2*aIdx;
   }
 
+  savedEnv = env;
   cgerc_(&m, &n, &alphaCplx, xPtr, &incx, yPtr, &incy, aPtr, &lda);
   if(aPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
@@ -1477,6 +1513,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cgeru(JNIEnv *env, jclass this,
     aPtr = aPtrBase + 2*aIdx;
   }
 
+  savedEnv = env;
   cgeru_(&m, &n, &alphaCplx, xPtr, &incx, yPtr, &incy, aPtr, &lda);
   if(aPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
@@ -1528,6 +1565,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_dger(JNIEnv *env, jclass this, 
     aPtr = aPtrBase + aIdx;
   }
 
+  savedEnv = env;
   dger_(&m, &n, &alpha, xPtr, &incx, yPtr, &incy, aPtr, &lda);
   if(aPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
@@ -1579,6 +1617,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_sger(JNIEnv *env, jclass this, 
     aPtr = aPtrBase + aIdx;
   }
 
+  savedEnv = env;
   sger_(&m, &n, &alpha, xPtr, &incx, yPtr, &incy, aPtr, &lda);
   if(aPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
@@ -1632,6 +1671,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgerc(JNIEnv *env, jclass this,
     aPtr = aPtrBase + 2*aIdx;
   }
 
+  savedEnv = env;
   zgerc_(&m, &n, &alphaCplx, xPtr, &incx, yPtr, &incy, aPtr, &lda);
   if(aPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
@@ -1685,6 +1725,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgeru(JNIEnv *env, jclass this,
     aPtr = aPtrBase + 2*aIdx;
   }
 
+  savedEnv = env;
   zgeru_(&m, &n, &alphaCplx, xPtr, &incx, yPtr, &incy, aPtr, &lda);
   if(aPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
@@ -1742,6 +1783,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_cgemm(JNIEnv *env, jclass this,
     cPtr = cPtrBase + 2*cIdx;
   }
 
+  savedEnv = env;
   cgemm_(&transaChr, &transbChr, &m, &n, &k, &alphaCplx, aPtr, &lda, bPtr, &ldb, &betaCplx, cPtr, &ldc);
   if(cPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, c, cPtrBase, 0);
@@ -1795,6 +1837,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_dgemm(JNIEnv *env, jclass this,
     cPtr = cPtrBase + cIdx;
   }
 
+  savedEnv = env;
   dgemm_(&transaChr, &transbChr, &m, &n, &k, &alpha, aPtr, &lda, bPtr, &ldb, &beta, cPtr, &ldc);
   if(cPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, c, cPtrBase, 0);
@@ -1848,6 +1891,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_sgemm(JNIEnv *env, jclass this,
     cPtr = cPtrBase + cIdx;
   }
 
+  savedEnv = env;
   sgemm_(&transaChr, &transbChr, &m, &n, &k, &alpha, aPtr, &lda, bPtr, &ldb, &beta, cPtr, &ldc);
   if(cPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, c, cPtrBase, 0);
@@ -1905,6 +1949,7 @@ JNIEXPORT void JNICALL Java_org_jblas_NativeBlas_zgemm(JNIEnv *env, jclass this,
     cPtr = cPtrBase + 2*cIdx;
   }
 
+  savedEnv = env;
   zgemm_(&transaChr, &transbChr, &m, &n, &k, &alphaCplx, aPtr, &lda, bPtr, &ldb, &betaCplx, cPtr, &ldc);
   if(cPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, c, cPtrBase, 0);
@@ -1951,6 +1996,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dgesv(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   dgesv_(&n, &nrhs, aPtr, &lda, ipivPtr, bPtr, &ldb, &info);
   if(bPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, b, bPtrBase, 0);
@@ -1994,6 +2040,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sgesv(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   sgesv_(&n, &nrhs, aPtr, &lda, ipivPtr, bPtr, &ldb, &info);
   if(bPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, b, bPtrBase, 0);
@@ -2049,6 +2096,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dsysv(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   dsysv_(&uploChr, &n, &nrhs, aPtr, &lda, ipivPtr, bPtr, &ldb, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
@@ -2112,6 +2160,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ssysv(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   ssysv_(&uploChr, &n, &nrhs, aPtr, &lda, ipivPtr, bPtr, &ldb, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
@@ -2171,6 +2220,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dsyev(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   dsyev_(&jobzChr, &uploChr, &n, aPtr, &lda, wPtr, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
@@ -2226,6 +2276,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ssyev(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   ssyev_(&jobzChr, &uploChr, &n, aPtr, &lda, wPtr, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
@@ -2286,6 +2337,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dsyevd(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dsyevd_(&jobzChr, &uploChr, &n, aPtr, &lda, wPtr, workPtr, &lwork, iworkPtr, &liwork, &info);
   if(iworkPtrBase) {
     (*env)->ReleaseIntArrayElements(env, iwork, iworkPtrBase, 0);
@@ -2384,6 +2436,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dsyevr(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dsyevr_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, mPtr, wPtr, zPtr, &ldz, isuppzPtr, workPtr, &lwork, iworkPtr, &liwork, &info);
   if(iworkPtrBase) {
     (*env)->ReleaseIntArrayElements(env, iwork, iworkPtrBase, 0);
@@ -2506,6 +2559,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dsyevx(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dsyevx_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, mPtr, wPtr, zPtr, &ldz, workPtr, &lwork, iworkPtr, ifailPtr, &info);
   if(ifailPtrBase) {
     (*env)->ReleaseIntArrayElements(env, ifail, ifailPtrBase, 0);
@@ -2594,6 +2648,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ssyevd(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   ssyevd_(&jobzChr, &uploChr, &n, aPtr, &lda, wPtr, workPtr, &lwork, iworkPtr, &liwork, &info);
   if(iworkPtrBase) {
     (*env)->ReleaseIntArrayElements(env, iwork, iworkPtrBase, 0);
@@ -2692,6 +2747,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ssyevr(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   ssyevr_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, mPtr, wPtr, zPtr, &ldz, isuppzPtr, workPtr, &lwork, iworkPtr, &liwork, &info);
   if(iworkPtrBase) {
     (*env)->ReleaseIntArrayElements(env, iwork, iworkPtrBase, 0);
@@ -2814,6 +2870,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ssyevx(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   ssyevx_(&jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, &vl, &vu, &il, &iu, &abstol, mPtr, wPtr, zPtr, &ldz, workPtr, &lwork, iworkPtr, ifailPtr, &info);
   if(ifailPtrBase) {
     (*env)->ReleaseIntArrayElements(env, ifail, ifailPtrBase, 0);
@@ -2885,6 +2942,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dposv(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   dposv_(&uploChr, &n, &nrhs, aPtr, &lda, bPtr, &ldb, &info);
   if(bPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, b, bPtrBase, 0);
@@ -2920,6 +2978,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sposv(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   sposv_(&uploChr, &n, &nrhs, aPtr, &lda, bPtr, &ldb, &info);
   if(bPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, b, bPtrBase, 0);
@@ -3018,6 +3077,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_cgeev(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   cgeev_(&jobvlChr, &jobvrChr, &n, aPtr, &lda, wPtr, vlPtr, &ldvl, vrPtr, &ldvr, workPtr, &lwork, rworkPtr, &info);
   if(workPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
@@ -3160,6 +3220,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dgeev(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   dgeev_(&jobvlChr, &jobvrChr, &n, aPtr, &lda, wrPtr, wiPtr, vlPtr, &ldvl, vrPtr, &ldvr, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
@@ -3302,6 +3363,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sgeev(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   sgeev_(&jobvlChr, &jobvrChr, &n, aPtr, &lda, wrPtr, wiPtr, vlPtr, &ldvl, vrPtr, &ldvr, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
@@ -3444,6 +3506,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_zgeev(JNIEnv *env, jclass this,
   }
   int info;
 
+  savedEnv = env;
   zgeev_(&jobvlChr, &jobvrChr, &n, aPtr, &lda, wPtr, vlPtr, &ldvl, vrPtr, &ldvr, workPtr, &lwork, rworkPtr, &info);
   if(workPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
@@ -3519,6 +3582,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dgetrf(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dgetrf_(&m, &n, aPtr, &lda, ipivPtr, &info);
   if(ipivPtrBase) {
     (*env)->ReleaseIntArrayElements(env, ipiv, ipivPtrBase, 0);
@@ -3548,6 +3612,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sgetrf(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   sgetrf_(&m, &n, aPtr, &lda, ipivPtr, &info);
   if(ipivPtrBase) {
     (*env)->ReleaseIntArrayElements(env, ipiv, ipivPtrBase, 0);
@@ -3573,6 +3638,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dpotrf(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dpotrf_(&uploChr, &n, aPtr, &lda, &info);
   if(aPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
@@ -3594,6 +3660,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_spotrf(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   spotrf_(&uploChr, &n, aPtr, &lda, &info);
   if(aPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
@@ -3686,6 +3753,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_cgesvd(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   cgesvd_(&jobuChr, &jobvtChr, &m, &n, aPtr, &lda, sPtr, uPtr, &ldu, vtPtr, &ldvt, workPtr, &lwork, rworkPtr, &info);
   if(workPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
@@ -3808,6 +3876,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dgesvd(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dgesvd_(&jobuChr, &jobvtChr, &m, &n, aPtr, &lda, sPtr, uPtr, &ldu, vtPtr, &ldvt, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
@@ -3916,6 +3985,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sgesvd(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   sgesvd_(&jobuChr, &jobvtChr, &m, &n, aPtr, &lda, sPtr, uPtr, &ldu, vtPtr, &ldvt, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
@@ -4044,6 +4114,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_zgesvd(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   zgesvd_(&jobuChr, &jobvtChr, &m, &n, aPtr, &lda, sPtr, uPtr, &ldu, vtPtr, &ldvt, workPtr, &lwork, rworkPtr, &info);
   if(workPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
@@ -4154,6 +4225,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dsygvd(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dsygvd_(&itype, &jobzChr, &uploChr, &n, aPtr, &lda, bPtr, &ldb, wPtr, workPtr, &lwork, iworkPtr, &liwork, &info);
   if(iworkPtrBase) {
     (*env)->ReleaseIntArrayElements(env, iwork, iworkPtrBase, 0);
@@ -4242,6 +4314,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ssygvd(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   ssygvd_(&itype, &jobzChr, &uploChr, &n, aPtr, &lda, bPtr, &ldb, wPtr, workPtr, &lwork, iworkPtr, &liwork, &info);
   if(iworkPtrBase) {
     (*env)->ReleaseIntArrayElements(env, iwork, iworkPtrBase, 0);
@@ -4282,7 +4355,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ssygvd(JNIEnv *env, jclass this
 JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dgelsd(JNIEnv *env, jclass this, jint m, jint n, jint nrhs, jdoubleArray a, jint aIdx, jint lda, jdoubleArray b, jint bIdx, jint ldb, jdoubleArray s, jint sIdx, jdouble rcond, jintArray rank, jint rankIdx, jdoubleArray work, jint workIdx, jint lwork, jintArray iwork, jint iworkIdx)
 {
   extern void dgelsd_(jint *, jint *, jint *, jdouble *, jint *, jdouble *, jint *, jdouble *, jdouble *, jint *, jdouble *, jint *, jint *, int *);
-
+  
   jdouble *aPtrBase = 0, *aPtr = 0;
   if (a) {
     aPtrBase = (*env)->GetDoubleArrayElements(env, a, NULL);
@@ -4336,6 +4409,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dgelsd(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dgelsd_(&m, &n, &nrhs, aPtr, &lda, bPtr, &ldb, sPtr, &rcond, rankPtr, workPtr, &lwork, iworkPtr, &info);
   if(workPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
@@ -4436,6 +4510,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sgelsd(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   sgelsd_(&m, &n, &nrhs, aPtr, &lda, bPtr, &ldb, sPtr, &rcond, rankPtr, workPtr, &lwork, iworkPtr, &info);
   if(workPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
@@ -4488,6 +4563,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ilaenv(JNIEnv *env, jclass this
   const jchar *_optsStr = (*env)->GetStringChars(env, opts, NULL);
   char *optsStr = (char *) _optsStr;
 
+  savedEnv = env;
   jint retval = ilaenv_(&ispec, nameStr, optsStr, &n1, &n2, &n3, &n4);
   (*env)->ReleaseStringChars(env, name, _nameStr);
   (*env)->ReleaseStringChars(env, opts, _optsStr);
@@ -4525,6 +4601,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dgeqrf(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dgeqrf_(&m, &n, aPtr, &lda, tauPtr, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
@@ -4578,6 +4655,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sgeqrf(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   sgeqrf_(&m, &n, aPtr, &lda, tauPtr, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
@@ -4647,6 +4725,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dormqr(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dormqr_(&sideChr, &transChr, &m, &n, &k, aPtr, &lda, tauPtr, cPtr, &ldc, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
@@ -4726,6 +4805,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sormqr(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   sormqr_(&sideChr, &transChr, &m, &n, &k, aPtr, &lda, tauPtr, cPtr, &ldc, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
@@ -4789,6 +4869,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dorgqr(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dorgqr_(&m, &n, &k, aPtr, &lda, tauPtr, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
@@ -4842,6 +4923,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_sorgqr(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   sorgqr_(&m, &n, &k, aPtr, &lda, tauPtr, workPtr, &lwork, &info);
   if(workPtrBase) {
     (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
@@ -4953,6 +5035,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_dsygvx(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   dsygvx_(&itype, &jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, bPtr, &ldb, &vl, &vu, &il, &iu, &abstol, mPtr, wPtr, zPtr, &ldz, workPtr, &lwork, iworkPtr, ifailPtr, &info);
   if(ifailPtrBase) {
     (*env)->ReleaseIntArrayElements(env, ifail, ifailPtrBase, 0);
@@ -5104,6 +5187,7 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ssygvx(JNIEnv *env, jclass this
   }
   int info;
 
+  savedEnv = env;
   ssygvx_(&itype, &jobzChr, &rangeChr, &uploChr, &n, aPtr, &lda, bPtr, &ldb, &vl, &vu, &il, &iu, &abstol, mPtr, wPtr, zPtr, &ldz, workPtr, &lwork, iworkPtr, ifailPtr, &info);
   if(ifailPtrBase) {
     (*env)->ReleaseIntArrayElements(env, ifail, ifailPtrBase, 0);

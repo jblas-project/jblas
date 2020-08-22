@@ -14,7 +14,7 @@
 #       disclaimer in the documentation and/or other materials provided
 #       with the distribution.
 # 
-#     * Neither the name of the Technische Universität Berlin nor the
+#     * Neither the name of the Technische Universitaet Berlin nor the
 #       names of its contributors may be used to endorse or promote
 #       products derived from this software without specific prior
 #       written permission.
@@ -48,8 +48,8 @@ class TemplateContext
     f = open(template_file)
     template = f.read
     f.close
-    
-    # Add the littel newline suppression hack as in rails.
+
+    # Add the little newline suppression hack as in rails.
     # Minus in front of closing or after opening '%' suppresses newlines.
     template.gsub! /-%>\n/, '%>'
     template.gsub! /\n<%-/, '<%'

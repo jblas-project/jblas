@@ -14,7 +14,7 @@
 #       disclaimer in the documentation and/or other materials provided
 #       with the distribution.
 #
-#     * Neither the name of the Technische Universität Berlin nor the
+#     * Neither the name of the Technische Universitaet Berlin nor the
 #       names of its contributors may be used to endorse or promote
 #       products derived from this software without specific prior
 #       written permission.
@@ -77,33 +77,42 @@ OPENBLAS_REQUIRED_SYMBOLS = LAPACK_REQUIRED_SYMBOLS
 NVBLAS_LIBS = %w(lapack_fortran lapack blas_fortran blas nvblas)
 NVBLAS_REQUIRED_SYMBOLS = LAPACK_REQUIRED_SYMBOLS
 
+
 configure :libs => 'LOADLIBES'
+
 
 desc 'determining build type'
 configure 'LINKAGE_TYPE' do
-  if $opts.defined? :static_libs
-    CONFIG['LINKAGE_TYPE'] = 'static'
-    CONFIG.add_xml '<property name="linkage" value="static" />'
-  else
+  if $opts.defined? :dynamic_libs
     CONFIG['LINKAGE_TYPE'] = 'dynamic'
     CONFIG.add_xml '<property name="linkage" value="dynamic" />'
+  else
+    CONFIG['LINKAGE_TYPE'] = 'static'
+    CONFIG.add_xml '<property name="linkage" value="static" />'
   end
   ok(CONFIG['LINKAGE_TYPE'])
 end
 
+
 desc 'getting library path...'
-configure :libpath => 'OS_NAME' do
+configure :libpath => ['OS_NAME', 'OS_ARCH'] do
   if $opts.defined? :libpath
     CONFIG[:libpath] = $opts[:libpath].split(':')
   else
     if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
       CONFIG[:libpath] = ['/opt/local/lib']
     else
-      CONFIG[:libpath] = %w(/usr/lib /lib /usr/lib/sse2)
+      #CONFIG[:libpath] = %w(/usr/lib /lib /usr/lib/sse2)
+      if CONFIG['OS_ARCH'] == 'aarch64'
+        CONFIG[:libpath] = %w(/usr/lib/aarch64-linux-gnu)
+      else
+        CONFIG[:libpath] = %w(/usr/lib/x86_64-linux-gnu)
+      end
     end
   end
   ok(CONFIG[:libpath].inspect)
 end
+
 
 desc 'determining whether to build for lapack or atlas'
 configure 'BUILD_TYPE' do
@@ -115,11 +124,12 @@ configure 'BUILD_TYPE' do
       CONFIG['BUILD_TYPE'] = 'lapack'
       ok('lapack')
     else
-      CONFIG['BUILD_TYPE'] = 'atlas'
-      ok('atlas')
+      CONFIG['BUILD_TYPE'] = 'openblas'
+      ok('openblas')
     end
   end
 end
+
 
 desc 'looking for libraries...'
 configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARCH'] do
@@ -165,14 +175,8 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARC
           sort { |x, y| libs.index(x) <=> libs.index(y) }.
           map { |s| File.join(result[s], LibHelpers.libname(s)).escape }
       if CONFIG['F77'] =~ /gfortran$/
-        puts CONFIG['OS_ARCH']
         if CONFIG['OS_NAME'] == 'Linux' and CONFIG['OS_ARCH'] == 'amd64'
           CONFIG['LOADLIBES'] += ['-lgfortran']
-          puts <<EOS
-WARNING: on 64bit Linux, I cannot link the gfortran library into the shared library
-because it's usually not compiled with -fPIC. This means that you need to
-have libgfortran.so installed on your target system. Sorry for the inconvenience!
-EOS
         elsif CONFIG['OS_NAME'] == 'Mac\ OS\ X'
           print "Looking for where libgfortran.a is... "
           libgfortran_path = %x(gfortran -print-file-name=libgfortran.a).strip

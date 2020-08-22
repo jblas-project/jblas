@@ -1,3 +1,33 @@
+Release 1.2.5 - Aug 20, 2020
+
+It has been a while! Too long, maybe. In the meantime, GPUs and tensorflow and pytorch have raised the bar when
+it comes to ML related computing. Adding automatic differentiation to compute gradients has become a must-have feature
+jblas doesn't have. If you're interested in that for the JVM, have a look at deeplearning4j.org.
+
+It seems people are still using jblas, therefore here is a small update which makes jblas work under ubuntu20.04 (amd64)
+and arm64. For these new versions, I switched to openblas, as performance seems to be comparable, but compilation is
+much easier.
+
+Major changes and updates:
+
+- updated Linux amd64 to work on ubuntu20.04. Updated libgfortran from version 3 to 4. Packaged libgfortran and
+  libquadmath into the JAR file so you don't have to install libgfortran.so.3 anymore.
+- Switched from ATLAS to openblas. Because openblas is so much easier to compile and we can just use the libraries
+  that are installed. Hopefully the performance / errors are the same.
+- Added libraries for arm64 (Raspberry Pis for 64bit images like ubuntu server) and AWS Graviton instances.
+
+Minor things:
+
+- fixed a few bugs in the build system when using newer versions of Ruby.
+- started using docker for creating reproducible environments for Linux builds.
+- default build-type is openblas
+- default build is for static libs. Added now flag --dynamic-libs to configure.
+
+Known issues:
+
+- Compile with java 8. They removed javah later and I haven't yet had the time to figure out how that is used now.
+
+
 Release 1.2.4 - May 11, 2015
 
 New features
