@@ -18,9 +18,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:https://github.com/mikiobraun/jblas.git</connection>
-    <developerConnection>scm:git:https://github.com/mikiobraun/jblas.git</developerConnection>
-    <url>https://github.com/mikiobraun/jblas.git</url>
+    <connection>scm:git:https://github.com/jblas-project/jblas.git</connection>
+    <developerConnection>scm:git:ssh://github.com/jblas-project/jblas.git</developerConnection>
+    <url>https://github.com/jblas-project/jblas</url>
   </scm>
 
   <developers>
