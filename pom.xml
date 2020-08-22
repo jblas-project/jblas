@@ -3,7 +3,7 @@
 
   <groupId>org.jblas</groupId>
   <artifactId>jblas</artifactId>
-  <version>1.2.5</version>
+  <version>1.2.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>jblas</name>
@@ -19,7 +19,7 @@
 
   <scm>
     <connection>scm:git:https://github.com/jblas-project/jblas.git</connection>
-    <developerConnection>scm:git:ssh://github.com/jblas-project/jblas.git</developerConnection>
+    <developerConnection>scm:git:ssh://git@github.com/jblas-project/jblas.git</developerConnection>
     <url>https://github.com/jblas-project/jblas</url>
     <tag>jblas-1.2.5</tag>
   </scm>
