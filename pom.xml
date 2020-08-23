@@ -101,6 +101,7 @@
           <failOnError>false</failOnError>
           <quiet>true</quiet>
           <doclint>none</doclint>
+          <source>8</source>
         </configuration>
         <executions>
           <execution>
