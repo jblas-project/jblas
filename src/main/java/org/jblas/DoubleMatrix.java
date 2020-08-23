@@ -85,6 +85,7 @@ import java.util.regex.Pattern;
  * <tr><td>DoubleMatrix.randn(m,n) <td>Values drawn from normal distribution.
  * <tr><td>DoubleMatrix.eye(n) <td>Unit matrix (values 0.0 except for 1.0 on the diagonal).
  * <tr><td>DoubleMatrix.diag(array) <td>Diagonal matrix with given diagonal elements.
+ * <caption>Matrix constructors.</caption>
  * </table>
  * 
  * <p>Alternatively, you can construct (column) vectors, if you just supply the length
@@ -100,6 +101,7 @@ import java.util.regex.Pattern;
  * <tr><td>DoubleMatrix.randn(m)</td>         <td>Values drawn from normal distribution.</td></tr>
  * <tr><td>DoubleMatrix.linspace(a, b, n)</td><td>n linearly spaced values from a to b.</td></tr>
  * <tr><td>DoubleMatrix.logspace(a, b, n)</td><td>n logarithmically spaced values form 10^a to 10^b.</td></tr>
+ * <caption>Column vector constructors.</caption>
  * </table>
  * 
  * <p>You can also construct new matrices by concatenating matrices either horziontally
@@ -109,6 +111,7 @@ import java.util.regex.Pattern;
  * <tr><th>Method<th>Description
  * <tr><td>x.concatHorizontally(y)<td>New matrix will be x next to y.
  * <tr><td>x.concatVertically(y)<td>New matrix will be x atop y.
+ * <caption>Matrix concatenation.</caption>
  * </table>
  * 
  * <h3>Element Access, Copying and Duplication</h3>
@@ -128,6 +131,7 @@ import java.util.regex.Pattern;
  * <tr><td>x.putRow(i, c)<td>Put matrix c into row i.
  * <tr><td>x.swapColumns(i, j)<td>Swap the contents of columns i and j.
  * <tr><td>x.swapRows(i, j)<td>Swap the contents of rows i and j.
+ * <caption>Element access.</caption>
  * </table>
  * 
  * <p>For <tt>get</tt> and <tt>put</tt>, you can also pass integer arrays,
@@ -153,6 +157,7 @@ import java.util.regex.Pattern;
  * <tr><td rowspan=3>IndicesRange <td>indices(int[])<td> The specified indices.
  * <tr><td>indices(DoubleMatrix)<td>The specified indices.
  * <tr><td>find(DoubleMatrix)<td>The non-zero entries of the matrix.
+ * <caption>Range objects.</caption>
  * </table>
  * 
  * <p>The following methods can be used for duplicating and copying matrices.</p>
@@ -161,6 +166,7 @@ import java.util.regex.Pattern;
  * <tr><th>Method<th>Description
  * <tr><td>x.dup()<td>Get a copy of x.
  * <tr><td>x.copy(y)<td>Copy the contents of y to x (possible resizing x).
+ * <caption>Copying matrices.</caption>
  * </table>
  *    
  * <h3>Size and Shape</h3>
@@ -180,6 +186,7 @@ import java.util.regex.Pattern;
  * <tr><td>x.isScalar()<td>Checks whether length == 1.
  * <tr><td>x.resize(r, c)<td>Resize the matrix to r rows and c columns, discarding the content.
  * <tr><td>x.reshape(r, c)<td>Resize the matrix to r rows and c columns.<br> Number of elements must not change.
+ * <caption>Size and size checks.</caption>
  * </table>
  * 
  * <p>The size is stored in the <tt>rows</tt> and <tt>columns</tt> member variables.
@@ -226,6 +233,7 @@ import java.util.regex.Pattern;
  * <tr>                     <td>x.dot(y) <td>scalar-product
  * <tr><td>x / y <td>x.div(y), y.rdiv(x) <td>rdiv divides right hand side by left hand side.
  * <tr><td>- x	 <td>x.neg()				<td>
+ * <caption>Basic arithmetics.</caption>
  * </table>
  * 
  * <p>There also exist operations which work on whole columns or rows.</p>
@@ -242,6 +250,7 @@ import java.util.regex.Pattern;
  * <tr><td>x.divColumnVector</td><td>Divide each column by a vector (elementwise)</td></tr>
  * <tr><td>x.mulRow</td>         <td>Multiplies a row by a scalar</td></tr>
  * <tr><td>x.mulColumn</td>      <td>Multiplies a column by a scalar</td></tr>
+ * <caption>Row and column arithmetics.</caption>
  * </table>
  * 
  * <p>In principle, you could achieve the same result by first calling getColumn(), 
@@ -257,6 +266,7 @@ import java.util.regex.Pattern;
  * <tr><td>x &gt;= y	<td>x.ge(y)
  * <tr><td>x == y		<td>x.eq(y)
  * <tr><td>x != y		<td>x.ne(y)
+ * <caption>Comparison operations.</caption>
  * </table>
  *
  * <p> Logical operations are also supported. For these operations, a value different from
@@ -265,10 +275,11 @@ import java.util.regex.Pattern;
  * 
  * <table class="my">
  * <tr><th>Operation <th>Method
- * <tr><td>x & y 	<td>x.and(y)
+ * <tr><td>x &amp; y 	<td>x.and(y)
  * <tr><td>x | y 	<td>x.or(y)
  * <tr><td>x ^ y	<td>x.xor(y)
  * <tr><td>! x		<td>x.not()
+ * <caption>Logical operations.</caption>
  * </table>
  * 
  * <p>Finally, there are a few more methods to compute various things:</p>
@@ -283,6 +294,7 @@ import java.util.regex.Pattern;
  * <tr><td>x.columnArgmins() <td>Return column-wise index of minima
  * <tr><td>x.columnMaxs() <td>Return column-wise maxima
  * <tr><td>x.columnArgmaxs() <td>Return column-wise index of maxima
+ * <caption>Minimum and maximum.</caption>
  * </table>
  * 
  * @author Mikio Braun, Johannes Schaback
@@ -311,7 +323,7 @@ public class DoubleMatrix implements Serializable {
      *
      **************************************************************************/
     /** Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
-     * using <i>newData></i> as the data. Note that any change to the DoubleMatrix
+     * using <i>newData</i> as the data. Note that any change to the DoubleMatrix
      * will change the input array, too.
      *
      * @param newRows the number of rows of the new matrix
@@ -382,8 +394,8 @@ public class DoubleMatrix implements Serializable {
      * is copied and any change to the DoubleMatrix will not change the input array.
      * The first dimension of the array makes the
      * rows (<i>n</i>) and the second dimension the columns (<i>m</i>). For example, the
-     * given code <br/><br/>
-     * <code>new DoubleMatrix(new double[][]{{1d, 2d, 3d}, {4d, 5d, 6d}, {7d, 8d, 9d}}).print();</code><br/><br/>
+     * given code <br><br>
+     * <code>new DoubleMatrix(new double[][]{{1d, 2d, 3d}, {4d, 5d, 6d}, {7d, 8d, 9d}}).print();</code><br><br>
      * will constructs the following matrix:
      * <pre>
      * 1.0	2.0	3.0
@@ -407,7 +419,7 @@ public class DoubleMatrix implements Serializable {
     }
 
     /**
-     * Creates a DoubleMatrix column vector from the given List&lt;Double&rt;.
+     * Creates a DoubleMatrix column vector from the given List&lt;Double&gt;.
      *
      * @param data data from which the entries are taken.
      */
@@ -796,7 +808,7 @@ public class DoubleMatrix implements Serializable {
         return result;
     }
 
-    /** Get elements from a column and rows <tt>a/tt> to <tt>b</tt>. */
+    /** Get elements from a column and rows <tt>a</tt> to <tt>b</tt>. */
     public DoubleMatrix getRowRange(int a, int b, int c) {
         DoubleMatrix result = new DoubleMatrix(b - a);
 
@@ -1898,7 +1910,7 @@ public class DoubleMatrix implements Serializable {
         return dup().isInfinitei();
     }
 
-    /** Checks whether all entries (i, j) with i >= j are zero. */
+    /** Checks whether all entries (i, j) with i &gt;= j are zero. */
     public boolean isLowerTriangular() {
       for (int i = 0; i < rows; i++)
         for (int j = i+1; j < columns; j++) {
@@ -1910,7 +1922,7 @@ public class DoubleMatrix implements Serializable {
     }
 
   /**
-   * Checks whether all entries (i, j) with i <= j are zero.
+   * Checks whether all entries (i, j) with i &lt;= j are zero.
    */
     public boolean isUpperTriangular() {
       for (int i = 0; i < rows; i++)

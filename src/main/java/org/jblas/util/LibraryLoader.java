@@ -134,9 +134,9 @@ public class LibraryLoader {
    * System.mapLibraryName(). For example, the library "foo" is called "libfoo.so"
    * under Linux and "foo.dll" under Windows, but you just have to pass "foo"
    * the loadLibrary().</p>
-   * <p/>
+   *
    * <p>I'm not quite sure if this doesn't open all kinds of security holes. Any ideas?</p>
-   * <p/>
+   *
    * <p>This function reports some more information to the "org.jblas" logger at
    * the FINE level.</p>
    *

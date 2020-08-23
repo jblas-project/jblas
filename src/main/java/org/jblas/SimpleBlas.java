@@ -44,12 +44,12 @@ import org.jblas.exceptions.*;
 import static org.jblas.util.Functions.*;
 
 /**
- * This class provides a cleaner direct interface to the BLAS routines by
- * extracting the parameters of the matrices from the matrices itself.
- * <p/>
- * For example, you can just pass the vector and do not have to pass the length,
+ * <p>This class provides a cleaner direct interface to the BLAS routines by
+ * extracting the parameters of the matrices from the matrices itself.</p>
+ *
+ * <p>For example, you can just pass the vector and do not have to pass the length,
  * corresponding DoubleBuffer, offset and step size explicitly.
- * <p/>
+ * </p>
  * Currently, all the general matrix routines are implemented.
  */
 public class SimpleBlas {
@@ -67,7 +67,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute x <- alpha * x (scale a matrix)
+	 * Compute x &lt;- alpha * x (scale a matrix)
 	 */
 	public static DoubleMatrix scal(double alpha, DoubleMatrix x) {
 		NativeBlas.dscal(x.length, alpha, x.data, 0, 1);
@@ -80,7 +80,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute y <- x (copy a matrix)
+	 * Compute y &lt;- x (copy a matrix)
 	 */
 	public static DoubleMatrix copy(DoubleMatrix x, DoubleMatrix y) {
 		//NativeBlas.dcopy(x.length, x.data, 0, 1, y.data, 0, 1);
@@ -94,7 +94,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute y <- alpha * x + y (elementwise addition)
+	 * Compute y &lt;- alpha * x + y (elementwise addition)
 	 */
 	public static DoubleMatrix axpy(double da, DoubleMatrix dx, DoubleMatrix dy) {
 		//NativeBlas.daxpy(dx.length, da, dx.data, 0, 1, dy.data, 0, 1);
@@ -175,7 +175,7 @@ public class SimpleBlas {
 	 */
 
 	/**
-	 * Compute y <- alpha*op(a)*x + beta * y (general matrix vector
+	 * Compute y &lt;- alpha*op(a)*x + beta * y (general matrix vector
 	 * multiplication)
 	 */
 	public static DoubleMatrix gemv(double alpha, DoubleMatrix a,
@@ -205,7 +205,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute A <- alpha * x * y^T + A (general rank-1 update)
+	 * Compute A &lt;- alpha * x * y^T + A (general rank-1 update)
 	 */
 	public static DoubleMatrix ger(double alpha, DoubleMatrix x,
 			DoubleMatrix y, DoubleMatrix a) {
@@ -215,7 +215,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute A <- alpha * x * y^T + A (general rank-1 update)
+	 * Compute A &lt;- alpha * x * y^T + A (general rank-1 update)
 	 */
 	public static ComplexDoubleMatrix geru(ComplexDouble alpha, ComplexDoubleMatrix x,
 			ComplexDoubleMatrix y, ComplexDoubleMatrix a) {
@@ -225,7 +225,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute A <- alpha * x * y^H + A (general rank-1 update)
+	 * Compute A &lt;- alpha * x * y^H + A (general rank-1 update)
 	 */
 	public static ComplexDoubleMatrix gerc(ComplexDouble alpha, ComplexDoubleMatrix x,
 			ComplexDoubleMatrix y, ComplexDoubleMatrix a) {
@@ -239,7 +239,7 @@ public class SimpleBlas {
 	 */
 
 	/**
-	 * Compute c <- a*b + beta * c (general matrix matrix
+	 * Compute c &lt;- a*b + beta * c (general matrix matrix
 	 * multiplication)
 	 */
 	public static DoubleMatrix gemm(double alpha, DoubleMatrix a,
@@ -394,7 +394,7 @@ public class SimpleBlas {
 				throw new LapackException("DSYGVD", "The leading minor of order " + (info - A.rows) + " of B is not positive definite.");
 		}
 	}
-	
+
 	public static int sygvx(int itype, char jobz, char range, char uplo, DoubleMatrix A,
 			DoubleMatrix B, double vl, double vu, int il, int iu, double abstol,
 			int[] m, DoubleMatrix W, DoubleMatrix Z) {
@@ -421,10 +421,10 @@ public class SimpleBlas {
 	 * Note that B must be padded to contain the solution matrix. This occurs when A has fewer rows
 	 * than columns.
 	 *
-	 * For example: in A * X = B, A is (m,n), X is (n,k) and B is (m,k). Now if m < n, since B is overwritten to contain
+	 * For example: in A * X = B, A is (m,n), X is (n,k) and B is (m,k). Now if m &lt; n, since B is overwritten to contain
 	 * the solution (in classical LAPACK style), B needs to be padded to be an (n,k) matrix.
 	 *
-	 * Likewise, if m > n, the solution consists only of the first n rows of B.
+	 * Likewise, if m &gt; n, the solution consists only of the first n rows of B.
 	 *
 	 * @param A an (m,n) matrix
 	 * @param B an (max(m,n), k) matrix (well, at least)
@@ -495,7 +495,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute x <- alpha * x (scale a matrix)
+	 * Compute x &lt;- alpha * x (scale a matrix)
 	 */
 	public static FloatMatrix scal(float alpha, FloatMatrix x) {
 		NativeBlas.sscal(x.length, alpha, x.data, 0, 1);
@@ -508,7 +508,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute y <- x (copy a matrix)
+	 * Compute y &lt;- x (copy a matrix)
 	 */
 	public static FloatMatrix copy(FloatMatrix x, FloatMatrix y) {
 		//NativeBlas.scopy(x.length, x.data, 0, 1, y.data, 0, 1);
@@ -522,7 +522,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute y <- alpha * x + y (elementwise addition)
+	 * Compute y &lt;- alpha * x + y (elementwise addition)
 	 */
 	public static FloatMatrix axpy(float da, FloatMatrix dx, FloatMatrix dy) {
 		//NativeBlas.saxpy(dx.length, da, dx.data, 0, 1, dy.data, 0, 1);
@@ -603,7 +603,7 @@ public class SimpleBlas {
 	 */
 
 	/**
-	 * Compute y <- alpha*op(a)*x + beta * y (general matrix vector
+	 * Compute y &lt;- alpha*op(a)*x + beta * y (general matrix vector
 	 * multiplication)
 	 */
 	public static FloatMatrix gemv(float alpha, FloatMatrix a,
@@ -633,7 +633,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute A <- alpha * x * y^T + A (general rank-1 update)
+	 * Compute A &lt;- alpha * x * y^T + A (general rank-1 update)
 	 */
 	public static FloatMatrix ger(float alpha, FloatMatrix x,
 			FloatMatrix y, FloatMatrix a) {
@@ -643,7 +643,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute A <- alpha * x * y^T + A (general rank-1 update)
+	 * Compute A &lt;- alpha * x * y^T + A (general rank-1 update)
 	 */
 	public static ComplexFloatMatrix geru(ComplexFloat alpha, ComplexFloatMatrix x,
 			ComplexFloatMatrix y, ComplexFloatMatrix a) {
@@ -653,7 +653,7 @@ public class SimpleBlas {
 	}
 
 	/**
-	 * Compute A <- alpha * x * y^H + A (general rank-1 update)
+	 * Compute A &lt;- alpha * x * y^H + A (general rank-1 update)
 	 */
 	public static ComplexFloatMatrix gerc(ComplexFloat alpha, ComplexFloatMatrix x,
 			ComplexFloatMatrix y, ComplexFloatMatrix a) {
@@ -667,7 +667,7 @@ public class SimpleBlas {
 	 */
 
 	/**
-	 * Compute c <- a*b + beta * c (general matrix matrix
+	 * Compute c &lt;- a*b + beta * c (general matrix matrix
 	 * multiplication)
 	 */
 	public static FloatMatrix gemm(float alpha, FloatMatrix a,
@@ -815,7 +815,7 @@ public class SimpleBlas {
 				throw new LapackException("DSYGVD", "The leading minor of order " + (info - A.rows) + " of B is not positive definite.");
 		}
 	}
-	
+
 	public static int sygvx(int itype, char jobz, char range, char uplo, FloatMatrix A,
 			FloatMatrix B, float vl, float vu, int il, int iu, float abstol,
 			int[] m, FloatMatrix W, FloatMatrix Z) {
@@ -842,10 +842,10 @@ public class SimpleBlas {
 	 * Note that B must be padded to contain the solution matrix. This occurs when A has fewer rows
 	 * than columns.
 	 *
-	 * For example: in A * X = B, A is (m,n), X is (n,k) and B is (m,k). Now if m < n, since B is overwritten to contain
+	 * For example: in A * X = B, A is (m,n), X is (n,k) and B is (m,k). Now if m &lt; n, since B is overwritten to contain
 	 * the solution (in classical LAPACK style), B needs to be padded to be an (n,k) matrix.
 	 *
-	 * Likewise, if m > n, the solution consists only of the first n rows of B.
+	 * Likewise, if m &gt; n, the solution consists only of the first n rows of B.
 	 *
 	 * @param A an (m,n) matrix
 	 * @param B an (max(m,n), k) matrix (well, at least)

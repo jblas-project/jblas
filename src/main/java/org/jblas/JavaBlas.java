@@ -92,7 +92,7 @@ public class JavaBlas {
         }
     }
 
-    /** Compute dy <- da * dx + dy. */
+    /** Compute dy &lt;- da * dx + dy. */
     public static void raxpy(int n, double da, double[] dx, int dxIdx, int incx, double[] dy, int dyIdx, int incy) {
         if (dxIdx < 0 || dxIdx + (n - 1) * incx >= dx.length) {
             throw new LapackException("Java.raxpy", "Parameters for x aren't valid! (n = " + n + ", dx.length = " + dx.length + ", dxIdx = " + dxIdx + ", incx = " + incx + ")");
@@ -125,7 +125,7 @@ public class JavaBlas {
         }
     }
 
-    /** Computes dz <- dx + dy */
+    /** Computes dz &lt;- dx + dy */
     public static void rzaxpy(int n, double[] dz, int dzIdx, int incz, double da, double[] dx, int dxIdx, int incx, double[] dy, int dyIdx, int incy) {
         if (dxIdx == 0 && incx == 1 && dyIdx == 0 && incy == 1 && dzIdx == 0 && incz == 1) {
             if (da == 1.0) {
@@ -207,7 +207,7 @@ public class JavaBlas {
         }
     }
 
-    /** Compute dy <- da * dx + dy. */
+    /** Compute dy &lt;- da * dx + dy. */
     public static void raxpy(int n, float da, float[] dx, int dxIdx, int incx, float[] dy, int dyIdx, int incy) {
         if (dxIdx < 0 || dxIdx + (n - 1) * incx >= dx.length) {
             throw new LapackException("Java.raxpy", "Parameters for x aren't valid! (n = " + n + ", dx.length = " + dx.length + ", dxIdx = " + dxIdx + ", incx = " + incx + ")");
@@ -240,7 +240,7 @@ public class JavaBlas {
         }
     }
 
-    /** Computes dz <- dx + dy */
+    /** Computes dz &lt;- dx + dy */
     public static void rzaxpy(int n, float[] dz, int dzIdx, int incz, float da, float[] dx, int dxIdx, int incx, float[] dy, int dyIdx, int incy) {
         if (dxIdx == 0 && incx == 1 && dyIdx == 0 && incy == 1 && dzIdx == 0 && incz == 1) {
             if (da == 1.0f) {

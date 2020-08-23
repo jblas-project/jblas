@@ -60,7 +60,7 @@ public class ComplexDoubleMatrix {
 
 	/**
    * Create a new matrix with <i>newRows</i> rows, <i>newColumns</i> columns
-	 * using <i>newData></i> as the data.
+	 * using <i>newData</i> as the data.
 	 */
 	public ComplexDoubleMatrix(int newRows, int newColumns, double... newData) {
 		rows = newRows;
@@ -144,8 +144,8 @@ public class ComplexDoubleMatrix {
 	 * Creates a new <i>n</i> times <i>m</i> <tt>ComplexDoubleMatrix</tt> from
 	 * the given <i>n</i> times <i>m</i> 2D data array. The first dimension of the array makes the
 	 * rows (<i>n</i>) and the second dimension the columns (<i>m</i>). For example, the
-	 * given code <br/><br/>
-	 * <code>new ComplexDoubleMatrix(new double[][]{{1d, 2d, 3d}, {4d, 5d, 6d}, {7d, 8d, 9d}}).print();</code><br/><br/>
+	 * given code <br><br>
+	 * <code>new ComplexDoubleMatrix(new double[][]{{1d, 2d, 3d}, {4d, 5d, 6d}, {7d, 8d, 9d}}).print();</code><br><br>
 	 * will constructs the following matrix:
 	 * <pre>
 	 * 1.0	2.0	3.0

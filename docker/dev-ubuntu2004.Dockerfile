@@ -2,8 +2,6 @@
 
 FROM ubuntu:20.04
 
-ENV JBLAS_VERSION=1.2.5
-
 RUN apt-get update
 RUN apt-get -y install less htop build-essential vim ruby
 RUN apt-get -y install openjdk-8-jdk-headless maven ant

@@ -44,7 +44,7 @@ package org.jblas.exceptions;
 public class LapackArgumentException extends LapackException {
     /** 
      * Construct exception for given function and info. Message
-     * will read "Argument <info> had an illegal value.");
+     * will read "Argument &lt;info&gt; had an illegal value.");
      */
 	public LapackArgumentException(String function, int info) {
 		super(function, "Argument " + info + " had an illegal value.");
