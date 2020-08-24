@@ -110,7 +110,7 @@ static void throwIllegalArgumentException(JNIEnv *env, const char *message)
 /**********************************************************************/
 
 static char *routine_names[] = {
- "CAXPY",  "CCOPY",  "CDOTC",  "CDOTU",  "CGEEV",  "CGEMM",  "CGEMV",  "CGERC",  "CGERU",  "CGESVD",  "CSCAL",  "CSSCAL",  "CSWAP",  "DASUM",  "DAXPY",  "DCOPY",  "DDOT",  "DGEEV",  "DGELSD",  "DGEMM",  "DGEMV",  "DGEQRF",  "DGER",  "DGESV",  "DGESVD",  "DGETRF",  "DNRM2",  "DORGQR",  "DORMQR",  "DPOSV",  "DPOTRF",  "DSCAL",  "DSWAP",  "DSYEV",  "DSYEVD",  "DSYEVR",  "DSYEVX",  "DSYGVD",  "DSYGVX",  "DSYSV",  "DZASUM",  "DZNRM2",  "ICAMAX",  "IDAMAX",  "ILAENV",  "ISAMAX",  "IZAMAX",  "SASUM",  "SAXPY",  "SCASUM",  "SCNRM2",  "SCOPY",  "SDOT",  "SGEEV",  "SGELSD",  "SGEMM",  "SGEMV",  "SGEQRF",  "SGER",  "SGESV",  "SGESVD",  "SGETRF",  "SNRM2",  "SORGQR",  "SORMQR",  "SPOSV",  "SPOTRF",  "SSCAL",  "SSWAP",  "SSYEV",  "SSYEVD",  "SSYEVR",  "SSYEVX",  "SSYGVD",  "SSYGVX",  "SSYSV",  "ZAXPY",  "ZCOPY",  "ZDOTC",  "ZDOTU",  "ZDSCAL",  "ZGEEV",  "ZGEMM",  "ZGEMV",  "ZGERC",  "ZGERU",  "ZGESVD",  "ZSCAL",  "ZSWAP", 	0
+ "CAXPY",  "CCOPY",  "CDOTC",  "CDOTU",  "CGEEV",  "CGEMM",  "CGEMV",  "CGERC",  "CGERU",  "CGESVD",  "CHEEV",  "CSCAL",  "CSSCAL",  "CSWAP",  "DASUM",  "DAXPY",  "DCOPY",  "DDOT",  "DGEEV",  "DGELSD",  "DGEMM",  "DGEMV",  "DGEQRF",  "DGER",  "DGESV",  "DGESVD",  "DGETRF",  "DNRM2",  "DORGQR",  "DORMQR",  "DPOSV",  "DPOTRF",  "DSCAL",  "DSWAP",  "DSYEV",  "DSYEVD",  "DSYEVR",  "DSYEVX",  "DSYGVD",  "DSYGVX",  "DSYSV",  "DZASUM",  "DZNRM2",  "ICAMAX",  "IDAMAX",  "ILAENV",  "ISAMAX",  "IZAMAX",  "SASUM",  "SAXPY",  "SCASUM",  "SCNRM2",  "SCOPY",  "SDOT",  "SGEEV",  "SGELSD",  "SGEMM",  "SGEMV",  "SGEQRF",  "SGER",  "SGESV",  "SGESVD",  "SGETRF",  "SNRM2",  "SORGQR",  "SORMQR",  "SPOSV",  "SPOTRF",  "SSCAL",  "SSWAP",  "SSYEV",  "SSYEVD",  "SSYEVR",  "SSYEVX",  "SSYGVD",  "SSYGVX",  "SSYSV",  "ZAXPY",  "ZCOPY",  "ZDOTC",  "ZDOTU",  "ZDSCAL",  "ZGEEV",  "ZGEMM",  "ZGEMV",  "ZGERC",  "ZGERU",  "ZGESVD",  "ZHEEV",  "ZSCAL",  "ZSWAP", 	0
 };
 
 static char *routine_arguments[][23] = {
@@ -124,6 +124,7 @@ static char *routine_arguments[][23] = {
    { "M", "N", "ALPHA", "X", "INCX", "Y", "INCY", "A", "LDA" }, 
    { "M", "N", "ALPHA", "X", "INCX", "Y", "INCY", "A", "LDA" }, 
    { "JOBU", "JOBVT", "M", "N", "A", "LDA", "S", "U", "LDU", "VT", "LDVT", "WORK", "LWORK", "RWORK", "INFO" }, 
+   { "JOBZ", "UPLO", "N", "A", "LDA", "W", "WORK", "LWORK", "RWORK", "INFO" }, 
    { "N", "CA", "CX", "INCX" }, 
    { "N", "SA", "CX", "INCX" }, 
    { "N", "CX", "INCX", "CY", "INCY" }, 
@@ -201,6 +202,7 @@ static char *routine_arguments[][23] = {
    { "M", "N", "ALPHA", "X", "INCX", "Y", "INCY", "A", "LDA" }, 
    { "M", "N", "ALPHA", "X", "INCX", "Y", "INCY", "A", "LDA" }, 
    { "JOBU", "JOBVT", "M", "N", "A", "LDA", "S", "U", "LDU", "VT", "LDVT", "WORK", "LWORK", "RWORK", "INFO" }, 
+   { "JOBZ", "UPLO", "N", "A", "LDA", "W", "WORK", "LWORK", "RWORK", "INFO" }, 
    { "N", "ZA", "ZX", "INCX" }, 
    { "N", "ZX", "INCX", "ZY", "INCY" }, 
 };
@@ -5246,6 +5248,164 @@ JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_ssygvx(JNIEnv *env, jclass this
   if(iworkPtrBase) {
     (*env)->ReleaseIntArrayElements(env, iwork, iworkPtrBase, JNI_ABORT);
     iworkPtrBase = 0;
+  }
+
+  return info;
+}
+
+JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_cheev(JNIEnv *env, jclass this, jchar jobz, jchar uplo, jint n, jfloatArray a, jint aIdx, jint lda, jfloatArray w, jint wIdx, jfloatArray work, jint workIdx, jint lwork, jfloatArray rwork, jint rworkIdx)
+{
+  extern void cheev_(char *, char *, jint *, jfloat *, jint *, jfloat *, jfloat *, jint *, jfloat *, int *);
+  
+  char jobzChr = (char) jobz;
+  char uploChr = (char) uplo;
+  jfloat *rworkPtrBase = 0, *rworkPtr = 0;
+  if (rwork) {
+    rworkPtrBase = (*env)->GetFloatArrayElements(env, rwork, NULL);
+    rworkPtr = rworkPtrBase + rworkIdx;
+  }
+  jfloat *aPtrBase = 0, *aPtr = 0;
+  if (a) {
+    if((*env)->IsSameObject(env, a, rwork) == JNI_TRUE)
+      aPtrBase = rworkPtrBase;
+    else
+      aPtrBase = (*env)->GetFloatArrayElements(env, a, NULL);
+    aPtr = aPtrBase + 2*aIdx;
+  }
+  jfloat *wPtrBase = 0, *wPtr = 0;
+  if (w) {
+    if((*env)->IsSameObject(env, w, rwork) == JNI_TRUE)
+      wPtrBase = rworkPtrBase;
+    else
+      if((*env)->IsSameObject(env, w, a) == JNI_TRUE)
+      wPtrBase = aPtrBase;
+    else
+      wPtrBase = (*env)->GetFloatArrayElements(env, w, NULL);
+    wPtr = wPtrBase + wIdx;
+  }
+  jfloat *workPtrBase = 0, *workPtr = 0;
+  if (work) {
+    if((*env)->IsSameObject(env, work, rwork) == JNI_TRUE)
+      workPtrBase = rworkPtrBase;
+    else
+      if((*env)->IsSameObject(env, work, a) == JNI_TRUE)
+      workPtrBase = aPtrBase;
+    else
+      if((*env)->IsSameObject(env, work, w) == JNI_TRUE)
+      workPtrBase = wPtrBase;
+    else
+      workPtrBase = (*env)->GetFloatArrayElements(env, work, NULL);
+    workPtr = workPtrBase + 2*workIdx;
+  }
+  int info;
+
+  cheev_(&jobzChr, &uploChr, &n, aPtr, &lda, wPtr, workPtr, &lwork, rworkPtr, &info);
+  if(workPtrBase) {
+    (*env)->ReleaseFloatArrayElements(env, work, workPtrBase, 0);
+    if (workPtrBase == rworkPtrBase)
+      rworkPtrBase = 0;
+    if (workPtrBase == aPtrBase)
+      aPtrBase = 0;
+    if (workPtrBase == wPtrBase)
+      wPtrBase = 0;
+    workPtrBase = 0;
+  }
+  if(wPtrBase) {
+    (*env)->ReleaseFloatArrayElements(env, w, wPtrBase, 0);
+    if (wPtrBase == rworkPtrBase)
+      rworkPtrBase = 0;
+    if (wPtrBase == aPtrBase)
+      aPtrBase = 0;
+    wPtrBase = 0;
+  }
+  if(aPtrBase) {
+    (*env)->ReleaseFloatArrayElements(env, a, aPtrBase, 0);
+    if (aPtrBase == rworkPtrBase)
+      rworkPtrBase = 0;
+    aPtrBase = 0;
+  }
+  if(rworkPtrBase) {
+    (*env)->ReleaseFloatArrayElements(env, rwork, rworkPtrBase, JNI_ABORT);
+    rworkPtrBase = 0;
+  }
+
+  return info;
+}
+
+JNIEXPORT jint JNICALL Java_org_jblas_NativeBlas_zheev(JNIEnv *env, jclass this, jchar jobz, jchar uplo, jint n, jdoubleArray a, jint aIdx, jint lda, jdoubleArray w, jint wIdx, jdoubleArray work, jint workIdx, jint lwork, jdoubleArray rwork, jint rworkIdx)
+{
+  extern void zheev_(char *, char *, jint *, jdouble *, jint *, jdouble *, jdouble *, jint *, jdouble *, int *);
+  
+  char jobzChr = (char) jobz;
+  char uploChr = (char) uplo;
+  jdouble *rworkPtrBase = 0, *rworkPtr = 0;
+  if (rwork) {
+    rworkPtrBase = (*env)->GetDoubleArrayElements(env, rwork, NULL);
+    rworkPtr = rworkPtrBase + rworkIdx;
+  }
+  jdouble *aPtrBase = 0, *aPtr = 0;
+  if (a) {
+    if((*env)->IsSameObject(env, a, rwork) == JNI_TRUE)
+      aPtrBase = rworkPtrBase;
+    else
+      aPtrBase = (*env)->GetDoubleArrayElements(env, a, NULL);
+    aPtr = aPtrBase + 2*aIdx;
+  }
+  jdouble *wPtrBase = 0, *wPtr = 0;
+  if (w) {
+    if((*env)->IsSameObject(env, w, rwork) == JNI_TRUE)
+      wPtrBase = rworkPtrBase;
+    else
+      if((*env)->IsSameObject(env, w, a) == JNI_TRUE)
+      wPtrBase = aPtrBase;
+    else
+      wPtrBase = (*env)->GetDoubleArrayElements(env, w, NULL);
+    wPtr = wPtrBase + wIdx;
+  }
+  jdouble *workPtrBase = 0, *workPtr = 0;
+  if (work) {
+    if((*env)->IsSameObject(env, work, rwork) == JNI_TRUE)
+      workPtrBase = rworkPtrBase;
+    else
+      if((*env)->IsSameObject(env, work, a) == JNI_TRUE)
+      workPtrBase = aPtrBase;
+    else
+      if((*env)->IsSameObject(env, work, w) == JNI_TRUE)
+      workPtrBase = wPtrBase;
+    else
+      workPtrBase = (*env)->GetDoubleArrayElements(env, work, NULL);
+    workPtr = workPtrBase + 2*workIdx;
+  }
+  int info;
+
+  zheev_(&jobzChr, &uploChr, &n, aPtr, &lda, wPtr, workPtr, &lwork, rworkPtr, &info);
+  if(workPtrBase) {
+    (*env)->ReleaseDoubleArrayElements(env, work, workPtrBase, 0);
+    if (workPtrBase == rworkPtrBase)
+      rworkPtrBase = 0;
+    if (workPtrBase == aPtrBase)
+      aPtrBase = 0;
+    if (workPtrBase == wPtrBase)
+      wPtrBase = 0;
+    workPtrBase = 0;
+  }
+  if(wPtrBase) {
+    (*env)->ReleaseDoubleArrayElements(env, w, wPtrBase, 0);
+    if (wPtrBase == rworkPtrBase)
+      rworkPtrBase = 0;
+    if (wPtrBase == aPtrBase)
+      aPtrBase = 0;
+    wPtrBase = 0;
+  }
+  if(aPtrBase) {
+    (*env)->ReleaseDoubleArrayElements(env, a, aPtrBase, 0);
+    if (aPtrBase == rworkPtrBase)
+      rworkPtrBase = 0;
+    aPtrBase = 0;
+  }
+  if(rworkPtrBase) {
+    (*env)->ReleaseDoubleArrayElements(env, rwork, rworkPtrBase, JNI_ABORT);
+    rworkPtrBase = 0;
   }
 
   return info;

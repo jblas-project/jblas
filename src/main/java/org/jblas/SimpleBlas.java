@@ -379,6 +379,25 @@ public class SimpleBlas {
 		return info;
 	}
 
+    public static int cgeev(char jobvl, char jobvr, ComplexDoubleMatrix A, ComplexDoubleMatrix W,
+                            ComplexDoubleMatrix VL, ComplexDoubleMatrix VR) {
+        double[] rwork = new double[A.rows*2];
+        int info = NativeBlas.zgeev(jobvl, jobvr, A.rows, A.data, 0, A.rows, W.data, 0, VL.data, 0, VL.rows,
+                VR.data, 0, VR.rows, rwork, 0);
+        if (info > 0)
+            throw new LapackConvergenceException("CGEEV", "First " + info + " eigenvalues have not converged.");
+        return info;
+    }
+
+    public static int cheev(char jobz, char uplo, ComplexDoubleMatrix A, DoubleMatrix W) {
+		double[] rwork = new double[3*A.rows-2];
+		int info = NativeBlas.zheev(jobz, uplo, A.rows, A.data, 0, A.rows, W.data, 0, rwork, 0);
+		if (info > 0)
+            throw new LapackConvergenceException("CGEEV", "Eigenvalues could not be computed " + info
+                            + " off-diagonal elements did not converge");
+        return info;
+	}
+
 	public static int sygvd(int itype, char jobz, char uplo, DoubleMatrix A, DoubleMatrix B, DoubleMatrix W) {
 		int info = NativeBlas.dsygvd(itype, jobz, uplo, A.rows, A.data, 0, A.rows, B.data, 0, B.rows, W.data, 0);
 		if (info == 0)
@@ -798,6 +817,25 @@ public class SimpleBlas {
 		if (info > 0)
 			throw new LapackConvergenceException("DGEEV", "First " + info + " eigenvalues have not converged.");
 		return info;
+	}
+
+    public static int cgeev(char jobvl, char jobvr, ComplexFloatMatrix A, ComplexFloatMatrix W,
+                            ComplexFloatMatrix VL, ComplexFloatMatrix VR) {
+        float[] rwork = new float[A.rows*2];
+        int info = NativeBlas.cgeev(jobvl, jobvr, A.rows, A.data, 0, A.rows, W.data, 0, VL.data, 0, VL.rows,
+                VR.data, 0, VR.rows, rwork, 0);
+        if (info > 0)
+            throw new LapackConvergenceException("CGEEV", "First " + info + " eigenvalues have not converged.");
+        return info;
+    }
+
+    public static int cheev(char jobz, char uplo, ComplexFloatMatrix A, FloatMatrix W) {
+		float[] rwork = new float[3*A.rows-2];
+		int info = NativeBlas.cheev(jobz, uplo, A.rows, A.data, 0, A.rows, W.data, 0, rwork, 0);
+		if (info > 0)
+            throw new LapackConvergenceException("CGEEV", "Eigenvalues could not be computed " + info
+                            + " off-diagonal elements did not converge");
+        return info;
 	}
 
 	public static int sygvd(int itype, char jobz, char uplo, FloatMatrix A, FloatMatrix B, FloatMatrix W) {

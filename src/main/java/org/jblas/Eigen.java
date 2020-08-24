@@ -51,6 +51,7 @@ import org.jblas.ranges.Range;
  */
 public class Eigen {
     private static final DoubleMatrix dummyDouble = new DoubleMatrix(1);
+    private static final ComplexDoubleMatrix dummyComplexDouble = new ComplexDoubleMatrix(1);
 
     /**
      * Compute the eigenvalues for a symmetric matrix.
@@ -87,7 +88,6 @@ public class Eigen {
         DoubleMatrix WR = new DoubleMatrix(A.rows);
         DoubleMatrix WI = WR.dup();
         SimpleBlas.geev('N', 'N', A.dup(), WR, WI, dummyDouble, dummyDouble);
-
         return new ComplexDoubleMatrix(WR, WI);
     }
 
@@ -306,10 +306,70 @@ public class Eigen {
     return result;
   }
 
+  /**
+   * Computes the eigenvalues of a complex matrix.
+   */
+  public static ComplexDoubleMatrix eigenvalues(ComplexDoubleMatrix A) {
+      A.assertSquare();
+      ComplexDoubleMatrix W = new ComplexDoubleMatrix(A.rows);
+      SimpleBlas.cgeev('N', 'N', A.dup(), W, dummyComplexDouble, dummyComplexDouble);
+      return W;
+  }
+
+  /**
+   * Computes the eigenvalues and eigenvectors of a complex matrix.
+   *
+   * @return an array of ComplexDoubleMatrix objects containing the (right) eigenvectors
+   *         stored as the columns of the first matrix, and the eigenvalues as the
+   *         diagonal elements of the second matrix.
+   */
+  public static ComplexDoubleMatrix[] eigenvectors(ComplexDoubleMatrix A) {
+      A.assertSquare();
+      // setting up result arrays
+      ComplexDoubleMatrix W = new ComplexDoubleMatrix(A.rows);
+      ComplexDoubleMatrix VR = new ComplexDoubleMatrix(A.rows, A.rows);
+
+      SimpleBlas.cgeev('N', 'V', A.dup(), W, dummyComplexDouble, VR);
+      return new ComplexDoubleMatrix[]{VR, ComplexDoubleMatrix.diag(W)};
+}
+
+    /**
+     * Computes the eigenvalues of a complex Hermitian matrix.
+     *
+     * Assumes that the input is an Hermitian matrix.
+     */
+    public static DoubleMatrix hermitianEigenvalues(ComplexDoubleMatrix A) {
+        A.assertSquare();
+        DoubleMatrix W = new DoubleMatrix(A.rows);
+        SimpleBlas.cheev('N', 'U', A.dup(), W);
+        return W;
+    }
+
+    /**
+     * Computes the eigenvalues and eigenvectors of a complex Hermitian matrix.
+     *
+     * Assumes that the input is an Hermitian matrix.
+     *
+     * @return an array of ComplexDoubleMatrix objects containing the orthonormal eigenvectors
+     *         stored as the columns of the first matrix, and the eigenvalues (in ascending order)
+     *         as the diagonal elements of the second matrix.
+     */
+    public static ComplexDoubleMatrix[] hermitianEigenvectors(ComplexDoubleMatrix A) {
+        A.assertSquare();
+        // setting up result arrays
+        DoubleMatrix W = new DoubleMatrix(A.rows);
+        ComplexDoubleMatrix eigenvectors = A.dup();
+
+        SimpleBlas.cheev('V', 'U', eigenvectors, W);
+        return new ComplexDoubleMatrix[]{eigenvectors, ComplexDoubleMatrix.diag(W.toComplex())};
+    }
+
+
 //BEGIN
   // The code below has been automatically generated.
   // DO NOT EDIT!
     private static final FloatMatrix dummyFloat = new FloatMatrix(1);
+    private static final ComplexFloatMatrix dummyComplexFloat = new ComplexFloatMatrix(1);
 
     /**
      * Compute the eigenvalues for a symmetric matrix.
@@ -346,7 +406,6 @@ public class Eigen {
         FloatMatrix WR = new FloatMatrix(A.rows);
         FloatMatrix WI = WR.dup();
         SimpleBlas.geev('N', 'N', A.dup(), WR, WI, dummyFloat, dummyFloat);
-
         return new ComplexFloatMatrix(WR, WI);
     }
 
@@ -564,6 +623,65 @@ public class Eigen {
     result[1] = W.get(r, 0);
     return result;
   }
+
+  /**
+   * Computes the eigenvalues of a complex matrix.
+   */
+  public static ComplexFloatMatrix eigenvalues(ComplexFloatMatrix A) {
+      A.assertSquare();
+      ComplexFloatMatrix W = new ComplexFloatMatrix(A.rows);
+      SimpleBlas.cgeev('N', 'N', A.dup(), W, dummyComplexFloat, dummyComplexFloat);
+      return W;
+  }
+
+  /**
+   * Computes the eigenvalues and eigenvectors of a complex matrix.
+   *
+   * @return an array of ComplexFloatMatrix objects containing the (right) eigenvectors
+   *         stored as the columns of the first matrix, and the eigenvalues as the
+   *         diagonal elements of the second matrix.
+   */
+  public static ComplexFloatMatrix[] eigenvectors(ComplexFloatMatrix A) {
+      A.assertSquare();
+      // setting up result arrays
+      ComplexFloatMatrix W = new ComplexFloatMatrix(A.rows);
+      ComplexFloatMatrix VR = new ComplexFloatMatrix(A.rows, A.rows);
+
+      SimpleBlas.cgeev('N', 'V', A.dup(), W, dummyComplexFloat, VR);
+      return new ComplexFloatMatrix[]{VR, ComplexFloatMatrix.diag(W)};
+}
+
+    /**
+     * Computes the eigenvalues of a complex Hermitian matrix.
+     *
+     * Assumes that the input is an Hermitian matrix.
+     */
+    public static FloatMatrix hermitianEigenvalues(ComplexFloatMatrix A) {
+        A.assertSquare();
+        FloatMatrix W = new FloatMatrix(A.rows);
+        SimpleBlas.cheev('N', 'U', A.dup(), W);
+        return W;
+    }
+
+    /**
+     * Computes the eigenvalues and eigenvectors of a complex Hermitian matrix.
+     *
+     * Assumes that the input is an Hermitian matrix.
+     *
+     * @return an array of ComplexFloatMatrix objects containing the orthonormal eigenvectors
+     *         stored as the columns of the first matrix, and the eigenvalues (in ascending order)
+     *         as the diagonal elements of the second matrix.
+     */
+    public static ComplexFloatMatrix[] hermitianEigenvectors(ComplexFloatMatrix A) {
+        A.assertSquare();
+        // setting up result arrays
+        FloatMatrix W = new FloatMatrix(A.rows);
+        ComplexFloatMatrix eigenvectors = A.dup();
+
+        SimpleBlas.cheev('V', 'U', eigenvectors, W);
+        return new ComplexFloatMatrix[]{eigenvectors, ComplexFloatMatrix.diag(W.toComplex())};
+    }
+
 
 //END
 }
