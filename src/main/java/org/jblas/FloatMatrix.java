@@ -2883,8 +2883,6 @@ public class FloatMatrix implements Serializable {
         }
         is.close();
 
-        System.out.println("Done reading file");
-
         FloatMatrix result = new FloatMatrix(rows.size(), columns);
         int r = 0;
         Iterator<FloatMatrix> ri = rows.iterator();

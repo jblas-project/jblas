@@ -2883,8 +2883,6 @@ public class DoubleMatrix implements Serializable {
         }
         is.close();
 
-        System.out.println("Done reading file");
-
         DoubleMatrix result = new DoubleMatrix(rows.size(), columns);
         int r = 0;
         Iterator<DoubleMatrix> ri = rows.iterator();
