@@ -20,9 +20,6 @@ see also the file RELEASE_NOTES
 
 Homepage: http://jblas.org
 
-![travis status](https://travis-ci.org/mikiobraun/jblas.png)
-Travis Page: https://travis-ci.org/mikiobraun/jblas
-
 INSTALL
 -------
 
