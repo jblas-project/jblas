@@ -26,8 +26,8 @@ Travis Page: https://travis-ci.org/mikiobraun/jblas
 INSTALL
 -------
 
-In principle, all you need is the jblas-1.2.4.jar in your
-classpath. jblas-1.2.4.jar will then automagically extract your platform
+In principle, all you need is the jblas-1.2.5.jar in your
+classpath. jblas-1.2.5.jar will then automagically extract your platform
 dependent native library to a tempfile and load it from there. You can
 also put that file somewhere in your load path ($LD_LIBRARY_PATH for
 Linux, %PATH for Windows).
@@ -38,7 +38,7 @@ Or, use the following dependency in maven
   <dependency>
     <groupId>org.jblas</groupId>
     <artifactId>jblas</artifactId>
-    <version>1.2.4</version>
+    <version>1.2.5</version>
   </dependency>
 ```
 
@@ -70,7 +70,7 @@ Have a look at javadoc/index.html and
 javadoc/org/jblas/DoubleMatrix.html
 
 If you want to validate your installation and get some performance
-numbers, try "java -jar jblas-1.2.4.jar".
+numbers, try "java -jar jblas-1.2.5.jar".
 
 
 LICENSE
