@@ -62,13 +62,30 @@
           <target>1.7</target>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>biz.aQute.bnd</groupId>
+        <artifactId>bnd-maven-plugin</artifactId>
+        <version>2.4.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>bnd-process</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
       <!-- some config for the jar -->
+      <!-- The following configuration is required because bnd-maven-plugin 
+           generates the manifest to target/classes/META-INF/MANIFEST.MF but the normal 
+           maven-jar-plugin does not use it. If the jar-plugin is patched to pick up 
+           the manifest from this location, then the following config is not needed. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.3.1</version>
         <configuration>
+          <useDefaultManifestFile>true</useDefaultManifestFile>
           <archive>
             <manifest>
               <mainClass>org.jblas.benchmark.Main</mainClass>
