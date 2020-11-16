@@ -176,10 +176,14 @@ EOS
         elsif CONFIG['OS_NAME'] == 'Mac\ OS\ X'
           print "Looking for where libgfortran.a is... "
           libgfortran_path = %x(gfortran -print-file-name=libgfortran.a).strip
+          libquadmath_path = %x(gfortran -print-file-name=libquadmath.a).strip
           puts "(#{libgfortran_path})"
+          puts "(#{libquadmath_path})"
           CONFIG['LOADLIBES'] += [libgfortran_path]
+          CONFIG['LOADLIBES'] += [libquadmath_path]
         else
           CONFIG['LOADLIBES'] += ['-l:libgfortran.a']
+          CONFIG['LOADLIBES'] += ['-l:libquadmath.a']
         end
       end
     #if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
