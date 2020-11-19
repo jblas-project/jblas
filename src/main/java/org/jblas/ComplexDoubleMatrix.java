@@ -1659,7 +1659,7 @@ public class ComplexDoubleMatrix {
 	  gen_overloads('mul', 'rows', 'columns'),
 	  gen_overloads('mmul', 'rows', 'other.columns'),
 	  gen_compare('eq', 'eq'),
-	  gen_compare('ne', 'eq'),
+	  gen_compare('ne', 'ne'),
 	  gen_logical('and', '&'),
 	  gen_logical('or', '|'),
 	  gen_logical('xor', '^'))
@@ -1903,7 +1903,7 @@ public class ComplexDoubleMatrix {
                 ComplexDouble c2 = new ComplexDouble(0.0);
           
                 for (int i = 0; i < length; i++)
-                    result.put(i, get(i, c1).eq(other.get(i, c2)) ? 1.0 : 0.0);
+                    result.put(i, get(i, c1).ne(other.get(i, c2)) ? 1.0 : 0.0);
 	   return result;
 	 }
 	 
@@ -1919,7 +1919,7 @@ public class ComplexDoubleMatrix {
 	   ensureResultLength(null, result);
            ComplexDouble c = new ComplexDouble(0.0);
 	   for (int i = 0; i < length; i++)
-	     result.put(i, get(i, c).eq(value) ? 1.0 : 0.0);
+	     result.put(i, get(i, c).ne(value) ? 1.0 : 0.0);
 	   return result;
 	 }
 

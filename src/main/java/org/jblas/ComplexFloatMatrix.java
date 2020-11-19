@@ -1659,7 +1659,7 @@ public class ComplexFloatMatrix {
 	  gen_overloads('mul', 'rows', 'columns'),
 	  gen_overloads('mmul', 'rows', 'other.columns'),
 	  gen_compare('eq', 'eq'),
-	  gen_compare('ne', 'eq'),
+	  gen_compare('ne', 'ne'),
 	  gen_logical('and', '&'),
 	  gen_logical('or', '|'),
 	  gen_logical('xor', '^'))
@@ -1903,7 +1903,7 @@ public class ComplexFloatMatrix {
                 ComplexFloat c2 = new ComplexFloat(0.0f);
           
                 for (int i = 0; i < length; i++)
-                    result.put(i, get(i, c1).eq(other.get(i, c2)) ? 1.0f : 0.0f);
+                    result.put(i, get(i, c1).ne(other.get(i, c2)) ? 1.0f : 0.0f);
 	   return result;
 	 }
 	 
@@ -1919,7 +1919,7 @@ public class ComplexFloatMatrix {
 	   ensureResultLength(null, result);
            ComplexFloat c = new ComplexFloat(0.0f);
 	   for (int i = 0; i < length; i++)
-	     result.put(i, get(i, c).eq(value) ? 1.0f : 0.0f);
+	     result.put(i, get(i, c).ne(value) ? 1.0f : 0.0f);
 	   return result;
 	 }
 
