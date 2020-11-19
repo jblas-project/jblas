@@ -49,7 +49,7 @@ import static org.junit.Assert.*;
  * @author mikio
  */
 
-public class ComplexDoubleMatrixTest {
+public class TestComplexDoubleMatrix {
     
     @Test
     public void testConstruction() {
@@ -58,15 +58,25 @@ public class ComplexDoubleMatrixTest {
         for (int i = 0; i < A.rows; i++)
             for (int j = 0; j < A.columns; j++)
                 A.put(i, j, new ComplexDouble(i, j));
-        //System.out.printf("A = %s\n", A.toString());
-        
-        //System.out.println(A.mmul(A));
-        
+
         DoubleMatrix R = new DoubleMatrix(3, 3, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
         A = new ComplexDoubleMatrix(R, R.transpose());
-        //System.out.println(A);
-        
+
         assertEquals(A.real(), R);
         assertEquals(A.imag(), R.transpose());
+    }
+
+    @Test
+    public void testComparison() {
+        ComplexDoubleMatrix A = new ComplexDoubleMatrix(2, 1, 1.0, 2.0, 3.0, 4.0);
+        ComplexDoubleMatrix B = new ComplexDoubleMatrix(2, 1, 1.0, 2.0, 2.0, 4.0);
+
+        assertEquals(A.eq(B), new ComplexDoubleMatrix(2, 1, 1.0, 0.0, 0.0, 0.0));
+        assertEquals(A.ne(B), new ComplexDoubleMatrix(2, 1, 0.0, 0.0, 1.0, 0.0));
+
+        assertEquals(A.eq(new ComplexDouble(1.0, 2.0)),
+                new ComplexDoubleMatrix(2, 1, 1.0, 0.0, 0.0, 0.0));
+        assertEquals(A.ne(new ComplexDouble(1.0, 2.0)),
+                new ComplexDoubleMatrix(2, 1, 0.0, 0.0, 1.0, 0.0));
     }
 }
