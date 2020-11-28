@@ -88,7 +88,7 @@ options summary:
 
   --lapack-build           build against fortran lapack instead of ATLAS
   --build-type=...         One of 'lapack', 'atlas', 'openblas', 'nvblas'
-                           (default is 'atlas')
+                           (default is 'openblas')
                            You might still have to set libpath correctly
 EOS
 
