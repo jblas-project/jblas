@@ -2226,6 +2226,13 @@ public class DoubleMatrix implements Serializable {
         return SimpleBlas.dot(this, other);
     }
 
+    /**
+     * The inner product of this with other.
+     */
+    public DoubleMatrix inner(DoubleMatrix other) {
+        return CommonBlas.inner(this, other);
+    }
+
     /** 
      * Computes the projection coefficient of other on this.
      *
