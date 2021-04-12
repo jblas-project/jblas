@@ -7,3 +7,9 @@ target/
 *.ipr
 *.iml
 *.iws
+
+*.rjpp
+*.class
+configure.log
+configure.options
+config/arch_flavor
