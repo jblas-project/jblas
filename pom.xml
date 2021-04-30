@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
+  
   <groupId>org.jblas</groupId>
   <artifactId>jblas</artifactId>
   <version>1.2.6-SNAPSHOT</version>
   <packaging>jar</packaging>
-
+  
   <name>jblas</name>
   <description>A fast linear algebra library for Java.</description>
   <url>http://jblas.org/</url>
@@ -16,14 +16,14 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
+  
   <scm>
     <connection>scm:git:https://github.com/jblas-project/jblas.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/jblas-project/jblas.git</developerConnection>
     <url>https://github.com/jblas-project/jblas</url>
     <tag>jblas-1.2.5</tag>
   </scm>
-
+  
   <developers>
     <developer>
       <id>mikiobraun</id>
@@ -31,11 +31,11 @@
       <email>mikiobraun@gmail.com</email>
     </developer>
   </developers>
-
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
+  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -44,20 +44,19 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
+  
   <build>
     <plugins>
       <!-- the usual config of the maven compiler plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>3.8.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <release>11</release>
         </configuration>
       </plugin>
-
+      
       <!-- some config for the jar -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -71,9 +70,9 @@
           </archive>
         </configuration>
       </plugin>
-
+      
       <!-- we need to call some ant targets to generate automatic sources -->
-      <plugin>
+      <!-- <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
@@ -89,8 +88,65 @@
             </configuration>
           </execution>
         </executions>
+      </plugin> -->
+      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>generate-float</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>scripts/generate-float.sh</executable>
+              <arguments>
+                <argument>DoubleMatrix</argument>
+                <argument>DoubleFunction</argument>
+                <argument>ComplexDouble</argument>
+                <argument>ComplexDoubleMatrix</argument>
+              </arguments>            
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-test-float</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>scripts/generate-test-float.sh</executable>
+              <arguments>
+                <argument>TestDoubleMatrix</argument>
+                <argument>TestBlasDouble</argument>
+              </arguments>            
+            </configuration>    
+          </execution>
+          <execution>
+            <id>generate-static-float</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>scripts/generate-static-float.sh</executable>
+              <arguments>
+                <argument>SimpleBlas</argument>
+                <argument>Solve</argument>
+                <argument>Eigen</argument>
+                <argument>Geometry</argument>
+                <argument>MatrixFunctions</argument>
+                <argument>JavaBlas</argument>
+                <argument>Singular</argument>
+              </arguments>            
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
-
+      
       <!-- javadoc jar -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -112,7 +168,7 @@
           </execution>
         </executions>
       </plugin>
-
+      
       <!-- sources.jar -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -134,7 +190,7 @@
           </execution>
         </executions>
       </plugin>
-
+      
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -146,7 +202,7 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
-
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
@@ -161,7 +217,7 @@
           </execution>
         </executions>
       </plugin>
-
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
@@ -174,10 +230,10 @@
         </configuration>
       </plugin>
     </plugins>
-
-
+    
+    
   </build>
-
+  
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>

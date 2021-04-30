@@ -59,6 +59,8 @@ SRC_JAVA=$(SRC)/java
 SRC_C=$(SRC)/c
 RESOURCES=$(SRC)/resources
 
+JAVAC=javac
+
 TARGET_C=target/c
 
 LIB_PATH=$(RESOURCES)/lib/$(LINKAGE_TYPE)/$(OS_NAME)/$(OS_ARCH)
@@ -92,28 +94,39 @@ SHARED_LIBS=$(FULL_LIB_PATH)/$(LIB)jblas.$(SO) $(LIB_PATH)/$(LIB)jblas_arch_flav
 # The default target
 all	:  $(SHARED_LIBS)
 
+#
+# main library jblas (from NativeBlas)
+#
+$(FULL_LIB_PATH)/$(LIB)jblas.$(SO) : $(TARGET_C)/NativeBlas.$(SO)
+	@mkdir -p "$(dir $@)"
+	mv "$<" "$@"
+
+$(TARGET_C)/NativeBlas.o: $(SRC_C)/NativeBlas.c
+	@mkdir -p "$(dir $@)"
+	$(CC) $(CFLAGS) $(INCDIRS) -c $(SRC_C)/NativeBlas.c -o $@
+
+$(SRC_C)/NativeBlas.c: generated-sources
+
+
+#
+# Arch Flavor
+#
+$(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO): $(SRC_C)/jblas_arch_flavor.$(SO)
+	@mkdir -p "$(dir $@)"
+	mv "$<" "$@"
+
+$(TARGET_C)/jblas_arch_flavor.o: generated-sources
+	@mkdir -p "$(dir $@)"
+	$(CC) $(CFLAGS) $(INCDIRS) -c $(SRC_C)/jblas_arch_flavor.c -o $@
+
+
+#
+# Generating JNI files and headers
+#
+
 # Generate the code for the wrapper (both Java and C)
 generate-wrapper: $(GENERATED_SOURCES) $(GENERATED_HEADERS)
 
-
-# Clean all object files
-clean:
-	rm -f native/*.o native/*.$(SO) \
-	 $(LIB_PATH)/$(LIB)jblas.$(SO) $(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO) \
-	 $(FULL_LIB_PATH)/$(LIB)jblas.$(SO) $(FULL_LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO) \
-	 $(SRC_JAVA)/$(PACKAGE_PATH)/NativeBlas.java $(SRC_C)/NativeBlas.c generated-sources
-
-# Full clean, including information extracted from the fortranwrappers.
-# You will need the original fortran sources in order to rebuild
-# the wrappers.
-ifeq ($(LAPACK_HOME),)
-realclean: clean
-	@echo "Since you don't have LAPACK sources, I cannot rebuild stubs and deleting the cached information is not a good idea."
-	@echo "(nothing deleted)"
-else
-realclean: clean
-	rm -f fortranwrapper.dump
-endif
 
 # Generating the stubs. This target requires that the blas sources can
 # be found in the $(BLAS) and $(LAPACK) directories.
@@ -149,27 +162,36 @@ generated-sources: \
 	$(LAPACK)/[sd]geqrf.f $(LAPACK)/[sd]ormqr.f \
 	$(LAPACK)/[sd]orgqr.f \
 	$(LAPACK)/[sd]sygvx.f
-	ant javah
+	$(JAVAC) -classpath $(SRC_JAVA) $(SRC_JAVA)/org/jblas/util/ArchFlavor.java -h $(SRC_C)
+	$(JAVAC) -classpath $(SRC_JAVA) $(SRC_JAVA)/org/jblas/NativeBlas.java -h $(SRC_C)
 	touch $@
 
-$(SRC_C)/NativeBlas.c: generated-sources
 
-$(TARGET_C)/NativeBlas.o: $(SRC_C)/NativeBlas.c
-	@mkdir -p "$(dir $@)"
-	$(CC) $(CFLAGS) $(INCDIRS) -c $(SRC_C)/NativeBlas.c -o $@
+####################################################################################
+#
+# Cleaning
+#
 
-$(TARGET_C)/jblas_arch_flavor.o: generated-sources
-	@mkdir -p "$(dir $@)"
-	$(CC) $(CFLAGS) $(INCDIRS) -c $(SRC_C)/jblas_arch_flavor.c -o $@
+# Clean all object files
+clean:
+	rm -f native/*.o native/*.$(SO) \
+	 $(LIB_PATH)/$(LIB)jblas.$(SO) $(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO) \
+	 $(FULL_LIB_PATH)/$(LIB)jblas.$(SO) $(FULL_LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO) \
+	 $(SRC_JAVA)/$(PACKAGE_PATH)/NativeBlas.java $(SRC_C)/NativeBlas.c generated-sources
 
-# Move the compile library to the machine specific directory.
-$(FULL_LIB_PATH)/$(LIB)jblas.$(SO) : $(TARGET_C)/NativeBlas.$(SO)
-	@mkdir -p "$(dir $@)"
-	mv "$<" "$@"
+# Full clean, including information extracted from the fortranwrappers.
+# You will need the original fortran sources in order to rebuild
+# the wrappers.
+ifeq ($(LAPACK_HOME),)
+realclean: clean
+	@echo "Since you don't have LAPACK sources, I cannot rebuild stubs and deleting the cached information is not a good idea."
+	@echo "(nothing deleted)"
+else
+realclean: clean
+	rm -f fortranwrapper.dump
+endif
 
-$(LIB_PATH)/$(LIB)jblas_arch_flavor.$(SO): $(SRC_C)/jblas_arch_flavor.$(SO)
-	@mkdir -p "$(dir $@)"
-	mv "$<" "$@"
+
 
 ######################################################################
 #
@@ -187,40 +209,6 @@ test-dist:
 	rm -rf jblas-$(VERSION)
 	tar xzvf jblas-$(VERSION).tgz
 	(cd jblas-$(VERSION); ./configure; make -j3; ant jar; LD_LIBRARY_PATH=$(FULL_LIB_PATH):$(LIB_PATH) java -cp jblas-$(VERSION).jar org.jblas.util.SanityChecks)
-
-######################################################################
-#
-# Packaging
-#
-
-
-# Build different kind of jars:
-#
-# * with dynamic libraries
-# * with static libraries
-# * a "fat" jar with everything
-#
-# FIXME: I think this build target assumes that the current configuration
-# is "dynamic"
-all-jars:
-	ant clean-jars
-	./configure --keep-options $$(cat configure.options)
-	ant jar 
-	ant lean-jar
-	./configure --keep-options --static-libs $$(cat configure.options)
-	make
-	ant static-jar fat-jar
-
-# Build static jars
-all-static-jars:
-	./configure --keep-options --static-libs $$(cat configure.options)
-	make
-	for os_name in native-libs/*; do \
-	  for os_arch in $$os_name/* ; do \
-	    ant static-jar -Dos_name=$$(basename $$os_name) \
-		-Dos_arch=$$(basename $$os_arch); \
-	  done; \
-	done
 
 ################################################################################
 #
@@ -255,6 +243,10 @@ shell-ubuntu2004:
 test-ubuntu2004:
 	docker build -f docker/test-ubuntu2004.Dockerfile -t jblas/test-ubuntu2004 .
 	docker run --rm jblas/test-ubuntu2004 /bin/bash
+
+shell-debian-testing:
+	docker build -f docker/dev-debian-testing.Dockerfile -t jblas/dev-debian-testing .
+	docker run -it --rm -v $(PWD):/home/dev jblas/dev-debian-testing /bin/bash
 
 
 #----------------------------------------------------------
