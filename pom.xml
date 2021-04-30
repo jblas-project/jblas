@@ -35,8 +35,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <src>src/main/java</src>
-        <test>src/test/java</test>
+        <var.src>src/main/java</var.src>
+        <var.test>src/test/java</var.test>
     </properties>
 
     <dependencies>
@@ -90,10 +90,10 @@
                         <configuration>
                             <executable>scripts/run-rjpp.sh</executable>
                             <arguments>
-                                <arguments>${src}/org/jblas/DoubleMatrix.java</arguments>
-                                <arguments>${test}/org/jblas/TestDoubleMatrix.java</arguments>
-                                <arguments>${src}/org/jblas/MatrixFunctions.java</arguments>
-                                <arguments>${src}/org/jblas/ComplexDoubleMatrix.java</arguments>
+                                <arguments>${var.src}/org/jblas/DoubleMatrix.java</arguments>
+                                <arguments>${var.test}/org/jblas/TestDoubleMatrix.java</arguments>
+                                <arguments>${var.src}/org/jblas/MatrixFunctions.java</arguments>
+                                <arguments>${var.src}/org/jblas/ComplexDoubleMatrix.java</arguments>
                             </arguments>
                         </configuration>
                     </execution>
