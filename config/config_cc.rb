@@ -70,7 +70,20 @@ RUBY=ruby
 LDFLAGS += -G
 EOS
   when 'Windows'
-    if w64build?
+    case os_arch
+    when 'aarch64'
+      Path.check_cmd(WARM64_PREFIX + 'gcc', 'make', W64_PREFIX + 'ld')
+      Path.check_cmd('cygpath')
+      JblasConfig::CONFIG << <<EOS
+CC = #{WARM64_PREFIX}gcc
+CFLAGS = -ggdb -D__int64='long long'
+INCDIRS += -I"#{dir java_home}/include" -I"#{dir java_home}/include/win32" -Iinclude
+LDFLAGS += -shared -Wl
+SO = dll
+LIB =
+RUBY = ruby
+EOS
+    when 'amd64'
       Path.check_cmd(W64_PREFIX + 'gcc', 'make', W64_PREFIX + 'ld')
       Path.check_cmd('cygpath')
       JblasConfig::CONFIG << <<EOS
