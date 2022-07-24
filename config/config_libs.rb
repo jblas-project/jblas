@@ -98,16 +98,23 @@ desc 'getting library path...'
 configure :libpath => ['OS_NAME', 'OS_ARCH'] do
   if $opts.defined? :libpath
     CONFIG[:libpath] = $opts[:libpath].split(':')
-  else
-    if CONFIG['OS_NAME'] == 'Mac\ OS\ X'
-      CONFIG[:libpath] = ['/opt/local/lib']
+  elsif CONFIG['OS_NAME'] == 'Windows'
+    case CONFIG['OS_ARCH']
+    when 'aarch64'
+      CONFIG[:libpath] = ['/clangarm64/lib']
+    when 'amd64'
+      CONFIG[:libpath] = ['/mingw64/lib']
     else
-      #CONFIG[:libpath] = %w(/usr/lib /lib /usr/lib/sse2)
-      if CONFIG['OS_ARCH'] == 'aarch64'
-        CONFIG[:libpath] = %w(/usr/lib/aarch64-linux-gnu)
-      else
-        CONFIG[:libpath] = %w(/usr/lib/x86_64-linux-gnu)
-      end
+      CONFIG[:libpath] = ['/mingw32/lib']
+    end
+  elsif CONFIG['OS_NAME'] == 'Mac\ OS\ X'
+    CONFIG[:libpath] = ['/opt/local/lib']
+  else
+    #CONFIG[:libpath] = %w(/usr/lib /lib /usr/lib/sse2)
+    if CONFIG['OS_ARCH'] == 'aarch64'
+      CONFIG[:libpath] = %w(/usr/lib/aarch64-linux-gnu)
+    else
+      CONFIG[:libpath] = %w(/usr/lib/x86_64-linux-gnu)
     end
   end
   ok(CONFIG[:libpath].inspect)
@@ -180,6 +187,10 @@ configure 'LOADLIBES' => ['LINKAGE_TYPE', :libpath, 'F77', 'BUILD_TYPE', 'OS_ARC
         elsif CONFIG['OS_NAME'] == 'Mac\ OS\ X'
           print "Looking for where libgfortran.a is... "
           libgfortran_path = %x(gfortran -print-file-name=libgfortran.a).strip
+          puts "(#{libgfortran_path})"
+          CONFIG['LOADLIBES'] += [libgfortran_path]
+          print "Looking for where libquadmath.a is... "
+          libgfortran_path = %x(gfortran -print-file-name=libquadmath.a).strip
           puts "(#{libgfortran_path})"
           CONFIG['LOADLIBES'] += [libgfortran_path]
         else
