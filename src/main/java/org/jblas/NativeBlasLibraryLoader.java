@@ -104,7 +104,7 @@ class NativeBlasLibraryLoader {
       loader.loadLibrary("libgfortran-3", false);
     } else if (name.equals("Linux") && arch.equals("amd64")) {
       loader.loadLibrary("quadmath-0", false);
-      loader.loadLibrary("gfortran-4", false);
+      loader.loadLibrary("gfortran-5", false);
     }
   }
 }
