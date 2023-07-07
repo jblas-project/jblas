@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- Define directories -->
 
-    <property name="version" value="1.2.4-SNAPSHOT" />
+    <property name="version" value="1.2.5-SNAPSHOT" />
     <property name="src" value="${basedir}/src/main/java" />
     <property name="test" value="${basedir}/src/test/java" />
     <property name="bin" value="${basedir}/target/classes" />
